@@ -1,5 +1,7 @@
 package com.example.myapplication_kt
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -19,14 +21,23 @@ class MainActivity : AppCompatActivity() {
 
         myText.text = "start Android by Kt"
         
-        loginBt.setOnClickListener(){
-            Toast.makeText(this,"토스트 메시지 - LOGIN Click",Toast.LENGTH_SHORT).show()
+        loginBt.setOnClickListener {
+            Toast.makeText(this, "토스트 메시지 - LOGIN Click", Toast.LENGTH_SHORT).show()
         }
-        
-        signUp.setOnClickListener(){
+
+
+        signUp.setOnClickListener{
             Toast.makeText(this, "토스트 메시지 - signUp", Toast.LENGTH_SHORT).show()
-//            test
         }
+
+        intent?.let{
+            handleDeepLinkData(it)
+        }
+
+    }
+
+    private fun handleDeepLinkData(intent: Intent){
+        val data : Uri? = intent.data
     }
 }
 
