@@ -20,6 +20,18 @@
 
                 <category android:name="android.inu n765tent.category.LAUNCHER" />
             </intent-filter>
+
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="testcase"
+                    android:host="event"
+                    android:pathPrefix="/list"/>
+            </intent-filter>
         </activity>
     </application>
 
