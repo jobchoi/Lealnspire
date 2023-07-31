@@ -19,10 +19,13 @@ class MainActivity : AppCompatActivity() {
         val myText:TextView = findViewById(R.id.ID_Textview_1)
         val loginBt:Button = findViewById(R.id.bt_Login)
         val signUp:Button = findViewById(R.id.bt_SignUp)
+//        ------------------ Find ID ------------------
+
+//        ------------------ deep Link URI data 가져오기 ------------------
         val intent = intent
         val data:Uri? = intent.data
         val deepLinkData:String? = data?.getQueryParameter("data")
-
+//        ------------------ deep Link URI data 가져오기 ------------------
         intent?.data?.let { data->
             val param:String? = data.pathSegments.lastOrNull()
             if(param != null ){
