@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
         val myText:TextView = findViewById(R.id.ID_Textview_1)
         val loginBt:Button = findViewById(R.id.bt_Login)
         val signUp:Button = findViewById(R.id.bt_SignUp)
+
 //        ------------------ Find ID ------------------
 
 //        ------------------ deep Link URI data 가져오기 ------------------
@@ -38,6 +39,9 @@ class MainActivity : AppCompatActivity() {
         
         loginBt.setOnClickListener {
             Toast.makeText(this, "토스트 메시지 - LOGIN Click + data:$deepLinkData", Toast.LENGTH_SHORT).show()
+//            if (true){
+//
+//            }
         }
 
 
