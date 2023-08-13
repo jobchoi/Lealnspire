@@ -63,7 +63,6 @@ class MainActivity : AppCompatActivity() {
 
         loginBt.setOnClickListener {
             Toast.makeText(this, "토스트 메시지 - LOGIN Click + data:$deepLinkData", Toast.LENGTH_SHORT).show()
-            dispatchTakePictureIntent()
         }
 
 
@@ -79,14 +78,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val REQUEST_IMAGE_CAPTURE = 1
-
-
-    private fun dispatchTakePictureIntent(){
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (takePictureIntent.resolveActivity(packageManager) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-        }
-    }
 
     private fun handleDeepLinkData(intent: Intent){
         val data : Uri? = intent.data
