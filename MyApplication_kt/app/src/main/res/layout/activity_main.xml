@@ -38,13 +38,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="40dp">
+                android:layout_marginTop="25dp">
                 <TextView
                     android:id="@+id/ID_Textview_1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="30dp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="15dp"
                     android:orientation="vertical"
                     android:gravity="center_horizontal"
                     android:text=""
@@ -57,21 +57,22 @@
                 />
 
             </LinearLayout>
+
             <androidx.camera.view.PreviewView
                 android:id="@+id/previewView"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"/>
+                android:layout_height="250dp" />
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:minHeight="30dp"
                 android:orientation="horizontal"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="30dp">
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/get_id"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
                     android:hint="아이디 또는 이메일"
                     android:scrollbarSize="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -83,7 +84,7 @@
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:orientation="horizontal">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/get_pwd"
@@ -98,21 +99,38 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="100" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="250dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="25dp"
                 android:layout_marginBottom="50dp"
-                android:gravity="center_horizontal">
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt_camera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:minWidth="48dp"
+                    android:minHeight="48dp"
+                    android:text="camera"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.491"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.665" />
+
 
                 <Button
                     android:id="@+id/bt_Login"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:minWidth="48dp"
                     android:minHeight="48dp"
-                    android:layout_marginStart="16dp"
                     android:text="LOGIN"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -125,9 +143,9 @@
                     android:id="@+id/bt_SignUp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:minWidth="48dp"
                     android:minHeight="48dp"
-                    android:layout_marginStart="16dp"
                     android:text="Sign Up"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -137,6 +155,7 @@
                     app:layout_constraintVertical_bias="0.789" />
 
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
