@@ -84,7 +84,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private val REQUEST_IMAGE_CAPTURE = 1
 
     private fun handleDeepLinkData(intent: Intent){
         val data : Uri? = intent.data
@@ -139,5 +138,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 }
+
+
 
