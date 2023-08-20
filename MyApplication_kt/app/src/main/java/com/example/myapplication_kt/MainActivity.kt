@@ -24,7 +24,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),SensorEventListener {
 
     private  lateinit var sensorManager:SensorManager
     private var accelerometer: Sensor? = null
@@ -121,11 +121,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        // Lisener 해제 중.
-//        sensorManager.unregisterListener(sensorManager)
-    }
+
+
 
     private fun handleDeepLinkData(intent: Intent){
         val data : Uri? = intent.data
@@ -183,7 +180,20 @@ class MainActivity : AppCompatActivity() {
 
 
 
+    override fun onPause() {
+        super.onPause()
+        // Lisener 해제 중.
+        sensorManager.unregisterListener(this)
 
+    }
+
+    override fun onSensorChanged(p0: SensorEvent?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+        TODO("Not yet implemented")
+    }
 }
 
 
