@@ -18,14 +18,41 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.Manifest
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 
 class MainActivity : AppCompatActivity() {
+
+    private  lateinit var sensorManager:SensorManager
+    private var accelerometer: Sensor? = null
 
     companion object{
         const val TAKE_PICTURE = 1
         const val REQUEST_CAMERA_PERMISSION_CODE = 1001
-
     }
+
+    private val sensorListener = object : SensorEventListener {
+        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+            // 센서 정확도 변경 시 처리
+        }
+
+        override fun onSensorChanged(event: SensorEvent?) {
+            event?.let {
+                when (event.sensor.type) {
+                    Sensor.TYPE_ACCELEROMETER -> {
+                        val ax = event.values[0]  // X축 가속도
+                        val ay = event.values[1]  // Y축 가속도
+                        val az = event.values[2]  // Z축 가속도
+                    }
+                    // 필요한 경우, 다른 센서 유형에 대한 처리도 추가할 수 있습니다.
+                }
+            }
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,8 +65,8 @@ class MainActivity : AppCompatActivity() {
         val loginBt:Button = findViewById(R.id.bt_Login)
         val signUp:Button = findViewById(R.id.bt_SignUp)
         val phto_bt:Button = findViewById(R.id.bt_camera)
+
 //        val CAMERA = arrayOf(Manifest.permission.CAMERA)
-//        ------------------ Find ID ------------------
 
 //        ------------------ deep Link URI data 가져오기 ------------------
         val intent = intent
@@ -82,8 +109,23 @@ class MainActivity : AppCompatActivity() {
             handleDeepLinkData(it)
         }
 
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+
     }
 
+    override fun onResume() {
+        super.onResume()
+        accelerometer?.let {
+            sensorManager.registerListener(sensorListener, it, SensorManager.SENSOR_DELAY_NORMAL)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Lisener 해제 중.
+//        sensorManager.unregisterListener(sensorManager)
+    }
 
     private fun handleDeepLinkData(intent: Intent){
         val data : Uri? = intent.data
@@ -138,6 +180,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+
+
 
 }
 
