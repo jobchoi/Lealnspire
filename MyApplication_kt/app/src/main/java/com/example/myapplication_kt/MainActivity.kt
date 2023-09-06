@@ -18,15 +18,23 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.Manifest
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),SensorEventListener {
+
+    private  lateinit var sensorManager:SensorManager
+    private var accelerometer: Sensor? = null
 
     companion object{
         const val TAKE_PICTURE = 1
         const val REQUEST_CAMERA_PERMISSION_CODE = 1001
-
     }
 
+   
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -38,8 +46,8 @@ class MainActivity : AppCompatActivity() {
         val loginBt:Button = findViewById(R.id.bt_Login)
         val signUp:Button = findViewById(R.id.bt_SignUp)
         val phto_bt:Button = findViewById(R.id.bt_camera)
+
 //        val CAMERA = arrayOf(Manifest.permission.CAMERA)
-//        ------------------ Find ID ------------------
 
 //        ------------------ deep Link URI data 가져오기 ------------------
         val intent = intent
@@ -63,6 +71,8 @@ class MainActivity : AppCompatActivity() {
                     androidx.fragment.app.FragmentActivity()
                     CallCamera()
                     Toast.makeText(this, "토스트 메시지 - Camera Call after", Toast.LENGTH_SHORT).show()
+                    Log.d("CAM_START", "CAM_START called")
+
                 }
             }
         }
@@ -82,7 +92,43 @@ class MainActivity : AppCompatActivity() {
             handleDeepLinkData(it)
         }
 
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+
     }
+
+    override fun onResume() {
+        super.onResume()
+        accelerometer?.let {
+            sensorManager.registerListener(sensorListener, it, SensorManager.SENSOR_DELAY_NORMAL)
+        }
+    }
+
+    private val sensorListener = object : SensorEventListener {
+        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+            when(accuracy){
+                SensorManager.SENSOR_STATUS_UNRELIABLE -> {                }
+                SensorManager.SENSOR_STATUS_ACCURACY_LOW -> {                }
+                SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM -> {}
+                SensorManager.SENSOR_STATUS_ACCURACY_HIGH -> {}
+            }
+        }
+
+        override fun onSensorChanged(event: SensorEvent?) {
+            event?.let {
+                when (event.sensor.type) {
+                    Sensor.TYPE_ACCELEROMETER -> {
+                        val ax = event.values[0]  // X축 가속도
+                        val ay = event.values[1]  // Y축 가속도
+                        val az = event.values[2]  // Z축 가속도
+                    }
+                    // 필요한 경우, 다른 센서 유형에 대한 처리도 추가할 수 있습니다.
+                }
+            }
+        }
+    }
+
+
 
 
     private fun handleDeepLinkData(intent: Intent){
@@ -139,6 +185,38 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+
+    override fun onPause() {
+        super.onPause()
+        // Lisener 해제 중.
+        sensorManager.unregisterListener(this)
+
+    }
+
+    override fun onSensorChanged(p0: SensorEvent?) {
+        p0?.let {
+            if(it.sensor.type == Sensor.TYPE_ACCELEROMETER){
+                val ax = it.values[0]
+                val ay = it.values[1]
+                val az = it.values[2]
+
+                val message = "X: $ax, Y: $ay, Z: $az"
+
+                Log.d("G_TEST", "onSensorChanged called")
+
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                runOnUiThread{
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+    }
+
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+        TODO("Not yet implemented")
+    }
 }
 
 
