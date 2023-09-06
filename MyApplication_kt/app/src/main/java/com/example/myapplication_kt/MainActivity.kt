@@ -34,26 +34,7 @@ class MainActivity : AppCompatActivity(),SensorEventListener {
         const val REQUEST_CAMERA_PERMISSION_CODE = 1001
     }
 
-    private val sensorListener = object : SensorEventListener {
-        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-            // 센서 정확도 변경 시 처리
-        }
-
-        override fun onSensorChanged(event: SensorEvent?) {
-            event?.let {
-                when (event.sensor.type) {
-                    Sensor.TYPE_ACCELEROMETER -> {
-                        val ax = event.values[0]  // X축 가속도
-                        val ay = event.values[1]  // Y축 가속도
-                        val az = event.values[2]  // Z축 가속도
-                    }
-                    // 필요한 경우, 다른 센서 유형에 대한 처리도 추가할 수 있습니다.
-                }
-            }
-        }
-    }
-
-
+   
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -90,6 +71,8 @@ class MainActivity : AppCompatActivity(),SensorEventListener {
                     androidx.fragment.app.FragmentActivity()
                     CallCamera()
                     Toast.makeText(this, "토스트 메시지 - Camera Call after", Toast.LENGTH_SHORT).show()
+                    Log.d("CAM_START", "CAM_START called")
+
                 }
             }
         }
@@ -118,6 +101,30 @@ class MainActivity : AppCompatActivity(),SensorEventListener {
         super.onResume()
         accelerometer?.let {
             sensorManager.registerListener(sensorListener, it, SensorManager.SENSOR_DELAY_NORMAL)
+        }
+    }
+
+    private val sensorListener = object : SensorEventListener {
+        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+            when(accuracy){
+                SensorManager.SENSOR_STATUS_UNRELIABLE -> {                }
+                SensorManager.SENSOR_STATUS_ACCURACY_LOW -> {                }
+                SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM -> {}
+                SensorManager.SENSOR_STATUS_ACCURACY_HIGH -> {}
+            }
+        }
+
+        override fun onSensorChanged(event: SensorEvent?) {
+            event?.let {
+                when (event.sensor.type) {
+                    Sensor.TYPE_ACCELEROMETER -> {
+                        val ax = event.values[0]  // X축 가속도
+                        val ay = event.values[1]  // Y축 가속도
+                        val az = event.values[2]  // Z축 가속도
+                    }
+                    // 필요한 경우, 다른 센서 유형에 대한 처리도 추가할 수 있습니다.
+                }
+            }
         }
     }
 
@@ -188,7 +195,23 @@ class MainActivity : AppCompatActivity(),SensorEventListener {
     }
 
     override fun onSensorChanged(p0: SensorEvent?) {
-        TODO("Not yet implemented")
+        p0?.let {
+            if(it.sensor.type == Sensor.TYPE_ACCELEROMETER){
+                val ax = it.values[0]
+                val ay = it.values[1]
+                val az = it.values[2]
+
+                val message = "X: $ax, Y: $ay, Z: $az"
+
+                Log.d("G_TEST", "onSensorChanged called")
+
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                runOnUiThread{
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
