@@ -24,10 +24,14 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 
-class MainActivity : AppCompatActivity(),SensorEventListener {
+abstract class MainActivity : AppCompatActivity(),SensorEventListener {
 
-    private  lateinit var sensorManager:SensorManager
+//    private  lateinit var sensorManager:SensorManager
+//    private var accelerometer: Sensor? = null
+    private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
+    private var gyroscope: Sensor? = null
+
 
     companion object{
         const val TAKE_PICTURE = 1
@@ -48,6 +52,12 @@ class MainActivity : AppCompatActivity(),SensorEventListener {
         val phto_bt:Button = findViewById(R.id.bt_camera)
 
 //        val CAMERA = arrayOf(Manifest.permission.CAMERA)
+
+        // SensorManager 초기화
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        // 가속도 센서와 자이로 센서 초기화
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
 
 //        ------------------ deep Link URI data 가져오기 ------------------
         val intent = intent
@@ -91,40 +101,15 @@ class MainActivity : AppCompatActivity(),SensorEventListener {
         intent?.let{
             handleDeepLinkData(it)
         }
-
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-
     }
 
     override fun onResume() {
         super.onResume()
         accelerometer?.let {
-            sensorManager.registerListener(sensorListener, it, SensorManager.SENSOR_DELAY_NORMAL)
+            sensorManager.registerListener(sensorEventListener, it, SensorManager.SENSOR_DELAY_NORMAL)
         }
-    }
-
-    private val sensorListener = object : SensorEventListener {
-        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-            when(accuracy){
-                SensorManager.SENSOR_STATUS_UNRELIABLE -> {                }
-                SensorManager.SENSOR_STATUS_ACCURACY_LOW -> {                }
-                SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM -> {}
-                SensorManager.SENSOR_STATUS_ACCURACY_HIGH -> {}
-            }
-        }
-
-        override fun onSensorChanged(event: SensorEvent?) {
-            event?.let {
-                when (event.sensor.type) {
-                    Sensor.TYPE_ACCELEROMETER -> {
-                        val ax = event.values[0]  // X축 가속도
-                        val ay = event.values[1]  // Y축 가속도
-                        val az = event.values[2]  // Z축 가속도
-                    }
-                    // 필요한 경우, 다른 센서 유형에 대한 처리도 추가할 수 있습니다.
-                }
-            }
+        gyroscope?.let {
+            sensorManager.registerListener(sensorEventListener, it, SensorManager.SENSOR_DELAY_NORMAL)
         }
     }
 
@@ -184,39 +169,32 @@ class MainActivity : AppCompatActivity(),SensorEventListener {
             }
         }
     }
+// SENSOR START
+private val sensorEventListener = object : SensorEventListener {
+        override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
+            // 센서의 정확도가 변경될 때 호출됩니다.
+        }
 
+        override fun onSensorChanged(event: SensorEvent) {
+            when (event.sensor.type) {
+                Sensor.TYPE_ACCELEROMETER -> {
+                    val ax = event.values[0]
+                    val ay = event.values[1]
+                    val az = event.values[2]
 
+                    // 가속도 센서 값을 사용하여 필요한 작업을 수행합니다.
+                }
+                Sensor.TYPE_GYROSCOPE -> {
+                    val gx = event.values[0]
+                    val gy = event.values[1]
+                    val gz = event.values[2]
 
-    override fun onPause() {
-        super.onPause()
-        // Lisener 해제 중.
-        sensorManager.unregisterListener(this)
-
-    }
-
-    override fun onSensorChanged(p0: SensorEvent?) {
-        p0?.let {
-            if(it.sensor.type == Sensor.TYPE_ACCELEROMETER){
-                val ax = it.values[0]
-                val ay = it.values[1]
-                val az = it.values[2]
-
-                val message = "X: $ax, Y: $ay, Z: $az"
-
-                Log.d("G_TEST", "onSensorChanged called")
-
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-                runOnUiThread{
-                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                    // 자이로 센서 값을 사용하여 필요한 작업을 수행합니다.
                 }
             }
         }
-
     }
-
-    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-        TODO("Not yet implemented")
-    }
+// SENSOR END
 }
 
 
