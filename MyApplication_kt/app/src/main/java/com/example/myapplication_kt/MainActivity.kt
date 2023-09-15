@@ -28,9 +28,9 @@ abstract class MainActivity : AppCompatActivity(),SensorEventListener {
 
 //    private  lateinit var sensorManager:SensorManager
 //    private var accelerometer: Sensor? = null
-    private val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    private val accelerometer: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-    private val gyroscope: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+    private lateinit var sensorManager: SensorManager
+    private var accelerometer: Sensor? = null
+    private var gyroscope: Sensor? = null
 
 
     companion object{
@@ -52,6 +52,12 @@ abstract class MainActivity : AppCompatActivity(),SensorEventListener {
         val phto_bt:Button = findViewById(R.id.bt_camera)
 
 //        val CAMERA = arrayOf(Manifest.permission.CAMERA)
+
+        // SensorManager 초기화
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        // 가속도 센서와 자이로 센서 초기화
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
 
 //        ------------------ deep Link URI data 가져오기 ------------------
         val intent = intent
