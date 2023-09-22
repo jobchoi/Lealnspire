@@ -24,10 +24,8 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 
-abstract class MainActivity : AppCompatActivity(),SensorEventListener {
+public class MainActivity : AppCompatActivity(),SensorEventListener {
 
-//    private  lateinit var sensorManager:SensorManager
-//    private var accelerometer: Sensor? = null
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
     private var gyroscope: Sensor? = null
@@ -74,12 +72,17 @@ abstract class MainActivity : AppCompatActivity(),SensorEventListener {
 
         myText.text = "start Android by Kt"
 
+        val hasCameraPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+        if (!hasCameraPermission) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION_CODE)
+        }
+
         phto_bt.setOnClickListener{v->
             when(v.id){
                 R.id.bt_camera->{
                     val camIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                     androidx.fragment.app.FragmentActivity()
-                    CallCamera()
+                    callMyCamera()
                     Toast.makeText(this, "토스트 메시지 - Camera Call after", Toast.LENGTH_SHORT).show()
                     Log.d("CAM_START", "CAM_START called")
 
@@ -92,10 +95,8 @@ abstract class MainActivity : AppCompatActivity(),SensorEventListener {
             Toast.makeText(this, "토스트 메시지 - LOGIN Click + data:$deepLinkData", Toast.LENGTH_SHORT).show()
         }
 
-
         signUp.setOnClickListener{
             Toast.makeText(this, "토스트 메시지 - signUp", Toast.LENGTH_SHORT).show()
-
         }
 
         intent?.let{
@@ -119,7 +120,7 @@ abstract class MainActivity : AppCompatActivity(),SensorEventListener {
     private fun handleDeepLinkData(intent: Intent){
         val data : Uri? = intent.data
     }
-    private fun CallCamera(){
+    private fun callMyCamera(){
 //        val imgCap = ImageCapture.Builder().build()
         val my_previewView = findViewById<PreviewView>(R.id.previewView)
 
@@ -193,6 +194,14 @@ private val sensorEventListener = object : SensorEventListener {
                 }
             }
         }
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+        TODO("Not yet implemented")
     }
 // SENSOR END
 }
