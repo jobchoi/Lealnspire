@@ -29,6 +29,7 @@ public class MainActivity : AppCompatActivity(),SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
     private var gyroscope: Sensor? = null
+    private lateinit var sensorValueTextView: TextView
 
 
     companion object{
@@ -43,11 +44,14 @@ public class MainActivity : AppCompatActivity(),SensorEventListener {
 
 
 
+
 //        ------------------ Find ID ------------------
         val myText:TextView = findViewById(R.id.ID_Textview_1)
         val loginBt:Button = findViewById(R.id.bt_Login)
         val signUp:Button = findViewById(R.id.bt_SignUp)
         val phto_bt:Button = findViewById(R.id.bt_camera)
+
+        sensorValueTextView = findViewById(R.id.getSensor)
 
 //        val CAMERA = arrayOf(Manifest.permission.CAMERA)
 
@@ -170,13 +174,22 @@ public class MainActivity : AppCompatActivity(),SensorEventListener {
             }
         }
     }
-// SENSOR START
-private val sensorEventListener = object : SensorEventListener {
+    // SENSOR START
+    private val sensorEventListener = object : SensorEventListener {
         override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
             // 센서의 정확도가 변경될 때 호출됩니다.
+
         }
 
         override fun onSensorChanged(event: SensorEvent) {
+            val gx = event.values[0]
+            val gy = event.values[1]
+            val gz = event.values[2]
+
+            var formattedX = String.format("%.2f", gx)
+            var formattedY = String.format("%.2f", gy)
+            var formattedZ = String.format("%.2f", gz)
+
             when (event.sensor.type) {
                 Sensor.TYPE_ACCELEROMETER -> {
                     val ax = event.values[0]
@@ -186,13 +199,15 @@ private val sensorEventListener = object : SensorEventListener {
                     // 가속도 센서 값을 사용하여 필요한 작업을 수행합니다.
                 }
                 Sensor.TYPE_GYROSCOPE -> {
-                    val gx = event.values[0]
-                    val gy = event.values[1]
-                    val gz = event.values[2]
+                    formattedX = String.format("%.2f", gx)
+                    formattedY = String.format("%.2f", gy)
+                    formattedZ = String.format("%.2f", gz)
 
                     // 자이로 센서 값을 사용하여 필요한 작업을 수행합니다.
                 }
             }
+            sensorValueTextView.text = "X: $formattedX  Y: $formattedY  Z: $formattedZ"
+
         }
     }
 
@@ -203,7 +218,7 @@ private val sensorEventListener = object : SensorEventListener {
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         TODO("Not yet implemented")
     }
-// SENSOR END
+    // SENSOR END
 }
 
 
