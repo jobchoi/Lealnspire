@@ -29,7 +29,8 @@ public class MainActivity : AppCompatActivity(),SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
     private var gyroscope: Sensor? = null
-    private lateinit var sensorValueTextView: TextView
+    private lateinit var gSensorValueTextView: TextView
+    private lateinit var aSensorValueTextView: TextView
 
 
     companion object{
@@ -51,7 +52,8 @@ public class MainActivity : AppCompatActivity(),SensorEventListener {
         val signUp:Button = findViewById(R.id.bt_SignUp)
         val phto_bt:Button = findViewById(R.id.bt_camera)
 
-        sensorValueTextView = findViewById(R.id.getSensor)
+        gSensorValueTextView = findViewById(R.id.getGSensor)
+        aSensorValueTextView = findViewById(R.id.getASensor)
 
 //        val CAMERA = arrayOf(Manifest.permission.CAMERA)
 
@@ -182,32 +184,41 @@ public class MainActivity : AppCompatActivity(),SensorEventListener {
         }
 
         override fun onSensorChanged(event: SensorEvent) {
-            val gx = event.values[0]
-            val gy = event.values[1]
-            val gz = event.values[2]
+            val getX = event.values[0]
+            val getY = event.values[1]
+            val getZ = event.values[2]
+//            val ax = event.values[0]
+//            val ay = event.values[1]
+//            val az = event.values[2]
 
-            var formattedX = String.format("%.2f", gx)
-            var formattedY = String.format("%.2f", gy)
-            var formattedZ = String.format("%.2f", gz)
+
+            var formatted_G_X = ""
+            var formatted_G_Y = ""
+            var formatted_G_Z = ""
+
+            var formatted_A_Z = ""
+            var formatted_A_X = ""
+            var formatted_A_Y = ""
 
             when (event.sensor.type) {
                 Sensor.TYPE_ACCELEROMETER -> {
-                    val ax = event.values[0]
-                    val ay = event.values[1]
-                    val az = event.values[2]
 
                     // 가속도 센서 값을 사용하여 필요한 작업을 수행합니다.
+                   formatted_A_X = String.format("%.2f", getX)
+                   formatted_A_Y = String.format("%.2f", getY)
+                   formatted_A_Z = String.format("%.2f", getZ)
                 }
                 Sensor.TYPE_GYROSCOPE -> {
-                    formattedX = String.format("%.2f", gx)
-                    formattedY = String.format("%.2f", gy)
-                    formattedZ = String.format("%.2f", gz)
+                    formatted_G_X = String.format("%.2f", getX)
+                    formatted_G_Y = String.format("%.2f", getY)
+                    formatted_G_Z = String.format("%.2f", getZ)
 
                     // 자이로 센서 값을 사용하여 필요한 작업을 수행합니다.
                 }
             }
             // textView에서 값 확인
-            sensorValueTextView.text = "X: $formattedX  Y: $formattedY  Z: $formattedZ"
+            gSensorValueTextView.text = "X: $formatted_G_X  Y: $formatted_G_Y  Z: $formatted_G_Z"
+            aSensorValueTextView.text = "X: $formatted_A_X  Y: $formatted_A_Y  Z: $formatted_A_Z"
         }
     }
 
