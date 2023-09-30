@@ -206,8 +206,8 @@ public class MainActivity : AppCompatActivity(),SensorEventListener {
                     // 자이로 센서 값을 사용하여 필요한 작업을 수행합니다.
                 }
             }
+            // textView에서 값 확인
             sensorValueTextView.text = "X: $formattedX  Y: $formattedY  Z: $formattedZ"
-
         }
     }
 
