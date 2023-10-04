@@ -83,7 +83,7 @@ public class MainActivity : AppCompatActivity(),SensorEventListener {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION_CODE)
         }
 
-        phto_bt.setOnClickListener{v->
+        phto_bt.setOnClickListener{v->  
             when(v.id){
                 R.id.bt_camera->{
                     val camIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
