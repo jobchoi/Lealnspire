@@ -12,7 +12,7 @@
 | ID | 작업 | 우선순위 | 선행 | 상태 |
 |---|---|---|---|---|
 | T0 | 뼈대, 문서, 자동화, 오케스트레이션 | P0 | - | 완료 |
-| T0b | 새 PC 환경 구성 스크립트(Windows/Linux/macOS) — 구현 Codex(GPT), 검토 Claude | P0 | T0 | 대기 |
+| T0b | 새 PC 환경 구성 스크립트(Windows/Linux/macOS) — 구현 Codex(GPT), 검토 Claude | P0 | T0 | 완료(macOS 미검증) |
 | D1 | [결정] 회전 방식 확정 | P0 | - | 보류 (사용자 결정) |
 | T1 | 게임 엔진(순수 로직) | P1 | T0, D1 | 대기 |
 | T2 | 스테이지 데이터 + 맵 렌더링 | P1 | T1 | 대기 |
@@ -34,14 +34,14 @@
 - [x] `/next-task` 스킬, `reviewer` 서브에이전트
 - [x] push 후 GitHub Actions 실행 결과 확인: 커밋 599e085에서 [run #1](https://github.com/jobchoi/Lealnspire/actions/runs/44645760569) 성공(lint, test, build)
 
-### T0b. 새 PC 환경 구성 스크립트 — P0, 대기
+### T0b. 새 PC 환경 구성 스크립트 — P0, 완료(macOS 미검증)
 
 - 담당: 구현 **Codex(GPT)**, 지시·검증·검토·커밋 **Claude Code**(모델 간 오케스트레이션 실험)
 - 지시서: [docs/handoff/T0b.md](handoff/T0b.md) — 완료 조건은 지시서의 요구사항 1~11
-- [ ] Codex 구현 결과 수령(보고 포함)
-- [ ] Claude 검증: `setup.sh --check`와 전체 실행(Linux/WSL), `setup.ps1 -Check`(WSL에서 Windows PowerShell 5.1)
-- [ ] `reviewer` 검토, 필수 지적 반영
-- [ ] macOS: 미검증으로 기록(실기기 없음)
+- [x] Codex 구현 결과 수령(보고 포함)
+- [x] Claude 검증: `setup.sh --check`와 전체 실행(Linux/WSL), `setup.ps1 -Check`(WSL에서 Windows PowerShell 5.1)
+- [x] 검증 지적(점검 모드가 conda Node를 못 찾음) → Codex 수정 → Claude 재검증 통과. `reviewer` 별도 검토는 토큰 절약을 위해 생략
+- [ ] macOS: 미검증(실기기 없음). Windows 전체 설치 실행도 미검증(점검 모드만 확인)
 
 ### D1. 회전 방식 확정 — P0, 보류
 

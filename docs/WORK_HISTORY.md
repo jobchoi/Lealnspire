@@ -4,6 +4,16 @@
 
 ---
 
+## T0b 환경 구성 스크립트 — Codex 구현, Claude 검증 (2026-11-20)
+
+- 사용자 방침: Claude 토큰은 최소로, GPT(Codex)는 최대한 활용. 실행은 Claude가 `codex exec`로 함(사용자 승인)
+- Codex: `.claude/settings.json` 읽기 전용 검토 → 맨 앞 `//` 주석 때문에 JSON이 깨져 설정 전체가 무시됨을 발견(사용자가 수정 예정). 패턴 기반 deny는 우회 가능하므로 GitHub 브랜치 보호 권장
+- Codex: `scripts/setup.sh`, `scripts/setup.ps1`(UTF-8 BOM), README 절 작성. 스스로 요구사항 1을 미충족, 나머지 대부분을 미검증으로 정직하게 보고
+- Claude 검증: Linux 전체 실행 통과(npm ci, 브라우저, PATH, verify), Windows PowerShell 5.1 `-Check` 정상 동작. 점검 모드가 conda env의 Node를 못 찾는 문제 발견 → Codex에 수정 지시 → 재검증에서 전 항목 OK
+- 미검증: macOS 전체, Windows 전체 설치 실행
+
+---
+
 ## 모델 간 오케스트레이션 구성(Claude ↔ Codex) (2026-11-20)
 
 - 사용자 요청: 환경 구성 스크립트는 GPT에게 작업을 맡겨 수행해 보기(Claude는 오케스트레이션 담당)

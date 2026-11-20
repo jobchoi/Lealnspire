@@ -13,6 +13,26 @@
 
 React 19 · TypeScript · Vite · Vitest · oxlint · GitHub Actions
 
+## 새 PC 환경 구성(자동)
+
+저장소를 클론한 뒤 프로젝트 폴더에서 실행합니다. 먼저 설치나 설정 변경 없이 상태를 확인할 수 있습니다.
+
+```bash
+# Linux, WSL, macOS
+bash scripts/setup.sh --check
+bash scripts/setup.sh
+```
+
+```powershell
+# Windows PowerShell 5.1 또는 PowerShell 7
+.\scripts\setup.ps1 -Check
+.\scripts\setup.ps1
+```
+
+스크립트는 git과 Node를 확인하고 필요하면 Node를 준비한 뒤 `npm ci`, Playwright MCP 브라우저 설치와 `npm run verify`를 실행합니다. Claude Code의 로컬 PATH를 설정하고, GitHub SSH 인증이 확인되면 HTTPS origin을 SSH로 바꿉니다. Linux에서 브라우저 라이브러리가 누락되면 설치 명령을 안내합니다.
+
+관리자 권한이나 sudo를 실행하지 않고, SSH 키를 만들거나 MCP 서버를 승인하지 않습니다. 실행 후 Claude Code를 재시작하고 프로젝트 MCP 서버를 승인한 다음 `/mcp`로 연결을 확인하세요. Windows에서 스크립트 실행 정책이 차단하면 현재 프로세스에 한해 `Set-ExecutionPolicy -Scope Process Bypass`를 실행한 뒤 다시 실행할 수 있습니다.
+
 ## 실행 방법
 
 필요 환경: Node.js `^20.19.0 || >=22.12.0` (권장 버전은 `.nvmrc`의 22)
