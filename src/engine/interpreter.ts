@@ -9,12 +9,18 @@ export function run(stage: Stage, program: Program): RunResult {
   let dir = stage.startDir
   const frames: RunResult['frames'] = [{ pos: { ...pos }, dir, activeBlockId: null }]
   let steps = 0
+  let repeatEntries = 0
   let result: RunResult['result'] = 'unfinished'
   function execute(blocks: Block[]): boolean {
     for (const block of blocks) {
       if (block.type === 'repeat') {
         if (!Number.isInteger(block.count) || block.count < 2 || block.count > 10) throw new Error('Invalid repeat count')
-        for (let i = 0; i < block.count; i++) if (execute(block.body)) return true
+        for (let i = 0; i < block.count; i++) {
+          // Bound interpreter work even when the body produces no frames.
+          if (repeatEntries === 1000) { result = 'stepLimit'; return true }
+          repeatEntries++
+          if (execute(block.body)) return true
+        }
         continue
       }
       if (steps === 1000) { result = 'stepLimit'; return true }

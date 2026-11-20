@@ -37,6 +37,22 @@ describe('run', () => {
     expect(run(stage(['S..G']), [repeat([forward], 3)]).result).toBe('success')
     expect(run(stage(['S...G']), [repeat([repeat([forward])])]).result).toBe('success')
   })
+  it('bounds ten nested empty repeats within 100ms without adding frames', () => {
+    let program: Block[] = []
+    for (let depth = 0; depth < 10; depth++) program = [repeat(program, 10)]
+    const started = performance.now()
+    const result = run(stage(['S.G']), program)
+    expect(performance.now() - started).toBeLessThan(100)
+    expect(result.result).toBe('stepLimit')
+    expect(result.frames).toHaveLength(1)
+    expect(run(stage(['S.G']), [repeat([], 10)]).result).toBe('unfinished')
+  })
+  it('enforces the repeat entry limit only when another entry is needed', () => {
+    const thousandEntries = Array.from({ length: 100 }, () => repeat([], 10))
+    expect(run(stage(['S.G']), thousandEntries).result).toBe('unfinished')
+    expect(run(stage(['S.G']), [...thousandEntries, repeat([])]).result).toBe('stepLimit')
+    expect(run(stage(['S.G']), [...thousandEntries, forward, forward]).result).toBe('success')
+  })
   it('reports unfinished and enforces the step limit only when another step is needed', () => {
     expect(run(stage(['S.G']), [forward]).result).toBe('unfinished')
     const thousand = Array.from({ length: 1000 }, () => right)

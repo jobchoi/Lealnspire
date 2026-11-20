@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { run } from '../engine/interpreter'
 import { countBlocks } from '../engine/program'
 import { stages } from './index'
+import type { Program } from '../engine/types'
 
 describe('스테이지 정답', () => {
   it('1~8 스테이지가 순서대로 있다', () => {
@@ -14,6 +15,19 @@ describe('스테이지 정답', () => {
       if (stage.maxBlocks !== undefined) expect(countBlocks(stage.solution)).toBeLessThanOrEqual(stage.maxBlocks)
     })
   }
+  it('모든 스테이지에 별 기준보다 짧은 기본 명령 정답이 없다', () => {
+    const started = performance.now()
+    const commands = ['forward', 'turnLeft', 'turnRight'] as const
+    for (const stage of stages) {
+      const visit = (program: Program): void => {
+        expect(run(stage, program).result).not.toBe('success')
+        if (program.length + 1 >= stage.starBlocks) return
+        for (const type of commands) visit([...program, { id: `plain-${program.length}`, type }])
+      }
+      visit([])
+    }
+    expect(performance.now() - started).toBeLessThan(1000)
+  })
   it('4번은 명령 하나를 고쳐 성공한다', () => {
     const stage = stages[3]
     expect(run(stage, stage.initialProgram!).result).not.toBe('success')
