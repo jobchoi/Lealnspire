@@ -124,8 +124,11 @@ Claude가 오케스트레이터, Codex(GPT)가 구현 담당인 작업은 TASKS.
 2. **실행**: 사용자가 정한 방식으로 Codex를 실행합니다.
    - (A) 사용자가 VS Code의 Codex 창에 "docs/handoff/<작업 ID>.md 지시서대로 작업해줘"라고 입력
    - (B) Claude가 `codex exec`로 실행. **Codex 사용량(사용자의 ChatGPT 요금제 또는 OpenAI API 과금)이 들기 때문에 작업마다 사용자 승인을 받습니다.** 샌드박스는 `workspace-write`, 네트워크 없음
-3. **검증(Claude)**: Codex 보고를 그대로 믿지 않고 완료 조건을 직접 실행해 확인합니다. Codex가 "통과"라고 했어도 Claude가 실행하지 않았으면 미검증입니다.
-4. **교차 검토(Claude)**: `reviewer` 서브에이전트로 검토하고, 필수 지적은 Claude가 고치거나 수정 지시서를 다시 Codex에 보냅니다.
+3. **QC 테스트(Claude)**: Claude는 코드를 고치지 않고 **테스트만** 합니다. 완료 조건을 직접 실행하고, Codex 보고를 그대로 믿지 않습니다(Claude가 실행하지 않았으면 미검증).
+4. **QC 보고 → Codex 수정**: 실패하면 Claude가 Codex에게 다음을 보냅니다. Codex가 고치고 Claude가 다시 테스트합니다.
+   - 실행한 명령과 **오류 메시지 원문**
+   - 같은 원인으로 **함께 깨질 것으로 예상되는 다른 부분**(다른 OS 분기, 같은 함수를 쓰는 곳, 경계 조건 등)을 "확인해 볼 것" 목록으로
+   - 사용자 토큰 방침상 `reviewer` 서브에이전트 검토는 생략하고, 필요하면 Codex에 읽기 전용 검토를 맡깁니다
 5. **기록과 커밋(Claude)**: TASKS.md, WORK_HISTORY.md에 누가 무엇을 했는지(구현 Codex, 검증·수정 Claude)와 검토 결과를 남기고 커밋·push합니다.
 
 ## 8. 스킬과 서브에이전트
