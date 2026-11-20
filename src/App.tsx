@@ -1,8 +1,14 @@
+import { Board } from './components/Board'
+import { stages } from './stages'
+
 function App() {
+  const stage = stages[0]
   return (
     <main className="app">
       <h1>Lealnspire</h1>
-      <p>게임으로 배우는 컴퓨터과학 — 첫 단원: 로봇 블록 코딩 퍼즐 (준비 중)</p>
+      <h2>스테이지 {stage.id}: {stage.title}</h2>
+      <p>{stage.goal}</p>
+      <Board stage={stage} />
     </main>
   )
 }

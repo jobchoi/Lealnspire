@@ -15,3 +15,28 @@ body {
   margin: 0 auto;
   padding: 2rem 1rem;
 }
+
+.board {
+  display: grid;
+  width: min(100%, 480px);
+  gap: 4px;
+  padding: 4px;
+  border-radius: 8px;
+  background: #cbd5e1;
+  box-sizing: border-box;
+}
+
+.board-cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: #fff;
+  color: #ad6700;
+  font-size: clamp(1.25rem, 6vw, 2.5rem);
+}
+
+.board-wall { background: #475569; }
+.board-goal { background: #fff1c2; }
+.board-robot { position: absolute; color: #2563eb; }
