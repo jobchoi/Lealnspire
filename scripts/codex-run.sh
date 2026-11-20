@@ -2,7 +2,7 @@
 # Codex(GPT) 작업 실행 + 진행 현황 기록
 #
 #   bash scripts/codex-run.sh <레포 경로> <작업 이름> <프롬프트>
-#   예) bash scripts/codex-run.sh ~/workspace/playX-mas "기획 초안" "docs/handoff/P1.md 지시서대로 작업해줘"
+#   예) bash scripts/codex-run.sh ../playX-mas "기획 초안" "docs/handoff/P1.md 지시서대로 작업해줘"
 #
 # - 시작/종료/종료 코드는 이 스크립트가 기록(사실)
 # - 단계별 진행은 Codex가 직접 한 줄씩 추가(자기 보고)
@@ -11,7 +11,8 @@ set -uo pipefail
 
 REPO="$(cd "$1" && pwd)"; TASK="$2"; PROMPT="$3"
 PROJ="$(basename "$REPO")"
-PDIR="${AI_PROGRESS_DIR:-$HOME/workspace/_progress}"
+# 진행 폴더: AI_PROGRESS_DIR, 없으면 작업 폴더(이 레포의 상위)/_progress
+PDIR="${AI_PROGRESS_DIR:-${WORKSPACE:-$(cd "$(dirname "$0")/../.." && pwd)}/_progress}"
 BOARD="$PDIR/PROGRESS.md"
 LOGS="$PDIR/logs"
 mkdir -p "$LOGS"

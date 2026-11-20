@@ -15,7 +15,11 @@ mkdir -p utilProject && git clone git@github.com:jobchoi/toyproject-HowToEasy.gi
 - 각 레포에서 아래 표의 **작업 브랜치**로 `git switch` 합니다.
 - Lealnspire 환경: `bash scripts/setup.sh` (Windows: `powershell -ExecutionPolicy Bypass -File scripts\setup.ps1`)
 - Claude Code 재시작 → MCP(context7, playwright) 승인 → `/mcp` 확인
-- Codex 실행기·진행률: `scripts/codex-run.sh`, `scripts/progress-summary.sh` (진행 기록은 `~/workspace/_progress/`에 새로 쌓임. 이전 기록은 `docs/progress/`)
+- Codex 실행기·진행률: `scripts/codex-run.sh`, `scripts/progress-summary.sh`
+  - 작업 폴더는 **Lealnspire가 들어 있는 상위 폴더**로 자동 인식합니다(예: 직장 PC `~/workspace`, 집 PC `~/project`). 다르게 쓰려면 `WORKSPACE=/경로`.
+  - 진행 기록은 `<작업 폴더>/_progress/`에 쌓입니다(`AI_PROGRESS_DIR`로 변경 가능). 이전 기록은 `docs/progress/`
+  - 학습실 레포는 `<작업 폴더>/utilProject/toyproject-HowToEasy` 또는 `<작업 폴더>/toyproject-HowToEasy` 어느 쪽이든 인식합니다.
+- 프로젝트별 환경: 장학 기금 `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt pytest`, 학습실 `conda create -n study-room python=3.12` 후 `backend/requirements.txt` 설치(문서의 `~/miniconda3` 경로는 PC에 따라 `~/miniforge3`일 수 있음), playX-mas는 `node --test`만 필요
 
 ## 2. 프로젝트별 상태
 

@@ -1,5 +1,14 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-20 — 집 PC(WSL)에서 4개 프로젝트 오케스트레이션 환경 재구성
+
+- 이 PC의 작업 폴더는 `~/project`(직장 PC는 `~/workspace`). `scripts/progress-summary.sh`, `scripts/codex-run.sh`가 경로를 고정하지 않고 레포 상위 폴더를 작업 폴더로 쓰도록 변경, 학습실 레포 두 위치 모두 인식
+- 클론: playX-mas(`feature/P2-adventure`), Rt_journeyPrjNum1(`feature/bank-excel-import`). 학습실 레포는 `feature/space-utilization-v1`로 전환. Lealnspire는 `feature/T1-engine`으로 전환
+- 로컬 환경: 장학 기금 `.venv`(+ `.git/info/exclude`에 `.venv/`, `samples/`), conda env `study-room`(Python 3.12). `samples/sample.xlsx`(개인정보)는 이 PC에 없음
+- 검증(이 PC): Lealnspire `npm run verify` 통과(테스트 22개), `setup.sh --check` 전 항목 OK, playX-mas `node --test` 6개 통과, 장학 기금 pytest 16개 통과, 학습실 backend pytest 12개 통과(추적 중인 DB 변경 없음), `progress-summary.sh` 4개 프로젝트 집계(47/20/76/66%)
+- Codex CLI: VS Code 확장 내장 `codex-cli 0.171.0-alpha.13`, ChatGPT 로그인 상태 확인. `codex-run.sh` 실제 실행은 사용량이 들어 하지 않음(미검증)
+- T2 화면: 헤드리스 Chromium으로 스테이지 1 렌더링 확인(3칸 맵, 로봇, 도착). TASKS 체크는 QC 마무리 때 반영 예정
+
 ## 2026-11-20 — T2 구현 (Codex, Claude QC 대기)
 
 - 스테이지 1~8과 정답, CSS Grid 지도 및 방향 표시를 구현. 스테이지 초안과 6~8 블록 제한은 잠정.
