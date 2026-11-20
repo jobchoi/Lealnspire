@@ -28,6 +28,7 @@ Claude Code에서 다음 중 하나를 입력합니다.
 
 ## 사용자 결정 대기
 
+0. **0단계를 `develop`에 반영하는 방식**: (A) `feature/T0-setup` 브랜치로 옮겨 PR(권장) · (B) 현재 `claude/blissful-keller-3yrx8x`에서 바로 PR. PR 병합은 사용자가 합니다.
 1. **D1 회전 방식**: 로봇 기준 왼쪽/오른쪽 돌기(권장, 잠정 적용) 또는 화면 기준 상하좌우. T1이 이 결정에 막혀 있습니다.
 2. 스테이지 초안(CURRICULUM.md 3절) 승인
 3. 블록 편집기 직접 구현안(ARCHITECTURE.md D6) 승인

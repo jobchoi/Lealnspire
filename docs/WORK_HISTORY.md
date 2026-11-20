@@ -4,6 +4,14 @@
 
 ---
 
+## 브랜치 규칙을 git flow로 정함 (2026-11-20)
+
+- 사용자가 로컬에서 `git flow init -d`로 구성(배포 `master`, 개발 `develop`, 접두어 feature/ bugfix/ release/ hotfix/ support/, 태그 접두어 없음)
+- CLAUDE.md 5절에 브랜치 규칙 추가, `/next-task` 스킬과 `reviewer`에 반영, ARCHITECTURE.md D11 기록
+- 0단계 작업은 세션 기본 브랜치 `claude/blissful-keller-3yrx8x`에 있음. `develop` 반영 방식은 사용자 결정 대기
+
+---
+
 ## 0단계 마무리 — push와 CI 확인 (2026-11-20)
 
 - GitHub 권한이 해결된 뒤 `599e085`를 작업 브랜치에 push(이전 시도들은 403으로 실패)
