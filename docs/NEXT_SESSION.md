@@ -23,7 +23,7 @@
 | 항목 | 결과 |
 |---|---|
 | `npm run verify` | 통과(lint, 테스트 57개, build) |
-| GitHub Actions | `feature/T9-kid-ux` 확인 전 |
+| GitHub Actions | 통과(`feature/T9-kid-ux` 47675ac) |
 | 브라우저 | Playwright로 첫 화면부터 스테이지 1~8 UI 완주, 375px 배치, 콘솔 오류 0 |
 
 ## 사용자 결정 대기
