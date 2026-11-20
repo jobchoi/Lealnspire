@@ -8,6 +8,8 @@ Claude Code는 세션마다 이 파일을 자동으로 읽습니다.
 | 문서 | 역할 |
 |---|---|
 | [docs/NEXT_SESSION.md](docs/NEXT_SESSION.md) | **가장 먼저 읽는 문서.** 현재 상태, 마지막 검증 결과, 다음 작업, 사용자 결정 대기 항목 |
+| [AGENTS.md](AGENTS.md) | Codex(GPT) 등 다른 AI용 안내. 규칙은 이 파일을 따르게 함 |
+| [docs/handoff/](docs/handoff/) | 다른 AI에게 주는 작업 지시서 |
 | [docs/TASKS.md](docs/TASKS.md) | 작업 목록(우선순위, 완료 조건, 상태)의 단일 출처 |
 | [docs/WORK_HISTORY.md](docs/WORK_HISTORY.md) | 완료한 작업과 결정의 기록(위에 추가) |
 | [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md) | 대상 사용자, 게임 루프, 실행 규칙, MVP 범위 |
@@ -113,6 +115,18 @@ Claude Code는 세션마다 이 파일을 자동으로 읽습니다.
 - API 키, 토큰, 비밀번호 등 비밀 정보를 저장소·문서·커밋에 기록(`.env*`는 gitignore 대상)
 - 유료 API 호출이나 자동 실행(예약 작업, AI를 호출하는 CI)을 추가. 필요하면 **방식과 예상 비용을 먼저 설명하고 승인**을 받습니다.
 - 히스토리 재작성(force push, rebase로 공개 커밋 변경)
+
+## 7-1. 다른 AI(Codex/GPT)에게 작업 맡기기
+
+Claude가 오케스트레이터, Codex(GPT)가 구현 담당인 작업은 TASKS.md에 "구현 Codex"로 표시합니다. Codex용 안내는 [AGENTS.md](AGENTS.md)에 있습니다.
+
+1. **지시서 작성(Claude)**: `docs/handoff/<작업 ID>.md`에 목적, 만들 파일, 완료 조건, 하지 말 것, 검증, 보고 형식을 적고, 작업 브랜치를 만들어 둡니다.
+2. **실행**: 사용자가 정한 방식으로 Codex를 실행합니다.
+   - (A) 사용자가 VS Code의 Codex 창에 "docs/handoff/<작업 ID>.md 지시서대로 작업해줘"라고 입력
+   - (B) Claude가 `codex exec`로 실행. **Codex 사용량(사용자의 ChatGPT 요금제 또는 OpenAI API 과금)이 들기 때문에 작업마다 사용자 승인을 받습니다.** 샌드박스는 `workspace-write`, 네트워크 없음
+3. **검증(Claude)**: Codex 보고를 그대로 믿지 않고 완료 조건을 직접 실행해 확인합니다. Codex가 "통과"라고 했어도 Claude가 실행하지 않았으면 미검증입니다.
+4. **교차 검토(Claude)**: `reviewer` 서브에이전트로 검토하고, 필수 지적은 Claude가 고치거나 수정 지시서를 다시 Codex에 보냅니다.
+5. **기록과 커밋(Claude)**: TASKS.md, WORK_HISTORY.md에 누가 무엇을 했는지(구현 Codex, 검증·수정 Claude)와 검토 결과를 남기고 커밋·push합니다.
 
 ## 8. 스킬과 서브에이전트
 

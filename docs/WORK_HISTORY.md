@@ -4,6 +4,16 @@
 
 ---
 
+## 모델 간 오케스트레이션 구성(Claude ↔ Codex) (2026-11-20)
+
+- 사용자 요청: 환경 구성 스크립트는 GPT에게 작업을 맡겨 수행해 보기(Claude는 오케스트레이션 담당)
+- 이 PC에 Codex CLI(`codex-cli 0.162.0-alpha`, VS Code 확장에 포함)가 있음을 확인. 인증 파일은 읽지 않음
+- 추가: `AGENTS.md`(Codex용 안내 — 규칙은 CLAUDE.md, 커밋·push·작업 문서 수정 금지), `docs/handoff/T0b.md`(첫 작업 지시서), TASKS.md T0b, CLAUDE.md 7-1절(지시 → 실행 → 검증 → 교차 검토 → 기록)
+- Claude가 먼저 만들었던 스크립트 초안은 레포에서 빼서 세션 임시 폴더에 보관(Codex가 독립적으로 구현한 뒤 비교용)
+- 실행 방식(A: 사용자가 Codex 창에 입력 / B: Claude가 `codex exec`)은 사용자 결정 대기
+
+---
+
 ## MCP 서버 구성 (2026-11-20)
 
 - 사용자 요청: context7(라이브러리 문서), playwright(화면 검증)를 프로젝트 범위 `.mcp.json`으로 구성. context7이 보안 문제로 안 되면 공식 출처로 대체
