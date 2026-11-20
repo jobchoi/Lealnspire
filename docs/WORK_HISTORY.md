@@ -4,6 +4,20 @@
 
 ---
 
+## MCP 서버 구성 (2026-11-20)
+
+- 사용자 요청: context7(라이브러리 문서), playwright(화면 검증)를 프로젝트 범위 `.mcp.json`으로 구성. context7이 보안 문제로 안 되면 공식 출처로 대체
+- `context7`: 원격 HTTP 엔드포인트 사용. 로컬에서 패키지 코드를 실행하지 않아 공급망 위험이 작음. API 키 없음(비밀 정보 없음)
+  - 확인: `initialize`, `tools/list` 응답 정상(서버 4.7.3). `context7.com` 홈페이지는 이 PC에서 TLS 오류(`EE certificate key too weak`)가 나지만 MCP 엔드포인트는 정상이라 대체 서버는 추가하지 않음. 대신 CLAUDE.md 3-1절에 "Context7 불가 시 공식 문서" 규칙을 둠
+- `playwright`: Microsoft 공식 `@playwright/mcp`, 2주 이상 지난 0.0.84로 고정(`@latest` 미사용). headless, 프로필은 메모리(`--isolated`), 출력은 `.playwright-mcp/`(gitignore)
+  - 브라우저 설치: `install-browser chrome-for-testing`(Chrome for Testing 157, `~/.cache/ms-playwright`)
+  - 확인: stdio로 직접 접속해 도구 25개 확인, `npm run dev` 화면을 `browser_navigate`로 열어 제목 "Lealnspire" 확인, 콘솔 오류 0건(React DevTools 안내 INFO 1건)
+- `/mcp` 화면 확인: 미검증. 이 세션은 `.mcp.json` 생성 전에 시작돼 서버를 불러오지 않았음. 재시작 후 사용자가 승인하고 `/mcp`에서 확인 필요
+- CLAUDE.md 3-1절(MCP 사용 규칙), README(MCP 설정), ARCHITECTURE D13 추가
+- `.claude/settings.json` 권한 추가(npm/git 자동 허용)를 사용자 위임으로 다시 시도했으나 Claude Code 안전장치가 다시 거부. 사용자가 직접 추가해야 함
+
+---
+
 ## 오케스트레이션 설정 마무리 (2026-11-20)
 
 - 사용자 요청: 기능 구현 전에 AI 오케스트레이션을 실험해 볼 수 있게 설정 마무리

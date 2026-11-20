@@ -30,3 +30,6 @@ dist-ssr
 
 # Claude Code PC별 설정(로컬 PATH 등)
 .claude/settings.local.json
+
+# Playwright MCP 출력
+.playwright-mcp/

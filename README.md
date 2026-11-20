@@ -41,6 +41,23 @@ npm run dev
 
 브라우저에서 http://localhost:5173 을 엽니다.
 
+## AI 도구(MCP) 설정
+
+`.mcp.json`에 프로젝트용 MCP 서버 두 개가 있습니다. Claude Code를 이 폴더에서 처음 열면 사용 승인을 묻습니다.
+
+| 서버 | 용도 | 방식 |
+|---|---|---|
+| `context7` | 최신 라이브러리 문서 조회 | 원격 HTTP(`https://mcp.context7.com/mcp`), API 키 없이 사용(요청 한도 낮음) |
+| `playwright` | 브라우저로 화면 검증 | 로컬 `npx @playwright/mcp@0.0.84`, headless Chromium |
+
+처음 한 번 브라우저를 설치해야 합니다.
+
+```bash
+npx -y @playwright/mcp@0.0.84 install-browser chrome-for-testing
+```
+
+연결 확인: Claude Code에서 `/mcp`를 입력해 두 서버가 connected인지 봅니다.
+
 ## 검증 방법
 
 | 명령 | 내용 |
