@@ -74,6 +74,8 @@ type Stage = {
 type Frame = { pos: { x: number; y: number }; dir: Dir; activeBlockId: string | null; event?: 'move' | 'turn' | 'bump' | 'goal' }
 ```
 
+구현된 엔진은 위 구조와 함께 `Dir`, `Position`, `RunResult`를 내보냅니다. `run`은 초기 상태 프레임과 명령별 프레임, 결과(`success`, `collision`, `unfinished`, `stepLimit`)를 반환합니다. 반복 블록 자체는 실행 단계가 아니며, 1000번째 명령 후 추가 명령이 있을 때 단계 초과입니다. 맵은 `.` 또는 공백을 빈 칸으로 허용하고 출발과 도착은 각각 정확히 하나여야 합니다. 편집 함수의 경로는 각 중첩 단계의 배열 인덱스이며 빈 부모 경로는 최상위입니다.
+
 ## 5. 주요 결정
 
 | # | 결정 | 상태 | 근거 |
@@ -84,7 +86,7 @@ type Frame = { pos: { x: number; y: number }; dir: Dir; activeBlockId: string | 
 | D4 | 테스트는 Vitest | [확정, 0단계] | Vite 설정을 그대로 사용 |
 | D5 | 실행기는 프로그램 전체를 먼저 실행해 상태 목록(`Frame[]`)을 만들고, 화면은 이를 재생만 한다 | [제안] | 한 단계 실행, 속도 조절, 블록 강조, 테스트가 쉬워짐 |
 | D6 | 블록 편집기는 직접 구현(1차 클릭 방식, 이후 dnd-kit 드래그) | [제안] | Blockly는 무겁고 꾸미기 어려우며 이후 단원 UI와 맞추기 불편. 블록 4종이라 직접 구현 부담이 작음 |
-| D7 | 회전 방식 | [미결정] | GAME_DESIGN.md 7절 참고 |
+| D7 | 로봇 기준 왼쪽/오른쪽 돌기 | [확정] | 사용자 결정(2026-11-20), GAME_DESIGN.md 7절 참고 |
 | D8 | 배포 방식(GitHub Pages 등) | [미결정] | MVP 후반에 결정, 사용자 요청 시에만 |
 | D9 | AI 작업 이어가기: CLAUDE.md 규칙 + TASKS.md 단일 작업 목록 + `/next-task` 스킬 + `reviewer` 서브에이전트 1개 | [확정, 0단계] | 사용자 요청. 긴 프롬프트 없이 같은 절차 반복. 역할은 필요할 때만 추가 |
 | D11 | 브랜치는 git flow(`master` 배포, `develop` 통합, `feature/<작업 ID>-<이름>`) | [확정] | 사용자가 기존 저장소 방식대로 `git flow init -d`로 구성. 버전 태그 접두어는 [미결정](현재 없음) |
