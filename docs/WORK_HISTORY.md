@@ -4,6 +4,15 @@
 
 ---
 
+## 다중 프로젝트 병렬 오케스트레이션, 플레이북 초안 (2026-11-20)
+
+- 4개 Codex 작업 동시 실행(playX-mas 기획·뼈대, 장학 기금 카뱅 가져오기 계획, 학습실 상태 정리, 이 레포 플레이북)
+- 추가: `scripts/codex-run.sh`(Codex 실행 + `~/workspace/_progress/PROGRESS.md` 진행 기록. 시작/종료는 스크립트, 단계는 Codex 자기 보고. Codex 쓰기는 대상 레포+진행 폴더만)
+- 시행착오: 백그라운드 `codex exec`가 stdin 입력 대기로 멈춤 → `< /dev/null`로 해결, 재실행 후 4개 모두 exit=0
+- 추가(Codex 작성): `docs/playbook/`. Claude QC: 개인정보 노출 없음 확인. 내용 세부 검토는 미실시
+
+---
+
 ## T0b 환경 구성 스크립트 — Codex 구현, Claude 검증 (2026-11-20)
 
 - 사용자 방침: Claude 토큰은 최소로, GPT(Codex)는 최대한 활용. 실행은 Claude가 `codex exec`로 함(사용자 승인)
