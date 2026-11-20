@@ -4,13 +4,13 @@ import type { Dir, Position, Stage } from '../engine/types'
 const directions: Record<Dir, string> = { N: '북쪽', E: '동쪽', S: '남쪽', W: '서쪽' }
 const arrows: Record<Dir, string> = { N: '▲', E: '▶', S: '▼', W: '◀' }
 
-type BoardProps = { stage: Stage; position?: Position; direction?: Dir }
+type BoardProps = { stage: Stage; position?: Position; direction?: Dir; bump?: boolean }
 
-export function Board({ stage, position, direction = stage.startDir }: BoardProps) {
+export function Board({ stage, position, direction = stage.startDir, bump = false }: BoardProps) {
   const grid = parseGrid(stage.grid)
   const robot = position ?? grid.start
   return (
-    <div className="board" role="img" aria-label={`${stage.title} 지도, 로봇 ${directions[direction]} 방향`} style={{ gridTemplateColumns: `repeat(${grid.width}, 1fr)` }}>
+    <div className={`board${bump ? ' board-bump' : ''}`} role="img" aria-label={`${stage.title} 지도, 로봇 ${directions[direction]} 방향`} style={{ gridTemplateColumns: `repeat(${grid.width}, 1fr)` }}>
       {stage.grid.flatMap((row, y) => [...row].map((_, x) => {
         const key = cellKey({ x, y })
         const wall = grid.walls.has(key)

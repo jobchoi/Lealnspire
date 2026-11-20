@@ -28,10 +28,11 @@
 ├─ public/favicon.svg
 ├─ src/
 │  ├─ main.tsx                # 진입점
-│  ├─ App.tsx                 # 스테이지 1 맵과 프로그램 state, 편집기 배치
+│  ├─ App.tsx                 # 스테이지 1, 편집기와 실행 재생·결과 연결
 │  ├─ App.test.tsx            # 렌더링 확인 테스트
-│  ├─ components/             # Board, Editor와 렌더링 테스트
-│  ├─ engine/                 # 게임 엔진, 블록 편집, editor(ID 생성·경로 탐색)와 단위 테스트
+│  ├─ components/             # Board, Editor, ResultModal과 렌더링 테스트
+│  ├─ engine/                 # 게임 엔진, 블록 편집, editor, score(잠정 별 평가)와 단위 테스트
+│  ├─ hooks/                 # usePlayback, 순수 프레임 진행 함수와 테스트
 │  ├─ stages/                 # 스테이지 1~8과 정답 검증
 │  ├─ i18n/ko.ts              # 편집기·앱 화면 문구
 │  └─ index.css

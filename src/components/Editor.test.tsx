@@ -33,3 +33,12 @@ describe('Editor', () => {
     expect(html).toContain(ko.root)
   })
 })
+
+describe('재생 중 편집기', () => {
+  it('중첩된 현재 블록만 강조하고 모든 편집 컨트롤을 잠근다', () => {
+    const html = renderToString(<Editor program={program} onChange={onChange} locked activeBlockId="c" />)
+    expect(html.match(/block-active/g)).toHaveLength(1)
+    expect(html).toContain('aria-current="step"')
+    for (const control of html.match(/<(?:button|select)\b[^>]*>/g) ?? []) expect(control).toContain('disabled=""')
+  })
+})

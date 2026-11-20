@@ -1,4 +1,9 @@
 export const ko = {
+  run: '실행', step: '한 단계', reset: '처음으로', speed: '속도',
+  speeds: { slow: '느리게', normal: '보통', fast: '빠르게' },
+  success: '성공했어요!', retry: '다시 하기', close: '닫기',
+  stars: (count: number) => `별 ${count}개`,
+  failures: { collision: '벽에 부딪혔어요', unfinished: '목적지에 도달하지 못했어요', stepLimit: '실행 단계가 너무 많아요. 반복 횟수와 블록을 줄여 보세요.' },
   title: 'Lealnspire', stage: '스테이지', editor: '블록 편집기', palette: '블록 추가',
   blocks: { forward: '앞으로', turnLeft: '왼쪽으로 돌기', turnRight: '오른쪽으로 돌기', repeat: 'N번 반복' },
   workspace: '작업 공간', empty: '팔레트에서 블록을 추가하세요.',

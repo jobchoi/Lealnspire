@@ -13,3 +13,7 @@ describe('지도', () => {
     expect(html).toContain('★')
   })
 })
+
+it('충돌 테두리를 표시한다', () => {
+  expect(renderToString(<Board stage={stages[0]} bump />)).toContain('board-bump')
+})

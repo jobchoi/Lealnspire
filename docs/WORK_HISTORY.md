@@ -1,5 +1,10 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-20 — T4 실행 재생과 결과 표시 (구현 Codex, QC Claude)
+
+- Codex: `usePlayback` 훅(프레임 인덱스만 보관), 순수 프레임 진행 함수, `score.ts`(잠정 별 기준), `ResultModal`, Board 충돌 표시, 편집기 실행 중 강조·잠금, GAME_DESIGN 3절(잠정)·ARCHITECTURE 2절
+- Claude QC: verify 통과(테스트 38개), Playwright로 성공·미도달·충돌 실제 재생과 모달·잠금·강조·375px 확인, 콘솔 오류 0
+
 ## 2026-11-20 — T3 블록 편집기 (구현 Codex, QC Claude)
 
 - Codex: `src/components/Editor.tsx`, `src/engine/editor.ts`(id 생성, 경로 찾기), `src/i18n/ko.ts`, App 연결, CSS, ARCHITECTURE 2절. Codex 샌드박스에서는 개발 서버 포트를 열 수 없어 브라우저 확인을 미검증으로 보고
