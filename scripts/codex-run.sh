@@ -45,5 +45,6 @@ row "스크립트" "시작" "-"
 "$CODEX" exec -s workspace-write -C "$REPO" --add-dir "$PDIR" -o "$OUT" "$PROMPT$PROGRESS_RULE" < /dev/null > "$LOG" 2>&1  # stdin을 닫지 않으면 백그라운드에서 입력 대기로 멈춤
 CODE=$?
 if [ $CODE -eq 0 ]; then row "스크립트" "완료" "exit=0, QC 대기"; else row "스크립트" "실패" "exit=$CODE, 로그 확인"; fi
+bash "$(dirname "$0")/progress-summary.sh" >/dev/null 2>&1
 echo "$PROJ / $TASK → exit=$CODE (보고: $OUT)"
 exit $CODE
