@@ -1,5 +1,10 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-20 — T3 블록 편집기 (구현 Codex, QC Claude)
+
+- Codex: `src/components/Editor.tsx`, `src/engine/editor.ts`(id 생성, 경로 찾기), `src/i18n/ko.ts`, App 연결, CSS, ARCHITECTURE 2절. Codex 샌드박스에서는 개발 서버 포트를 열 수 없어 브라우저 확인을 미검증으로 보고
+- Claude QC: verify 통과(테스트 30개). Playwright 스크립트로 클릭·키보드 조작, 375px 가로 스크롤, 콘솔 오류 확인 → 모두 통과
+
 ## 2026-11-20 — T2a QC 후속 수정 (구현 Codex, QC Claude)
 
 - Codex: 스테이지 7 맵 교체(`세 변 따라가기`), 반복 진입 1000회 상한, 회귀 테스트 3개, CURRICULUM·GAME_DESIGN 갱신

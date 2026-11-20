@@ -40,3 +40,19 @@ body {
 .board-wall { background: #475569; }
 .board-goal { background: #fff1c2; }
 .board-robot { position: absolute; color: #2563eb; }
+
+* { box-sizing: border-box; }
+button, select { font: inherit; }
+button { cursor: pointer; padding: .4rem .65rem; border: 1px solid #94a3b8; border-radius: 6px; background: white; color: inherit; }
+button:disabled { cursor: default; opacity: .45; }
+button:focus-visible, select:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+.game-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+.editor { min-width: 0; overflow-wrap: anywhere; }
+.editor h2 { margin-top: 0; }
+.palette, .block-actions, .repeat-controls, .block-heading { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+.block-list { list-style: none; padding: 0; margin: .6rem 0; }
+.block-list .block-list { margin-left: min(2vw, .8rem); border-left: 2px solid #94a3b8; padding-left: min(2vw, .8rem); }
+.block { padding: .5rem; margin: .5rem 0; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; min-width: 0; }
+.block-selected { border: 2px solid #2563eb; background: #eff6ff; }
+.block-actions, .repeat-controls { margin-top: .5rem; }
+@media (max-width: 700px) { .game-layout { grid-template-columns: minmax(0, 1fr); } }
