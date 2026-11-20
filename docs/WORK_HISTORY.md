@@ -4,6 +4,16 @@
 
 ---
 
+## 0단계를 feature 브랜치로 옮김 (2026-11-20)
+
+- 사용자 결정: 0단계 결과를 git flow 규칙에 맞춰 `feature/T0-setup`으로 옮겨 진행(NEXT_SESSION 결정 대기 0번의 A안)
+- `feature/T0-setup`은 `claude/blissful-keller-3yrx8x`(`b2d3f6c`)에서 그대로 분기. 코드 변경 없음, 문서만 갱신
+- Kotlin(ARCore) 프로젝트는 보류. `develop`(`29f8b9a`)에 그대로 남아 있고, 이 브랜치를 병합하면 `develop`에서는 삭제되지만 히스토리로 복구 가능
+- 참고: git은 클론할 때 모든 브랜치의 히스토리를 받으므로, 브랜치를 나눈다고 클론 크기가 줄지는 않음. 현재 저장소 크기는 약 0.5MB. 필요하면 `git clone --single-branch -b develop` 또는 `--depth 1`로 받을 수 있음
+- 검증: 로컬 미검증(이 PC의 WSL에 Node 없음). 코드 변경이 없어 push 후 GitHub Actions 결과로 확인
+
+---
+
 ## 브랜치 규칙을 git flow로 정함 (2026-11-20)
 
 - 사용자가 로컬에서 `git flow init -d`로 구성(배포 `master`, 개발 `develop`, 접두어 feature/ bugfix/ release/ hotfix/ support/, 태그 접두어 없음)
