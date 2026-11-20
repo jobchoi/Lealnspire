@@ -4,6 +4,16 @@
 
 ---
 
+## push 자동화 설정 (2026-11-20)
+
+- 사용자 요청: 시험용 레포이므로 이 PC에서의 push는 확인 없이 자동 처리
+- 로컬 remote를 HTTPS → SSH로 변경(이 PC의 기존 `~/.ssh` 키, GitHub 인증 확인). `feature/T0-setup` push 성공
+- `.claude/settings.json` 추가: `feature/*`, `bugfix/*` push 자동 허용 / force push, 브랜치 삭제, `develop`·`master` push 거부
+- CLAUDE.md 5절에 push 규칙(브랜치 명시, 맨 `git push` 금지) 추가
+- 남은 일(사용자): GitHub Rulesets로 `develop`·`master` 직접 push 금지를 서버에서도 강제(권장)
+
+---
+
 ## 0단계를 feature 브랜치로 옮김 (2026-11-20)
 
 - 사용자 결정: 0단계 결과를 git flow 규칙에 맞춰 `feature/T0-setup`으로 옮겨 진행(NEXT_SESSION 결정 대기 0번의 A안)
