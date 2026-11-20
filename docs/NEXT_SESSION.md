@@ -2,41 +2,36 @@
 
 > 이 파일은 작업이 끝날 때마다 덮어씁니다. 작업 목록은 [TASKS.md](TASKS.md), 과거 기록은 [WORK_HISTORY.md](WORK_HISTORY.md)에 있습니다.
 
-마지막 갱신: 2026-11-20 · 작업 브랜치 `feature/T0-setup`
+마지막 갱신: 2026-11-20 · 작업 브랜치 `feature/T1-engine`
 
 ## 시작하는 법
 
-Claude Code에서 다음 중 하나를 입력합니다.
-
 - `/next-task` — TASKS.md에서 다음 작업 하나를 골라 수행
-- `/next-task T1` — 특정 작업 수행
-- `task-pipeline 워크플로로 T1 진행해줘` — 여러 에이전트(계획·구현·검토 2·수정·마무리)로 진행. 사용량이 더 듦
+- `/next-task T3` — 특정 작업 수행
+- 다른 PC에서 이어 갈 때: [RESUME_ELSEWHERE.md](RESUME_ELSEWHERE.md)
 
-> T0가 아직 `develop`에 병합되지 않았으므로, 다음 작업 브랜치는 `feature/T0-setup`에서 분기합니다.
+> T0~T2가 아직 `develop`에 병합되지 않았습니다. 다음 작업 브랜치는 `feature/T1-engine`에서 분기합니다.
 
 ## 현재 상태
 
-- T0(뼈대, 문서, 자동화, 오케스트레이션): **완료**(로컬 검증과 GitHub Actions 모두 통과)
-- 게임 기능: 아직 없음(자리표시 화면만 있음)
+- 완료: T0(뼈대·문서·CI), T0b(환경 스크립트, macOS 미검증), D1(로봇 기준 회전), T1(게임 엔진), T2(스테이지 1~8, 맵 화면)
+- 화면: 스테이지 1의 맵만 보입니다. 블록 편집, 실행, 스테이지 이동은 아직 없습니다(T3~T6)
+- 확인 방법: `npm run dev` → http://localhost:5173
 
-## 마지막 검증 결과
+## 마지막 검증 결과 (2026-11-20, 집 PC WSL)
 
-| 항목 | 결과 | 환경 |
-|---|---|---|
-| `npm run lint` | 통과 | 로컬, Node 22.23.5 |
-| `npm run test` | 통과(1개) | 로컬 |
-| `npm run build` | 통과 | 로컬 |
-| 브라우저 렌더링 | 통과, 콘솔 오류 0건 | 로컬 헤드리스 Chromium |
-| GitHub Actions | 통과 | [run #1](https://github.com/jobchoi/Lealnspire/actions/runs/44645760569), 커밋 599e085 |
+| 항목 | 결과 |
+|---|---|
+| `npm run verify` | 통과(lint, 테스트 22개, build) |
+| GitHub Actions | 통과(`feature/T1-engine` 최신 커밋) |
+| 브라우저 | 스테이지 1~8 렌더링 확인(헤드리스 Chromium, 데스크톱·375px) |
 
 ## 사용자 결정 대기
 
-0. **`feature/T0-setup` → `develop` PR 생성과 병합**: 브랜치는 준비됨. 병합하면 `develop`에서 Kotlin 프로젝트(`MyApplication_kt/`)가 삭제됩니다(히스토리에는 남음, `29f8b9a`). PR 생성·병합은 사용자 요청 시에만 합니다.
-1. **D1 회전 방식**: 로봇 기준 왼쪽/오른쪽 돌기(권장, 잠정 적용) 또는 화면 기준 상하좌우. T1이 이 결정에 막혀 있습니다.
-2. 스테이지 초안(CURRICULUM.md 3절) 승인
-3. 블록 편집기 직접 구현안(ARCHITECTURE.md D6) 승인
+1. **T2a Codex 실행 승인**: 스테이지 7 지름길과 빈 반복 중첩 문제 수정(지시서 작성 → Codex 구현 → Claude QC)
+2. **`develop` 병합**: PR 생성·병합은 사용자 요청 시에만. 병합하면 `develop`에서 옛 Android 코드가 삭제됩니다(기록은 남음)
+3. 스테이지 초안(CURRICULUM.md 3절)과 블록 편집기 직접 구현안(ARCHITECTURE.md D6) 최종 승인
 
 ## 다음 작업
 
-1. 사용자가 D1(회전 방식)을 결정하면 T1(게임 엔진) 시작
-2. D1 결정 전에는 `/next-task`가 구현 없이 결정 요청만 보고합니다
+1. T2a(승인 후) 또는 T3(블록 편집기). 둘은 서로 다른 파일을 고치므로 순서는 자유
