@@ -11,7 +11,7 @@
 
 | ID | 작업 | 우선순위 | 선행 | 상태 |
 |---|---|---|---|---|
-| T0 | 뼈대, 문서, 자동화, 오케스트레이션 | P0 | - | 진행 중 (CI 확인 남음) |
+| T0 | 뼈대, 문서, 자동화, 오케스트레이션 | P0 | - | 완료 |
 | D1 | [결정] 회전 방식 확정 | P0 | - | 보류 (사용자 결정) |
 | T1 | 게임 엔진(순수 로직) | P1 | T0, D1 | 대기 |
 | T2 | 스테이지 데이터 + 맵 렌더링 | P1 | T1 | 대기 |
@@ -24,14 +24,14 @@
 
 ## 상세
 
-### T0. 뼈대, 문서, 자동화, 오케스트레이션 — P0, 진행 중
+### T0. 뼈대, 문서, 자동화, 오케스트레이션 — P0, 완료
 
 - [x] Vite + React + TypeScript 뼈대, 자리표시 화면
 - [x] `npm run lint`, `npm run test`, `npm run build`, `npm run verify` 구성과 로컬 통과
 - [x] GitHub Actions 워크플로(`.github/workflows/ci.yml`) 작성
 - [x] README, CLAUDE.md, docs 문서(GAME_DESIGN, CURRICULUM, ARCHITECTURE, TASKS, NEXT_SESSION, WORK_HISTORY)
 - [x] `/next-task` 스킬, `reviewer` 서브에이전트
-- [ ] push 후 GitHub Actions 실행 결과 확인 (첫 push가 403 권한 오류로 실패, 권한 해결 필요)
+- [x] push 후 GitHub Actions 실행 결과 확인: 커밋 599e085에서 [run #1](https://github.com/jobchoi/Lealnspire/actions/runs/44645760569) 성공(lint, test, build)
 
 ### D1. 회전 방식 확정 — P0, 보류
 

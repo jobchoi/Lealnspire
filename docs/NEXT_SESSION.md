@@ -2,7 +2,7 @@
 
 > 이 파일은 작업이 끝날 때마다 덮어씁니다. 작업 목록은 [TASKS.md](TASKS.md), 과거 기록은 [WORK_HISTORY.md](WORK_HISTORY.md)에 있습니다.
 
-마지막 갱신: 2026-11-19 · 작업 브랜치 `claude/blissful-keller-3yrx8x`
+마지막 갱신: 2026-11-20 · 작업 브랜치 `claude/blissful-keller-3yrx8x`
 
 ## 시작하는 법
 
@@ -13,7 +13,7 @@ Claude Code에서 다음 중 하나를 입력합니다.
 
 ## 현재 상태
 
-- T0(뼈대, 문서, 자동화, 오케스트레이션): 로컬 검증 완료, **GitHub Actions 결과 확인만 남음**
+- T0(뼈대, 문서, 자동화, 오케스트레이션): **완료**(로컬 검증과 GitHub Actions 모두 통과)
 - 게임 기능: 아직 없음(자리표시 화면만 있음)
 
 ## 마지막 검증 결과
@@ -24,7 +24,7 @@ Claude Code에서 다음 중 하나를 입력합니다.
 | `npm run test` | 통과(1개) | 로컬 |
 | `npm run build` | 통과 | 로컬 |
 | 브라우저 렌더링 | 통과, 콘솔 오류 0건 | 로컬 헤드리스 Chromium |
-| GitHub Actions | 미검증 | push 실패(403, Claude GitHub 앱 권한 없음)로 원격 실행 전 |
+| GitHub Actions | 통과 | [run #1](https://github.com/jobchoi/Lealnspire/actions/runs/44645760569), 커밋 599e085 |
 
 ## 사용자 결정 대기
 
@@ -34,5 +34,5 @@ Claude Code에서 다음 중 하나를 입력합니다.
 
 ## 다음 작업
 
-1. T0의 남은 항목: GitHub 권한을 해결한 뒤 로컬 커밋을 push하고, GitHub Actions 결과를 확인해 TASKS.md와 이 문서 갱신
-2. D1이 결정되면 T1(게임 엔진) 시작
+1. 사용자가 D1(회전 방식)을 결정하면 T1(게임 엔진) 시작
+2. D1 결정 전에는 `/next-task`가 구현 없이 결정 요청만 보고합니다

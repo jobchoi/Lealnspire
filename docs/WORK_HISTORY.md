@@ -4,6 +4,13 @@
 
 ---
 
+## 0단계 마무리 — push와 CI 확인 (2026-11-20)
+
+- GitHub 권한이 해결된 뒤 `599e085`를 작업 브랜치에 push(이전 시도들은 403으로 실패)
+- GitHub Actions [run #1](https://github.com/jobchoi/Lealnspire/actions/runs/44645760569): 성공(lint, test, build). T0를 완료로 변경
+
+---
+
 ## 0단계 — 프로젝트 뼈대, 문서, 자동화 (2026-11-19)
 
 ### 작업 전 확인
