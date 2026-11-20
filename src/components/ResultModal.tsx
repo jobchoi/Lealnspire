@@ -24,13 +24,14 @@ export function ResultModal({ result, stars, onRetry, onClose, onNext, lastStage
         }
       }
     }}>
+      <div className="result-symbol" aria-hidden="true">{result === 'success' ? '★'.repeat(stars) : result === 'collision' ? '💥' : '🤔'}</div>
       <h2 id="result-title">{result === 'success' ? ko.success : ko.failures[result]}</h2>
-      {result === 'success' && <p aria-label={ko.stars(stars)}><span aria-hidden="true">{'★'.repeat(stars)}</span> {ko.stars(stars)}</p>}
+      {result === 'success' && <p aria-label={ko.stars(stars)}>{ko.stars(stars)}</p>}
       {result === 'success' && lastStage && <p>{ko.congratulations}</p>}
       <div className="playback-controls">
-        {result === 'success' && onNext && <button type="button" onClick={onNext}>{lastStage ? ko.toList : ko.nextStage}</button>}
-        <button type="button" onClick={onRetry}>{ko.retry}</button>
-        <button type="button" onClick={onClose}>{ko.close}</button>
+        {result === 'success' && onNext && <button type="button" onClick={onNext} aria-label={lastStage ? ko.toList : ko.nextStage} title={lastStage ? ko.toList : ko.nextStage}><span className="control-symbol" aria-hidden="true">{lastStage ? ko.icons.toList : ko.icons.nextStage}</span><small>{lastStage ? ko.toList : ko.nextStage}</small></button>}
+        <button type="button" onClick={onRetry} aria-label={ko.retry} title={ko.retry}><span className="control-symbol" aria-hidden="true">{ko.icons.retry}</span><small>{ko.retry}</small></button>
+        <button type="button" onClick={onClose} aria-label={ko.close} title={ko.close}><span className="control-symbol" aria-hidden="true">{ko.icons.close}</span><small>{ko.close}</small></button>
       </div>
     </div>
   </div>

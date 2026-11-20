@@ -7,3 +7,7 @@ export function continueStageIndex(progress: Progress): number | undefined {
   const index = stages.findIndex((stage, index) => isUnlocked(progress, index) && !progress.stages[stage.id]?.completed)
   return index === -1 ? undefined : index
 }
+
+export function showNextStage(progress: Progress, stageId: string, lastStage: boolean): boolean {
+  return !lastStage && progress.stages[stageId]?.completed === true
+}

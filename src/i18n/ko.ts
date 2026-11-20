@@ -1,4 +1,7 @@
 export const ko = {
+  icons: { forward: '⬆', turnLeft: '↺', turnRight: '↻', repeat: '🔁', up: '▲', down: '▼', remove: '✕', select: '⤵', run: '▶', step: '⏭', reset: '↺', hint: '💡', stageList: '☰', nextStage: '➡', retry: '↺', close: '✕', toList: '☰' },
+  speedIcons: { slow: '▶', normal: '▶▶', fast: '▶▶▶' },
+  decrease: '반복 횟수 줄이기', increase: '반복 횟수 늘리기', goalIcon: '🤖 → ★',
   introduction: '명령 블록과 반복으로 로봇을 목적지까지 안내하세요.',
   start: '시작하기', continue: '이어하기', stageList: '스테이지 목록', home: '첫 화면',
   hint: '힌트', nextStage: '다음 스테이지', toList: '목록으로',

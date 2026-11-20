@@ -42,3 +42,17 @@ describe('화면 렌더링', () => {
     expect(html).toContain('data-page-title')
   })
 })
+
+it('완료한 게임을 다시 열면 상단 다음 버튼이 보이고 실행 기호의 이름을 유지한다', () => {
+  const store = createProgressStore()
+  const page = (lastStage = false) => renderToString(<PlayPage stage={stages[0]} progressStore={store} onList={noop} onNext={noop} lastStage={lastStage} />)
+  expect(page()).not.toContain(`aria-label="${ko.nextStage}"`)
+  store.completeStage('1', 3, [])
+  expect(page()).toContain(`aria-label="${ko.nextStage}"`)
+  expect(page(true)).not.toContain(`aria-label="${ko.nextStage}"`)
+  for (const name of [ko.run, ko.step, ko.reset, ko.hint, ko.stageList, ...Object.values(ko.speeds)]) {
+    expect(page()).toContain(`aria-label="${name}"`)
+    expect(page()).toContain(`title="${name}"`)
+  }
+  expect(page()).toContain('aria-pressed="true"')
+})

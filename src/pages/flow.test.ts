@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createProgressStore } from '../storage/progress'
 import { stages } from '../stages'
-import { continueStageIndex } from './flow'
+import { continueStageIndex, showNextStage } from './flow'
 
 describe('이어하기 대상', () => {
   it('진행이 없거나 알려진 스테이지 기록이 없으면 숨긴다', () => {
@@ -24,4 +24,15 @@ describe('이어하기 대상', () => {
     for (const stage of stages) store.completeStage(stage.id, 3, stage.solution)
     expect(continueStageIndex(store.getProgress())).toBeUndefined()
   })
+})
+
+it('완료한 스테이지에서만 다음 버튼을 표시하며 마지막에서는 숨긴다', () => {
+  const store = createProgressStore()
+  expect(showNextStage(store.getProgress(), '1', false)).toBe(false)
+  store.saveProgram('1', [])
+  expect(showNextStage(store.getProgress(), '1', false)).toBe(false)
+  store.completeStage('1', 3, [])
+  expect(showNextStage(store.getProgress(), '1', false)).toBe(true)
+  expect(showNextStage(store.getProgress(), '1', true)).toBe(false)
+  expect(showNextStage(store.getProgress(), 'unknown', false)).toBe(false)
 })

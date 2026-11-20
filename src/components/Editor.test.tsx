@@ -11,8 +11,8 @@ describe('Editor', () => {
     const html = renderToString(<Editor program={program} onChange={onChange} />)
     expect(html.replaceAll('<!-- -->', '')).toContain('1.1.1. 앞으로')
     expect(html).toContain('1.1번 N번 반복 반복 횟수')
-    expect(html).toContain('value="2" selected=""')
-    expect(html).toContain('value="3" selected=""')
+    expect(html.replaceAll('<!-- -->', '')).toContain('×2')
+    expect(html.replaceAll('<!-- -->', '')).toContain('×3')
     expect(html).toContain(ko.total(3))
     expect(html).not.toContain(ko.limit)
     expect(html).not.toContain('value="11"')
@@ -41,4 +41,20 @@ describe('재생 중 편집기', () => {
     expect(html).toContain('aria-current="step"')
     for (const control of html.match(/<(?:button|select)\b[^>]*>/g) ?? []) expect(control).toContain('disabled=""')
   })
+})
+
+it('반복 횟수의 경계에서 해당 버튼만 비활성화하고 아이콘 이름을 유지한다', () => {
+  for (const count of [2, 3, 10]) {
+    const html = renderToString(<Editor program={[{ id: 'r', type: 'repeat', count, body: [] }]} onChange={onChange} />)
+    for (const [action, disabled] of [[ko.decrease, count === 2], [ko.increase, count === 10]] as const) {
+      const button = (html.match(/<button[^>]*>/g) ?? []).find(tag => tag.includes(`aria-label="${ko.action('1', ko.blocks.repeat, action)}"`))
+      expect(button).toBeDefined()
+      expect(button!.includes('disabled=""')).toBe(disabled)
+    }
+    for (const type of ['forward', 'turnLeft', 'turnRight', 'repeat'] as const) {
+      expect(html).toContain(`aria-label="${ko.blocks[type]}"`)
+      expect(html).toContain(`title="${ko.blocks[type]}"`)
+      expect(html).toContain(ko.icons[type])
+    }
+  }
 })

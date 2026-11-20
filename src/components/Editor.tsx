@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { addBlock, countBlocks, deleteBlock, moveBlock, setRepeatCount } from '../engine/program'
 import { createBlock, findBlockPath } from '../engine/editor'
 import type { Block, Program } from '../engine/types'
@@ -8,6 +8,20 @@ type EditorProps = { program: Program; onChange: (program: Program) => void; max
 const types: Block['type'][] = ['forward', 'turnLeft', 'turnRight', 'repeat']
 
 export function Editor({ program, onChange, maxBlocks, locked = false, activeBlockId }: EditorProps) {
+  const workspace = useRef<HTMLDivElement>(null)
+  const addedId = useRef<string | null>(null)
+  useEffect(() => {
+    const targetId = activeBlockId ?? addedId.current
+    if (!targetId || !workspace.current) return
+    const area = workspace.current
+    const block = Array.from(area.querySelectorAll<HTMLElement>('[data-block-id]')).find(node => node.dataset.blockId === targetId)
+    if (block) {
+      const outer = area.getBoundingClientRect(), inner = block.getBoundingClientRect()
+      if (inner.top < outer.top || inner.height > outer.height) area.scrollTop += inner.top - outer.top
+      else if (inner.bottom > outer.bottom) area.scrollTop += inner.bottom - outer.bottom
+    }
+    addedId.current = null
+  }, [program, activeBlockId])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const selectedPath = selectedId === null ? undefined : findBlockPath(program, selectedId)
   const total = countBlocks(program)
@@ -23,19 +37,19 @@ export function Editor({ program, onChange, maxBlocks, locked = false, activeBlo
       const order = path.map(i => i + 1).join('.')
       const selected = !!selectedPath && selectedId === block.id
       const label = (action: string) => ko.action(order, ko.blocks[block.type], action)
-      return <li aria-current={activeBlockId === block.id ? 'step' : undefined} key={block.id} className={`block${selected ? ' block-selected' : ''}${activeBlockId === block.id ? ' block-active' : ''}`}>
-        <div className="block-heading"><strong>{order}. {ko.blocks[block.type]}</strong>{selected && <span>{ko.selected}</span>}</div>
+      return <li aria-current={activeBlockId === block.id ? 'step' : undefined} key={block.id} data-block-id={block.id} className={`block block-${block.type}${selected ? ' block-selected' : ''}${activeBlockId === block.id ? ' block-active' : ''}`}>
+        <div className="block-heading"><strong><span className="block-symbol" aria-hidden="true">{ko.icons[block.type]}</span><small>{order}. {ko.blocks[block.type]}</small></strong>{selected && <span aria-label={ko.selected}><span aria-hidden="true">⤵</span></span>}</div>
         <div className="block-actions">
-          <button type="button" aria-label={label(ko.up)} disabled={locked || index === 0} onClick={() => change(moveBlock(program, path, 'up'))}>{ko.up}</button>
-          <button type="button" aria-label={label(ko.down)} disabled={locked || index === blocks.length - 1} onClick={() => change(moveBlock(program, path, 'down'))}>{ko.down}</button>
-          <button type="button" disabled={locked} aria-label={label(ko.remove)} onClick={() => change(deleteBlock(program, path))}>{ko.remove}</button>
+          <button type="button" title={label(ko.up)} aria-label={label(ko.up)} disabled={locked || index === 0} onClick={() => change(moveBlock(program, path, 'up'))}><span aria-hidden="true">{ko.icons.up}</span></button>
+          <button type="button" title={label(ko.down)} aria-label={label(ko.down)} disabled={locked || index === blocks.length - 1} onClick={() => change(moveBlock(program, path, 'down'))}><span aria-hidden="true">{ko.icons.down}</span></button>
+          <button type="button" disabled={locked} title={label(ko.remove)} aria-label={label(ko.remove)} onClick={() => change(deleteBlock(program, path))}><span aria-hidden="true">{ko.icons.remove}</span></button>
         </div>
         {block.type === 'repeat' && <>
           <div className="repeat-controls">
-            <label>{ko.count} <select disabled={locked} aria-label={label(ko.count)} value={block.count} onChange={event => change(setRepeatCount(program, path, Number(event.target.value)))}>
-              {Array.from({ length: 9 }, (_, i) => i + 2).map(count => <option key={count} value={count}>{count}</option>)}
-            </select> {ko.times}</label>
-            <button type="button" disabled={locked} aria-pressed={selected} aria-label={label(selected ? ko.deselect : ko.select)} onClick={() => setSelectedId(selected ? null : block.id)}>{selected ? ko.deselect : ko.select}</button>
+            <button type="button" disabled={locked || block.count <= 2} aria-label={label(ko.decrease)} title={label(ko.decrease)} onClick={() => change(setRepeatCount(program, path, block.count - 1))}><span aria-hidden="true">−</span></button>
+            <output aria-label={label(ko.count)}>×{block.count}</output>
+            <button type="button" disabled={locked || block.count >= 10} aria-label={label(ko.increase)} title={label(ko.increase)} onClick={() => change(setRepeatCount(program, path, block.count + 1))}><span aria-hidden="true">+</span></button>
+            <button type="button" disabled={locked} aria-pressed={selected} title={label(selected ? ko.deselect : ko.select)} aria-label={label(selected ? ko.deselect : ko.select)} onClick={() => setSelectedId(selected ? null : block.id)}><span aria-hidden="true">{ko.icons.repeat} {ko.icons.select}</span><small>{selected ? ko.deselect : ko.select}</small></button>
           </div>
           {renderList(block.body, path)}
         </>}
@@ -46,11 +60,15 @@ export function Editor({ program, onChange, maxBlocks, locked = false, activeBlo
     <h2>{ko.editor}</h2>
     <p aria-live="polite">{ko.total(total, maxBlocks)}</p>
     <p aria-live="polite">{selectedPath ? ko.target(selectedPath.map(i => i + 1).join('.')) : ko.root}</p>
-    <div className="palette" role="group" aria-label={ko.palette}>{types.map(type => <button type="button" key={type} disabled={locked || atLimit} onClick={() => {
-      if (!locked && !atLimit) change(addBlock(program, createBlock(program, type), selectedPath ?? []))
-    }}>{ko.blocks[type]}</button>)}</div>
+    <div className="palette" role="group" aria-label={ko.palette}>{types.map(type => <button type="button" key={type} className={`block-${type}`} aria-label={ko.blocks[type]} title={ko.blocks[type]} disabled={locked || atLimit} onClick={() => {
+      if (!locked && !atLimit) {
+        const block = createBlock(program, type)
+        addedId.current = block.id
+        change(addBlock(program, block, selectedPath ?? []))
+      }
+    }}><span className="block-symbol" aria-hidden="true">{ko.icons[type]}</span><small>{ko.blocks[type]}</small></button>)}</div>
     {atLimit && <p role="status">{ko.limit}</p>}
     <h3>{ko.workspace}</h3>
-    {program.length ? renderList(program) : <p>{ko.empty}</p>}
+    <div className="workspace" ref={workspace} role="region" aria-label={ko.workspace} tabIndex={0}>{program.length ? renderList(program) : <p>{ko.empty}</p>}</div>
   </section>
 }
