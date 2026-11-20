@@ -4,6 +4,19 @@
 
 ---
 
+## 오케스트레이션 설정 마무리 (2026-11-20)
+
+- 사용자 요청: 기능 구현 전에 AI 오케스트레이션을 실험해 볼 수 있게 설정 마무리
+- 로컬 Node: 이 PC(WSL)에 Node가 없어 conda env `lealnspire`(Node 22.23.5)를 만들고 `.claude/settings.local.json`의 `env.PATH`로 연결(커밋 안 함, `.gitignore`에 추가)
+- 추가: 저장 워크플로 `.claude/workflows/task-pipeline.js` — 계획 → 구현 → `reviewer` 2개(범위 / 정확성) 독립 검토 → 필수 지적 1회 수정·재검토 → 문서·커밋·push
+  - 구현 역할을 서브에이전트로 따로 만들지 않음. 워크플로 단계 프롬프트로 충분하고, 검토만 `reviewer`를 재사용
+  - 에이전트 최대 7개로 제한(사용량 절약). 훅·예약 실행은 넣지 않음
+- 문서: CLAUDE.md 3절(Node 없을 때 처리)·8절(워크플로, 선택 기준), README(conda Node), ARCHITECTURE D12, NEXT_SESSION(실행 방법, 분기 기준)
+- 시도했으나 적용 안 됨: `.claude/settings.json`에 npm/git 명령 자동 허용 추가 → Claude Code 안전장치가 AI의 권한 확대를 거부. 사용자가 직접 추가하도록 안내
+- 검증(로컬, Node 22.23.5): `npm ci` 후 `npm run verify` 통과(lint 0건, 테스트 1개 통과, build 성공). 워크플로 스크립트는 문법 검사만 통과, 실제 실행은 미검증(첫 실행은 T1에서)
+
+---
+
 ## push 자동화 설정 (2026-11-20)
 
 - 사용자 요청: 시험용 레포이므로 이 PC에서의 push는 확인 없이 자동 처리

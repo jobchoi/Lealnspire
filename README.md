@@ -17,6 +17,20 @@ React 19 · TypeScript · Vite · Vitest · oxlint · GitHub Actions
 
 필요 환경: Node.js `^20.19.0 || >=22.12.0` (권장 버전은 `.nvmrc`의 22)
 
+<details><summary>conda로 Node를 쓰는 경우(시스템에 Node가 없을 때)</summary>
+
+```bash
+conda create -y -n lealnspire -c conda-forge "nodejs=22"
+conda activate lealnspire
+```
+
+Claude Code가 이 Node를 쓰게 하려면 `.claude/settings.local.json`(커밋하지 않음)에 PATH를 지정합니다.
+
+```json
+{ "env": { "PATH": "/home/<사용자>/miniconda3/envs/lealnspire/bin:<기존 PATH>" } }
+```
+</details>
+
 ```bash
 npm install
 ```

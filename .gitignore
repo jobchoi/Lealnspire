@@ -27,3 +27,6 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Claude Code PC별 설정(로컬 PATH 등)
+.claude/settings.local.json
