@@ -1,4 +1,9 @@
 export const ko = {
+  introduction: '명령 블록과 반복으로 로봇을 목적지까지 안내하세요.',
+  start: '시작하기', continue: '이어하기', stageList: '스테이지 목록', home: '첫 화면',
+  hint: '힌트', nextStage: '다음 스테이지', toList: '목록으로',
+  congratulations: '축하해요! 모든 스테이지를 완주했어요!',
+  locked: '잠김', unlocked: '열림', bestStars: (count: number) => `최고 별 ${count}개`,
   run: '실행', step: '한 단계', reset: '처음으로', speed: '속도',
   speeds: { slow: '느리게', normal: '보통', fast: '빠르게' },
   success: '성공했어요!', retry: '다시 하기', close: '닫기',

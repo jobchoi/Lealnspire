@@ -64,3 +64,8 @@ button:focus-visible, select:focus-visible { outline: 3px solid #2563eb; outline
 .board-bump .board-robot { color: #dc2626; }
 .modal-backdrop { position: fixed; inset: 0; background: #0008; display: grid; place-items: center; padding: 1rem; z-index: 10; }
 .result-modal { background: white; padding: 1.5rem; border-radius: 12px; width: min(100%, 420px); max-height: 90vh; overflow: auto; overflow-wrap: anywhere; }
+
+.stage-list { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 1rem; }
+.stage-list li { min-width: 0; }
+.stage-card { display: flex; flex-direction: column; gap: .5rem; text-align: left; width: 100%; height: 100%; overflow-wrap: anywhere; }
+.app h1 { overflow-wrap: anywhere; }

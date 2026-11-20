@@ -24,3 +24,15 @@ describe('결과 모달', () => {
     }
   })
 })
+
+ it('성공 시 다음 이동과 마지막 스테이지의 완주 안내를 표시한다', () => {
+   const normal = renderToString(<ResultModal result="success" stars={3} onRetry={noop} onClose={noop} onNext={noop} />)
+   expect(normal).toContain(ko.nextStage)
+   expect(normal).not.toContain(ko.congratulations)
+   const last = renderToString(<ResultModal result="success" stars={3} onRetry={noop} onClose={noop} onNext={noop} lastStage />)
+   expect(last).toContain(ko.toList)
+   expect(last).toContain(ko.congratulations)
+   const failed = renderToString(<ResultModal result="collision" stars={0} onRetry={noop} onClose={noop} onNext={noop} lastStage />)
+   expect(failed).not.toContain(ko.toList)
+   expect(failed).not.toContain(ko.congratulations)
+ })

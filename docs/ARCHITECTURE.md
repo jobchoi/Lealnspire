@@ -28,8 +28,9 @@
 ├─ public/favicon.svg
 ├─ src/
 │  ├─ main.tsx                # 진입점
-│  ├─ App.tsx                 # 스테이지 1, 편집기·실행 재생·결과·진행 저장 연결
+│  ├─ App.tsx                 # App state로 첫 화면·목록·게임 화면 전환
 │  ├─ App.test.tsx            # 렌더링 확인 테스트
+│  ├─ pages/                 # HomePage, StageSelectPage, PlayPage, 이어하기 계산과 테스트
 │  ├─ components/             # Board, Editor, ResultModal과 렌더링 테스트
 │  ├─ engine/                 # 게임 엔진, 블록 편집, editor, score(잠정 별 평가)와 단위 테스트
 │  ├─ hooks/                 # usePlayback, 순수 프레임 진행 함수와 테스트

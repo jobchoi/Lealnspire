@@ -1,5 +1,11 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-20 — T6 화면 흐름, 힌트, 반응형 (구현 Codex, QC Claude)
+
+- Codex: `src/pages/`(HomePage, StageSelectPage, PlayPage), 이어하기 대상 계산, 다음 스테이지·완주 모달, 힌트, 반응형 CSS, GAME_DESIGN 6절·ARCHITECTURE 2절
+- Claude QC: verify 통과(테스트 54개), Playwright로 1~8 UI 완주와 화면 흐름·375px 확인, 콘솔 오류 0
+- MVP 필수 작업(T0~T6) 완료
+
 ## 2026-11-20 — T5 진행 상황 저장 (구현 Codex, QC Claude)
 
 - Codex: `src/storage/progress.ts`(버전 1, 검증, 가짜 storage 주입, 메모리 대체), 잠금 해제 순수 함수, App 연결, ARCHITECTURE 갱신
