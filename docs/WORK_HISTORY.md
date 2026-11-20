@@ -1,5 +1,10 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-20 — T5 진행 상황 저장 (구현 Codex, QC Claude)
+
+- Codex: `src/storage/progress.ts`(버전 1, 검증, 가짜 storage 주입, 메모리 대체), 잠금 해제 순수 함수, App 연결, ARCHITECTURE 갱신
+- Claude QC: verify 통과(테스트 47개), Playwright로 새로고침 유지·저장 구조·손상값 복구·저장소 차단 확인, 콘솔 오류 0
+
 ## 2026-11-20 — T4 실행 재생과 결과 표시 (구현 Codex, QC Claude)
 
 - Codex: `usePlayback` 훅(프레임 인덱스만 보관), 순수 프레임 진행 함수, `score.ts`(잠정 별 기준), `ResultModal`, Board 충돌 표시, 편집기 실행 중 강조·잠금, GAME_DESIGN 3절(잠정)·ARCHITECTURE 2절

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Program } from './engine/types'
 import { Editor } from './components/Editor'
 import { ko } from './i18n/ko'
@@ -9,11 +9,22 @@ import { playbackSpeeds } from './hooks/playback'
 import { ResultModal } from './components/ResultModal'
 import { score } from './engine/score'
 import { countBlocks } from './engine/program'
+import { createProgressStore } from './storage/progress'
 
 function App() {
   const stage = stages[0]
-  const [program, setProgram] = useState<Program>(() => stage.initialProgram ?? [])
+  const [progressStore] = useState(() => createProgressStore())
+  const [program, setProgram] = useState<Program>(() => progressStore.getProgram(stage))
   const playback = usePlayback(stage, program)
+  function editProgram(nextProgram: Program) {
+    setProgram(nextProgram)
+    progressStore.saveProgram(stage.id, nextProgram)
+  }
+  useEffect(() => {
+    if (playback.finished && playback.result === 'success') {
+      progressStore.completeStage(stage.id, score(playback.result, countBlocks(program), stage.starBlocks), program)
+    }
+  }, [playback.finished, playback.result, program, progressStore, stage])
   return (
     <main className="app">
       <h1>{ko.title}</h1>
@@ -21,7 +32,7 @@ function App() {
       <p>{stage.goal}</p>
       <div className="game-layout">
         <Board stage={stage} position={playback.frame?.pos} direction={playback.frame?.dir} bump={playback.frame?.event === 'bump'} />
-        <Editor program={program} onChange={setProgram} maxBlocks={stage.maxBlocks} locked={playback.locked} activeBlockId={playback.frame?.activeBlockId} />
+        <Editor program={program} onChange={editProgram} maxBlocks={stage.maxBlocks} locked={playback.locked} activeBlockId={playback.frame?.activeBlockId} />
       </div>
       <div className="playback-controls">
         <button type="button" disabled={!program.length || playback.playing} onClick={playback.play}>{ko.run}</button>

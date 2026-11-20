@@ -28,11 +28,12 @@
 ├─ public/favicon.svg
 ├─ src/
 │  ├─ main.tsx                # 진입점
-│  ├─ App.tsx                 # 스테이지 1, 편집기와 실행 재생·결과 연결
+│  ├─ App.tsx                 # 스테이지 1, 편집기·실행 재생·결과·진행 저장 연결
 │  ├─ App.test.tsx            # 렌더링 확인 테스트
 │  ├─ components/             # Board, Editor, ResultModal과 렌더링 테스트
 │  ├─ engine/                 # 게임 엔진, 블록 편집, editor, score(잠정 별 평가)와 단위 테스트
 │  ├─ hooks/                 # usePlayback, 순수 프레임 진행 함수와 테스트
+│  ├─ storage/                # progress.ts(버전 1 저장소), Node 가짜 저장소 테스트
 │  ├─ stages/                 # 스테이지 1~8과 정답 검증
 │  ├─ i18n/ko.ts              # 편집기·앱 화면 문구
 │  └─ index.css
@@ -98,3 +99,13 @@ type Frame = { pos: { x: number; y: number }; dir: Dir; activeBlockId: string | 
 | D12 | 다중 에이전트는 저장 워크플로 `task-pipeline` 하나(계획·구현·검토 2·수정·마무리). 사용자 요청 시에만 실행 | [확정] | 사용자 요청(오케스트레이션 실험). 에이전트 최대 7개로 제한 |
 | D13 | MCP: `context7`(원격 HTTP, 키 없음) + `playwright`(`@playwright/mcp@0.0.84` 고정, headless) | [확정] | 사용자 요청. 버전은 2주 이상 지난 것으로 고정. Context7을 쓸 수 없으면 공식 문서로 대체(CLAUDE.md 3-1절) |
 | D10 | 유료 API·자동 실행 없음. CI는 lint/test/build만 | [확정, 0단계] | 사용자 운영 원칙. 추가하려면 방식과 비용을 먼저 설명 |
+
+## 6. 진행 상황 저장 (T5)
+
+- `src/storage/progress.ts`만 브라우저 localStorage에 접근합니다. 키는 `lealnspire.progress`, 저장 구조 버전은 `1`입니다.
+- 저장 예: `{"version":1,"stages":{"1":{"completed":true,"bestStars":3,"lastProgram":[{"id":"f1","type":"forward"}]}}}`. 스테이지 키는 `Stage.id`입니다.
+- `createProgressStore(storage?)`는 `getItem`/`setItem`만 가진 저장소를 주입받을 수 있습니다. 기본 저장소 접근, 읽기 또는 쓰기가 실패하면 메모리 상태로 계속 동작합니다. 새로고침을 넘는 보존은 브라우저 저장소가 사용 가능할 때만 보장합니다.
+- JSON 파싱 실패·다른 버전·잘못된 최상위 구조는 빈 진행 상황으로 초기화합니다. 잘못된 스테이지 항목은 개별적으로 버립니다. 완료 여부, 정수 별 0~3, 프로그램 블록 타입·고유한 비어 있지 않은 ID·반복 몸체·정수 횟수 2~10을 검증합니다.
+- `saveProgram`은 완료 여부와 최고 별을 유지합니다. `completeStage`는 완료를 기록하고 최고 별을 최댓값으로 유지합니다. 입출력 프로그램은 복사하여 외부 변경으로부터 보호합니다.
+- `isUnlocked(progress, stageIndex)`는 0 기반 인덱스를 사용합니다. 첫 스테이지는 항상 열리고 이후에는 `stages` 배열의 직전 스테이지가 완료되어야 열립니다. 유효하지 않은 인덱스는 닫힘입니다(T6에서 사용).
+- App은 저장 코드 → `initialProgram` → 빈 프로그램 순으로 시작합니다. 편집 이벤트마다 즉시 저장하고 재생이 성공으로 끝나면 완료 여부·최고 별을 기록합니다. 빈 저장 코드도 유지합니다.
