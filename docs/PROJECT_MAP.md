@@ -70,6 +70,12 @@ E2E는 Chromium과 로컬 포트 실행 권한이 필요합니다. 실행 못 �
 | `view/pages/PlayPage.tsx` | 게임 화면 조합, Controller 구독과 이벤트 전달 |
 | `view/pages/StageSelectPage.tsx` | 스테이지 카드·잠금·최고 별 표시 |
 | `view/pages/pages.test.tsx` | 이어하기·카드 잠금·저장 코드·힌트·다음 렌더링 |
+| `view/theme/sketchbook.ts`, `sketchbook.css` | 공책·크레용 테마와 자체 포함 손글씨 글꼴 |
+| `view/theme/train.ts`, `train.css` | 기차 칸·순환 선로와 마을 테마 |
+| `view/theme/handheld.ts`, `handheld.css` | 게임기·도트 화면·카트리지 테마 |
+| `view/theme/themes.ts`, `themes.test.tsx` | 월드 등록·완료 조건에 따른 선택과 렌더링 회귀 테스트 |
+| `view/theme/Symbols.tsx` | 공통 SVG 명령·월드 아이콘, 방향별 로봇 |
+| `view/theme/TrainMap.tsx`, `isometric.ts` | SVG 섬 지도와 순수 이소메트릭 좌표 변환 |
 | `view/theme/defaultTheme.ts` | Theme 인터페이스와 기본 기호·이름·색 클래스·반복·버튼·방향 표현 |
 
 ## MVC와 데이터
@@ -94,7 +100,7 @@ View는 포커스, 모달 키보드, 타일 스크롤과 CSS를 담당합니다.
 Program 상한은 반복 몸체까지 합쳐 10개이며 스테이지 제한은 더 낮을 수 있습니다.
 Interpreter는 목표에 도착하면 즉시 멈추고, 명령 1000개와 반복 진입 1000회에 안전장치를 둡니다.
 저장 키는 lealnspire.progress이며 구조 변경 시 버전을 올리고 검증·마이그레이션 정책을 함께 결정합니다.
-Stage.world는 1~3 sketchbook, 4~6 train, 7~8 handheld입니다. 현재 View는 기본 테마 하나입니다.
+Stage.world는 1~3 sketchbook, 4~6 train, 7~8 handheld입니다. View는 world별 테마를 선택하며 완주한 스테이지는 세 월드로 다시 풀 수 있습니다.
 
 ## 화면 흐름과 메서드
 
@@ -121,7 +127,7 @@ EditorController는 선택 타일과 반복 추가 대상을 별도로 관리합
 | 블록 종류 추가 | model/types.ts → program/editor/interpreter → controller → View Theme; 저장 검증·모든 관련 테스트 |
 | 문구 수정 | i18n/locales/ko.json; aria-label은 e2e/helpers.ts 계약 확인 |
 | 언어 추가 | locales/<언어>.json 하나 추가, ko 키의 부분집합; ?lang=<언어>로 확인 |
-| 테마 추가(T13) | view/theme/defaultTheme.ts의 Theme 구현·선택과 components/CSS; Model·Controller 변경 불필요 |
+| 테마 추가(T13) | view/theme/themes.ts의 등록·선택, 각 월드 Theme·CSS·Symbols/TrainMap과 components; Model·Controller 변경 불필요 |
 | 저장 구조 변경 | model/ProgressRepository.ts; version·검증·복사·손상 처리 테스트 |
 | 실행/재생 변경 | model/interpreter.ts, controller/GameController.ts, playback.ts |
 | 화면 이동 변경 | controller/AppController.ts, flow.ts + view/App.tsx |

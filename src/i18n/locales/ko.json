@@ -119,5 +119,39 @@
   "stage7Hint": "두 칸 이동하고 오른쪽으로 도는 패턴을 세 번 반복해요.",
   "stage8Title": "반복 미로",
   "stage8Goal": "순서와 반복을 섞어 미로를 지나가요.",
-  "stage8Hint": "계단을 반복한 뒤 한 칸 더 이동해요."
+  "stage8Hint": "계단을 반복한 뒤 한 칸 더 이동해요.",
+  "themes": {
+    "choose": "다른 월드로 다시 풀기",
+    "introduction": "세 가지 세계에서 순서와 반복을 발견해요.",
+    "sketchbook": {
+      "name": "크레용 스케치북",
+      "description": "공책 위에 그리는 첫 번째 모험",
+      "run": "해 보기!",
+      "repeat": "{count}번",
+      "switch": "크레용 스케치북 월드로 바꾸기",
+      "forward": "앞으로",
+      "turnLeft": "왼쪽",
+      "turnRight": "오른쪽"
+    },
+    "train": {
+      "name": "기차 마을",
+      "description": "명령을 연결하고 반복 선로를 달려요",
+      "run": "출발!",
+      "repeat": "{count}바퀴",
+      "switch": "기차 마을 월드로 바꾸기",
+      "forward": "앞으로 칸",
+      "turnLeft": "왼쪽 칸",
+      "turnRight": "오른쪽 칸"
+    },
+    "handheld": {
+      "name": "나의 게임기",
+      "description": "작은 화면 속 커다란 반복 미로",
+      "run": "A",
+      "repeat": "×{count}",
+      "switch": "나의 게임기 월드로 바꾸기",
+      "forward": "앞으로",
+      "turnLeft": "왼쪽",
+      "turnRight": "오른쪽"
+    }
+  }
 }

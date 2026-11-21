@@ -1,0 +1,82 @@
+@import '@fontsource/do-hyeon/korean-400.css';
+@import '@fontsource/black-han-sans/korean-400.css';
+.theme-train { font-family:'Do Hyeon',sans-serif; color:#294c48; padding:16px 20px; border-radius:24px; background:radial-gradient(ellipse at 85% 10%,#fff 0 5%,transparent 5.4%),radial-gradient(ellipse at 70% 8%,#fff 0 4%,transparent 4.4%),linear-gradient(#c3e9f6 0 48%,#c5df9c 48%); box-shadow:0 8px 30px #326a3820; }
+.theme-train h1 { font-family:'Black Han Sans',sans-serif; color:#fff8e8; background:#8a603d; border:3px solid #bc9466; border-radius:10px; padding:4px 12px; width:fit-content; }
+.theme-train .map-panel { background:transparent; }
+.theme-train .board { background:#6b9a57; border:5px solid #94bd72; box-shadow:0 8px #658347; border-radius:14px; transform:perspective(700px) rotateX(18deg) rotateZ(-5deg) scale(.94); }
+.theme-train .board-cell { background:#d6e8ab; border-radius:5px; border-bottom:4px solid #b1cc87; }
+.theme-train .board-wall { background:#8c9d9c; border:3px solid #718684; box-shadow:0 -3px #b9c5bc; }
+.theme-train .board-goal { background:#ffe9a8; color:#c54537; }
+.theme-train .palette button { border:2px solid #497d73; box-shadow:0 4px #396359; border-radius:12px 12px 5px 5px; }
+.theme-train .workspace { background:repeating-linear-gradient(0deg,transparent 0 72px,#8c796780 72px 76px,#e0c49f 76px 80px); border:2px solid #9dbb86; }
+.theme-train .block-tile { border:3px solid #4c8279; border-radius:12px 12px 6px 6px; box-shadow:0 4px #46615c; }
+.theme-train .repeat-frame { border:4px solid #d6a625; border-radius:22px; background:#fff1ba; }
+.theme-train .run-button { background:#d64c3d; border:3px solid #a93930; border-radius:24px; box-shadow:0 3px #9f352b; }
+.theme-train .block-active { animation:train-bounce .4s infinite alternate; }
+@keyframes train-bounce { to { transform:translateY(-4px); } }
+.theme-train .board.train-island { display:block; transform:none; border:0; background:transparent; box-shadow:none; overflow:visible; }
+.train-island .board-robot { position:static; }
+.train-island .robot-art { width:34px; height:34px; }
+/* Approved concept: sky, wooden sign, station and train cars. */
+.play-page.theme-train { color:#1c1917; background:radial-gradient(40px 22px at 12% 12%,#fff 98%,transparent),radial-gradient(60px 28px at 16% 10%,#fff 98%,transparent),radial-gradient(50px 24px at 72% 18%,#fff 98%,transparent),radial-gradient(70px 30px at 77% 15%,#fff 98%,transparent),linear-gradient(#7dd3fc,#e0f2fe 55%,#84cc16 55%,#65a30d); }
+.theme-train h1 { background:#b45309; color:#fff7ed; border:0; box-shadow:inset 0 -6px #0003,0 8px 0 -2px #78350f; padding:8px 18px; }
+.theme-train .board.train-island { overflow:hidden; filter:drop-shadow(0 8px 0 #3f6212); padding:0; }
+.theme-train .train-island .board-robot { position:static; }
+.theme-train .editor { background:#fffbeb; border-radius:22px; padding:16px; box-shadow:0 10px #d6b98c,0 30px 40px -20px #0006; }
+.theme-train .palette { display:flex; gap:14px; padding-bottom:6px; }
+.theme-train .palette button { flex:0 0 auto; width:92px; height:78px; border:0; border-radius:14px; color:#fff; background:var(--c); box-shadow:0 6px #0003; font-size:15px; }
+.theme-train .block-forward { --c:#2563eb; }
+.theme-train .block-turnLeft,.theme-train .block-turnRight { --c:#16a34a; }
+.theme-train .block-repeat { --c:#f59e0b; }
+.theme-train .workspace { border:0; border-radius:0; background:transparent; padding-bottom:16px; }
+.theme-train .workspace > .tile-list { padding-top:12px; padding-bottom:18px; }
+.theme-train .tile-list { align-items:flex-end; row-gap:28px; background:repeating-linear-gradient(90deg,#78350f 0 10px,transparent 10px 22px) 0 calc(100% - 2px)/100% 8px no-repeat,linear-gradient(#57534e,#57534e) 0 calc(100% - 8px)/100% 3px no-repeat,linear-gradient(#57534e,#57534e) 0 100%/100% 3px no-repeat; }
+.theme-train .block-tile { background:var(--c); color:white; border:0; border-radius:12px 12px 6px 6px; box-shadow:inset 0 -8px #0002; margin-bottom:12px; }
+.theme-train .tile-item { position:relative; padding-right:5px; }
+.theme-train .tile-item::after { content:''; position:absolute; right:-4px; bottom:28px; width:10px; height:6px; background:#57534e; }
+.theme-train .block-tile::before,.theme-train .block-tile::after { content:''; position:absolute; bottom:-10px; width:20px; height:20px; border-radius:50%; background:#292524; box-shadow:inset 0 0 0 5px #57534e; }
+.theme-train .block-tile::before { left:8px; }.theme-train .block-tile::after { right:8px; }
+.theme-train .repeat-frame { border:5px solid #f59e0b; border-bottom:0; border-radius:35px 35px 0 0; padding:12px 8px 0; background:transparent; box-shadow:none; }
+.theme-train .block-repeat { height:var(--tile-size); }
+.theme-train .block-repeat strong { border-radius:999px; background:#f59e0b; box-shadow:0 3px #b45309; padding:3px; }
+.theme-train .engine-art { width:100px; height:77px; display:block; float:left; margin:10px 8px 12px 0; }
+.theme-train button:not(.block-tile):not(.palette button) { border:0; border-radius:999px; background:#fff7ed; color:#78350f; box-shadow:0 4px #b98d56; }
+.theme-train .execution-controls { background:transparent; }
+.theme-train button.run-button { background:#dc2626; color:white; box-shadow:0 7px #7f1d1d; font-family:'Black Han Sans'; }
+.theme-train .run-button .control-symbol { display:none; }.theme-train .run-button small { font-size:25px; }
+.theme-train .tile-toolbar { background:#fffbeb; }
+@media(max-width:700px) {
+ .theme-train .editor { padding:4px; border-radius:12px; box-shadow:0 4px #d6b98c; }
+ .theme-train .palette { gap:8px; }.theme-train .palette button { width:62px; height:56px; }
+ .theme-train .palette small { display:block; font-size:10px; }.theme-train .palette .theme-symbol { width:28px; height:28px; }
+ .theme-train .engine-art { width:52px; height:40px; margin:12px 2px 12px 0; }
+ .theme-train .workspace { --tile-size:50px; --tile-gap:4px; }
+ .theme-train .repeat-frame { padding:7px 4px 0; border-width:3px; }
+ .theme-train .block-tile::before,.theme-train .block-tile::after { width:14px; height:14px; box-shadow:inset 0 0 0 3px #57534e; bottom:-7px; }
+ .theme-train .block-tile::before { left:4px; }.theme-train .block-tile::after { right:4px; }
+ .theme-train .run-button small { font-size:19px; }
+}
+
+.theme-train button[aria-pressed="true"] { outline:3px solid #f59e0b; outline-offset:-3px; }
+.theme-train .palette button { display:grid; justify-items:center; align-content:center; gap:4px; }
+.theme-train .palette .block-symbol { line-height:0; }
+@media(max-width:700px) { .theme-train .palette button { grid-template-rows:28px 14px; gap:0; padding:4px; }.theme-train .palette small { line-height:14px; } }
+
+/* Wheels and rails paint inside a row; they never add another row's height. */
+.theme-train .workspace > .tile-list { padding:4px 0; }
+.theme-train .tile-list { row-gap:10px; align-items:flex-start; }
+.theme-train .block-tile { margin-bottom:0; }
+.theme-train .block-tile::before,.theme-train .block-tile::after { width:10px; height:10px; bottom:0; box-shadow:inset 0 0 0 2px #57534e; }
+.theme-train .repeat-frame { padding:4px; border-width:3px; }
+.theme-train .block-repeat .block-symbol { display:none; }
+.theme-train .block-repeat strong { font-size:18px; line-height:24px; white-space:nowrap; position:relative; z-index:1; }
+.theme-train .engine-art { float:none; width:60px; height:46px; margin:0 0 4px; }
+@media(max-width:700px) {
+ .theme-train .palette button { width:64px; height:60px; grid-template-rows:28px 16px; }
+ .theme-train .palette small { font-size:13px; line-height:16px; }
+ .theme-train .workspace .block-repeat strong { font-size:16px; }
+}
+
+/* Palette symbols and labels occupy separate, fixed rows. */
+.theme-train .palette .block-repeat .block-symbol { display:block; }
+.theme-train .palette small { white-space:nowrap; }

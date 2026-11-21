@@ -28,7 +28,8 @@ describe('화면 렌더링', () => {
     store.completeStage('1', 2, [])
     expect(list().match(/disabled=""/g)).toHaveLength(6)
     expect(list()).toContain(t('bestStars', { count: 2 }))
-    expect(list().replaceAll('<!-- -->', '')).toContain('★★☆')
+    expect(list().match(/style="opacity:1"/g)).toHaveLength(2)
+    expect(list().match(/style="opacity:0.25"/g)).toHaveLength(22)
   })
   it('저장 코드로 게임을 열고 힌트와 결과는 닫힌 상태로 시작한다', () => {
     const store = createProgressStore()
@@ -55,4 +56,17 @@ it('완료한 게임을 다시 열면 상단 다음 버튼이 보이고 실행 �
     expect(page()).toContain(`title="${name}"`)
   }
   expect(page()).toContain('aria-pressed="true"')
+})
+
+it('LCD HUD counts nested blocks and uses the stage limit or default', () => {
+  const store = createProgressStore()
+  store.saveProgram('7', [{ id: 'outer', type: 'repeat', count: 3, body: [
+    { id: 'inner', type: 'repeat', count: 2, body: [{ id: 'step', type: 'forward' }] },
+  ] }])
+  for (const maxBlocks of [undefined, 6]) {
+    const html = renderToString(<PlayPage stage={{ ...stages[6], maxBlocks }} progressStore={store} onList={noop} onNext={noop} lastStage={false} />).replaceAll('<!-- -->', '')
+    const hud = html.split('class="lcd-hud"')[1].split('</div>')[0]
+    expect(hud).toContain(`<span>3/${maxBlocks ?? 10}</span>`)
+    expect(html).toContain(t('total', { count: 3, max: maxBlocks ?? 10 }))
+  }
 })

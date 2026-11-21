@@ -1,16 +1,17 @@
-import { defaultTheme as theme } from '../theme/defaultTheme'
+import { defaultTheme, type Theme } from '../theme/defaultTheme'
 import { useEffect, useRef, useState } from 'react'
 import { MAX_PROGRAM_BLOCKS } from '../../model/program'
 import { EditorController } from '../../controller/EditorController'
 import { useController } from '../hooks/useController'
 import type { Program } from '../../model/types'
 import { BlockTiles } from './BlockTiles'
+import { Engine, Symbol } from '../theme/Symbols'
 import { t } from '../../i18n/I18n'
 
-type EditorProps = { program: Program; onChange: (program: Program) => void; maxBlocks?: number; locked?: boolean; activeBlockId?: string | null }
-const types = theme.blockTypes
+type EditorProps = { theme?: Theme; program: Program; onChange: (program: Program) => void; maxBlocks?: number; locked?: boolean; activeBlockId?: string | null }
+const types = defaultTheme.blockTypes
 
-export function Editor({ program, onChange, maxBlocks, locked = false, activeBlockId }: EditorProps) {
+export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, locked = false, activeBlockId }: EditorProps) {
   const workspace = useRef<HTMLDivElement>(null)
   const [controller] = useState(() => new EditorController())
   controller.configure(program, onChange, locked, maxBlocks)
@@ -35,7 +36,7 @@ export function Editor({ program, onChange, maxBlocks, locked = false, activeBlo
     <div className="block-budget"><p aria-live="polite">{t('total', { count: total, max: limit })}</p>
     <span className="slot-dots" aria-hidden="true">{Array.from({ length: MAX_PROGRAM_BLOCKS }, (_, i) => <span key={i} className={i < total ? 'filled' : i >= limit ? 'unavailable' : ''}>{i < total ? '●' : '○'}</span>)}</span></div>
     <p className="insertion-status" aria-live="polite">{targetPath ? t('target', { order: targetPath.map(i => i + 1).join('.') }) : t('root')}</p>
-    <div className="palette" role="group" aria-label={t('palette')}>{types.map(type => <button type="button" key={type} className={theme.blockClass(type)} aria-label={theme.blockName(type)} title={theme.blockName(type)} disabled={locked || atLimit} onClick={() => controller.add(type)}><span className="block-symbol" aria-hidden="true">{theme.blockSymbol(type)}</span><small>{theme.blockName(type)}</small></button>)}</div>
+    <div className="palette" role="group" aria-label={t('palette')}>{types.map(type => <button type="button" key={type} className={theme.blockClass(type)} aria-label={theme.blockName(type)} title={theme.blockName(type)} disabled={locked || atLimit} onClick={() => controller.add(type)}><span className="block-symbol" aria-hidden="true">{theme.blockSymbol(type)}</span><small>{theme.world === 'handheld' && type === 'repeat' ? 'B' : theme.paletteName?.(type) ?? theme.blockName(type)}</small></button>)}</div>
     {atLimit && <p role="status">{t('limit')}</p>}
     <h3>{t('workspace')}</h3>
     <div className={`workspace-shell${selectedBlock ? ' has-selection' : ''}`}>
@@ -47,14 +48,15 @@ export function Editor({ program, onChange, maxBlocks, locked = false, activeBlo
         {selectedBlock.type === 'repeat' && <>
           <button disabled={locked || selectedBlock.count <= 2} aria-label={label(t('decrease'))} onClick={() => controller.setCount(selectedBlock.count - 1)}>−</button>
           <button disabled={locked || selectedBlock.count >= 10} aria-label={label(t('increase'))} onClick={() => controller.setCount(selectedBlock.count + 1)}>+</button>
-          <button disabled={locked} aria-pressed={targetId === selectedId} aria-label={label(targetId === selectedId ? t('deselect') : t('select'))} onClick={() => controller.toggleTarget()}><span aria-hidden="true">🔁⤵</span></button>
+          <button disabled={locked} aria-pressed={targetId === selectedId} aria-label={label(targetId === selectedId ? t('deselect') : t('select'))} onClick={() => controller.toggleTarget()}><span aria-hidden="true"><Symbol name="repeat" /></span></button>
         </>}
       </> : <small>{t('chooseTile')}</small>}
     </div>}
     <div className="workspace" ref={workspace} role="region" aria-label={t('workspace')} tabIndex={0} onClick={event => {
       if (!locked && !(event.target as HTMLElement).closest('button')) controller.clear()
     }}>
-      {program.length ? <BlockTiles program={program} selectedId={selectedPath ? selectedId : null} targetId={targetPath ? targetId : null} activeBlockId={activeBlockId} locked={locked} onSelect={controller.select} />: <p>{t('empty')}</p>}
+      {theme.world === 'train' && <Engine />}{program.length ? <BlockTiles theme={theme} program={program} selectedId={selectedPath ? selectedId : null} targetId={targetPath ? targetId : null} activeBlockId={activeBlockId} locked={locked} onSelect={controller.select} />: <p>{t('empty')}</p>}
+    {theme.world === 'handheld' && <div className="cartridge-slots" aria-hidden="true">{Array.from({ length: Math.max(0, 10 - total) }, (_, i) => <span key={i} />)}</div>}
     </div>
     </div>
   </section>

@@ -153,3 +153,154 @@ button small { display: block; font-size: .75rem; }
   .play-page .game-layout { grid-template-columns: minmax(0, 1fr); gap: .35rem; }
   .map-panel .board { width: min(100%, var(--compact-board-width), max(var(--mobile-board-width), var(--min-board-width))); }
 }
+
+/* Shared world artwork stays within the established viewport budget. */
+.theme-symbol { width:32px; height:32px; display:inline-block; vertical-align:middle; }
+.block-symbol .theme-symbol { width:36px; height:36px; }
+.robot-art { width:36px; height:36px; display:block; }
+.world-switch { position:absolute; top:6px; right:6px; display:flex; gap:4px; z-index:3; }
+.play-page { position:relative; }
+.play-page:has(.world-switch) h1 { padding-right:160px; }
+.world-switch button { padding:4px; background:#ffffffe0; }
+.world-switch [aria-pressed=true] { outline:3px solid #476f9d; outline-offset:-3px; }
+.world-gallery { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; margin:24px 0; }
+.world-preview { padding:24px 16px; border-radius:22px; box-shadow:0 6px 18px #24382b15; }
+.world-preview .theme-symbol { width:64px; height:64px; }
+.world-preview h2 { font-size:1.4rem; }
+.world-preview p { margin-bottom:0; }
+.world-heading { display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:12px; margin-top:24px; }
+.world-sketchbook { background:#fff3d6; color:#68513b; }
+.world-train { background:#d9edc3; color:#345c48; }
+.world-handheld { background:#d9decf; color:#344d36; }
+@media(max-width:700px) {
+ .play-page.theme-sketchbook,.play-page.theme-train,.play-page.theme-handheld { padding:4px; border-width:0; box-shadow:none; border-radius:8px; }
+ .play-page.theme-sketchbook { border-left:3px dotted #899098; }
+ .theme-handheld .map-panel { display:contents; }
+ .theme-train h1 { padding:0 6px; font-family:'Do Hyeon',sans-serif; }
+ .world-switch { top:0; right:0; gap:2px; }
+ .world-switch button { min-width:44px; min-height:44px; width:44px; height:44px; }
+ .world-switch .theme-symbol { width:24px; height:24px; }
+ .play-page:has(.world-switch) h1 { padding-right:140px; min-height:44px; font-size:.95rem; }
+ .world-gallery { grid-template-columns:1fr; gap:10px; }
+ .world-preview { padding:12px 18px; }
+ .world-preview .theme-symbol { float:right; width:48px; height:48px; }
+ .theme-handheld .board { border-width:3px; }
+}
+/* World compositions retain the layout contract while using the approved art. */
+.play-page .editor > h2,.play-page .editor > h3,.play-page .insertion-status { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+.play-page .game-layout { grid-template-columns:minmax(280px,38%) minmax(0,1fr); }
+.play-page .map-panel .art-board { width:100%; max-height:calc(100dvh - 390px); }
+.play-page .map-panel .train-island { width:100%; max-height:calc(100dvh - 390px); }
+.art-board .board-robot { position:static; }
+.home-page { font-family:'Do Hyeon',sans-serif; background:linear-gradient(#e0f2fe,#fffaf0); padding:26px; border-radius:28px; box-shadow:0 14px 40px #6b5b3e22; }
+.home-page h1 { font-size:clamp(36px,6vw,64px); margin:0; color:#2b2d42; }
+.home-page > p { font-size:20px; }
+.home-page .playback-controls button { font-size:20px; border:0; border-radius:999px; padding:12px 26px; background:#fff7ed; box-shadow:0 5px #d6b98c; }
+.home-page .playback-controls button:first-child { background:#dc2626; color:white; font-size:26px; box-shadow:0 7px #7f1d1d; }
+.world-preview { overflow:hidden; padding:20px; }
+.world-scene { display:block; width:100%; height:180px; }
+.world-preview.world-sketchbook { font-family:'Gamja Flower'; background:repeating-linear-gradient(transparent 0 27px,#c9dcf0 27px 28px),#fffaf0; border-left:6px dotted #899098; transform:rotate(-2deg); }
+.world-preview.world-train { font-family:'Do Hyeon'; background:linear-gradient(#7dd3fc,#e0f2fe 65%,#84cc16 65%); transform:rotate(1deg); }
+.world-preview.world-handheld { background:linear-gradient(160deg,#e8e1d3,#c9bfab); border-radius:20px 20px 50px 20px; box-shadow:inset -5px -6px #0001,inset 4px 4px #fff8; }
+.world-preview.world-handheld .world-scene { background:#9bbc0f; border:14px solid #56586b; border-radius:12px 12px 24px 12px; }
+.stage-world { padding:12px 18px; margin-top:18px; border-radius:20px; }
+.stage-world.world-sketchbook { font-family:'Gaegu'; background:repeating-linear-gradient(transparent 0 37px,#c9dcf0 37px 38px),#fffaf0; border-left:6px dotted #899098; }
+.stage-world.world-train { font-family:'Do Hyeon'; background:linear-gradient(#7dd3fc,#e0f2fe 65%,#84cc16 65%); }
+.stage-world.world-handheld { font-family:'Do Hyeon'; background:linear-gradient(160deg,#e8e1d3,#c9bfab); }
+.stage-world .world-heading { background:none; margin:0; }
+.stage-world .stage-card { padding:16px; border:0; box-shadow:0 5px #0002; border-radius:16px; }
+.world-sketchbook .stage-card { background:#fffdf5; border:2px dashed #a49a87; }
+.world-train .stage-card { background:#fffbeb; color:#78350f; }
+.world-handheld .stage-card { background:#3a3c4e; color:#ffd166; box-shadow:inset 0 -5px #0004; }
+@media(max-width:700px) {
+ .play-page .game-layout { grid-template-columns:minmax(0,1fr); }
+ .play-page .map-panel .art-board { width:min(100%,max(200px,var(--mobile-board-width))); height:min(22dvh,150px); max-height:150px; }
+ .play-page .map-panel .train-island { width:min(100%,300px); height:22dvh; max-height:150px; }
+ .play-page .stage-controls button { min-height:44px; }
+ .home-page { padding:18px; }.home-page .world-gallery { grid-template-columns:1fr; }
+ .world-scene { height:120px; }.world-preview { padding:12px 16px; }
+ .world-preview h2 { margin:8px 0; }
+ .world-preview .world-scene { float:right; width:42%; }
+}
+@media(max-width:700px) and (max-height:590px) {
+ .play-page .map-panel .art-board,.play-page .map-panel .train-island { height:75px; }
+ .theme-handheld .palette { grid-template-rows:44px 44px; }
+ .theme-handheld .palette::after { display:none; }
+ .theme-handheld .palette button.block-repeat { grid-row:1 / 3; }
+}
+
+/* QC: reserve real space for text and decorations within the viewport. */
+.play-page > :not(.game-layout) { flex-shrink:0; }
+.play-page .stage-goal { font-size:16px; line-height:24px; max-height:48px; overflow-y:auto; }
+.play-page button small { font-size:13px; line-height:16px; white-space:nowrap; }
+.play-page .block-budget p { font-size:14px; line-height:20px; }
+.play-page .execution-controls button { min-width:44px; }
+.play-page .execution-controls .run-button small { white-space:nowrap; }
+.stage-select-page { font-family:'Do Hyeon',sans-serif; padding:26px; border-radius:28px; background:linear-gradient(#e0f2fe,#fffaf0); box-shadow:0 14px 40px #6b5b3e22; }
+.stage-select-page > h1 { margin:0 0 16px; color:#2b2d42; }
+.stage-select-page > button { border:0; border-radius:999px; padding:10px 24px; background:#fff7ed; box-shadow:0 4px #d6b98c; }
+.earned-star .theme-symbol { fill:#f6c343; stroke:#a66a12; }
+.empty-star .theme-symbol { fill:none; opacity:.35; }
+[data-page-title]:focus { outline:none; }
+@media(min-width:701px) {
+ .play-page .map-panel .art-board,.play-page .map-panel .train-island { max-height:240px; }
+ .play-page .execution-controls button { height:64px; min-height:64px; }
+ .play-page .repeat-frame { flex-wrap:nowrap; }
+ .play-page .repeat-frame > .tile-list { flex:0 1 auto; }
+}
+@media(max-width:700px) {
+ .play-page .game-layout { grid-template-rows:110px minmax(0,1fr) 64px; }
+ .play-page .map-panel .art-board,.play-page .map-panel .train-island { height:110px; max-height:110px; }
+ .play-page .execution-controls { grid-template-columns:1.65fr repeat(5,minmax(44px,1fr)); gap:2px; }
+ .play-page .execution-controls button { min-width:44px; padding:0; height:64px; min-height:64px; }
+ .play-page .execution-controls .theme-symbol { width:26px; height:26px; }
+ .play-page .execution-controls .run-button small { font-size:16px; }
+ .play-page .editor { gap:3px; }
+ .play-page .palette { margin:0; }
+ .play-page .workspace { --tile-size:50px; --tile-gap:6px; display:grid; grid-template-columns:repeat(5,50px); grid-auto-rows:50px; align-content:start; gap:6px; padding:6px; scrollbar-gutter:auto; }
+ .play-page .workspace .tile-list,.play-page .workspace .tile-item,.play-page .workspace .repeat-frame { display:contents; }
+ .play-page .workspace .tile-item::after,.play-page .workspace .crayon-bracket,.play-page .workspace .engine-art { display:none; }
+ .play-page .workspace .block-tile { width:50px; height:50px; min-width:50px; min-height:50px; margin:0; padding:10px 2px 2px; }
+ .play-page .workspace .block-symbol .theme-symbol { width:30px; height:30px; }
+ .play-page .workspace .block-repeat { outline:2px dashed var(--c,#e4572e); outline-offset:-2px; }
+ .play-page .has-selection .workspace { padding-top:58px; }
+ .play-page .workspace .block-tile small { font-size:11px; line-height:12px; top:1px; }
+ .play-page .workspace .block-repeat .block-symbol { display:none; }
+ .play-page .workspace .block-repeat strong { font-size:16px; line-height:20px; padding:0; white-space:nowrap; }
+ .play-page .insertion-marker { display:none; }
+ .home-page .world-preview { display:grid; grid-template-columns:minmax(0,1fr) 42%; column-gap:12px; align-items:center; }
+ .home-page .world-preview .world-scene { float:none; width:100%; grid-column:2; grid-row:1 / 3; }
+ .home-page .world-preview h2,.home-page .world-preview p { grid-column:1; margin:4px 0; }
+ .stage-select-page { padding:18px; }
+}
+@media(max-width:700px) and (max-height:590px) {
+ .play-page .game-layout { grid-template-rows:75px minmax(0,1fr) 64px; }
+ .play-page .map-panel .art-board,.play-page .map-panel .train-island { height:75px; }
+}
+
+/* Flattened repeat frames paint a continuous band through every occupied cell.
+   Painting outside the tile consumes none of the five-column/two-row budget. */
+.repeat-ribbon,.empty-repeat-label { display:none; }
+.play-page .repeat-frame { --repeat-ink:#c56030; --repeat-paper:#ffe5bb; }
+.play-page .repeat-frame[data-repeat-tone="1"] { --repeat-ink:#7b529c; --repeat-paper:#e9d9ff; }
+.play-page .repeat-frame[data-repeat-tone="2"] { --repeat-ink:#237e81; --repeat-paper:#c8f0e5; }
+.theme-handheld .repeat-frame .repeat-ribbon {
+ display:block; position:absolute; inset:-3px; border:2px dashed var(--repeat-ink); background:transparent; box-shadow:inset 0 0 0 5px var(--repeat-paper); pointer-events:none; z-index:-1;
+}
+.theme-handheld .workspace .block-tile { isolation:isolate; }
+.theme-handheld .workspace .empty-repeat { display:none; }
+.theme-handheld .workspace .empty-repeat-label { display:block; position:absolute; bottom:0; font-size:10px; line-height:12px; white-space:nowrap; }
+.theme-handheld .workspace .block-repeat:has(.empty-repeat-label) strong { transform:translateY(-5px); }
+.theme-handheld .frame-selected > .block-tile .repeat-ribbon,
+.theme-handheld .frame-selected > .tile-list .repeat-ribbon { border-color:#2563eb; }
+@media(max-width:700px) {
+ .play-page .workspace .block-tile { isolation:isolate; }
+ .play-page .repeat-frame .repeat-ribbon { display:block; position:absolute; inset:-3px; border-block:3px solid var(--repeat-ink); background:transparent; box-shadow:inset 0 0 0 5px var(--repeat-paper); pointer-events:none; z-index:-1; }
+ .play-page.theme-sketchbook .repeat-ribbon { border-radius:8px; border-inline:2px solid var(--repeat-ink); }
+ .play-page.theme-handheld .repeat-ribbon { border:2px dashed var(--repeat-ink); }
+ .play-page .frame-selected > .block-tile .repeat-ribbon,
+ .play-page .frame-selected > .tile-list .repeat-ribbon { border-color:#2563eb; }
+ .play-page .workspace .empty-repeat { display:none; }
+ .play-page .workspace .empty-repeat-label { display:block; position:absolute; bottom:0; font-size:10px; line-height:12px; white-space:nowrap; }
+ .play-page .workspace .block-repeat:has(.empty-repeat-label) strong { transform:translateY(-5px); }
+}

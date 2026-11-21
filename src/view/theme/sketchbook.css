@@ -1,0 +1,85 @@
+@import '@fontsource/gaegu/korean-400.css';
+@import '@fontsource/gamja-flower/korean-400.css';
+.theme-sketchbook { font-family: 'Gaegu', sans-serif; color:#3b3a36; background: repeating-linear-gradient(transparent 0 31px,#c9dcf070 31px 32px),#fffaf0; border-radius:6px 22px 22px 6px; box-shadow:0 3px #d8ccb4,0 16px 40px #6b5b3e25; position:relative; padding:16px 20px 16px 38px; border-left:8px dotted #899098; }
+.theme-sketchbook h1 { font-family:'Gamja Flower',sans-serif; text-decoration:underline; text-decoration-color:#f6c343; text-decoration-thickness:7px; text-underline-offset:2px; }
+.theme-sketchbook .map-panel { background:#fffaf0; position:relative; }
+.theme-sketchbook .board { border:3px solid #667a87; border-radius:7px 12px 6px 13px; background:#aec5ce; transform:rotate(.5deg); }
+.theme-sketchbook .board-cell { border:1px solid #8aa9bc; border-radius:12% 5%; background:#fffdf5; }
+.theme-sketchbook .board-wall { background:repeating-linear-gradient(45deg,#697987 0 3px,#c3cbd0 3px 9px); }
+.theme-sketchbook .palette button { border:3px solid currentColor; border-radius:48% 52% 45% 55%; box-shadow:2px 3px #6b5b3e22; }
+.theme-sketchbook .workspace { background:repeating-linear-gradient(transparent 0 31px,#b7cfe770 31px 32px); border:0; }
+.theme-sketchbook .block-tile { border-radius:25% 20% 30% 22%; border:2px solid currentColor; }
+.theme-sketchbook .repeat-frame { border:3px solid #d36b44; border-top:0; border-bottom:0; background:#fff1d080; border-radius:18px; }
+.theme-sketchbook .run-button { background:#479664; border:0; border-radius:3px 30% 30% 3px; }
+.theme-sketchbook .stage-hint { background:#fff59d; padding:5px 12px; box-shadow:2px 3px #887b4422; }
+.theme-sketchbook .block-active { animation:sketch-wiggle .5s infinite alternate; }
+@keyframes sketch-wiggle { to { transform:rotate(4deg); } }
+.theme-sketchbook .map-panel::before { content:''; display:block; width:70px; height:13px; background:#eed995aa; position:absolute; top:-5px; left:35%; transform:rotate(-4deg); z-index:1; }
+@media(max-width:700px) { .theme-sketchbook .map-panel::before { display:none; } }
+/* Approved concept: book, stickers, diary steps and crayon. */
+.play-page.theme-sketchbook { background-image:repeating-linear-gradient(transparent 0 37px,#c9dcf0 37px 38px),linear-gradient(90deg,transparent 24px,#f2a7a7 24px 26px,transparent 26px); }
+.theme-sketchbook .board.art-board { display:block; background:transparent; padding:10px; border:0; box-shadow:none; border-radius:0; width:100%; }
+.theme-sketchbook .art-board .board-wall,.theme-sketchbook .art-board .board-goal { background:none; }
+.theme-sketchbook .art-board .board-robot { position:static; }
+.theme-sketchbook .art-board .robot-art { width:100%; height:100%; }
+.theme-sketchbook .palette { display:flex; gap:20px; padding:8px 5px; }
+.theme-sketchbook .palette button { flex:0 0 auto; width:84px; height:84px; aspect-ratio:1; background:#fff; border:0; border-radius:50% 46% 52% 48% / 48% 52% 46% 50%; box-shadow:0 0 0 4px var(--c),3px 5px 0 4px #0001; display:grid; place-items:center; padding:4px; }
+.theme-sketchbook .palette button:nth-child(odd) { transform:rotate(-5deg); }
+.theme-sketchbook .palette button:nth-child(even) { transform:rotate(4deg); }
+.theme-sketchbook .palette small { display:none; }
+.theme-sketchbook .palette .theme-symbol { width:52px; height:52px; }
+.theme-sketchbook .block-forward { --c:#2e86de; }
+.theme-sketchbook .block-turnLeft,.theme-sketchbook .block-turnRight { --c:#47a447; }
+.theme-sketchbook .block-repeat { --c:#e4572e; }
+.theme-sketchbook .block-tile { background:transparent; border:0; box-shadow:none; border-radius:0; }
+.theme-sketchbook .block-tile .theme-symbol { width:58px; height:58px; }
+.theme-sketchbook .block-tile small { font-size:18px; color:#a49a87; }
+.theme-sketchbook .tile-item::after { content:''; width:18px; height:20px; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 20'%3E%3Cpath d='M2 10 C9 9 16 11 22 10 M16 4 L22 10 L16 16' stroke='%23a49a87' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat; }
+.theme-sketchbook .repeat-frame { border:0; background:transparent; border-radius:0; box-shadow:none; position:relative; padding:9px 12px; }
+.theme-sketchbook .repeat-frame::before { content:''; position:absolute; inset:0; pointer-events:none; border-left:4px solid #e4572e; border-right:4px solid #e4572e; border-radius:18px; filter:url(#sketchbook-rough); }
+.theme-sketchbook .block-repeat .block-symbol { display:none; }
+.theme-sketchbook .block-repeat strong { font:32px 'Gamja Flower'; color:#e4572e; }
+.theme-sketchbook button:not(.block-tile):not(.run-button):not(.palette button) { background:#fffdf5; border:2px solid #a49a87; border-radius:45% 8% 20% 6% / 8% 20% 8% 20%; box-shadow:2px 3px #0001; }
+.theme-sketchbook .execution-controls { background:transparent; }
+.theme-sketchbook .run-button { clip-path:polygon(0 12%,88% 0,100% 50%,88% 100%,0 88%); background:#47a447; border:0; border-radius:0; font-family:'Gamja Flower'; filter:url(#sketchbook-rough); }
+.theme-sketchbook .run-button .control-symbol { display:none; }
+.theme-sketchbook .run-button small { font-size:26px; }
+.theme-sketchbook .tile-toolbar { background:#fffaf0; }
+@media(max-width:700px) {
+ .theme-sketchbook .palette { gap:15px; padding:6px; }
+ .theme-sketchbook .palette button { width:56px; height:56px; }
+ .theme-sketchbook .palette .theme-symbol { width:40px; height:40px; }
+ .theme-sketchbook .block-tile .theme-symbol { width:44px; height:44px; }
+ .theme-sketchbook .tile-item::after { width:6px; }
+ .theme-sketchbook .repeat-frame { padding:4px 7px; }
+ .theme-sketchbook .block-repeat strong { font-size:26px; }
+ .theme-sketchbook .run-button small { font-size:20px; }
+}
+.theme-sketchbook .repeat-frame::before { display:none; }
+.crayon-bracket { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; overflow:visible; }
+@media(max-width:700px) { .theme-sketchbook .workspace { --tile-size:50px; } }
+
+body:has(.theme-sketchbook) { background:#e9dfcc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.theme-sketchbook button[aria-pressed="true"] { box-shadow:0 0 0 3px #e4572e; }
+
+/* The repeat symbol is hidden only on a program tile, never the palette. */
+.theme-sketchbook .palette .block-repeat .block-symbol { display:block; }
+.theme-sketchbook .palette small { display:block; font-size:13px; line-height:16px; white-space:nowrap; }
+.theme-sketchbook .palette button { grid-template-rows:52px 16px; }
+@media(max-width:700px) {
+ .theme-sketchbook .palette { gap:14px; padding:4px; }
+ .theme-sketchbook .palette button { width:60px; height:60px; grid-template-rows:32px 16px; gap:0; transform:none; }
+ .theme-sketchbook .palette .theme-symbol { width:32px; height:32px; }
+ .theme-sketchbook .workspace .block-repeat strong { font-family:'Gamja Flower'; font-size:22px; }
+}
+
+/* Keep both rows inside the circular sticker's safe central area. */
+.theme-sketchbook .palette button { grid-template-rows:40px 16px; align-content:center; padding:0; }
+.theme-sketchbook .palette .block-symbol { line-height:0; }
+.theme-sketchbook .palette .theme-symbol { width:40px; height:40px; }
+@media(max-width:700px) {
+ .theme-sketchbook .palette button { grid-template-rows:28px 14px; }
+ .play-page.theme-sketchbook .palette small { font-size:12px; line-height:14px; }
+ .theme-sketchbook .palette .theme-symbol { width:28px; height:28px; }
+ .theme-sketchbook .palette { padding-block:0; }
+}

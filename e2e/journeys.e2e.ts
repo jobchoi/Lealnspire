@@ -13,7 +13,7 @@ test.describe('처음 온 아이', () => {
       await g.clear()
       await g.build(SOLUTIONS[s])
       const result = await g.runToEnd()
-      expect(result, `스테이지 ${s} 별 3개`).toContain('★★★')
+      expect(result, `스테이지 ${s} 별 3개`).toMatch(/별 3개|★★★/)
       if (s < 8) await g.press(g.dialog.getByRole('button', { name: '다음 스테이지', exact: true }))
       else expect(result).toContain('완주')
     }
@@ -25,10 +25,11 @@ test.describe('처음 온 아이', () => {
   test('블록·실행 버튼은 글을 몰라도 기호로 구분된다(모든 버튼에 한글 외 기호가 보임)', async ({ page }) => {
     const g = new Game(page)
     await g.fresh(); await g.start()
+    // 각 버튼에 그림(SVG) 또는 한글 외 기호가 보여야 함
     const buttons = page.locator('.palette button, .playback-controls button, .run-button')
-    const texts = await buttons.allInnerTexts()
-    expect(texts.length).toBeGreaterThan(6)
-    for (const t of texts) expect(t.replace(/[\s가-힣0-9.]/g, '').length, `기호 있음: "${t}"`).toBeGreaterThan(0)
+    const items = await buttons.evaluateAll(es => es.map(e => ({ t: (e as HTMLElement).innerText, svg: !!e.querySelector('svg') })))
+    expect(items.length).toBeGreaterThan(6)
+    for (const it of items) expect(it.svg || it.t.replace(/[\s가-힣0-9.!]/g, '').length > 0, `기호 있음: "${it.t}"`).toBe(true)
   })
 
   test('스테이지 4: 미리 들어 있는 틀린 코드를 한 블록만 고쳐 성공한다', async ({ page }) => {
@@ -47,7 +48,7 @@ test.describe('처음 온 아이', () => {
     await g.add('R')
     await g.select('3')
     await g.press(g.action(/앞으로 옮기기$|위로$/))
-    expect(await g.runToEnd()).toContain('★★★')
+    expect(await g.runToEnd()).toMatch(/별 3개|★★★/)
   })
 })
 
@@ -95,7 +96,7 @@ test.describe('실수가 많은 사용자', () => {
       if (await step.isEnabled()) await g.press(step)
     }
     await expect(g.dialog).toBeVisible()
-    await expect(g.dialog).toContainText('★')
+    await expect(g.dialog).toContainText(/별 \d개|★/)
   })
 
   test('재생 도중 새로고침해도 만든 코드가 그대로 있고 오류가 없다', async ({ page }) => {

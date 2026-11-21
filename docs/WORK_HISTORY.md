@@ -1,5 +1,14 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-21 — T13 테마 월드 3종 (구현 Codex, QC Claude)
+
+- 사용자 결정: 스케치북 1~3, 기차 마을 4~6, 게임기 7~8 [확정], 완료한 스테이지는 다른 월드로 다시 풀기. 목표는 docs/design/concepts 시안 수준
+- Codex: `src/view/theme/`(themes.ts 등록·선택, sketchbook/train/handheld Theme·CSS, Symbols.tsx SVG 기호, TrainMap.tsx 이소메트릭 맵), 월드별 목록 묶음, 월드 전환 버튼, ko.json 문구, 테스트(themes.test.tsx)
+- Claude: @fontsource 5종 설치(이유 ARCHITECTURE.md), QC 4회. 1차는 시안보다 크게 못 미쳐 시안 SVG·CSS 이식 지시(docs/design/qc/ 1차 캡처), 2차·3차는 배치 실패·반복 범위 미표시·글자 줄바꿈 등 13개·6개 항목 전달
+- Claude E2E: `e2e/layout.e2e.ts`를 세 월드 모두 검사하도록 확장(1번 완료 후 월드 전환), 짧은 버튼 글자 줄바꿈 검사 추가, 글자 잘림 검사를 버튼 scrollWidth 대신 실제 글자 위치로 변경(반복 범위 띠·기차 바퀴 같은 그림 장식이 밖으로 나오는 것은 잘림이 아님. 기존 scrollWidth 검사는 장식 3px에 걸렸음)
+- 검증(Claude 실행): `npm run verify` 통과(테스트 82개), `npm run e2e` 45개 통과·1개 건너뜀, 스테이지 1·4·7과 홈·목록을 1280×720, 375×667로 캡처해 육안 확인, 콘솔 오류 0
+- 남은 다듬기: TASKS.md T14 제안
+
 ## 2026-11-21 — T12 구조 개편: MVC·OOP, 언어 JSON, PROJECT_MAP (구현 Codex, QC Claude)
 
 - 사용자 요청: OOP·MVC, 언어 추가는 파일 추가로(JSON, XML 아님), 다른 에이전트가 문서 하나로 착수

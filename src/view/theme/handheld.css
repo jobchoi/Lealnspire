@@ -1,0 +1,105 @@
+@import '@fontsource/press-start-2p/latin-400.css';
+@import '@fontsource/do-hyeon/korean-400.css';
+.theme-handheld { font-family:'Do Hyeon',sans-serif; color:#303846; padding:16px 24px; background:linear-gradient(135deg,#e2e3db,#b6bdbb); border-radius:24px 24px 60px 24px; border:3px solid #a0a7a4; box-shadow:inset 3px 3px #f6f7ed,0 8px #7e8985; }
+.theme-handheld h1 { border-left:8px solid #d24965; padding-left:10px; }
+.theme-handheld .map-panel { background:#444d59; border-radius:15px 15px 40px 15px; border:6px solid #626c78; }
+.theme-handheld .board { background:#536b37; border:6px solid #34432d; border-radius:2px; gap:2px; }
+.theme-handheld .board-cell { background:#b3c87a; border-radius:0; color:#33482d; }
+.theme-handheld .board-wall { background:repeating-linear-gradient(0deg,#344b2c 0 3px,#647e42 3px 11px); border:2px solid #344b2c; }
+.theme-handheld .board-goal { background:#a1bd65; }
+.theme-handheld .board::after { content:''; position:absolute; inset:0; pointer-events:none; background:repeating-linear-gradient(transparent 0 3px,#23421415 3px 4px); }
+.theme-handheld .board { position:relative; }
+.theme-handheld .palette button { background:#35414b; color:#f2f1df; border:3px solid #222a33; border-radius:5px; box-shadow:0 4px #84918b; }
+.theme-handheld .palette .block-repeat { border-radius:50%; background:#a83351; }
+.theme-handheld .workspace { background:#d0d5c9; border:3px solid #778176; }
+.theme-handheld .block-tile { border:3px solid #4c5d47; border-radius:4px; box-shadow:inset 0 -5px #203b1820; }
+.theme-handheld .repeat-frame { border:3px dashed #526442; background:#b9c79e; border-radius:4px; }
+.theme-handheld .run-button { background:#bc3555; border:3px solid #862940; border-radius:50%; font-family:'Press Start 2P',sans-serif; }
+.theme-handheld .block-active { animation:pixel-blink .5s steps(2,end) infinite; }
+.cartridge-slots { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+.cartridge-slots span { width:var(--tile-size); height:var(--tile-size); border:2px dashed #849079; border-radius:4px; background:#b9c2ad50; }
+@keyframes pixel-blink { to { box-shadow:inset 0 0 0 6px #4c6538; } }
+
+.theme-handheld .palette { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.theme-handheld .palette .block-forward { clip-path:polygon(25% 0,75% 0,75% 25%,100% 25%,100% 75%,75% 75%,75% 100%,25% 100%,25% 75%,0 75%,0 25%,25% 25%); }
+.theme-handheld .palette .block-turnLeft { border-radius:18px 4px 4px 18px; }
+.theme-handheld .palette .block-turnRight { border-radius:4px 18px 18px 4px; }
+.theme-handheld .palette .block-repeat small { display:block; font-family:'Press Start 2P',sans-serif; font-size:10px; }
+/* Approved concept: beige shell, navy rubber pad and four-colour LCD. */
+.play-page.theme-handheld { background:linear-gradient(160deg,#e8e1d3,#c9bfab); color:#2b2d42; border:0; box-shadow:inset -8px -10px #0001,inset 6px 6px #fff8,0 30px 60px -30px #000; }
+.theme-handheld .map-panel { background:#56586b; border-radius:16px 16px 50px 16px; padding:18px; border:0; box-shadow:inset 0 4px 8px #0006; }
+.theme-handheld .map-panel::before { content:'●  BATTERY · CODE BOY'; display:block; color:#ff4d6d; font:9px 'Press Start 2P'; padding:0 0 14px; text-shadow:0 0 8px #ff4d6d; }
+.theme-handheld .board.art-board { display:block; background:#9bbc0f; border:3px solid #8bac0f; box-shadow:inset 0 0 30px #0f380f44; border-radius:4px; padding:8px; shape-rendering:crispEdges; image-rendering:pixelated; }
+.theme-handheld .art-board .board-wall,.theme-handheld .art-board .board-goal { background:none; }
+.theme-handheld .art-board .board-robot { position:static; }
+.theme-handheld .art-board .robot-art { width:100%; height:100%; }
+.theme-handheld .palette { display:grid; grid-template-columns:repeat(3,48px) 20px 74px; grid-template-rows:repeat(3,48px); gap:0; position:relative; width:238px; align-items:stretch; margin:8px 0; }
+.theme-handheld .palette button { width:48px; height:48px; min-width:48px; min-height:48px; background:#2b2d42; color:white; border:0; padding:0; border-radius:0; clip-path:none; box-shadow:inset 0 -5px #0007; opacity:1; }
+.theme-handheld .palette button:disabled { color:#b1b2bd; }
+.theme-handheld .palette .block-forward { grid-column:2; grid-row:1; border-radius:8px 8px 0 0; clip-path:none; }
+.theme-handheld .palette .block-turnLeft { grid-column:1; grid-row:2; border-radius:8px 0 0 8px; }
+.theme-handheld .palette .block-turnRight { grid-column:3; grid-row:2; border-radius:0 8px 8px 0; }
+.theme-handheld .palette::before { content:''; grid-column:2; grid-row:2; background:#1f2030; }
+.theme-handheld .palette::after { content:''; grid-column:2; grid-row:3; background:#1f2030; border-radius:0 0 8px 8px; box-shadow:inset 0 -5px #0007; }
+.theme-handheld .palette button.block-repeat { grid-column:5; grid-row:1 / 4; width:74px; height:74px; aspect-ratio:1; align-self:center; border-radius:50%; background:#ffb703; color:#3a2a00; box-shadow:inset 0 -6px #0005,0 6px #0002; }
+.theme-handheld .palette .block-repeat .block-symbol { display:none; }
+.theme-handheld .palette .block-repeat small { font:18px 'Press Start 2P'; display:block; }
+.theme-handheld .palette small { display:none; }
+.theme-handheld .palette .theme-symbol { width:24px; height:24px; }
+.theme-handheld .workspace { background:#3a3c4e; border:0; border-radius:10px; padding:12px; box-shadow:inset 0 4px #0005; display:flex; flex-wrap:wrap; align-content:flex-start; gap:6px; }
+.theme-handheld .workspace > .tile-list { width:100%; }
+.theme-handheld .block-tile { color:#fff; background:var(--c); border:0; border-radius:6px; box-shadow:inset 0 -5px #0004,0 0 0 2px #0003; }
+.theme-handheld .block-forward { --c:#4361ee; }.theme-handheld .block-turnLeft,.theme-handheld .block-turnRight { --c:#2a9d8f; }.theme-handheld .block-repeat { --c:#ffb703; }
+.theme-handheld .repeat-frame { border:3px dashed #ffd166; background:transparent; box-shadow:none; }
+.theme-handheld .cartridge-slots { margin:0; gap:6px; }.theme-handheld .cartridge-slots span { border:0; border-radius:6px; background:#1f2030; box-shadow:inset 0 -4px #0006; }
+.theme-handheld button:not(.block-tile):not(.palette button):not(.run-button) { background:#8d8677; border:0; color:#fff; border-radius:20px; box-shadow:inset 0 -3px #0003; }
+.theme-handheld button.run-button { width:74px; height:74px; aspect-ratio:1; justify-self:center; border:0; border-radius:50%; background:#d1345b; color:#fff; box-shadow:inset 0 -6px #0005,0 6px #0002; }
+.theme-handheld .run-button .control-symbol { display:none; }.theme-handheld .run-button small { font:18px 'Press Start 2P'; }
+.theme-handheld .execution-controls { background:transparent; }
+.theme-handheld .editor::after { content:''; height:26px; width:88px; align-self:flex-end; flex-shrink:0; background:repeating-linear-gradient(90deg,transparent 0 8px,#0002 8px 16px); border-radius:5px; transform:rotate(-18deg); }
+.theme-handheld .tile-toolbar { background:#c9bfab; }
+@media(max-width:700px) {
+ .theme-handheld .palette { grid-template-columns:repeat(3,44px) 20px 64px; grid-template-rows:repeat(3,44px); width:216px; margin:0; }
+ .theme-handheld .palette button { width:44px; height:44px; min-width:44px; min-height:44px; }
+ .theme-handheld .palette button.block-repeat { width:64px; height:64px; }
+ .theme-handheld .workspace { padding:5px; }
+ .theme-handheld .has-selection .workspace { padding-top:58px; }
+ .theme-handheld .editor::after { display:none; }
+ .theme-handheld button.run-button { width:58px; height:58px; min-height:58px; }
+ .theme-handheld .execution-controls { gap:2px; }
+ .theme-handheld .map-panel::before { display:none; }
+}
+.theme-handheld .has-selection .workspace { padding-top:58px; }
+.lcd-hud { display:flex; justify-content:space-between; align-items:center; color:#0f380f; background:#9bbc0f; font:9px 'Press Start 2P'; padding:8px; }
+.lcd-hud .theme-symbol { width:16px; height:16px; fill:#0f380f; }
+@media(max-width:700px) { .lcd-hud { display:none; }.play-page.theme-handheld .map-panel .art-board { height:110px; } }
+@media(max-width:700px) and (max-height:590px) { .play-page.theme-handheld .map-panel .art-board { height:75px; } }
+/* Ten cartridge positions include recursive blocks in their editing order. */
+.theme-handheld .workspace { display:grid; grid-template-columns:repeat(5,var(--tile-size)); grid-auto-rows:var(--tile-size); gap:8px; }
+.theme-handheld .workspace .tile-list,.theme-handheld .workspace .tile-item,.theme-handheld .workspace .repeat-frame,.theme-handheld .cartridge-slots { display:contents; }
+.theme-handheld .workspace .block-repeat { outline:3px dashed #ffd166; outline-offset:-3px; color:#3a2a00; }
+.theme-handheld .workspace > p { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+.theme-handheld .insertion-marker,.theme-handheld .empty-repeat { display:none; }
+@media(max-width:700px) { .theme-handheld .workspace { --tile-size:50px; gap:7px; } }
+
+body:has(.theme-handheld) { background:repeating-linear-gradient(45deg,#2b2d42 0 14px,#32354d 14px 28px); }
+.theme-handheld button[aria-pressed="true"] { outline:3px solid #ffd166; outline-offset:-3px; }
+.theme-handheld .palette .block-symbol { line-height:0; }
+
+.theme-handheld .block-repeat .block-symbol { display:none; }
+.theme-handheld .block-repeat strong { white-space:nowrap; font:18px/24px 'Do Hyeon',sans-serif; }
+@media(min-width:701px) {
+ .theme-handheld .map-panel { padding:12px; }
+ .theme-handheld .editor::after { height:12px; }
+}
+@media(max-width:700px) {
+ /* Two pad rows preserve the cross and release 44px to the cartridge. */
+ .theme-handheld .palette { grid-template-rows:44px 44px; height:88px; }
+ .theme-handheld .palette::after { display:none; }
+ .theme-handheld .palette button.block-repeat { grid-row:1 / 3; }
+ .theme-handheld .palette .block-symbol .theme-symbol { shape-rendering:geometricPrecision; }
+}
+@media(min-width:701px) {
+ /* 24px bezel + 23px brand + 32px HUD + 160px LCD + 144px controls = 383px. */
+ .play-page.theme-handheld .map-panel .art-board { max-height:160px; }
+}

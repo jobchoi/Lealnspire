@@ -1,3 +1,4 @@
+import { Symbol } from '../theme/Symbols'
 import { defaultTheme as theme } from '../theme/defaultTheme'
 import { useEffect, useRef } from 'react'
 import type { RunResult } from '../../model/types'
@@ -25,14 +26,14 @@ export function ResultModal({ result, stars, onRetry, onClose, onNext, lastStage
         }
       }
     }}>
-      <div className="result-symbol" aria-hidden="true">{result === 'success' ? '★'.repeat(stars) : result === 'collision' ? '💥' : '🤔'}</div>
+      <div className="result-symbol" aria-hidden="true">{result === 'success' ? Array.from({ length: stars }, (_, i) => <Symbol key={i} name="goal" />) : <Symbol name="hint" />}</div>
       <h2 id="result-title">{result === 'success' ? t('success') : t(`failures.${result}`)}</h2>
       {result === 'success' && <p aria-label={t('stars', { count: stars })}>{t('stars', { count: stars })}</p>}
       {result === 'success' && lastStage && <p>{t('congratulations')}</p>}
       <div className="playback-controls">
-        {result === 'success' && onNext && <button type="button" onClick={onNext} aria-label={lastStage ? theme.buttonLabel('toList') : theme.buttonLabel('nextStage')} title={lastStage ? theme.buttonLabel('toList') : theme.buttonLabel('nextStage')}><span className="control-symbol" aria-hidden="true">{lastStage ? t('icons.toList') : t('icons.nextStage')}</span><small>{lastStage ? theme.buttonLabel('toList') : theme.buttonLabel('nextStage')}</small></button>}
-        <button type="button" onClick={onRetry} aria-label={theme.buttonLabel('retry')} title={theme.buttonLabel('retry')}><span className="control-symbol" aria-hidden="true">{t('icons.retry')}</span><small>{theme.buttonLabel('retry')}</small></button>
-        <button type="button" onClick={onClose} aria-label={theme.buttonLabel('close')} title={theme.buttonLabel('close')}><span className="control-symbol" aria-hidden="true">{t('icons.close')}</span><small>{theme.buttonLabel('close')}</small></button>
+        {result === 'success' && onNext && <button type="button" onClick={onNext} aria-label={lastStage ? theme.buttonLabel('toList') : theme.buttonLabel('nextStage')} title={lastStage ? theme.buttonLabel('toList') : theme.buttonLabel('nextStage')}><span className="control-symbol" aria-hidden="true"><Symbol name={lastStage ? "stageList" : "nextStage"} /></span><small>{lastStage ? theme.buttonLabel('toList') : theme.buttonLabel('nextStage')}</small></button>}
+        <button type="button" onClick={onRetry} aria-label={theme.buttonLabel('retry')} title={theme.buttonLabel('retry')}><span className="control-symbol" aria-hidden="true"><Symbol name="reset" /></span><small>{theme.buttonLabel('retry')}</small></button>
+        <button type="button" onClick={onClose} aria-label={theme.buttonLabel('close')} title={theme.buttonLabel('close')}><span className="control-symbol" aria-hidden="true"><Symbol name="close" /></span><small>{theme.buttonLabel('close')}</small></button>
       </div>
     </div>
   </div>

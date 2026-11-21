@@ -33,7 +33,13 @@ src/
     pages/                 # 첫 화면, 스테이지 목록, 게임
     components/            # 맵, 편집기, 블록 타일, 결과 모달
     hooks/useController.ts # useSyncExternalStore 어댑터
-    theme/defaultTheme.ts  # 기본 테마 인터페이스·구현
+    theme/defaultTheme.ts  # 공통 Theme 인터페이스·기존 단독 렌더링 기본값
+    theme/themes.ts        # 월드 등록·완료 후 교체 규칙
+    theme/{sketchbook,train,handheld}.{ts,css} # 월드 표현·로컬 글꼴
+    theme/Symbols.tsx      # SVG 아이콘과 방향별 캐릭터
+    theme/TrainMap.tsx     # SVG 이소메트릭 섬
+    theme/isometric.ts     # 좌표 변환 순수 함수
+    theme/themes.test.tsx # 선택 규칙·좌표·접근성 이름 회귀
   i18n/
     I18n.ts                # t(key, params), 자동 locale 탐색, ko fallback
     locales/ko.json        # 기준 문구와 스테이지 문구
@@ -52,7 +58,7 @@ src/
 - `AppController`: 화면 전환·잠금·이어하기·다음 이동, 게임 생성·해제. `GameController`: 코드 저장, 실행·프레임·속도·결과·성공 저장. `EditorController`: 블록 선택·추가 대상·상한·편집. 타이머는 GameController에만 있고 Scheduler 주입으로 테스트합니다.
 - `Observable`은 상태가 변경될 때만 snapshot 객체를 교체합니다. React View는 `useController`로 구독합니다. 포커스, 모달 키보드 처리, 작업 공간 스크롤은 View 책임입니다.
 - 언어 추가: `src/i18n/locales/<언어>.json` 파일 하나 추가. Vite glob으로 자동 등록하며 `?lang=<언어>`로 개발 확인합니다. UI 선택기는 없습니다. 점 구분 키와 `{count}` 등의 치환을 사용하며 해당 언어 → ko → 키 자체 순으로 대체합니다. 키 테스트는 모든 locale 키가 ko의 부분집합인지 확인합니다.
-- `Stage.world`는 1~3 sketchbook, 4~6 train, 7~8 handheld입니다. 현재는 모든 스테이지가 기본 테마 하나를 씁니다. T13은 View 테마 선택과 표현만 확장하며 Model/Controller의 블록 타입과 실행 규칙을 바꾸지 않습니다.
+- `Stage.world`는 1~3 sketchbook, 4~6 train, 7~8 handheld입니다. View의 `themes.ts`에서 월드별 Theme를 선택합니다. 완료한 스테이지에서만 View의 임시 선택 상태로 다른 월드를 적용하며 저장 형식은 버전 1을 유지합니다. T13은 Model/Controller의 블록 타입과 실행 규칙을 바꾸지 않습니다.
 - 기본 테마는 블록 종류·기호·이름·색 클래스·반복 표현·버튼 라벨·방향 기호를 정의합니다. CSS 클래스와 접근성 이름은 E2E 계약입니다.
 
 ## 4. 데이터 구조 초안 [제안]
@@ -120,3 +126,10 @@ type Frame = { pos: { x: number; y: number }; dir: Dir; activeBlockId: string | 
 ## E2E 테스트 의존성 (2026-11-21)
 
 - `@playwright/test` 1.64.1(devDependency, 버전 고정): 사용자 시나리오 E2E(`npm run e2e`, `e2e/`). 이유: 사용자 요청으로 실제 사용자 수준 검증 필요. CI에는 아직 넣지 않음(브라우저 설치 시간). 타입 검사는 `tsconfig.e2e.json`
+
+## T13 월드 표현
+
+- Theme의 블록 기호는 ReactNode이며 접근성 이름은 공통 리소스, 보이는 이름·반복·실행 문구는 월드 리소스로 분리합니다. 팔레트·타일·맵에 같은 Theme를 전달합니다. Model/Controller는 변경하지 않습니다.
+- 기차 지도는 순수 `isometric` 좌표 변환을 사용하는 SVG입니다. 스케치북은 SVG 거친 선 필터, 게임기는 픽셀 로봇과 CSS 주사선을 사용합니다.
+- 의존성 추가(T13, Claude가 설치): `@fontsource/{gaegu, gamja-flower, do-hyeon, black-han-sans, press-start-2p}` 5.3.0. 이유: 월드별 손글씨·간판·도트 글꼴을 어느 기기에서나 같게 보이도록 외부 CDN 없이 자체 포함(오프라인·개인정보 요청 없음). 로컬 CSS로 import하며 한국어 subset과 Press Start 2P latin subset만 사용합니다.
+- 전체 화면 장식은 모바일에서 패딩·테두리를 줄이고 기존 고정 맵/하단 실행 행을 유지합니다. 애니메이션은 전역 prefers-reduced-motion 규칙을 따릅니다.

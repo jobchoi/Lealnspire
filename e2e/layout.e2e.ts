@@ -1,15 +1,32 @@
+import type { Page } from '@playwright/test'
 import { expect, Game, test } from './helpers'
 
 /** 화면 배치 점검: 스크린샷은 e2e-results/screens/에 저장해 사람이(또는 Claude가) 직접 봅니다. */
-test.describe('@layout 화면 배치', () => {
+const worldSwitch = { sketchbook: '크레용 스케치북 월드로 바꾸기', train: '기차 마을 월드로 바꾸기', handheld: '나의 게임기 월드로 바꾸기' } as const
+type World = keyof typeof worldSwitch
+
+/** 1번을 깬 상태로 시작해 월드를 바꿉니다(완료한 스테이지는 다른 월드로 다시 풀 수 있음). */
+async function startIn(page: Page, world: World) {
+  const g = new Game(page)
+  await g.fresh()
+  await page.evaluate(() => localStorage.setItem('lealnspire.progress', JSON.stringify({ version: 1, stages: { 1: { completed: true, bestStars: 3, lastProgram: [] } } })))
+  await page.reload()
+  await page.locator('.stage-card').first().waitFor({ state: 'detached' }).catch(() => {})
+  await g.press(g.button('스테이지 목록'))
+  await g.press(page.locator('.stage-card').first())
+  await g.press(page.getByRole('button', { name: worldSwitch[world] }))
+  await expect(page.locator(`.theme-${world}`)).toBeVisible()
+  return g
+}
+
+for (const world of Object.keys(worldSwitch) as World[]) test.describe(`@layout ${world} 월드 배치`, () => {
   test('블록 10개(반복 포함)를 채워도 맵·팔레트·실행 버튼이 스크롤 없이 보이고, 겹치거나 잘리지 않는다', async ({ page }, info) => {
-    const g = new Game(page)
-    await g.fresh(); await g.start()
+    const g = await startIn(page, world)
     await g.build('F L F')
     await g.build('3[F F R]')
     await g.build('2[L F]')
     expect(await g.blockCount()).toBe(10)
-    await page.screenshot({ path: `e2e-results/screens/${info.project.name}-full.png` })
+    await page.screenshot({ path: `e2e-results/screens/${info.project.name}-${world}-full.png` })
 
     expect(await page.evaluate(() => window.scrollY), '페이지 스크롤 없음').toBe(0)
     await g.noHorizontalScroll()
@@ -43,20 +60,36 @@ test.describe('@layout 화면 배치', () => {
   })
 
   test('누를 수 있는 모든 버튼은 최소 44×44px이고, 버튼 글자가 잘리지 않는다', async ({ page }) => {
-    const g = new Game(page)
-    await g.fresh(); await g.start()
+    const g = await startIn(page, world)
     await g.build('F 2[L]')
     await g.select('2')
     const bad = await page.locator('button:visible').evaluateAll(es => es.flatMap(e => {
       const r = e.getBoundingClientRect(); const label = e.getAttribute('aria-label') ?? e.textContent?.trim() ?? ''
       const issues: string[] = []
       if (r.width < 44 || r.height < 44) issues.push(`${label}: ${Math.round(r.width)}x${Math.round(r.height)}`)
-      if (e.scrollWidth > e.clientWidth + 1) issues.push(`${label}: 글자 잘림`)
+      // 버튼 안 모든 글자(라벨, 순서 번호, 반복 횟수)의 실제 위치가 버튼 안에 있음.
+      // 반복 범위 띠·바퀴 같은 그림 장식이 밖으로 나오는 것은 글자 잘림이 아니므로 글자만 잰다.
+      const walker = document.createTreeWalker(e, NodeFilter.SHOW_TEXT)
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        if (!n.textContent?.trim()) continue
+        const range = document.createRange(); range.selectNodeContents(n)
+        for (const t of range.getClientRects()) {
+          if (t.width && (t.top < r.top - 1 || t.bottom > r.bottom + 1 || t.left < r.left - 1 || t.right > r.right + 1)) { issues.push(`${label}: 글자 잘림(${n.textContent.trim()})`); break }
+        }
+      }
+      // 짧은 버튼 글자(예: 해 보기!)가 한 글자씩 세로로 쪼개지지 않음
+      for (const small of e.querySelectorAll('small')) {
+        const lh = parseFloat(getComputedStyle(small).lineHeight) || parseFloat(getComputedStyle(small).fontSize) * 1.3
+        if ((small.textContent ?? '').trim().length <= 6 && small.getBoundingClientRect().height > lh * 1.6) issues.push(`${label}: 글자 줄바꿈`)
+      }
       return issues
     }))
     expect(bad, '작은 버튼·잘린 글자').toEqual([])
   })
 
+})
+
+test.describe('@layout 공통', () => {
   test('블록 타일은 정사각형이고 옆으로 이어진다', async ({ page }) => {
     const g = new Game(page)
     await g.fresh(); await g.start()
