@@ -10,7 +10,7 @@ export type Scheduler = { set(callback: () => void, delay: number): unknown; cle
 const scheduler: Scheduler = { set: (callback, delay) => setTimeout(callback, delay), clear: handle => clearTimeout(handle as ReturnType<typeof setTimeout>) }
 type State = { program: Program; execution: RunResult | null; index: number; playing: boolean; dismissed: boolean; speed: keyof typeof playbackSpeeds; hintStep: 0 | 1 | 2; failure: ReturnType<typeof failurePoint> }
 export class GameController extends Observable<State> {
-  readonly editor = new EditorController()
+  readonly editor = new EditorController(() => { if (this.finished) this.reset() })
   readonly stage: Stage
   readonly repository: ProgressRepository
   private clock: Scheduler
@@ -22,7 +22,7 @@ export class GameController extends Observable<State> {
   get failure() { return this.state.failure ?? (this.finished && this.state.execution ? failurePoint(this.state.execution) : null) }
   get frame() { return this.state.execution?.frames[this.state.index] }
   get result() { return this.state.execution?.result }
-  get locked() { return this.state.execution !== null }
+  get locked() { return this.state.execution !== null && !this.finished }
   get finished() { return isLastFrame(this.state.index, this.state.execution?.frames.length ?? 0) }
   get showResult() { return this.finished && !this.state.dismissed }
   get stars() { return this.result ? Score.score(this.result, ProgramModel.countBlocks(this.state.program), this.stage.starBlocks) : 0 }
@@ -42,7 +42,7 @@ export class GameController extends Observable<State> {
   edit = (program: Program) => {
     if (this.locked) return
     this.repository.saveProgram(this.stage.id, program)
-    this.publish({ ...this.state, program: structuredClone(program), failure: null })
+    this.publish({ ...this.state, program: structuredClone(program), execution: null, index: 0, playing: false, dismissed: false, failure: null })
   }
   play = () => {
     if (!this.state.program.length || this.state.playing) return

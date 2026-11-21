@@ -6,7 +6,16 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   locked = false
   maxBlocks?: number
   onChange: (program: Program) => void = () => {}
-  constructor() { super({ selectedId: null, targetId: null, addedId: null }) }
+  private beforeEdit: () => void
+  constructor(beforeEdit: () => void = () => {}) {
+    super({ selectedId: null, targetId: null, addedId: null })
+    this.beforeEdit = beforeEdit
+  }
+  private prepareEdit() {
+    if (this.locked) return false
+    this.beforeEdit()
+    return true
+  }
   configure(program: Program, onChange: (program: Program) => void, locked: boolean, maxBlocks?: number) {
     this.program = program; this.onChange = onChange; this.locked = locked; this.maxBlocks = maxBlocks
   }
@@ -26,7 +35,7 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
     this.onChange(next)
   }
   select = (id: string) => {
-    if (this.locked) return
+    if (!this.prepareEdit()) return
     const selectedId = this.state.selectedId === id ? null : id
     this.update({ ...this.state, selectedId, targetId: selectedId ? this.state.targetId : null })
   }
@@ -36,15 +45,15 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
     this.update({ selectedId, targetId: null, addedId: selectedId })
   }
   acknowledgeAdded = () => { if (this.state.addedId) this.update({ ...this.state, addedId: null }) }
-  clear = () => { if (!this.locked) this.update({ ...this.state, selectedId: null, targetId: null }) }
-  toggleTarget = () => { if (!this.locked && this.selectedBlock?.type === 'repeat') this.update({ ...this.state, targetId: this.state.targetId === this.state.selectedId ? null : this.state.selectedId }) }
+  clear = () => { if (this.prepareEdit()) this.update({ ...this.state, selectedId: null, targetId: null }) }
+  toggleTarget = () => { if (this.selectedBlock?.type === 'repeat' && this.prepareEdit()) this.update({ ...this.state, targetId: this.state.targetId === this.state.selectedId ? null : this.state.selectedId }) }
   add = (type: Block['type']) => {
-    if (this.locked || this.atLimit) return
+    if (this.locked || this.atLimit || !this.prepareEdit()) return
     const block = new ProgramModel(this.program).create(type)
     this.update({ ...this.state, addedId: block.id })
     this.change(new ProgramModel(this.program).add(block, this.targetPath ?? []).toBlocks())
   }
-  move = (direction: 'up' | 'down') => { if (this.selectedPath && !this.locked) this.change(new ProgramModel(this.program).move(this.selectedPath, direction).toBlocks()) }
-  remove = () => { if (this.selectedPath && !this.locked) this.change(new ProgramModel(this.program).remove(this.selectedPath).toBlocks()) }
-  setCount = (count: number) => { if (this.selectedPath && !this.locked) this.change(new ProgramModel(this.program).setCount(this.selectedPath, count).toBlocks()) }
+  move = (direction: 'up' | 'down') => { if (this.selectedPath && this.prepareEdit()) this.change(new ProgramModel(this.program).move(this.selectedPath, direction).toBlocks()) }
+  remove = () => { if (this.selectedPath && this.prepareEdit()) this.change(new ProgramModel(this.program).remove(this.selectedPath).toBlocks()) }
+  setCount = (count: number) => { if (this.selectedPath && this.prepareEdit()) this.change(new ProgramModel(this.program).setCount(this.selectedPath, count).toBlocks()) }
 }

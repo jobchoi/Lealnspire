@@ -40,3 +40,18 @@ test.describe('실패 지점에서 고쳐 보기', () => {
     expect(await g.runToEnd()).toMatch(/성공|별 \d개|★/)
   })
 })
+
+/** T22: 결과 창을 닫은 뒤 "처음으로"를 누르지 않아도 바로 고칠 수 있다 */
+test('실패 → 닫기 → 바로 블록을 더 넣어(자동으로 처음으로) 성공', async ({ page }) => {
+  const g = new Game(page)
+  await g.fresh(); await g.start()
+  await g.build('F')
+  await g.speed('빠르게')
+  expect(await g.runToEnd()).toContain('도달하지')
+  await g.press(g.dialog.getByRole('button', { name: '닫기' }))
+  await expect(g.palette('F'), '닫은 뒤에도 팔레트가 눌림').toBeEnabled()
+  await g.add('F')
+  expect(await g.blockCount(), '한 번 눌러 바로 추가됨').toBe(2)
+  await expect(page.locator('.failure-badge'), '실패 표시는 사라짐').toHaveCount(0)
+  expect(await g.runToEnd()).toMatch(/성공|별 \d개|★/)
+})
