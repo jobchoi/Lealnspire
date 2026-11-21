@@ -170,8 +170,8 @@ button small { display: block; font-size: .75rem; }
 .world-preview p { margin-bottom:0; }
 .world-heading { display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:12px; margin-top:24px; }
 .world-sketchbook { background:#fff3d6; color:#68513b; }
-.world-train { background:#d9edc3; color:#345c48; }
-.world-handheld { background:#d9decf; color:#344d36; }
+.world-train { background:#d9edc3; color:#264332; }
+.world-handheld { background:#d9decf; color:#2b4230; }
 @media(max-width:700px) {
  .play-page.theme-sketchbook,.play-page.theme-train,.play-page.theme-handheld { padding:4px; border-width:0; box-shadow:none; border-radius:8px; }
  .play-page.theme-sketchbook { border-left:3px dotted #899098; }
@@ -301,10 +301,10 @@ button small { display: block; font-size: .75rem; }
  .play-page .workspace .block-repeat:has(.empty-repeat-label) strong { transform:translateY(-5px); }
 }
 
-/* Disabled controls retain legible ink; desaturation supplies the muted state. */
+/* Locked commands retain their identifying colours and icon contrast. */
 .play-page .palette button:disabled,
 .play-page .block-tile:disabled,
-.play-page button.run-button:disabled { opacity:1; filter:grayscale(1); }
+.play-page button.run-button:disabled { opacity:1; filter:none; cursor:not-allowed; }
 
 /* Each enclosing repeat owns a separate lane, including through nested frames. */
 .theme-handheld .repeat-frame .repeat-ribbon { inset:auto -3px calc(-3px + var(--ribbon-depth) * 3px); height:0; border:0; border-bottom:2px solid var(--ribbon-ink); box-shadow:none; }
@@ -356,7 +356,7 @@ button small { display: block; font-size: .75rem; }
 @media(max-width:700px) {
  .play-page .stage-hint { padding:2px 4px; gap:4px; }
  .play-page .stage-hint p { font-size:13px; line-height:18px; }
- .play-page .stage-hint button:first-child:not(:last-child) { width:44px; white-space:normal; }
+ .play-page .stage-hint button:first-child:not(:last-child) { width:auto; white-space:nowrap; }
 }
 
 .home-page { position: relative; }

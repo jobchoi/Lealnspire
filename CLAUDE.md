@@ -14,6 +14,7 @@ Claude Code는 세션마다 이 파일을 자동으로 읽습니다.
 | [AGENTS.md](AGENTS.md) | Codex(GPT) 등 다른 AI용 안내. 규칙은 이 파일을 따르게 함 |
 | [docs/handoff/](docs/handoff/) | 다른 AI에게 주는 작업 지시서 |
 | [docs/TASKS.md](docs/TASKS.md) | 작업 목록(우선순위, 완료 조건, 상태)의 단일 출처 |
+| [docs/GUIDE.md](docs/GUIDE.md) | 교사·보호자 안내(실제 동작 기준) |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | 2단계 로드맵(Claude+GPT 교차 기획, 동향 근거, 채택·보류 이유) |
 | [docs/WORK_HISTORY.md](docs/WORK_HISTORY.md) | 완료한 작업과 결정의 기록(위에 추가) |
 | [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md) | 대상 사용자, 게임 루프, 실행 규칙, MVP 범위 |

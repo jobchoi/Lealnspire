@@ -95,7 +95,7 @@ body:has(.theme-sketchbook) { background:#e9dfcc url("data:image/svg+xml,%3Csvg 
 .play-page.theme-sketchbook .empty-repeat,
 .play-page.theme-sketchbook .workspace .empty-repeat-label { font-size:13px; line-height:16px; font-weight:700; }
 .play-page.theme-sketchbook .block-budget p { font-size:14px; line-height:20px; }
-.play-page.theme-sketchbook .palette button:disabled { color:#3b3a36; background:#fff; opacity:1; filter:grayscale(1); }
+.play-page.theme-sketchbook .palette button:disabled { color:#3b3a36; background:#fff; opacity:1; filter:none; }
 
 .play-page.theme-sketchbook .run-button small { font-size:26px; line-height:30px; }
 @media(max-width:700px) {

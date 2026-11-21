@@ -94,7 +94,7 @@
   "tile": "{order}번 {name}",
   "loopIteration": "{count}번 중 {iteration}번째",
   "repeatTile": "{order}번 반복 {count}번",
-  "board": "{title} 지도, 로봇 {direction} 방향",
+  "board": "{title} 지도, 로봇은 {row}번째 줄 {column}번째 칸에서 {direction}을 봐요. 별은 {goalRow}번째 줄 {goalColumn}번째 칸.",
   "directions": {
     "N": "북쪽",
     "E": "동쪽",

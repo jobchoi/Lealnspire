@@ -10,10 +10,13 @@ type BoardProps = { theme?: Theme; stage: Stage; position?: Position; direction?
 
 export function Board({ theme = defaultTheme, stage, position, direction = stage.startDir, bump = false, failurePosition, hintHighlight }: BoardProps) {
   const grid = boardCells(stage, position, hintHighlight)
+  const robotIndex = grid.cells.findIndex(cell => cell.occupied)
+  const goalIndex = grid.cells.findIndex(cell => cell.goal)
+  const label = t('board', { title: t(stage.title), row: Math.floor(robotIndex / grid.width) + 1, column: robotIndex % grid.width + 1, goalRow: Math.floor(goalIndex / grid.width) + 1, goalColumn: goalIndex % grid.width + 1, direction: t(`directions.${direction}`) })
   if (theme.world === 'train') return <TrainMap hintHighlight={hintHighlight} stage={stage} position={position} direction={direction} bump={bump} failurePosition={failurePosition} />
   if (theme.world) {
     const pixel = theme.world === 'handheld', size = pixel ? 16 : 80, width = grid.width * size, height = stage.grid.length * size
-    return <svg className={`board art-board${bump ? ' board-bump' : ''}`} role="img" aria-label={t('board', { title: t(stage.title), direction: t(`directions.${direction}`) })} viewBox={`-8 -8 ${width+16} ${height+16}`}>
+    return <svg className={`board art-board${bump ? ' board-bump' : ''}`} role="img" aria-label={label} viewBox={`-8 -8 ${width+16} ${height+16}`}>
       <defs><pattern id="lcd-scan" width="3" height="3" patternUnits="userSpaceOnUse"><path d="M0 2h3" stroke="#0f380f" strokeOpacity=".12" strokeWidth="1"/></pattern><pattern id="crayon-wall" width="80" height="80" patternUnits="userSpaceOnUse"><path d="M6 12l60 60M6 42l32 32M32 6l42 42" stroke="#8d7b68" strokeWidth="5" opacity=".7" filter="url(#sketchbook-rough)"/></pattern><pattern id="pixel-wall" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#306230"/><path d="M0 7h16M0 15h16M7 0v7M12 8v7" stroke="#0f380f" strokeWidth="1"/></pattern></defs>
       <rect width={width} height={height} fill={pixel ? '#9bbc0f' : '#fffaf0'} stroke={pixel ? '#8bac0f' : '#3b3a36'} strokeWidth={pixel ? 1 : 3} filter={pixel ? undefined : 'url(#sketchbook-rough)'}/>
       {grid.cells.map(({key,wall,goal,occupied,hint},i)=><g key={key} transform={`translate(${i%grid.width*size} ${Math.floor(i/grid.width)*size})`}>
@@ -28,7 +31,7 @@ export function Board({ theme = defaultTheme, stage, position, direction = stage
     </svg>
   }
   return (
-    <div className={`board${bump ? ' board-bump' : ''}`} role="img" aria-label={t('board', { title: t(stage.title), direction: t(`directions.${direction}`) })} style={{ gridTemplateColumns: `repeat(${grid.width}, 1fr)` }}>
+    <div className={`board${bump ? ' board-bump' : ''}`} role="img" aria-label={label} style={{ gridTemplateColumns: `repeat(${grid.width}, 1fr)` }}>
       {grid.cells.map(({ key, wall, goal, occupied, hint }) => {
         return <div data-hint-cell={hint ? key : undefined} className={`board-cell${hint ? ' board-hint' : ''}${wall ? ' board-wall' : ''}${goal ? ' board-goal' : ''}`} key={key}>
           {key === [failurePosition?.x, failurePosition?.y].join(',') && <span className="board-failure" role="img" aria-label={t('failureCell')}>!</span>}

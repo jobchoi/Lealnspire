@@ -11,7 +11,7 @@ describe('지도', () => {
     const html = renderToString(<Board stage={stages[1]} position={{ x: 2, y: 1 }} direction="N" />)
     expect(html).toContain('board-wall')
     expect(html).toContain('board-goal')
-    expect(html).toContain('로봇 북쪽 방향')
+    expect(html).toContain('로봇은 2번째 줄 3번째 칸에서 북쪽을 봐요.')
     expect(html).toContain('▲')
     expect(html).toContain('★')
   })
@@ -34,5 +34,15 @@ it('marks the failure cell and nested command in each world, independently of ro
     expect(tiles).toContain(t('failureBlock'))
     expect(tiles).not.toContain('block-active')
     expect(renderToString(<Board theme={theme} stage={stages[0]} />)).not.toContain('board-failure')
+  }
+})
+
+it('describes initial and moving robot coordinates and the goal in every world', () => {
+  for (const world of ['sketchbook', 'train', 'handheld'] as const) {
+    const theme = selectTheme(world, false)
+    const initial = renderToString(<Board theme={theme} stage={stages[0]} />)
+    expect(initial).toContain('로봇은 1번째 줄 1번째 칸에서 동쪽을 봐요. 별은 1번째 줄 3번째 칸.')
+    const moved = renderToString(<Board theme={theme} stage={stages[0]} position={{ x: 1, y: 0 }} direction="W" />)
+    expect(moved).toContain('로봇은 1번째 줄 2번째 칸에서 서쪽을 봐요. 별은 1번째 줄 3번째 칸.')
   }
 })

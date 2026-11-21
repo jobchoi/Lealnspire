@@ -28,7 +28,7 @@
 /* Approved concept: beige shell, navy rubber pad and four-colour LCD. */
 .play-page.theme-handheld { background:linear-gradient(160deg,#e8e1d3,#c9bfab); color:#2b2d42; border:0; box-shadow:inset -8px -10px #0001,inset 6px 6px #fff8,0 30px 60px -30px #000; }
 .theme-handheld .map-panel { background:#56586b; border-radius:16px 16px 50px 16px; padding:18px; border:0; box-shadow:inset 0 4px 8px #0006; }
-.theme-handheld .map-panel::before { content:'●  BATTERY · CODE BOY'; display:block; color:#ff4d6d; font:9px 'Press Start 2P'; padding:0 0 14px; text-shadow:0 0 8px #ff4d6d; }
+.theme-handheld .map-panel::before { content:'●  BATTERY · CODE BOY'; display:block; color:#ffd1da; font:9px 'Press Start 2P'; padding:0 0 14px; text-shadow:0 0 8px #ff4d6d; }
 .theme-handheld .board.art-board { display:block; background:#9bbc0f; border:3px solid #8bac0f; box-shadow:inset 0 0 30px #0f380f44; border-radius:4px; padding:8px; shape-rendering:crispEdges; image-rendering:pixelated; }
 .theme-handheld .art-board .board-wall,.theme-handheld .art-board .board-goal { background:none; }
 .theme-handheld .art-board .board-robot { position:static; }
@@ -52,7 +52,7 @@
 .theme-handheld .block-forward { --c:#4361ee; }.theme-handheld .block-turnLeft,.theme-handheld .block-turnRight { --c:#19786d; }.theme-handheld .block-repeat { --c:#ffb703; }
 .theme-handheld .repeat-frame { border:3px dashed #ffd166; background:transparent; box-shadow:none; }
 .theme-handheld .cartridge-slots { margin:0; gap:6px; }.theme-handheld .cartridge-slots span { border:0; border-radius:6px; background:#1f2030; box-shadow:inset 0 -4px #0006; }
-.theme-handheld button:not(.block-tile):not(.palette button):not(.run-button) { background:#8d8677; border:0; color:#fff; border-radius:20px; box-shadow:inset 0 -3px #0003; }
+.theme-handheld button:not(.block-tile):not(.palette button):not(.run-button) { background:#625d53; border:0; color:#fff; border-radius:20px; box-shadow:inset 0 -3px #0003; }
 .theme-handheld button.run-button { width:74px; height:74px; aspect-ratio:1; justify-self:center; border:0; border-radius:50%; background:#d1345b; color:#fff; box-shadow:inset 0 -6px #0005,0 6px #0002; }
 .theme-handheld .run-button .control-symbol { display:none; }.theme-handheld .run-button small { font:18px 'Press Start 2P'; }
 .theme-handheld .execution-controls { background:transparent; }
