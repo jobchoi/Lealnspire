@@ -3,7 +3,7 @@ import { stages } from './stages'
 
 export type StageProgress = { completed: boolean; bestStars: number; lastProgram: Program }
 export type Progress = { version: 1; stages: Record<string, StageProgress> }
-export type ProgressStorage = { getItem(key: string): string | null; setItem(key: string, value: string): void }
+export type ProgressStorage = { getItem(key: string): string | null; setItem(key: string, value: string): void; removeItem?(key: string): void }
 export const progressKey = 'lealnspire.progress'
 const empty = (): Progress => ({ version: 1, stages: {} })
 const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T
@@ -47,6 +47,7 @@ export function isUnlocked(progress: Progress, stageIndex: number): boolean {
 }
 
 function makeStore(storage?: ProgressStorage) {
+  const deletionStorage = storage
   let progress = empty()
   try {
     progress = parseProgress(storage?.getItem(progressKey) ?? null)
@@ -61,6 +62,18 @@ function makeStore(storage?: ProgressStorage) {
     }
   }
   return {
+    get persistent() { return storage !== undefined },
+    clear() {
+      progress = empty()
+      try {
+        if (!deletionStorage?.removeItem) return false
+        deletionStorage.removeItem(progressKey)
+        return storage !== undefined
+      } catch {
+        storage = undefined
+        return false
+      }
+    },
     getProgress: (): Progress => clone(progress),
     getProgram: (stage: Stage): Program => clone(progress.stages[stage.id]?.lastProgram ?? stage.initialProgram ?? []),
     saveProgram(stageId: string, program: Program) {
@@ -84,6 +97,8 @@ function makeStore(storage?: ProgressStorage) {
 export class ProgressRepository {
   private store: ReturnType<typeof makeStore>
   constructor(storage?: ProgressStorage) { this.store = makeStore(storage) }
+  get persistent() { return this.store.persistent }
+  clear = () => this.store.clear()
   getProgress = () => this.store.getProgress()
   getProgram = (stage: Stage) => this.store.getProgram(stage)
   saveProgram = (id: string, program: Program) => this.store.saveProgram(id, program)

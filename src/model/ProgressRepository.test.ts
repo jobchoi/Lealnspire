@@ -6,7 +6,7 @@ import type { Program } from './types'
 const program: Program = [{ id: 'r', type: 'repeat', count: 2, body: [{ id: 'f', type: 'forward' }] }]
 function fakeStorage(raw: string | null = null) {
   const values = new Map<string, string>(raw === null ? [] : [[progressKey, raw]])
-  return { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => { values.set(key, value) } }
+  return { removeItem: (key: string) => { values.delete(key) }, getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => { values.set(key, value) } }
 }
 const serialize = (lastProgram: unknown = program, bestStars: unknown = 3, completed: unknown = true) =>
   JSON.stringify({ version: 1, stages: { [stages[0].id]: { completed, bestStars, lastProgram } } })
@@ -94,4 +94,36 @@ describe('진행 상황 저장', () => {
     expect(store.getProgram(stages[0])).toEqual(program)
     expect(store.getProgress().stages[stages[0].id].bestStars).toBe(0)
   })
+})
+
+
+it('clears only the app key and resets progress, programs and locks across reloads', () => {
+  const storage = fakeStorage()
+  storage.setItem('other-app', 'keep')
+  const store = createProgressStore(storage)
+  store.completeStage(stages[0].id, 3, program)
+  expect(store.clear()).toBe(true)
+  expect(storage.getItem(progressKey)).toBeNull()
+  expect(storage.getItem('other-app')).toBe('keep')
+  expect(store.getProgress()).toEqual({ version: 1, stages: {} })
+  expect(store.getProgram(stages[0])).toEqual(stages[0].initialProgram ?? [])
+  expect(isUnlocked(store.getProgress(), 1)).toBe(false)
+  expect(createProgressStore(storage).getProgress()).toEqual(store.getProgress())
+  store.saveProgram(stages[0].id, program)
+  expect(createProgressStore(storage).getProgram(stages[0])).toEqual(program)
+})
+
+it('clears memory without throwing when storage is absent or read, write or removal fails', () => {
+  for (const failure of ['absent', 'read', 'write', 'remove']) {
+    const storage = fakeStorage(serialize())
+    const store = createProgressStore(failure === 'absent' ? undefined : {
+      getItem: key => { if (failure === 'read') throw Error('denied'); return storage.getItem(key) },
+      setItem: (key, value) => { if (failure === 'write') throw Error('quota'); storage.setItem(key, value) },
+      removeItem: key => { if (failure === 'remove') throw Error('denied'); storage.removeItem(key) },
+    })
+    store.saveProgram(stages[0].id, program)
+    expect(store.clear()).toBe(false)
+    expect(store.getProgress().stages).toEqual({})
+    if (failure === 'write') expect(storage.getItem(progressKey)).toBeNull()
+  }
 })

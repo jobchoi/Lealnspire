@@ -1,7 +1,7 @@
 import { GameController } from '../../controller/GameController'
 import { renderToString } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { HomePage } from './HomePage'
+import { HomePage, RecordDialog } from './HomePage'
 import { StageSelectPage } from './StageSelectPage'
 import { PlayPage } from './PlayPage'
 import { createProgressStore } from '../../model/ProgressRepository'
@@ -172,4 +172,18 @@ it('keeps the final loop iteration through results and dismiss, clearing it on r
       controller.dispose()
     }
   }
+})
+
+
+it('shows the record guide and a separate destructive confirmation', () => {
+  const home = renderToString(<HomePage progress={createProgressStore().getProgress()} onStart={noop} onContinue={noop} onList={noop} />)
+  expect(home).toContain(`aria-label="${t('privacy.title')}"`)
+  const dialog = (confirm: boolean, notice?: string) => renderToString(<RecordDialog confirm={confirm} notice={notice} onClose={noop} onConfirm={noop} onCancel={noop} onClear={noop} />)
+  const info = dialog(false, t('privacy.unavailable'))
+  expect(info).toContain('role="dialog"')
+  expect(info).toContain('aria-modal="true"')
+  for (const key of ['location', 'records', 'browser', 'clear', 'unavailable']) expect(info).toContain(t(`privacy.${key}`))
+  expect(info).not.toContain(t('privacy.confirm'))
+  for (const key of ['confirm', 'erase', 'cancel']) expect(dialog(true)).toContain(t(`privacy.${key}`))
+  expect(dialog(true)).not.toContain(t('privacy.clear'))
 })

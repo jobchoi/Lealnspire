@@ -17,6 +17,13 @@ export class AppController extends Observable<Screen> {
     this.game = new GameController(stages[index], this.repository)
     this.update({ page: 'play', index })
   }
+  clearProgress = () => {
+    this.game?.dispose()
+    this.game = undefined
+    const cleared = this.repository.clear()
+    this.update({ page: 'home' })
+    return cleared
+  }
   start = () => this.openStage(0)
   continue = () => { if (this.continueIndex !== undefined) this.openStage(this.continueIndex) }
   list = () => { this.game?.dispose(); this.update({ page: 'list' }) }

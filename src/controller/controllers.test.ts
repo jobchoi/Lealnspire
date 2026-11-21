@@ -275,3 +275,18 @@ for (const action of ['add', 'move', 'setCount'] as const) {
     expect(game.editor.selectedPath).toEqual([0])
   })
 }
+
+
+it('clearing app progress notifies the home screen and removes continue and unlocked stages', () => {
+  const repository = new ProgressRepository()
+  repository.completeStage(stages[0].id, 3, [])
+  const app = new AppController(repository)
+  let updates = 0
+  app.subscribe(() => { updates++ })
+  expect(app.continueIndex).toBeDefined()
+  app.clearProgress()
+  expect(updates).toBe(1)
+  expect(app.getSnapshot()).toEqual({ page: 'home' })
+  expect(app.continueIndex).toBeUndefined()
+  expect(repository.getProgress().stages).toEqual({})
+})

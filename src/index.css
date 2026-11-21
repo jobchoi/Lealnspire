@@ -358,3 +358,9 @@ button small { display: block; font-size: .75rem; }
  .play-page .stage-hint p { font-size:13px; line-height:18px; }
  .play-page .stage-hint button:first-child:not(:last-child) { width:44px; white-space:normal; }
 }
+
+.home-page { position: relative; }
+.privacy-info-button { min-width: 44px; min-height: 44px; align-self: flex-end; font-size: 1.5rem; }
+.privacy-modal { width: min(460px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow-y: auto; box-sizing: border-box; text-align: left; }
+.privacy-modal p { overflow-wrap: anywhere; line-height: 1.5; }
+.privacy-modal button { min-width: 44px; min-height: 44px; }
