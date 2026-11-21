@@ -1,1 +1,4 @@
-{ "start": "Start", "home": "Home" }
+{
+  "fix": "Fix",
+  "failureBlock": "Failure block",
+  "failureCell": "Failure location", "start": "Start", "home": "Home" }

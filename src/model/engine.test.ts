@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { parseGrid } from './grid'
-import { run } from './interpreter'
+import { failurePoint, run } from './interpreter'
 import { addBlock, countBlocks, deleteBlock, moveBlock, setRepeatCount } from './program'
 import type { Block, Stage } from './types'
 
@@ -80,5 +80,28 @@ describe('program editing', () => {
     expect(setRepeatCount(initial, [0, 0], 10)).toEqual([repeat([repeat([], 10)])])
     for (const count of [1, 11, 2.5]) expect(() => setRepeatCount(initial, [0], count)).toThrow()
     expect(() => setRepeatCount([forward], [0], 2)).toThrow()
+  })
+})
+
+describe('failure point', () => {
+  it('uses the blocked inner command and position before collision, including boundaries', () => {
+    for (const [grid, dir] of [[['S#G'], 'E'], [['S.G'], 'W']] as const) {
+      const execution = run(stage([...grid], dir), [repeat([repeat([forward])])])
+      expect(failurePoint(execution)).toEqual({ blockId: 'f', position: { x: 0, y: 0 }, direction: dir })
+    }
+  })
+  it('uses the final executed command and stopped position for unfinished runs', () => {
+    const execution = run(stage(['S..G']), [forward, right, repeat([])])
+    const point = failurePoint(execution)
+    expect(point).toEqual({ blockId: 'r', position: { x: 1, y: 0 }, direction: 'S' })
+    point!.position.x = 99
+    expect(execution.frames.at(-1)!.pos.x).toBe(1)
+  })
+  it('has no cause for success, empty programs, empty repeats or either safety limit', () => {
+    let empty: Block[] = []
+    for (let i = 0; i < 10; i++) empty = [repeat(empty, 10)]
+    for (const program of [[], [repeat([])], empty, Array.from({ length: 1001 }, () => right), [forward, forward]]) {
+      expect(failurePoint(run(stage(['S.G']), program))).toBeNull()
+    }
   })
 })

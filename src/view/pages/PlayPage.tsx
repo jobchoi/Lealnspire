@@ -36,7 +36,7 @@ export function PlayPage({ stage, progressStore, onList, onNext, lastStage, cont
       <div className="game-layout">
         <div className="map-panel" style={{ '--min-board-width': `${stage.grid[0].length * 40 + (stage.grid[0].length - 1) * 4 + 8}px`, '--compact-board-width': `${stage.grid[0].length * 56 + (stage.grid[0].length - 1) * 4 + 8}px`, '--board-ratio': stage.grid[0].length / stage.grid.length, '--mobile-board-width': `calc((22dvh - 8px) * ${stage.grid[0].length} / ${stage.grid.length})` } as CSSProperties}>
           {theme.world === 'handheld' && <div className="lcd-hud" aria-hidden="true"><span>STAGE {stage.id}</span><span><Symbol name="goal" /></span><span>{countBlocks(program)}/{stage.maxBlocks ?? 10}</span></div>}
-          <Board theme={theme} stage={stage} position={playback.frame?.pos} direction={playback.frame?.dir} bump={playback.frame?.event === 'bump'} />
+          <Board failurePosition={controller.failure?.position} theme={theme} stage={stage} position={playback.frame?.pos} direction={playback.frame?.dir} bump={playback.frame?.event === 'bump'} />
           <div className="playback-controls execution-controls">
             <button className="run-button" type="button" disabled={!program.length || playback.playing} onClick={playback.play} aria-label={theme.buttonLabel('run')} title={theme.buttonLabel('run')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="run" /></span><small>{theme.runText?.()}</small></button>
             <button type="button" disabled={!program.length || playback.playing || playback.finished} onClick={playback.step} aria-label={theme.buttonLabel('step')} title={theme.buttonLabel('step')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="step" /></span><small>{theme.buttonLabel('step')}</small></button>
@@ -48,9 +48,9 @@ export function PlayPage({ stage, progressStore, onList, onNext, lastStage, cont
             })}
           </div>
         </div>
-        <Editor theme={theme} program={program} onChange={controller.edit} maxBlocks={stage.maxBlocks} locked={playback.locked} activeBlockId={playback.frame?.activeBlockId} />
+        <Editor controller={controller.editor} failedBlockId={controller.failure?.blockId} theme={theme} program={program} onChange={controller.edit} maxBlocks={stage.maxBlocks} locked={playback.locked} activeBlockId={playback.frame?.activeBlockId} />
       </div>
-      {playback.showResult && playback.result && <ResultModal result={playback.result} stars={controller.stars} onRetry={playback.reset} onClose={playback.dismiss} onNext={onNext} lastStage={lastStage} />}
+      {playback.showResult && playback.result && <ResultModal onFix={controller.fix} result={playback.result} stars={controller.stars} onRetry={playback.reset} onClose={playback.dismiss} onNext={onNext} lastStage={lastStage} />}
     </section>
   )
 }

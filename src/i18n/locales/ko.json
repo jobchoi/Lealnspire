@@ -1,4 +1,7 @@
 {
+  "fix": "고치기",
+  "failureBlock": "실패 지점 블록",
+  "failureCell": "실패 지점",
   "icons": {
     "forward": "⬆",
     "turnLeft": "↺",

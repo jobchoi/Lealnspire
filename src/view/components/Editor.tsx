@@ -8,12 +8,12 @@ import { BlockTiles } from './BlockTiles'
 import { Engine, Symbol } from '../theme/Symbols'
 import { t } from '../../i18n/I18n'
 
-type EditorProps = { theme?: Theme; program: Program; onChange: (program: Program) => void; maxBlocks?: number; locked?: boolean; activeBlockId?: string | null }
+type EditorProps = { theme?: Theme; program: Program; onChange: (program: Program) => void; maxBlocks?: number; locked?: boolean; activeBlockId?: string | null; failedBlockId?: string | null; controller?: EditorController }
 const types = defaultTheme.blockTypes
 
-export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, locked = false, activeBlockId }: EditorProps) {
+export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, locked = false, activeBlockId, failedBlockId, controller: supplied }: EditorProps) {
   const workspace = useRef<HTMLDivElement>(null)
-  const [controller] = useState(() => new EditorController())
+  const [controller] = useState(() => supplied ?? new EditorController())
   controller.configure(program, onChange, locked, maxBlocks)
   const { selectedId, targetId, addedId } = useController(controller)
   const { selectedPath, selectedBlock, targetPath, total, limit, atLimit, siblings } = controller
@@ -55,7 +55,7 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
     <div className="workspace" ref={workspace} role="region" aria-label={t('workspace')} tabIndex={0} onClick={event => {
       if (!locked && !(event.target as HTMLElement).closest('button')) controller.clear()
     }}>
-      {theme.world === 'train' && <Engine />}{program.length ? <BlockTiles theme={theme} program={program} selectedId={selectedPath ? selectedId : null} targetId={targetPath ? targetId : null} activeBlockId={activeBlockId} locked={locked} onSelect={controller.select} />: <p>{t('empty')}</p>}
+      {theme.world === 'train' && <Engine />}{program.length ? <BlockTiles theme={theme} program={program} selectedId={selectedPath ? selectedId : null} targetId={targetPath ? targetId : null} activeBlockId={activeBlockId} failedBlockId={failedBlockId} locked={locked} onSelect={controller.select} />: <p>{t('empty')}</p>}
     {theme.world === 'handheld' && <div className="cartridge-slots" aria-hidden="true">{Array.from({ length: Math.max(0, 10 - total) }, (_, i) => <span key={i} />)}</div>}
     </div>
     </div>

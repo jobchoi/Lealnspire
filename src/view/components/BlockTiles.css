@@ -34,3 +34,11 @@
   .tile-toolbar { gap: 2px; }
   .tile-toolbar button { flex-basis: 48px; }
 }
+
+.play-page { --failure-ink: #a52b14; }
+.theme-train { --failure-ink: #9f1239; }
+.theme-handheld { --failure-ink: #0f380f; }
+.block-tile.block-failed { outline: 3px dashed var(--failure-ink); outline-offset: -4px; }
+.failure-badge { position: absolute; right: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--failure-ink); color: #fff; font: bold 15px/18px sans-serif; z-index: 2; }
+.board-failure { color: var(--failure-ink); pointer-events: none; }
+.fix-button { min-width: 44px; min-height: 44px; }

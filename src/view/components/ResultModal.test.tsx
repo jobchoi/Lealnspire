@@ -36,3 +36,10 @@ describe('결과 모달', () => {
    expect(failed).not.toContain(t('toList'))
    expect(failed).not.toContain(t('congratulations'))
  })
+
+it('offers fix for every failure and never for success', () => {
+  for (const result of ['collision', 'unfinished', 'stepLimit', 'success'] as const) {
+    const html = renderToString(<ResultModal result={result} stars={0} onFix={noop} onRetry={noop} onClose={noop} />)
+    expect(html.includes('aria-label="' + t('fix') + '"')).toBe(result !== 'success')
+  }
+})

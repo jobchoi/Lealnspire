@@ -49,3 +49,12 @@ export class Interpreter {
   }
 }
 export const run = Interpreter.run
+
+/** Collision frames retain the position and direction before the blocked move. */
+export function failurePoint(execution: RunResult) {
+  if (execution.result === 'success' || execution.result === 'stepLimit') return null
+  const frame = execution.result === 'collision'
+    ? execution.frames.slice().reverse().find(frame => frame.event === 'bump')
+    : execution.frames.slice().reverse().find(frame => frame.activeBlockId !== null)
+  return frame?.activeBlockId ? { blockId: frame.activeBlockId, position: { ...frame.pos }, direction: frame.dir } : null
+}

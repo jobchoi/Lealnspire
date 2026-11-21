@@ -30,6 +30,11 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
     const selectedId = this.state.selectedId === id ? null : id
     this.update({ ...this.state, selectedId, targetId: selectedId ? this.state.targetId : null })
   }
+  reveal = (id: string | null) => {
+    if (this.locked) return
+    const selectedId = id && new ProgramModel(this.program).find(id) ? id : null
+    this.update({ selectedId, targetId: null, addedId: selectedId })
+  }
   acknowledgeAdded = () => { if (this.state.addedId) this.update({ ...this.state, addedId: null }) }
   clear = () => { if (!this.locked) this.update({ ...this.state, selectedId: null, targetId: null }) }
   toggleTarget = () => { if (!this.locked && this.selectedBlock?.type === 'repeat') this.update({ ...this.state, targetId: this.state.targetId === this.state.selectedId ? null : this.state.selectedId }) }

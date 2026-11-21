@@ -1,5 +1,6 @@
 import { Observable } from './Observable'
-import { Interpreter } from '../model/interpreter'
+import { EditorController } from './EditorController'
+import { failurePoint, Interpreter } from '../model/interpreter'
 import { Program as ProgramModel } from '../model/program'
 import { Score } from '../model/score'
 import type { Program, RunResult, Stage } from '../model/types'
@@ -7,16 +8,18 @@ import type { ProgressRepository } from '../model/ProgressRepository'
 import { isLastFrame, nextFrameIndex, playbackSpeeds } from './playback'
 export type Scheduler = { set(callback: () => void, delay: number): unknown; clear(handle: unknown): void }
 const scheduler: Scheduler = { set: (callback, delay) => setTimeout(callback, delay), clear: handle => clearTimeout(handle as ReturnType<typeof setTimeout>) }
-type State = { program: Program; execution: RunResult | null; index: number; playing: boolean; dismissed: boolean; speed: keyof typeof playbackSpeeds; showHint: boolean }
+type State = { program: Program; execution: RunResult | null; index: number; playing: boolean; dismissed: boolean; speed: keyof typeof playbackSpeeds; showHint: boolean; failure: ReturnType<typeof failurePoint> }
 export class GameController extends Observable<State> {
+  readonly editor = new EditorController()
   readonly stage: Stage
   readonly repository: ProgressRepository
   private clock: Scheduler
   private timer: unknown
   constructor(stage: Stage, repository: ProgressRepository, clock: Scheduler = scheduler) {
-    super({ program: repository.getProgram(stage), execution: null, index: 0, playing: false, dismissed: false, speed: 'normal', showHint: false })
+    super({ program: repository.getProgram(stage), execution: null, index: 0, playing: false, dismissed: false, speed: 'normal', showHint: false, failure: null })
     this.stage = stage; this.repository = repository; this.clock = clock
   }
+  get failure() { return this.state.failure ?? (this.finished && this.state.execution ? failurePoint(this.state.execution) : null) }
   get frame() { return this.state.execution?.frames[this.state.index] }
   get result() { return this.state.execution?.result }
   get locked() { return this.state.execution !== null }
@@ -39,20 +42,27 @@ export class GameController extends Observable<State> {
   edit = (program: Program) => {
     if (this.locked) return
     this.repository.saveProgram(this.stage.id, program)
-    this.publish({ ...this.state, program: structuredClone(program) })
+    this.publish({ ...this.state, program: structuredClone(program), failure: null })
   }
   play = () => {
     if (!this.state.program.length || this.state.playing) return
     const execution = Interpreter.run(this.stage, this.state.program)
-    this.publish({ ...this.state, execution, index: 0, playing: execution.frames.length > 1, dismissed: false })
+    this.publish({ ...this.state, execution, failure: null, index: 0, playing: execution.frames.length > 1, dismissed: false })
   }
   step = () => {
     if (!this.state.program.length || this.state.playing || this.finished) return
     const execution = this.state.execution ?? Interpreter.run(this.stage, this.state.program)
-    this.publish({ ...this.state, execution, index: nextFrameIndex(this.state.index, execution.frames.length), playing: false, dismissed: false })
+    this.publish({ ...this.state, execution, failure: null, index: nextFrameIndex(this.state.index, execution.frames.length), playing: false, dismissed: false })
   }
   setSpeed = (speed: keyof typeof playbackSpeeds) => this.publish({ ...this.state, speed })
-  reset = () => this.publish({ ...this.state, execution: null, index: 0, playing: false, dismissed: false })
+  reset = () => this.publish({ ...this.state, execution: null, failure: null, index: 0, playing: false, dismissed: false })
+  fix = () => {
+    if (!this.finished || !this.state.execution || this.result === 'success') return
+    const failure = failurePoint(this.state.execution)
+    this.editor.configure(this.state.program, this.edit, false, this.stage.maxBlocks)
+    this.editor.reveal(failure?.blockId ?? null)
+    this.publish({ ...this.state, execution: null, failure, index: 0, playing: false, dismissed: false })
+  }
   dismiss = () => this.update({ ...this.state, dismissed: true })
   toggleHint = () => this.update({ ...this.state, showHint: !this.state.showHint })
   dispose = () => this.stop()
