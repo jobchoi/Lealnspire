@@ -78,11 +78,26 @@ body:has(.theme-sketchbook) { background:#e9dfcc url("data:image/svg+xml,%3Csvg 
 .theme-sketchbook .palette .block-symbol { line-height:0; }
 .theme-sketchbook .palette .theme-symbol { width:40px; height:40px; }
 @media(max-width:700px) {
- .theme-sketchbook .palette button { grid-template-rows:28px 14px; }
- .play-page.theme-sketchbook .palette small { font-size:12px; line-height:14px; }
+ .theme-sketchbook .palette button { grid-template-rows:28px 16px; }
+ .play-page.theme-sketchbook .palette small { font-size:13px; line-height:16px; }
  .theme-sketchbook .palette .theme-symbol { width:28px; height:28px; }
  .theme-sketchbook .palette { padding-block:0; }
 }
 
 /* Opaque paper keeps notebook ruling from reducing command-icon contrast. */
 .theme-sketchbook .block-tile { background:#fffaf0; }
+
+/* T14: keep handwriting readable without enlarging the tile grid. */
+.play-page.theme-sketchbook .stage-goal { font-size:16px; line-height:24px; font-weight:700; }
+.play-page.theme-sketchbook .editor p,
+.play-page.theme-sketchbook .stage-hint,
+.play-page.theme-sketchbook button small,
+.play-page.theme-sketchbook .empty-repeat,
+.play-page.theme-sketchbook .workspace .empty-repeat-label { font-size:13px; line-height:16px; font-weight:700; }
+.play-page.theme-sketchbook .block-budget p { font-size:14px; line-height:20px; }
+.play-page.theme-sketchbook .palette button:disabled { color:#3b3a36; background:#fff; opacity:1; filter:grayscale(1); }
+
+.play-page.theme-sketchbook .run-button small { font-size:26px; line-height:30px; }
+@media(max-width:700px) {
+ .play-page.theme-sketchbook .execution-controls .run-button small { font-size:16px; line-height:20px; }
+}
