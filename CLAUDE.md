@@ -5,9 +5,12 @@ Claude Code는 세션마다 이 파일을 자동으로 읽습니다.
 
 ## 0. 문서 지도
 
+먼저 [docs/PROJECT_MAP.md](docs/PROJECT_MAP.md)를 읽고 착수합니다.
+
 | 문서 | 역할 |
 |---|---|
-| [docs/NEXT_SESSION.md](docs/NEXT_SESSION.md) | **가장 먼저 읽는 문서.** 현재 상태, 마지막 검증 결과, 다음 작업, 사용자 결정 대기 항목 |
+| [docs/PROJECT_MAP.md](docs/PROJECT_MAP.md) | **가장 먼저 읽는 문서.** 소스 지도, MVC 경계, 실행·검증, 변경 위치 |
+| [docs/NEXT_SESSION.md](docs/NEXT_SESSION.md) | 현재 상태, 마지막 검증 결과, 다음 작업, 사용자 결정 대기 항목 |
 | [AGENTS.md](AGENTS.md) | Codex(GPT) 등 다른 AI용 안내. 규칙은 이 파일을 따르게 함 |
 | [docs/handoff/](docs/handoff/) | 다른 AI에게 주는 작업 지시서 |
 | [docs/TASKS.md](docs/TASKS.md) | 작업 목록(우선순위, 완료 조건, 상태)의 단일 출처 |
@@ -30,9 +33,9 @@ Claude Code는 세션마다 이 파일을 자동으로 읽습니다.
 
 - **한 번에 작업 하나.** 완료 조건에 없는 기능은 임의로 넣지 않습니다. 필요해 보이면 TASKS.md에 새 작업으로 제안만 추가합니다.
 - MVP 제외 목록(GAME_DESIGN.md 5절)에 있는 기능은 사용자 요청 없이 만들지 않습니다.
-- `src/engine/`(게임 규칙, 실행기)은 React와 DOM에 의존하지 않는 순수 TypeScript로 작성하고 단위 테스트를 붙입니다.
-- 화면 문구는 한국어입니다. 문구가 늘어나면 `src/i18n/ko.ts`로 모읍니다.
-- localStorage는 `src/storage/`에서만 읽고 씁니다. 저장 구조를 바꾸면 버전 번호를 올립니다.
+- `src/model/`(게임 규칙, 실행기)은 React와 DOM에 의존하지 않는 순수 TypeScript로 작성하고 단위 테스트를 붙입니다.
+- 화면 문구는 한국어입니다. 문구가 늘어나면 `src/i18n/locales/ko.json`로 모읍니다.
+- localStorage의 읽기·쓰기는 `src/model/ProgressRepository.ts`에서 주입받은 storage로만 수행합니다. 브라우저 저장소 선택은 `src/main.tsx`에서 합니다. 저장 구조를 바꾸면 버전 번호를 올립니다.
 - 새 의존성은 꼭 필요할 때만 추가하고, 이유를 ARCHITECTURE.md에 기록합니다.
 - 잠정안으로 진행해야 하면 문서에 "잠정"으로 표시하고 보고에 적습니다.
 
@@ -74,6 +77,7 @@ Claude Code는 세션마다 이 파일을 자동으로 읽습니다.
 | 실행·검증 명령, 필요 환경 변경 | README.md |
 | 게임 규칙, 루프, MVP 범위 변경 | docs/GAME_DESIGN.md |
 | 스테이지, 학습 목표 변경 | docs/CURRICULUM.md |
+| 폴더·파일 추가·이동 | docs/PROJECT_MAP.md |
 | 폴더 구조, 의존성, 데이터 구조, 기술 결정 변경 | docs/ARCHITECTURE.md |
 | 작업 규칙, 스킬, 서브에이전트 변경 | CLAUDE.md |
 

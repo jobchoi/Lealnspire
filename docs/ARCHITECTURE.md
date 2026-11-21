@@ -16,48 +16,44 @@
 | 게임 화면 | CSS Grid | - | 사용자 지정 |
 | 저장소 | localStorage | - | 서버 없음, 사용자 지정 |
 
-## 2. 현재 폴더 구조 [확정]
+## 2. 현재 폴더 구조 (T12)
 
-```
-.
-├─ .github/workflows/ci.yml   # lint, test, build
-├─ .claude/
-│  ├─ skills/next-task/       # /next-task: 다음 작업 수행 절차
-│  └─ agents/reviewer.md      # 읽기 전용 검토 서브에이전트
-├─ docs/                      # 기획, 작업 목록, 설계, 진행 기록
-├─ public/favicon.svg
-├─ src/
-│  ├─ main.tsx                # 진입점
-│  ├─ App.tsx                 # App state로 첫 화면·목록·게임 화면 전환
-│  ├─ App.test.tsx            # 렌더링 확인 테스트
-│  ├─ pages/                 # HomePage, StageSelectPage, PlayPage, 이어하기 계산과 테스트
-│  ├─ components/             # Board, Editor, ResultModal과 렌더링 테스트
-│  ├─ engine/                 # 게임 엔진, 블록 편집, editor, score(잠정 별 평가)와 단위 테스트
-│  ├─ hooks/                 # usePlayback, 순수 프레임 진행 함수와 테스트
-│  ├─ storage/                # progress.ts(버전 1 저장소), Node 가짜 저장소 테스트
-│  ├─ stages/                 # 스테이지 1~8과 정답 검증
-│  ├─ i18n/ko.ts              # 편집기·앱 화면 문구
-│  └─ index.css
-├─ index.html
-├─ package.json, vite.config.ts, tsconfig*.json, .oxlintrc.json, .nvmrc
-├─ README.md, CLAUDE.md
-```
-
-## 3. 목표 폴더 구조 [제안]
-
-```
+```text
 src/
-├─ engine/        # 순수 로직: types, grid(맵 파싱·이동), interpreter(run → Frame[]), program(블록 트리 편집)
-├─ stages/        # stage01.ts … , index.ts
-├─ storage/       # progress.ts (localStorage, 버전 관리)
-├─ hooks/         # usePlayback(재생), useProgress
-├─ components/    # board/, editor/, controls/, common/
-├─ pages/         # HomePage, StageSelectPage, PlayPage
-├─ i18n/ko.ts     # 화면 문구
-└─ styles/
+  main.tsx                 # 브라우저 어댑터: storage 주입, 언어 선택, React 시작
+  model/                   # 순수 TS: Program, GridModel, Interpreter, Score, 타입
+    ProgressRepository.ts  # 주입 storage 읽기·쓰기, 버전 1 검증·메모리 대체
+    stages/index.ts        # 스테이지 1~8, 정답과 world
+  controller/              # 순수 TS: AppController, GameController, EditorController
+    Observable.ts          # 안정된 snapshot/subscribe
+    BoardPresenter.ts      # 맵 표시 데이터 계산
+    flow.ts, playback.ts   # 목록·이어하기, 프레임 진행
+  view/                    # React 표시·이벤트 전달, 포커스·스크롤 등 DOM 처리
+    App.tsx
+    pages/                 # 첫 화면, 스테이지 목록, 게임
+    components/            # 맵, 편집기, 블록 타일, 결과 모달
+    hooks/useController.ts # useSyncExternalStore 어댑터
+    theme/defaultTheme.ts  # 기본 테마 인터페이스·구현
+  i18n/
+    I18n.ts                # t(key, params), 자동 locale 탐색, ko fallback
+    locales/ko.json        # 기준 문구와 스테이지 문구
+    locales/en.json        # 일부 키만 있는 영어 예시
+  index.css
 ```
 
-원칙: `engine/`은 React와 DOM을 모릅니다. 이후 단원(자료구조, 알고리즘 등)을 붙일 때도 같은 경계를 씁니다.
+모든 소스 파일과 테스트 위치는 [PROJECT_MAP.md](PROJECT_MAP.md)를 봅니다.
+기존 engine/storage/stages/hooks/pages/components는 이동 후 제거했습니다.
+
+## 3. MVC 경계와 확장 방법
+
+- 의존 방향: **View → Controller → Model**. View는 Model 타입을 참조할 수 있지만 규칙은 Controller에 맡깁니다. Model/Controller에는 React·DOM·브라우저 전역이 없습니다.
+- Model: `program.ts`의 `Program`은 입력·출력을 복사하는 불변 트리 객체이며 add/remove/move/setCount/count/find를 제공합니다. 정적 편집 메서드와 기존 함수 별칭은 같은 구현을 사용합니다. `GridModel`, `Interpreter`, `Score`는 순수 계산 클래스입니다. Stage와 Frame 등 직렬화 데이터는 타입·레코드로 유지합니다.
+- `ProgressRepository(storage?)`는 storage를 주입받습니다. `main.tsx`에서 localStorage 접근 실패 시 메모리 저장소로 생성합니다. 저장 형식·키·버전·검증은 기존과 같습니다.
+- `AppController`: 화면 전환·잠금·이어하기·다음 이동, 게임 생성·해제. `GameController`: 코드 저장, 실행·프레임·속도·결과·성공 저장. `EditorController`: 블록 선택·추가 대상·상한·편집. 타이머는 GameController에만 있고 Scheduler 주입으로 테스트합니다.
+- `Observable`은 상태가 변경될 때만 snapshot 객체를 교체합니다. React View는 `useController`로 구독합니다. 포커스, 모달 키보드 처리, 작업 공간 스크롤은 View 책임입니다.
+- 언어 추가: `src/i18n/locales/<언어>.json` 파일 하나 추가. Vite glob으로 자동 등록하며 `?lang=<언어>`로 개발 확인합니다. UI 선택기는 없습니다. 점 구분 키와 `{count}` 등의 치환을 사용하며 해당 언어 → ko → 키 자체 순으로 대체합니다. 키 테스트는 모든 locale 키가 ko의 부분집합인지 확인합니다.
+- `Stage.world`는 1~3 sketchbook, 4~6 train, 7~8 handheld입니다. 현재는 모든 스테이지가 기본 테마 하나를 씁니다. T13은 View 테마 선택과 표현만 확장하며 Model/Controller의 블록 타입과 실행 규칙을 바꾸지 않습니다.
+- 기본 테마는 블록 종류·기호·이름·색 클래스·반복 표현·버튼 라벨·방향 기호를 정의합니다. CSS 클래스와 접근성 이름은 E2E 계약입니다.
 
 ## 4. 데이터 구조 초안 [제안]
 
@@ -69,7 +65,8 @@ type Block =
 type Program = Block[]
 
 type Stage = {
-  id: string; title: string; goal: string; hint: string
+  id: string; world: 'sketchbook' | 'train' | 'handheld'
+  title: string; goal: string; hint: string // i18n 키
   grid: string[]            // 예: ["#####", "#S.G#"]  S: 출발, G: 도착, #: 벽
   startDir: 'N' | 'E' | 'S' | 'W'
   maxBlocks?: number
@@ -99,22 +96,24 @@ type Frame = { pos: { x: number; y: number }; dir: Dir; activeBlockId: string | 
 | D11 | 브랜치는 git flow(`master` 배포, `develop` 통합, `feature/<작업 ID>-<이름>`) | [확정] | 사용자가 기존 저장소 방식대로 `git flow init -d`로 구성. 버전 태그 접두어는 [미결정](현재 없음) |
 | D12 | 다중 에이전트는 저장 워크플로 `task-pipeline` 하나(계획·구현·검토 2·수정·마무리). 사용자 요청 시에만 실행 | [확정] | 사용자 요청(오케스트레이션 실험). 에이전트 최대 7개로 제한 |
 | D13 | MCP: `context7`(원격 HTTP, 키 없음) + `playwright`(`@playwright/mcp@0.0.84` 고정, headless) | [확정] | 사용자 요청. 버전은 2주 이상 지난 것으로 고정. Context7을 쓸 수 없으면 공식 문서로 대체(CLAUDE.md 3-1절) |
+| D14 | OOP + MVC: 순수 Model, Observable Controller, 표시 전용 React View | [확정, T12] | 사용자 요청. T13의 View 교체와 React 없는 컨트롤러 테스트를 지원 |
+| D15 | 언어 리소스 JSON + I18n, 파일 자동 탐색과 ko fallback | [확정, T12] | 사용자 요청. 의존성 없이 언어 파일 하나로 확장 |
 | D10 | 유료 API·자동 실행 없음. CI는 lint/test/build만 | [확정, 0단계] | 사용자 운영 원칙. 추가하려면 방식과 비용을 먼저 설명 |
 
 ## 6. 진행 상황 저장 (T5)
 
-- `src/storage/progress.ts`만 브라우저 localStorage에 접근합니다. 키는 `lealnspire.progress`, 저장 구조 버전은 `1`입니다.
+- `src/model/ProgressRepository.ts`만 주입된 storage를 읽고 씁니다. 브라우저 localStorage의 선택과 예외 처리는 main.tsx가 담당합니다. 키는 `lealnspire.progress`, 저장 구조 버전은 `1`입니다.
 - 저장 예: `{"version":1,"stages":{"1":{"completed":true,"bestStars":3,"lastProgram":[{"id":"f1","type":"forward"}]}}}`. 스테이지 키는 `Stage.id`입니다.
-- `createProgressStore(storage?)`는 `getItem`/`setItem`만 가진 저장소를 주입받을 수 있습니다. 기본 저장소 접근, 읽기 또는 쓰기가 실패하면 메모리 상태로 계속 동작합니다. 새로고침을 넘는 보존은 브라우저 저장소가 사용 가능할 때만 보장합니다.
+- `createProgressStore(storage?)`는 `getItem`/`setItem`만 가진 저장소를 주입받을 수 있습니다. 브라우저 어댑터의 저장소 접근, 읽기 또는 쓰기가 실패하면 메모리 상태로 계속 동작합니다. 새로고침을 넘는 보존은 브라우저 저장소가 사용 가능할 때만 보장합니다.
 - JSON 파싱 실패·다른 버전·잘못된 최상위 구조는 빈 진행 상황으로 초기화합니다. 잘못된 스테이지 항목은 개별적으로 버립니다. 완료 여부, 정수 별 0~3, 프로그램 블록 타입·고유한 비어 있지 않은 ID·반복 몸체·정수 횟수 2~10을 검증합니다.
 - `saveProgram`은 완료 여부와 최고 별을 유지합니다. `completeStage`는 완료를 기록하고 최고 별을 최댓값으로 유지합니다. 입출력 프로그램은 복사하여 외부 변경으로부터 보호합니다.
 - `isUnlocked(progress, stageIndex)`는 0 기반 인덱스를 사용합니다. 첫 스테이지는 항상 열리고 이후에는 `stages` 배열의 직전 스테이지가 완료되어야 열립니다. 유효하지 않은 인덱스는 닫힘입니다(T6에서 사용).
-- App은 저장 코드 → `initialProgram` → 빈 프로그램 순으로 시작합니다. 편집 이벤트마다 즉시 저장하고 재생이 성공으로 끝나면 완료 여부·최고 별을 기록합니다. 빈 저장 코드도 유지합니다.
+- GameController는 저장 코드 → `initialProgram` → 빈 프로그램 순으로 시작합니다. 편집 이벤트마다 즉시 저장하고 재생이 성공으로 끝나면 완료 여부·최고 별을 기록합니다. 빈 저장 코드도 유지합니다.
 
 ## 7. 타일 작업 공간 (T10)
 
-- 작업 공간 레이아웃은 교체 가능한 컴포넌트 `src/components/BlockTiles.tsx`와 `BlockTiles.css`로 분리합니다. `--tile-size`, `--tile-gap`으로 타일 크기와 간격을 조절합니다.
-- Editor는 선택 블록 ID와 반복 추가 대상 ID를 따로 관리합니다. 타일 선택 후 고정 작업 막대에서 앞/뒤 이동·삭제·횟수 변경을 하고, 반복의 안에 넣기를 켜면 해당 몸체 끝에 추가합니다.
+- 작업 공간 레이아웃은 교체 가능한 컴포넌트 `src/view/components/BlockTiles.tsx`와 `BlockTiles.css`로 분리합니다. `--tile-size`, `--tile-gap`으로 타일 크기와 간격을 조절합니다.
+- EditorController는 선택 블록 ID와 반복 추가 대상 ID를 따로 관리합니다. 타일 선택 후 고정 작업 막대에서 앞/뒤 이동·삭제·횟수 변경을 하고, 반복의 안에 넣기를 켜면 해당 몸체 끝에 추가합니다.
 - `program.ts`의 `MAX_PROGRAM_BLOCKS = 10`과 `addBlock`이 반복 몸체를 포함한 전체 추가 상한을 지킵니다. 실행기는 기존 저장 프로그램의 실행 의미를 유지합니다.
 
 

@@ -1,5 +1,12 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-21 — T12 구조 개편: MVC·OOP, 언어 JSON, PROJECT_MAP (구현 Codex, QC Claude)
+
+- 사용자 요청: OOP·MVC, 언어 추가는 파일 추가로(JSON, XML 아님), 다른 에이전트가 문서 하나로 착수
+- Codex: `src/model/`(엔진·스테이지·ProgressRepository), `src/controller/`(App·Game·Editor 컨트롤러, Observable, BoardPresenter), `src/view/`(React는 표시·이벤트만, useSyncExternalStore 구독, theme/ 기본 테마), `src/i18n/`(I18n 클래스, locales/ko.json·en.json 일부 예시, ko 대체), 스테이지 `world` 필드(1~3 sketchbook, 4~6 train, 7~8 handheld), `docs/PROJECT_MAP.md`
+- Claude QC: verify(73개), E2E(33개, 동작 동일), 경계 grep 직접 확인
+- 다음: T13 테마 월드 3종은 view/theme에 테마를 추가하는 방식
+
 ## 2026-11-21 — T10 가로 정사각형 블록(구현 Codex), T11 사용자 시나리오 E2E(Claude)
 
 - 사용자 피드백: 블록을 옆으로 정사각형으로, 최대 10개, 반복 사용 시 작업 공간이 너무 작음, "오류 없으니 통과" 대신 실제 사용자 수준 테스트

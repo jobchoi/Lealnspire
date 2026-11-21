@@ -1,5 +1,7 @@
 # AGENTS.md — Claude 외 AI 에이전트(Codex/GPT 등)용 안내
 
+먼저 [docs/PROJECT_MAP.md](docs/PROJECT_MAP.md)를 읽고 착수합니다.
+
 이 저장소의 작업 규칙은 **[CLAUDE.md](CLAUDE.md) 하나**입니다. 이름은 CLAUDE.md지만 모든 AI 에이전트에게 똑같이 적용됩니다. 먼저 CLAUDE.md를 끝까지 읽고 따르세요.
 
 ## 이 저장소에서의 역할 분담
