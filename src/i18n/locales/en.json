@@ -1,4 +1,26 @@
 {
   "fix": "Fix",
   "failureBlock": "Failure block",
-  "failureCell": "Failure location", "start": "Start", "home": "Home" }
+  "failureCell": "Failure location",
+  "start": "Start",
+  "home": "Home",
+  "stage1Hint1": "Count the cells between the robot and the star.",
+  "stage1Hint2": "How many cells must you travel to reach the star?",
+  "stage2Hint1": "Look at where the walls are.",
+  "stage2Hint2": "At which cell should you change direction to reach the star?",
+  "stage3Hint1": "Follow the path the robot can travel.",
+  "stage3Hint2": "How many bends are there, and which way does each bend turn?",
+  "stage4Hint1": "Look at the direction the robot is facing.",
+  "stage4Hint2": "When turning at the first cell, is the star to the robot’s right or left?",
+  "stage5Hint1": "Count the cells along the straight path.",
+  "stage5Hint2": "You need the same block several times, but can only use two blocks. What could you do?",
+  "stage6Hint1": "Look at how the staircase shape repeats.",
+  "stage6Hint2": "How many blocks make one stair step? How many times does that action repeat?",
+  "stage7Hint1": "Look at the shape of the path.",
+  "stage7Hint2": "Have you found the action for one side? How many times should you do it?",
+  "stage8Hint1": "Look at the cells left between the end of the stairs and the star.",
+  "stage8Hint2": "Is there anything left to do after the repeat ends?",
+  "hintStep": "{step}/2",
+  "nextHint": "Next hint",
+  "closeHint": "Close hint"
+}

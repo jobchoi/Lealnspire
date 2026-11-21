@@ -1,3 +1,4 @@
+import { GameController } from '../../controller/GameController'
 import { renderToString } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { HomePage } from './HomePage'
@@ -37,7 +38,7 @@ describe('화면 렌더링', () => {
     const html = renderToString(<PlayPage stage={stages[3]} progressStore={store} onList={noop} onNext={noop} lastStage={false} />)
     expect(html.replaceAll('<!-- -->', '')).toContain('aria-label="1번 오른쪽으로 돌기"')
     expect(html).toContain('aria-expanded="false"')
-    expect(html).not.toContain(t(stages[3].hint))
+    expect(html).not.toContain(t(stages[3].hints.keys[0]))
     expect(html).not.toContain('role="dialog"')
     expect(html).toContain(t('stageList'))
     expect(html).toContain('data-page-title')
@@ -68,5 +69,30 @@ it('LCD HUD counts nested blocks and uses the stage limit or default', () => {
     const hud = html.split('class="lcd-hud"')[1].split('</div>')[0]
     expect(hud).toContain(`<span>3/${maxBlocks ?? 10}</span>`)
     expect(html).toContain(t('total', { count: 3, max: maxBlocks ?? 10 }))
+  }
+})
+
+it('renders each requested hint with map emphasis across all worlds', () => {
+  for (const stage of stages) {
+    const store = createProgressStore(), controller = new GameController(stage, store)
+    const page = () => renderToString(<PlayPage stage={stage} progressStore={store} controller={controller} onList={noop} onNext={noop} lastStage={false} />).replaceAll('<!-- -->', '')
+    expect(page()).not.toContain('data-hint-cell=')
+    controller.toggleHint()
+    expect(page()).toContain('1/2')
+    expect(page()).toContain('id="stage-hint"')
+    expect(page()).toContain('aria-controls="stage-hint"')
+    expect(page()).toContain('aria-expanded="true"')
+    expect(page()).not.toContain('class="stage-goal"')
+    expect(page()).toContain(t(stage.hints.keys[0]))
+    expect(page()).toContain('data-hint-cell=')
+    expect(page()).toContain(`aria-label="${t('nextHint')}"`)
+    controller.nextHint()
+    expect(page()).toContain('2/2')
+    expect(page()).toContain(t(stage.hints.keys[1]))
+    expect(page()).not.toContain(`aria-label="${t('nextHint')}"`)
+    controller.toggleHint()
+    expect(page()).not.toContain('data-hint-cell=')
+    expect(page()).toContain('aria-expanded="false"')
+    expect(page()).toContain('class="stage-goal"')
   }
 })

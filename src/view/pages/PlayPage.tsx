@@ -16,7 +16,7 @@ type Props = { stage: Stage; progressStore: ReturnType<typeof createProgressStor
 
 export function PlayPage({ stage, progressStore, onList, onNext, lastStage, controller: supplied }: Props) {
   const [controller] = useState(() => supplied ?? new GameController(stage, progressStore))
-  const { program, showHint, playing, speed } = useController(controller)
+  const { program, hintStep, playing, speed } = useController(controller)
   useEffect(() => () => controller.dispose(), [controller])
   const [requestedWorld, setWorld] = useState<Stage['world']>()
   const completed = !!progressStore.getProgress().stages[stage.id]?.completed
@@ -27,16 +27,20 @@ export function PlayPage({ stage, progressStore, onList, onNext, lastStage, cont
       <ConceptDefs /><h1 tabIndex={-1} data-page-title>{t('stage')} {stage.id}: {t(stage.title)}</h1>
       <div className="playback-controls stage-controls">
         <button type="button" onClick={onList} aria-label={theme.buttonLabel('stageList')} title={theme.buttonLabel('stageList')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="stageList" /></span><small>{theme.buttonLabel('stageList')}</small></button>
-        <button type="button" aria-expanded={showHint} aria-controls="stage-hint" onClick={controller.toggleHint} aria-label={theme.buttonLabel('hint')} title={theme.buttonLabel('hint')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="hint" /></span><small>{theme.buttonLabel('hint')}</small></button>
+        <button type="button" aria-expanded={hintStep > 0} aria-controls="stage-hint" onClick={controller.toggleHint} aria-label={theme.buttonLabel('hint')} title={theme.buttonLabel('hint')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="hint" /></span><small>{theme.buttonLabel('hint')}</small></button>
         {(controller.canNext && !lastStage) && <button type="button" aria-label={theme.buttonLabel('nextStage')} title={theme.buttonLabel('nextStage')} onClick={onNext}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="nextStage" /></span><small>{theme.buttonLabel('nextStage')}</small></button>}
       </div>
       {completed && <div className="world-switch" role="group" aria-label={t('themes.choose')}>{worlds.map(world => <button key={world} type="button" aria-label={t(`themes.${world}.switch`)} aria-pressed={theme.world === world} onClick={() => setWorld(world)}><Symbol world={theme.world} name={world} /></button>)}</div>}
-      {showHint && <p id="stage-hint" className="stage-hint">{t(stage.hint)}</p>}
-      <p className="stage-goal"><span className="goal-symbol" aria-hidden="true"><Symbol world={theme.world} name="goal" /></span> {t(stage.goal)}</p>
+      {hintStep > 0 && <div id="stage-hint" className="stage-hint">
+        <p role="status"><span>{t('hintStep', { step: hintStep })}</span> {t(stage.hints.keys[hintStep - 1])}</p>
+        <div className="hint-actions">{hintStep === 1 && <button type="button" aria-label={t('nextHint')} onClick={controller.nextHint}>{t('nextHint')}</button>}
+        <button type="button" aria-label={t('closeHint')} onClick={controller.toggleHint}><span aria-hidden="true">×</span></button></div>
+      </div>}
+      {hintStep === 0 && <p className="stage-goal"><span className="goal-symbol" aria-hidden="true"><Symbol world={theme.world} name="goal" /></span> {t(stage.goal)}</p>}
       <div className="game-layout">
         <div className="map-panel" style={{ '--min-board-width': `${stage.grid[0].length * 40 + (stage.grid[0].length - 1) * 4 + 8}px`, '--compact-board-width': `${stage.grid[0].length * 56 + (stage.grid[0].length - 1) * 4 + 8}px`, '--board-ratio': stage.grid[0].length / stage.grid.length, '--mobile-board-width': `calc((22dvh - 8px) * ${stage.grid[0].length} / ${stage.grid.length})` } as CSSProperties}>
           {theme.world === 'handheld' && <div className="lcd-hud" aria-hidden="true"><span>STAGE {stage.id}</span><span><Symbol name="goal" /></span><span>{countBlocks(program)}/{stage.maxBlocks ?? 10}</span></div>}
-          <Board failurePosition={controller.failure?.position} theme={theme} stage={stage} position={playback.frame?.pos} direction={playback.frame?.dir} bump={playback.frame?.event === 'bump'} />
+          <Board hintHighlight={hintStep > 0 ? stage.hints.highlight : undefined} failurePosition={controller.failure?.position} theme={theme} stage={stage} position={playback.frame?.pos} direction={playback.frame?.dir} bump={playback.frame?.event === 'bump'} />
           <div className="playback-controls execution-controls">
             <button className="run-button" type="button" disabled={!program.length || playback.playing} onClick={playback.play} aria-label={theme.buttonLabel('run')} title={theme.buttonLabel('run')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="run" /></span><small>{theme.runText?.()}</small></button>
             <button type="button" disabled={!program.length || playback.playing || playback.finished} onClick={playback.step} aria-label={theme.buttonLabel('step')} title={theme.buttonLabel('step')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="step" /></span><small>{theme.buttonLabel('step')}</small></button>

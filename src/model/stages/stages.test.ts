@@ -1,3 +1,5 @@
+import { hintCells } from '../grid'
+import { t } from '../../i18n/I18n'
 import { describe, expect, it } from 'vitest'
 import { run } from '../interpreter'
 import { countBlocks, MAX_PROGRAM_BLOCKS } from '../program'
@@ -38,4 +40,19 @@ describe('스테이지 정답', () => {
 
 it('assigns the confirmed worlds to stages 1–8', () => {
   expect(stages.map(stage => stage.world)).toEqual(['sketchbook', 'sketchbook', 'sketchbook', 'train', 'train', 'train', 'handheld', 'handheld'])
+})
+
+it('provides two translated hints for every stage and highlights original map cells', () => {
+  for (const stage of stages) {
+    expect(stage.hints.keys).toHaveLength(2)
+    for (const key of stage.hints.keys) expect(t(key)).not.toBe(key)
+    for (const kind of ['path', 'walls', 'start', 'goal'] as const) {
+      const expected = stage.grid.flatMap((row, y) => [...row].flatMap((cell, x) => {
+        const included = kind === 'path' ? cell !== '#' && cell !== 'S'
+          : cell === ({ walls: '#', start: 'S', goal: 'G' } as const)[kind]
+        return included ? [`${x},${y}`] : []
+      }))
+      expect([...hintCells(stage, kind)]).toEqual(expected)
+    }
+  }
 })

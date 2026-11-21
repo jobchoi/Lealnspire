@@ -8,7 +8,7 @@ import type { ProgressRepository } from '../model/ProgressRepository'
 import { isLastFrame, nextFrameIndex, playbackSpeeds } from './playback'
 export type Scheduler = { set(callback: () => void, delay: number): unknown; clear(handle: unknown): void }
 const scheduler: Scheduler = { set: (callback, delay) => setTimeout(callback, delay), clear: handle => clearTimeout(handle as ReturnType<typeof setTimeout>) }
-type State = { program: Program; execution: RunResult | null; index: number; playing: boolean; dismissed: boolean; speed: keyof typeof playbackSpeeds; showHint: boolean; failure: ReturnType<typeof failurePoint> }
+type State = { program: Program; execution: RunResult | null; index: number; playing: boolean; dismissed: boolean; speed: keyof typeof playbackSpeeds; hintStep: 0 | 1 | 2; failure: ReturnType<typeof failurePoint> }
 export class GameController extends Observable<State> {
   readonly editor = new EditorController()
   readonly stage: Stage
@@ -16,7 +16,7 @@ export class GameController extends Observable<State> {
   private clock: Scheduler
   private timer: unknown
   constructor(stage: Stage, repository: ProgressRepository, clock: Scheduler = scheduler) {
-    super({ program: repository.getProgram(stage), execution: null, index: 0, playing: false, dismissed: false, speed: 'normal', showHint: false, failure: null })
+    super({ program: repository.getProgram(stage), execution: null, index: 0, playing: false, dismissed: false, speed: 'normal', hintStep: 0, failure: null })
     this.stage = stage; this.repository = repository; this.clock = clock
   }
   get failure() { return this.state.failure ?? (this.finished && this.state.execution ? failurePoint(this.state.execution) : null) }
@@ -64,6 +64,7 @@ export class GameController extends Observable<State> {
     this.publish({ ...this.state, execution: null, failure, index: 0, playing: false, dismissed: false })
   }
   dismiss = () => this.update({ ...this.state, dismissed: true })
-  toggleHint = () => this.update({ ...this.state, showHint: !this.state.showHint })
+  toggleHint = () => this.update({ ...this.state, hintStep: this.state.hintStep === 0 ? 1 : 0 })
+  nextHint = () => { if (this.state.hintStep === 1) this.update({ ...this.state, hintStep: 2 }) }
   dispose = () => this.stop()
 }

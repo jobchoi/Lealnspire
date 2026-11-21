@@ -15,8 +15,12 @@ async function startIn(page: Page, stage: number, world?: World) {
   const done = world ? stage : stage - 1
   await page.evaluate(n => localStorage.setItem('lealnspire.progress', JSON.stringify({ version: 1, stages: Object.fromEntries(Array.from({ length: n }, (_, i) => [i + 1, { completed: true, bestStars: 3, lastProgram: [] }])) })), done)
   await page.reload()
-  await g.press(g.button('스테이지 목록'))
   const card = page.locator('.stage-card').nth(stage - 1)
+  // 새로고침 직후 첫 누름이 앱 준비 전에 들어가 무시되는 경우가 있어(간헐 실패 2회), 목록이 보일 때까지 다시 누른다
+  await expect(async () => {
+    if (!(await card.isVisible())) await g.press(g.button('스테이지 목록'))
+    await expect(card).toBeVisible({ timeout: 2_000 })
+  }).toPass({ timeout: 15_000 })
   await expect(card).toBeEnabled()
   await g.press(card)
   if (world) await g.press(page.getByRole('button', { name: worldSwitch[world] }))

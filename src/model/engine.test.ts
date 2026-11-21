@@ -4,7 +4,7 @@ import { failurePoint, run } from './interpreter'
 import { addBlock, countBlocks, deleteBlock, moveBlock, setRepeatCount } from './program'
 import type { Block, Stage } from './types'
 
-const stage = (grid: string[], startDir: Stage['startDir'] = 'E'): Stage => ({ id: 'test', world: 'sketchbook', title: '', goal: '', hint: '', grid, startDir, starBlocks: 1, solution: [] })
+const stage = (grid: string[], startDir: Stage['startDir'] = 'E'): Stage => ({ id: 'test', world: 'sketchbook', title: '', goal: '', hints: { keys: ['', ''], highlight: 'path' }, grid, startDir, starBlocks: 1, solution: [] })
 const forward: Block = { id: 'f', type: 'forward' }
 const left: Block = { id: 'l', type: 'turnLeft' }
 const right: Block = { id: 'r', type: 'turnRight' }
