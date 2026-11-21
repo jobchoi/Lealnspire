@@ -10,5 +10,5 @@ export type Stage = {
   initialProgram?: Program; solution: Program
 }
 export type Position = { x: number; y: number }
-export type Frame = { pos: Position; dir: Dir; activeBlockId: string | null; event?: 'move' | 'turn' | 'bump' | 'goal' }
+export type Frame = { pos: Position; dir: Dir; activeBlockId: string | null; loops?: { blockId: string; iteration: number; count: number }[]; event?: 'move' | 'turn' | 'bump' | 'goal' }
 export type RunResult = { frames: Frame[]; result: 'success' | 'collision' | 'unfinished' | 'stepLimit' }

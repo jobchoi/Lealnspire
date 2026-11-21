@@ -52,7 +52,7 @@ export function PlayPage({ stage, progressStore, onList, onNext, lastStage, cont
             })}
           </div>
         </div>
-        <Editor controller={controller.editor} failedBlockId={controller.failure?.blockId} theme={theme} program={program} onChange={controller.edit} maxBlocks={stage.maxBlocks} locked={playback.locked} activeBlockId={playback.frame?.activeBlockId} />
+        <Editor controller={controller.editor} failedBlockId={controller.failure?.blockId} theme={theme} program={program} onChange={controller.edit} maxBlocks={stage.maxBlocks} locked={playback.locked} activeBlockId={playback.frame?.activeBlockId} loops={playback.frame?.loops} />
       </div>
       {playback.showResult && playback.result && <ResultModal onFix={controller.fix} result={playback.result} stars={controller.stars} onRetry={playback.reset} onClose={playback.dismiss} onNext={onNext} lastStage={lastStage} />}
     </section>

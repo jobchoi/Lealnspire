@@ -91,6 +91,7 @@
   "totalUnlimited": "블록 {count}개",
   "action": "{order}번 {name} {action}",
   "tile": "{order}번 {name}",
+  "loopIteration": "{count}번 중 {iteration}번째",
   "repeatTile": "{order}번 반복 {count}번",
   "board": "{title} 지도, 로봇 {direction} 방향",
   "directions": {

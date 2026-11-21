@@ -3,15 +3,15 @@ import { useEffect, useRef, useState } from 'react'
 import { MAX_PROGRAM_BLOCKS } from '../../model/program'
 import { EditorController } from '../../controller/EditorController'
 import { useController } from '../hooks/useController'
-import type { Program } from '../../model/types'
+import type { Frame, Program } from '../../model/types'
 import { BlockTiles } from './BlockTiles'
 import { Engine, Symbol } from '../theme/Symbols'
 import { t } from '../../i18n/I18n'
 
-type EditorProps = { theme?: Theme; program: Program; onChange: (program: Program) => void; maxBlocks?: number; locked?: boolean; activeBlockId?: string | null; failedBlockId?: string | null; controller?: EditorController }
+type EditorProps = { theme?: Theme; program: Program; onChange: (program: Program) => void; maxBlocks?: number; locked?: boolean; activeBlockId?: string | null; loops?: Frame['loops']; failedBlockId?: string | null; controller?: EditorController }
 const types = defaultTheme.blockTypes
 
-export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, locked = false, activeBlockId, failedBlockId, controller: supplied }: EditorProps) {
+export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, locked = false, activeBlockId, loops, failedBlockId, controller: supplied }: EditorProps) {
   const workspace = useRef<HTMLDivElement>(null)
   const [controller] = useState(() => supplied ?? new EditorController())
   controller.configure(program, onChange, locked, maxBlocks)
@@ -55,7 +55,7 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
     <div className="workspace" ref={workspace} role="region" aria-label={t('workspace')} tabIndex={0} onClick={event => {
       if (!locked && !(event.target as HTMLElement).closest('button')) controller.clear()
     }}>
-      {theme.world === 'train' && <Engine />}{program.length ? <BlockTiles theme={theme} program={program} selectedId={selectedPath ? selectedId : null} targetId={targetPath ? targetId : null} activeBlockId={activeBlockId} failedBlockId={failedBlockId} locked={locked} onSelect={controller.select} />: <p>{t('empty')}</p>}
+      {theme.world === 'train' && <Engine />}{program.length ? <BlockTiles theme={theme} program={program} selectedId={selectedPath ? selectedId : null} targetId={targetPath ? targetId : null} activeBlockId={activeBlockId} loops={loops} failedBlockId={failedBlockId} locked={locked} onSelect={controller.select} />: <p>{t('empty')}</p>}
     {theme.world === 'handheld' && <div className="cartridge-slots" aria-hidden="true">{Array.from({ length: Math.max(0, 10 - total) }, (_, i) => <span key={i} />)}</div>}
     </div>
     </div>

@@ -1,5 +1,5 @@
 import { cellKey, parseGrid } from './grid'
-import type { Block, Dir, Program, RunResult, Stage } from './types'
+import type { Block, Dir, Frame, Program, RunResult, Stage } from './types'
 
 const directions: Dir[] = ['N', 'E', 'S', 'W']
 const offsets = { N: [0, -1], E: [1, 0], S: [0, 1], W: [-1, 0] } as const
@@ -13,7 +13,7 @@ export class Interpreter {
     let steps = 0
     let repeatEntries = 0
     let result: RunResult['result'] = 'unfinished'
-    function execute(blocks: Block[]): boolean {
+    function execute(blocks: Block[], loops: NonNullable<Frame['loops']> = []): boolean {
       for (const block of blocks) {
         if (block.type === 'repeat') {
           if (!Number.isInteger(block.count) || block.count < 2 || block.count > 10) throw new Error('Invalid repeat count')
@@ -21,7 +21,7 @@ export class Interpreter {
             // Bound interpreter work even when the body produces no frames.
             if (repeatEntries === 1000) { result = 'stepLimit'; return true }
             repeatEntries++
-            if (execute(block.body)) return true
+            if (execute(block.body, [...loops, { blockId: block.id, iteration: i + 1, count: block.count }])) return true
           }
           continue
         }
@@ -31,15 +31,15 @@ export class Interpreter {
           const [dx, dy] = offsets[dir]
           const next = { x: pos.x + dx, y: pos.y + dy }
           if (next.x < 0 || next.y < 0 || next.x >= grid.width || next.y >= grid.height || grid.walls.has(cellKey(next))) {
-            frames.push({ pos: { ...pos }, dir, activeBlockId: block.id, event: 'bump' }); result = 'collision'; return true
+            frames.push({ pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'bump' }); result = 'collision'; return true
           }
           pos = next
           const goal = cellKey(pos) === cellKey(grid.goal)
-          frames.push({ pos: { ...pos }, dir, activeBlockId: block.id, event: goal ? 'goal' : 'move' })
+          frames.push({ pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: goal ? 'goal' : 'move' })
           if (goal) { result = 'success'; return true }
         } else {
           dir = directions[(directions.indexOf(dir) + (block.type === 'turnRight' ? 1 : 3)) % 4]
-          frames.push({ pos: { ...pos }, dir, activeBlockId: block.id, event: 'turn' })
+          frames.push({ pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'turn' })
         }
       }
       return false

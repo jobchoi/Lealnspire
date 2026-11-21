@@ -96,3 +96,80 @@ it('renders each requested hint with map emphasis across all worlds', () => {
     expect(page()).toContain('class="stage-goal"')
   }
 })
+
+
+it('shows loop iterations during playback and clears them after leaving a loop or resetting', () => {
+  for (const world of ['sketchbook', 'train', 'handheld'] as const) {
+    const stage = { ...stages[0], world }
+    const store = createProgressStore()
+    let tick: (() => void) | undefined
+    const controller = new GameController(stage, store, { set: callback => { tick = callback; return 0 }, clear: noop })
+    controller.edit([{ id: 'loop', type: 'repeat', count: 3, body: [
+      { id: 'inner', type: 'repeat', count: 2, body: [{ id: 'turn', type: 'turnRight' }] },
+    ] }, { id: 'after', type: 'turnLeft' }])
+    const page = () => renderToString(<PlayPage stage={stage} progressStore={store} controller={controller} onList={noop} onNext={noop} lastStage={false} />).replaceAll('<!-- -->', '')
+    expect(page()).not.toContain('class="loop-progress"')
+    controller.step()
+    expect(page()).toContain('aria-label="1번 반복 3번"')
+    expect(page()).toContain('aria-label="3번 중 1번째"')
+    expect(page()).toContain('aria-label="2번 중 1번째"')
+    controller.step()
+    controller.step()
+    expect(page()).toContain('aria-label="3번 중 2번째"')
+    controller.step()
+    controller.step()
+    expect(page()).toContain('aria-label="3번 중 3번째"')
+    controller.reset()
+    expect(page()).not.toContain('class="loop-progress"')
+    controller.play()
+    tick!()
+    expect(page()).toContain('aria-label="3번 중 1번째"')
+    controller.reset()
+    for (let i = 0; i < 7; i++) controller.step()
+    expect(controller.finished).toBe(true)
+    expect(page()).not.toContain('class="loop-progress"')
+    controller.dispose()
+  }
+})
+
+it('keeps the final loop iteration through results and dismiss, clearing it on reset, edit, selection or replay', () => {
+  for (const world of ['sketchbook', 'train', 'handheld'] as const) {
+    for (const success of [false, true]) {
+      const stage = { ...stages[0], world }
+      const store = createProgressStore()
+      const controller = new GameController(stage, store, { set: () => 0, clear: noop })
+      const program = [{ id: 'loop', type: 'repeat' as const, count: success ? 2 : 3, body: [
+        { id: 'command', type: success ? 'forward' as const : 'turnLeft' as const },
+      ] }]
+      const page = () => renderToString(<PlayPage stage={stage} progressStore={store} controller={controller} onList={noop} onNext={noop} lastStage={false} />).replaceAll('<!-- -->', '')
+      const finish = () => {
+        controller.edit(program)
+        for (let i = 0; i < program[0].count; i++) controller.step()
+        expect(controller.finished).toBe(true)
+        expect(controller.result).toBe(success ? 'success' : 'unfinished')
+        expect(page()).toContain('role="dialog"')
+        expect(page()).toContain(`aria-label="${program[0].count}번 중 ${program[0].count}번째"`)
+        controller.dismiss()
+        expect(page()).not.toContain('role="dialog"')
+        expect(page()).toContain('class="loop-progress"')
+      }
+      const cleared = () => {
+        expect(page()).not.toContain('class="loop-progress"')
+        expect(page()).not.toContain('class="failure-badge"')
+      }
+      finish()
+      controller.reset()
+      cleared()
+      finish()
+      controller.edit(program)
+      cleared()
+      finish()
+      controller.editor.select('loop')
+      cleared()
+      finish()
+      controller.play()
+      cleared()
+      controller.dispose()
+    }
+  }
+})

@@ -105,3 +105,39 @@ describe('failure point', () => {
     }
   })
 })
+
+
+describe('loop frame context', () => {
+  it('records each iteration and clears context after the repeat', () => {
+    const frames = run(stage(['S......G']), [repeat([forward], 3), right]).frames
+    expect(frames.map(frame => frame.loops)).toEqual([undefined,
+      [{ blockId: 'loop', iteration: 1, count: 3 }],
+      [{ blockId: 'loop', iteration: 2, count: 3 }],
+      [{ blockId: 'loop', iteration: 3, count: 3 }], undefined])
+  })
+  it('records outer to inner context for 2[F 3[L]] without changing earlier frames', () => {
+    const inner: Block = { id: 'inner', type: 'repeat', count: 3, body: [left] }
+    const frames = run(stage(['S....G', '......']), [repeat([forward, inner])]).frames.slice(1)
+    expect(frames.map(frame => frame.loops)).toEqual([1, 2].flatMap(iteration => {
+      const outer = { blockId: 'loop', iteration, count: 2 }
+      return [[outer], ...[1, 2, 3].map(i => [outer, { blockId: 'inner', iteration: i, count: 3 }])]
+    }))
+    frames[1].loops![0].iteration = 99
+    expect(frames[0].loops![0].iteration).toBe(1)
+  })
+  it('keeps the interrupted iteration on a collision frame', () => {
+    const execution = run(stage(['S.#G']), [repeat([forward], 3)])
+    expect(execution.result).toBe('collision')
+    expect(execution.frames.at(-1)).toMatchObject({ event: 'bump', loops: [{ blockId: 'loop', iteration: 2, count: 3 }] })
+  })
+  it('keeps the last executed context at either safety limit without extra frames', () => {
+    const execution = run(stage(['S.G']), [repeat(Array.from({ length: 501 }, () => right))])
+    expect(execution.result).toBe('stepLimit')
+    expect(execution.frames).toHaveLength(1001)
+    expect(execution.frames.at(-1)?.loops).toEqual([{ blockId: 'loop', iteration: 2, count: 2 }])
+    const entries = run(stage(['S.G']), [repeat([right]), ...Array.from({ length: 100 }, () => repeat([], 10))])
+    expect(entries.result).toBe('stepLimit')
+    expect(entries.frames).toHaveLength(3)
+    expect(entries.frames.at(-1)?.loops).toEqual([{ blockId: 'loop', iteration: 2, count: 2 }])
+  })
+})

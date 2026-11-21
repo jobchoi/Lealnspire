@@ -42,3 +42,14 @@
 .failure-badge { position: absolute; right: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--failure-ink); color: #fff; font: bold 15px/18px sans-serif; z-index: 2; }
 .board-failure { color: var(--failure-ink); pointer-events: none; }
 .fix-button { min-width: 44px; min-height: 44px; }
+
+/* Reserve a separate line inside the tile for the live iteration badge. */
+.block-tile.has-loop-progress { padding-top: 12px; padding-bottom: 20px; }
+.block-tile .loop-progress { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); max-width: calc(100% - 6px); padding: 0 3px; white-space: nowrap; font: bold 12px/16px sans-serif; color: #713e0b; background: #fff4cf; border: 1px solid currentColor; border-radius: 4px; }
+.theme-sketchbook .loop-progress { font-family: 'Gaegu', cursive; font-size: 15px; border-style: dashed; color: #a13e21; }
+.theme-train .loop-progress { color: #194f68; background: #fff8df; border-radius: 8px; border-width: 2px; line-height: 14px; }
+.theme-handheld .loop-progress { font-family: monospace; color: #0f380f; background: #c5dba2; border-radius: 0; letter-spacing: 1px; }
+@media (max-width: 700px) {
+  .block-tile.has-loop-progress .block-symbol { font-size: 1.1rem; line-height: 1; }
+  .play-page .workspace .block-tile.has-loop-progress strong { font-size: 16px; line-height: 20px; padding: 0 2px; }
+}
