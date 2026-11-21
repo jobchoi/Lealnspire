@@ -6,7 +6,7 @@ Lealnspire는 아이가 명령 블록과 반복으로 로봇을 목적지까지 
 
 1. 이 문서 → CLAUDE.md 전체 → AGENTS.md → 지정된 docs/handoff/<작업 ID>.md를 읽습니다.
 2. git status와 현재 브랜치를 확인하고 기존 변경을 보존합니다. Codex는 커밋·push·브랜치 변경을 하지 않습니다.
-3. 현재 작업·결정은 docs/NEXT_SESSION.md와 docs/TASKS.md, 규칙은 docs/GAME_DESIGN.md, 학습 구성은 docs/CURRICULUM.md를 봅니다.
+3. 현재 작업·결정은 docs/NEXT_SESSION.md와 docs/TASKS.md, 규칙은 docs/GAME_DESIGN.md, 학습 구성은 docs/CURRICULUM.md를 봅니다. 다음 단계 방향은 docs/ROADMAP.md.
 4. Codex는 지시서 범위만 수정하며 TASKS/NEXT_SESSION/WORK_HISTORY는 Claude가 갱신합니다.
 
 ```sh

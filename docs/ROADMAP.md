@@ -1,0 +1,47 @@
+# 2단계 로드맵 (자체 기획, Claude + GPT 교차 기획)
+
+> 상태: **[제안·잠정]** — 사용자 지시(2026-11-21 "기획단도 gpt와 할 수 있으면 요새 트랜드를 반영해서 자체적으로 설계 및 구현")로 Claude와 GPT(Codex)가 각자 기획하고 Claude가 종합했다. 사용자가 승인하면 [확정]으로 바꾼다. 실행 중 결정은 이 문서와 WORK_HISTORY.md에 남긴다.
+
+## 1. 목표
+
+새 문법(조건문 등)을 늘리기 전에, 지금의 순서·반복 퍼즐을 **예측 → 실행 → 원인 찾기 → 고치기 → 다른 문제에 적용**하는 학습 경험으로 만든다. 도움은 아이가 요청할 때만, 생각을 대신하지 않는 만큼만 준다. 서버·회원가입·외부 전송·유료 AI 없이 정적 사이트와 localStorage로 한다.
+
+## 2. 근거로 삼은 동향 (2026-11-21 조사)
+
+| 동향 | 근거 수준 | 반영 |
+|---|---|---|
+| 컴퓨팅 사고 중심 프로그램이 문제 해결·비판적 사고 향상(2025 리뷰 49편), 4학년 10주 코딩 RCT | 연구 인용(AAP) | 문법보다 사고 과정(예측·디버깅) 강화 |
+| 비계(단계 분해, 막힐 때 개입)의 효과가 큼(Xu et al. 2022) | 연구, 업체 블로그 경유 | 요청형 단계 힌트, 실패 지점 표시 |
+| 학습자를 계속 인지적으로 관여시키기, 생각을 대신해 주지 않기 | 업계 글(Filament Games 2026-08) | 예측 도전, 정답을 주지 않는 힌트 |
+| AI 리터러시는 도구 사용이 아니라 분해·조립으로(LEGO Education, AI for Good 2026), 게임형 AI 리터러시 산출물 스코핑 리뷰(2026) | 강연 요약·리뷰 | 이번 단계에는 넣지 않음(별도 단원 필요) |
+| AI 개인화 코딩 교육 | 업체 마케팅 위주 | 채택 안 함(유료 API·데이터 전송·생각 대체 우려) |
+| 부모의 감시·데이터 수집 우려 | 소규모 연구(11가족) | 저장 기록 안내·삭제, 감시 대시보드는 만들지 않음 |
+
+출처: [AAP 컴퓨팅 사고 Q&A](https://www.aap.org/en/patient-care/media-and-children/center-of-excellence-on-social-media-and-youth-mental-health/qa-portal/qa-portal-library/qa-portal-library-questions/computer-programming-and-computational-thinking/), [JetLearn 2026 동향](https://www.jetlearn.com/blog/2026-coding-trends-kids-must-know-now), [Codeyoung](https://www.codeyoung.com/blog/coding-for-kids-the-future-of-education), [LEGO Education K-8 CS](https://education.lego.com/en-us/blog/computer-science-education/), [EdTech Magazine 2026-02](https://edtechmagazine.com/k12/article/2026/02/how-lego-education-promoting-k-8-computer-science), [AI for Good: 아이의 주체성](https://aiforgood.itu.int/designing-ai-education-around-childrens-agency/), [Filament Games 2026-08](https://www.filamentgames.com/blog/the-latest-findings-in-ai-and-learning---august-2026), [AI 리터러시 게임 설계(Waterloo)](https://uwspace.uwaterloo.ca/items/3e4cb5bf-8bc8-4b93-aec5-93158b88910b), [부모의 디지털 참여 인식(UWS)](https://research-portal.uws.ac.uk/en/publications/how-parents-read-young-learners-digital-engagement-a-posthumanist/)
+
+## 3. 두 기획 비교
+
+| 아이디어 | Claude | GPT | 결정 |
+|---|---|---|---|
+| 실패 지점 표시·고치기 | 버그 잡기 스테이지로 제안 | T15(1순위) | **채택 T15** — 모든 스테이지의 실패 루프를 개선 |
+| 단계형 힌트 | 3단계(목표→어긋난 블록→첫 블록 공개) | 2단계(관찰→질문), 정답 비공개 | **채택 T16, GPT안** — 블록 공개는 생각을 대신함 |
+| 실행 전 예측 | 멈출 칸 고르기 | 위치+방향 후보 3개, 선택형 도전 | **채택 T17** — 강제하지 않는 선택 도전 |
+| 반복 회차 표시 | 없음 | T19 | **채택 T18** — 반복 학습의 핵심 가시화 |
+| 되돌리기 1회 | 없음 | T21 | **채택 T19** — 실수 비용을 낮춰 직접 수정 유도 |
+| 저장 기록 안내·삭제 | 보호자용 학습 기록 | 안내·삭제(감시 화면 제외) | **채택 T20, GPT안** — 데이터 우려에 맞음 |
+| 전이 보너스 스테이지 | 오늘의 퍼즐(절차적 생성) | 수작업 보너스 2개, 생성은 반대 | **채택 T21, GPT안** — 생성 맵은 학습 목표 보장이 어려움 |
+| 더 짧게 다시 풀기 | 없음 | T20 | 보류 — 별 기준 확정과 함께 결정 |
+| 내 맵 만들기 + URL 공유 | T18 | 없음 | 보류 — GAME_DESIGN 5절 제외 목록(편집기·공유), 사용자 결정 |
+| 2단원 조건문 | T21 | 동시 도입 반대 | 보류 — 위 루프 검증 후 다음 개념 하나 선정 |
+
+하지 않을 것(GPT 제안에 동의): AI 챗봇·자동 정답, 실패 횟수로 몰래 난이도 하향, 출석·연속 접속·순위표·부모 감시, 여러 단원 동시 도입, 테마 추가 확장.
+
+## 4. 실행 순서
+
+T14(T13 다듬기, 가독성) → T15 → T16 → T17 → T18 → T19 → T20 → T21. 각 작업은 TASKS.md의 완료 조건, `docs/handoff/<ID>.md` 지시서, 구현 Codex·QC Claude, 화면 변경은 세 월드 × 세 화면 크기 E2E와 스크린샷 육안 확인.
+
+## 5. 사용자 결정이 필요한 것
+
+1. 이 로드맵 승인([제안]→[확정])
+2. 보류 항목: 내 맵 만들기·URL 공유(제외 목록 해제 여부), 2단원 주제, 더 짧게 다시 풀기
+3. 별 기준(잠정 3·2·1) 확정
