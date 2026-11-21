@@ -1,3 +1,4 @@
+import { stages } from '../../model/stages'
 import { predictions } from '../../model/predictions'
 import { worlds } from '../theme/themes'
 import { Symbol } from '../theme/Symbols'
@@ -10,10 +11,10 @@ export function StageSelectPage({ progress, onSelect, onHome, onPrediction }: Pr
   return <section className="stage-select-page">
     <h1 tabIndex={-1} data-page-title>{t('stageList')}</h1>
     <button type="button" onClick={onHome}>{t('home')}</button>
-    {worlds.map(world => <div key={world} className={`stage-world world-${world}`}><h2 className={`world-heading world-${world}`}><Symbol name={world} />{t(`themes.${world}.name`)}</h2><ol className="stage-list">{stageCards(progress).filter(card => card.stage.world === world).map(({ stage, index, unlocked, stars }) => {
+    {[...worlds, 'bonus' as const].map(world => <div key={world} className={`stage-world world-${world}`}><h2 className={`world-heading world-${world}`}>{world !== 'bonus' && <Symbol name={world} />}{world === 'bonus' ? t('bonus') : t(`themes.${world}.name`)}</h2><ol className="stage-list">{stageCards(progress).filter(card => world === 'bonus' ? card.index >= stages.length : card.index < stages.length && card.stage.world === world).map(({ stage, index, unlocked, stars }) => {
       return <li key={stage.id}>
         <button type="button" className="stage-card" disabled={!unlocked} onClick={() => onSelect(index)}>
-          <strong>{t('stage')} {stage.id}: {t(stage.title)}</strong>
+          <strong>{index < stages.length ? `${t('stage')} ${stage.id}: ` : ''}{t(stage.title)}</strong>
           <span>{t('bestStars', { count: stars })} <span aria-hidden="true">{Array.from({ length: 3 }, (_, i) => <span key={i} className={i < stars ? 'earned-star' : 'empty-star'} style={{ opacity: i < stars ? 1 : .25 }}><Symbol name="goal" /></span>)}</span></span>
           <span>{unlocked ? t('unlocked') : t('locked')}</span>
         </button>

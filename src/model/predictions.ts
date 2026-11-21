@@ -1,5 +1,5 @@
 import { Interpreter } from './interpreter'
-import { stages } from './stages'
+import { allStages as stages } from './stages'
 import type { Dir, Position, Program, Block } from './types'
 export type PredictionChoice = { pos: Position; dir: Dir }
 export type Prediction = { id: string; stageId: string; program: Program; choices: PredictionChoice[] }
@@ -17,9 +17,11 @@ const definitions = [
   { stageId: '2', program: code('forward', 'turnRight', 'forward'), variants: [code('forward', 'turnLeft', 'forward'), code('forward', 'forward')] },
   { stageId: '5', program: [loop(3, code('forward'))], variants: [[loop(6, code('forward'))], code('forward')] },
   { stageId: '7', program: [loop(2, code('forward', 'forward', 'turnRight'))], variants: [[loop(3, code('forward', 'forward', 'turnRight'))], [loop(2, code('forward', 'forward', 'turnLeft'))]] },
+  { stageId: 'b1', program: [loop(2, code('forward', 'forward', 'turnLeft', 'forward', 'turnRight'))], variants: [[loop(2, code('forward', 'turnLeft', 'forward', 'turnRight'))], code('forward', 'forward')] },
+  { stageId: 'b2', program: code('forward', 'forward', 'turnLeft', 'forward'), variants: [code('forward', 'turnLeft', 'forward'), code('forward', 'forward', 'turnLeft', 'forward', 'forward')] },
 ]
 export const predictions: Prediction[] = definitions.map(({ stageId, program, variants }, i) => {
   const choices = variants.map(variant => predictionEnd(stageId, variant))
-  choices.splice(i, 0, predictionEnd(stageId, program))
+  choices.splice(i % 3, 0, predictionEnd(stageId, program))
   return { id: `prediction-${stageId}`, stageId, program, choices }
 })

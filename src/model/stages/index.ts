@@ -16,3 +16,11 @@ export const stages: Stage[] = [
   { id: '7', world: 'handheld', title: 'stage7Title', goal: 'stage7Goal', hints: { keys: ['stage7Hint1', 'stage7Hint2'], highlight: 'path' }, grid: ['S..', '##.', 'G..'], startDir: 'E', maxBlocks: 4, starBlocks: 4, solution: [repeat(3, 'forward', 'forward', 'turnRight')] },
   { id: '8', world: 'handheld', title: 'stage8Title', goal: 'stage8Goal', hints: { keys: ['stage8Hint1', 'stage8Hint2'], highlight: 'goal' }, grid: ['##.G', '#..#', 'S.##'], startDir: 'E', maxBlocks: 7, starBlocks: 7, solution: [repeat(2, 'forward', 'turnLeft', 'forward', 'turnRight'), { id: 'last-forward', type: 'forward' }] },
 ]
+
+// T21 전이 보너스: 정규 완주 뒤 선택하는 잠정 구성입니다.
+export const bonusStages: Stage[] = [
+  { id: 'b1', world: 'train', title: 'bonus1Title', goal: 'bonus1Goal', hints: { keys: ['bonus1Hint1', 'bonus1Hint2'], highlight: 'path' }, grid: ['####G', '##...', 'S..##'], startDir: 'E', maxBlocks: 7, starBlocks: 6, solution: [repeat(2, 'forward', 'forward', 'turnLeft', 'forward', 'turnRight')] },
+  { id: 'b2', world: 'handheld', title: 'bonus2Title', goal: 'bonus2Goal', hints: { keys: ['bonus2Hint1', 'bonus2Hint2'], highlight: 'path' }, grid: ['###G', '###.', '##..', '##.#', 'S..#'], startDir: 'E', maxBlocks: 8, starBlocks: 7, solution: [{ id: 'first-forward', type: 'forward' }, repeat(2, 'forward', 'turnLeft', 'forward', 'forward', 'turnRight')] },
+]
+export const allStages = [...stages, ...bonusStages]
+export const isLastStage = (index: number) => index === stages.length - 1 || index === allStages.length - 1

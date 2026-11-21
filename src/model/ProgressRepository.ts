@@ -1,5 +1,5 @@
 import type { Program, Stage } from './types'
-import { stages } from './stages'
+import { allStages as stages } from './stages'
 
 export type StageProgress = { completed: boolean; bestStars: number; lastProgram: Program }
 export type Progress = { version: 1; stages: Record<string, StageProgress> }

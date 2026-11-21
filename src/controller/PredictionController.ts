@@ -1,7 +1,7 @@
 import { Observable } from './Observable'
 import { GameController, type Scheduler } from './GameController'
 import { ProgressRepository } from '../model/ProgressRepository'
-import { stages } from '../model/stages'
+import { allStages as stages } from '../model/stages'
 import { samePrediction, type Prediction } from '../model/predictions'
 export class PredictionController extends Observable<{ selected: number | null }> {
   readonly game: GameController

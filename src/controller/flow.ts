@@ -1,4 +1,4 @@
-import { stages } from '../model/stages'
+import { stages, allStages } from '../model/stages'
 import { isUnlocked, type Progress } from '../model/ProgressRepository'
 
 // 모든 스테이지를 마쳤으면 이어하기 대신 목록에서 다시 고른다.
@@ -13,5 +13,5 @@ export function showNextStage(progress: Progress, stageId: string, lastStage: bo
 }
 
 export function stageCards(progress: Progress) {
-  return stages.map((stage, index) => ({ stage, index, unlocked: isUnlocked(progress, index), stars: progress.stages[stage.id]?.bestStars ?? 0 }))
+  return allStages.map((stage, index) => ({ stage, index, unlocked: isUnlocked(progress, index), stars: progress.stages[stage.id]?.bestStars ?? 0 }))
 }

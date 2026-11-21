@@ -3,7 +3,7 @@ import { t } from '../../i18n/I18n'
 import { describe, expect, it } from 'vitest'
 import { run } from '../interpreter'
 import { countBlocks, MAX_PROGRAM_BLOCKS } from '../program'
-import { stages } from './index'
+import { stages, bonusStages } from './index'
 import type { Program } from '../types'
 
 describe('스테이지 정답', () => {
@@ -56,3 +56,30 @@ it('provides two translated hints for every stage and highlights original map ce
     }
   }
 })
+
+for (const stage of bonusStages) {
+  it(`${stage.id}: two solutions fit, all open cells are reachable, and no plain program fits`, () => {
+    const started = performance.now()
+    expect(run(stage, stage.solution).result).toBe('success')
+    expect(countBlocks(stage.solution)).toBeLessThanOrEqual(stage.starBlocks)
+    const alternative: Program = structuredClone(stage.solution)
+    const loop = alternative.find(block => block.type === 'repeat')!
+    if (loop.type !== 'repeat') throw new Error('missing repeat')
+    const pair = loop.body.findIndex((block, i) => block.type === 'forward' && loop.body[i + 1]?.type === 'forward')
+    loop.body.splice(pair, 2, { id: 'inner', type: 'repeat', count: 2, body: [{ id: 'inner-forward', type: 'forward' }] })
+    expect(countBlocks(alternative)).toBeLessThanOrEqual(stage.maxBlocks!)
+    expect(run(stage, alternative).result).toBe('success')
+    const visited = new Set(run(stage, stage.solution).frames.map(frame => `${frame.pos.x},${frame.pos.y}`))
+    stage.grid.forEach((row, y) => [...row].forEach((cell, x) => { if (cell !== '#') expect(visited.has(`${x},${y}`)).toBe(true) }))
+    expect(stage.grid.length).toBeLessThanOrEqual(6)
+    expect(stage.grid[0].length).toBeLessThanOrEqual(6)
+    for (const key of stage.hints.keys) expect(t(key)).not.toBe(key)
+    const visit = (program: Program): void => {
+      if (run(stage, program).result === 'success') throw new Error(`plain shortcut: ${JSON.stringify(program)}`)
+      if (program.length === stage.maxBlocks) return
+      for (const type of ['forward', 'turnLeft', 'turnRight'] as const) visit([...program, { id: `plain-${program.length}`, type }])
+    }
+    visit([])
+    expect(performance.now() - started).toBeLessThan(1000)
+  })
+}

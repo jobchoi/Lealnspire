@@ -19,7 +19,8 @@ test.describe('처음 온 아이', () => {
     }
     await page.reload()
     await g.press(g.button('스테이지 목록')).catch(async () => { await g.start(); await g.press(g.button('스테이지 목록')) })
-    await expect(page.locator('main')).not.toContainText('잠김')
+    // 정규 1~8은 모두 열림(보너스 2는 보너스 1을 깨야 열리는 선택 활동이라 제외 — T21·T23 완주 계약)
+    for (let i = 0; i < 8; i++) await expect(page.locator('.stage-card').nth(i)).not.toContainText('잠김')
   })
 
   test('블록·실행 버튼은 글을 몰라도 기호로 구분된다(모든 버튼에 한글 외 기호가 보임)', async ({ page }) => {

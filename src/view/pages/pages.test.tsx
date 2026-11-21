@@ -5,7 +5,7 @@ import { HomePage, RecordDialog } from './HomePage'
 import { StageSelectPage } from './StageSelectPage'
 import { PlayPage } from './PlayPage'
 import { createProgressStore } from '../../model/ProgressRepository'
-import { stages } from '../../model/stages'
+import { stages, bonusStages } from '../../model/stages'
 import { t } from '../../i18n/I18n'
 
 const noop = () => {}
@@ -20,17 +20,17 @@ describe('화면 렌더링', () => {
     for (const stage of stages) store.completeStage(stage.id, 3, [])
     expect(home()).not.toContain(t('continue'))
   })
-  it('8개 카드와 잠김, 최고 별을 표시하고 이전 완료 시 다음 카드가 열린다', () => {
+  it('정규 8개와 보너스 2개 카드, 잠김, 최고 별을 표시하고 이전 완료 시 다음 카드가 열린다', () => {
     const store = createProgressStore()
     const list = () => renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)
-    expect(list().match(/class="stage-card"/g)).toHaveLength(8)
-    expect(list().match(/disabled=""/g)).toHaveLength(7)
+    expect(list().match(/class="stage-card"/g)).toHaveLength(10)
+    expect(list().match(/disabled=""/g)).toHaveLength(9)
     expect(list()).toContain(t('locked'))
     store.completeStage('1', 2, [])
-    expect(list().match(/disabled=""/g)).toHaveLength(6)
+    expect(list().match(/disabled=""/g)).toHaveLength(8)
     expect(list()).toContain(t('bestStars', { count: 2 }))
     expect(list().match(/style="opacity:1"/g)).toHaveLength(2)
-    expect(list().match(/style="opacity:0.25"/g)).toHaveLength(22)
+    expect(list().match(/style="opacity:0.25"/g)).toHaveLength(28)
   })
   it('저장 코드로 게임을 열고 힌트와 결과는 닫힌 상태로 시작한다', () => {
     const store = createProgressStore()
@@ -186,4 +186,18 @@ it('shows the record guide and a separate destructive confirmation', () => {
   expect(info).not.toContain(t('privacy.confirm'))
   for (const key of ['confirm', 'erase', 'cancel']) expect(dialog(true)).toContain(t(`privacy.${key}`))
   expect(dialog(true)).not.toContain(t('privacy.clear'))
+})
+
+it('keeps regular stage headings and uses bonus titles without an extra prefix in headings and card names', () => {
+  const store = createProgressStore()
+  const list = renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)
+  for (const stage of [...stages, ...bonusStages]) {
+    const title = bonusStages.includes(stage) ? t(stage.title) : `${t('stage')} ${stage.id}: ${t(stage.title)}`
+    const page = renderToString(<PlayPage stage={stage} progressStore={store} onList={noop} onNext={noop} lastStage={false} />).replaceAll('<!-- -->', '')
+    expect(page).toContain(`<h1 tabindex="-1" data-page-title="true">${title}</h1>`)
+    expect(list.replaceAll('<!-- -->', '')).toContain(`<strong>${title}</strong>`)
+    if (bonusStages.includes(stage)) {
+      for (const html of [page, list]) expect(html).not.toContain(`${t('stage')} ${stage.id}`)
+    }
+  }
 })

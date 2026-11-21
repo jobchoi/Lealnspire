@@ -3,6 +3,7 @@ import { ConceptDefs, Symbol } from '../theme/Symbols'
 import { useEffect, useState, type CSSProperties } from 'react'
 import { countBlocks } from '../../model/program'
 import type { Stage } from '../../model/types'
+import { bonusStages } from '../../model/stages'
 import { Editor } from '../components/Editor'
 import { t } from '../../i18n/I18n'
 import { Board } from '../components/Board'
@@ -24,7 +25,7 @@ export function PlayPage({ stage, progressStore, onList, onNext, lastStage, cont
   const playback = { frame: controller.frame, result: controller.result, locked: controller.locked, finished: controller.finished, showResult: controller.showResult, playing, speed, play: controller.play, step: controller.step, reset: controller.reset, dismiss: controller.dismiss, setSpeed: controller.setSpeed }
   return (
     <section className={`play-page theme-${theme.world}`}>
-      <ConceptDefs /><h1 tabIndex={-1} data-page-title>{t('stage')} {stage.id}: {t(stage.title)}</h1>
+      <ConceptDefs /><h1 tabIndex={-1} data-page-title>{bonusStages.some(bonus => bonus.id === stage.id) ? '' : `${t('stage')} ${stage.id}: `}{t(stage.title)}</h1>
       <div className="playback-controls stage-controls">
         <button type="button" onClick={onList} aria-label={theme.buttonLabel('stageList')} title={theme.buttonLabel('stageList')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="stageList" /></span><small>{theme.buttonLabel('stageList')}</small></button>
         <button type="button" aria-expanded={hintStep > 0} aria-controls="stage-hint" onClick={controller.toggleHint} aria-label={theme.buttonLabel('hint')} title={theme.buttonLabel('hint')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="hint" /></span><small>{theme.buttonLabel('hint')}</small></button>

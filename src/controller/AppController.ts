@@ -1,5 +1,5 @@
 import { Observable } from './Observable'
-import { stages } from '../model/stages'
+import { allStages as stages, isLastStage } from '../model/stages'
 import { ProgressRepository, isUnlocked } from '../model/ProgressRepository'
 import { continueStageIndex, stageCards } from './flow'
 import { GameController } from './GameController'
@@ -43,7 +43,7 @@ export class AppController extends Observable<Screen> {
   home = () => { this.prediction?.dispose(); this.game?.dispose(); this.update({ page: 'home' }) }
   next = () => {
     if (this.state.page !== 'play') return
-    if (this.state.index === stages.length - 1) this.list()
+    if (isLastStage(this.state.index)) this.list()
     else this.openStage(this.state.index + 1)
   }
 }

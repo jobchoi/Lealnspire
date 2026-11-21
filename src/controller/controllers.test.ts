@@ -1,3 +1,4 @@
+import { bonusStages } from '../model/stages'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AppController } from './AppController'
 import { GameController } from './GameController'
@@ -290,3 +291,27 @@ it('clearing app progress notifies the home screen and removes continue and unlo
   expect(app.continueIndex).toBeUndefined()
   expect(repository.getProgress().stages).toEqual({})
 })
+
+for (const stage of bonusStages) {
+  it(`${stage.id} supports hints, failure fix, undo and saved success`, () => {
+    vi.useFakeTimers()
+    try {
+      const repository = new ProgressRepository()
+      const game = new GameController(stage, repository)
+      game.toggleHint(); game.nextHint()
+      expect(game.getSnapshot().hintStep).toBe(2)
+      game.edit([{ id: 'wrong', type: 'turnRight' }, { id: 'bump', type: 'forward' }])
+      game.play(); vi.runAllTimers()
+      expect(game.result).toBe('collision')
+      game.fix()
+      expect(game.failure?.blockId).toBe('bump')
+      expect(game.locked).toBe(false)
+      game.edit(stage.solution); game.undo()
+      expect(game.getSnapshot().program[0].id).toBe('wrong')
+      game.edit(stage.solution); game.play(); vi.runAllTimers()
+      expect(game.result).toBe('success')
+      expect(repository.getProgram(stage)).toEqual(stage.solution)
+      expect(repository.getProgress().stages[stage.id].completed).toBe(true)
+    } finally { vi.useRealTimers() }
+  })
+}
