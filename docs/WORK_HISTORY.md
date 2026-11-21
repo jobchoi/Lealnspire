@@ -1,5 +1,13 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-21 — T25 기록 신뢰성 E2E (Claude), T26 앱 연결·T27 정적 배포 준비 (구현 Codex, 배포 E2E·QC Claude) [잠정]
+
+- T25: e2e/records.e2e.ts 10개 통과, 코드 수정 불필요(기존 ProgressRepository 검증이 망가진 기록·저장 차단을 처리)
+- T27 Context7 확인(Vite v8.0.10): `vite build --base`, `import.meta.env.BASE_URL`; 설치된 vite 8.3.8의 `vite preview --help`로 `--outDir`·`--base` 확인
+- Codex: public/guide.html(GUIDE.md와 핵심 문장 일치 단위 테스트), 기록 안내 대화 상자에 '교사·보호자 안내' 링크, DEPLOY.md(빌드·업로드·체크리스트·캐시·되돌리기), ASSETS.md(글꼴 5종 OFL 1.1, 저작권 표시). Codex가 Claude 지시서 오류를 바로잡음: localStorage는 경로가 아니라 출처(프로토콜·도메인·포트)마다 분리
+- Claude: playwright.prod.config.ts(루트 4173, /lealnspire/ 4174로 빌드·미리보기), e2e/production.prod.ts, `npm run e2e:prod`, OFL 재배포 조건에 맞춰 public/licenses/fonts.txt(라이선스 원문). 첫 실행 실패는 Claude 테스트 기대값 실수(1번 F F는 별 3개)
+- 검증: verify 133개, e2e 98개 통과·2개 건너뜀, e2e:prod 4개 통과
+
 ## 2026-11-21 — T24 접근성 점검·수정 (점검 E2E·QC Claude, 구현 Codex), T26 교사·보호자 안내 문서 (Claude) [잠정]
 
 - Claude: e2e/a11y.e2e.ts 작성 — 보이는 글자 대비 자동 계산(배경 이미지·그라데이션 위 글자는 계산 불가로 건너뜀), 버튼 이름, 맵 대체 설명의 위치·방향, 동작 줄이기 시 재생 중 애니메이션 0, 키보드만으로 반복 편집→실패→고치기→힌트→성공·포커스 표시

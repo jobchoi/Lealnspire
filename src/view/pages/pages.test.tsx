@@ -1,3 +1,5 @@
+import sourceGuide from '../../../docs/GUIDE.md?raw'
+import publishedGuide from '../../../public/guide.html?raw'
 import { GameController } from '../../controller/GameController'
 import { renderToString } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
@@ -183,6 +185,9 @@ it('shows the record guide and a separate destructive confirmation', () => {
   expect(info).toContain('role="dialog"')
   expect(info).toContain('aria-modal="true"')
   for (const key of ['location', 'records', 'browser', 'clear', 'unavailable']) expect(info).toContain(t(`privacy.${key}`))
+  expect(info).toContain(`href="${import.meta.env.BASE_URL}guide.html"`)
+  expect(info).toContain(t('privacy.guide'))
+  expect(info).not.toContain('target=')
   expect(info).not.toContain(t('privacy.confirm'))
   for (const key of ['confirm', 'erase', 'cancel']) expect(dialog(true)).toContain(t(`privacy.${key}`))
   expect(dialog(true)).not.toContain(t('privacy.clear'))
@@ -200,4 +205,15 @@ it('keeps regular stage headings and uses bonus titles without an extra prefix i
       for (const html of [page, list]) expect(html).not.toContain(`${t('stage')} ${stage.id}`)
     }
   }
+})
+
+it('keeps the published teacher guide consistent with the source guide', () => {
+  const source = sourceGuide
+  const published = publishedGuide
+  for (const sentence of ['8개를 성공하면 1단원 완료', '이 기기의 브라우저에만', '별이 적어도 다음 스테이지는 열립니다.', '실제 휴대폰·태블릿 기기, 사파리·파이어폭스는 아직 검증하지 않았습니다.']) {
+    expect(source).toContain(sentence)
+    expect(published).toContain(sentence)
+  }
+  expect(published).toContain('href="./"')
+  expect(published).toContain('lang="ko"')
 })

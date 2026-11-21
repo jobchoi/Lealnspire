@@ -86,6 +86,7 @@ npx -y @playwright/mcp@0.0.84 install-browser chrome-for-testing
 | `npm run test` | Vitest 단위 테스트 1회 실행 |
 | `npm run build` | 타입 검사(`tsc -b`) + 프로덕션 빌드 |
 | `npm run e2e` | 사용자 시나리오 E2E(Playwright, 처음 한 번 `npx playwright install chromium`) |
+| `npm run e2e:prod` | 배포용 빌드 E2E: 루트(`/`)와 하위 경로(`/lealnspire/`)로 빌드해 미리보기 서버(4173, 4174)에서 확인. 배포 절차는 [docs/DEPLOY.md](docs/DEPLOY.md) |
 | `npm run verify` | 위 세 가지를 순서대로 실행 |
 
 변경을 올리기 전에 실행합니다.

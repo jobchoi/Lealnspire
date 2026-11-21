@@ -50,7 +50,7 @@ export function RecordDialog({ confirm, notice, onClose, onConfirm, onCancel, on
   return <div className="modal-backdrop"><div ref={dialog} className="result-modal privacy-modal" role="dialog" aria-modal="true" aria-labelledby="privacy-title" tabIndex={-1} onKeyDown={event => {
     if (event.key === 'Escape') { event.preventDefault(); onClose() }
     if (event.key === 'Tab') {
-      const buttons = dialog.current?.querySelectorAll('button')
+      const buttons = dialog.current?.querySelectorAll<HTMLElement>('button, a[href]')
       if (!buttons?.length) return
       const first = buttons[0], last = buttons[buttons.length - 1]
       if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog.current)) {
@@ -71,6 +71,7 @@ export function RecordDialog({ confirm, notice, onClose, onConfirm, onCancel, on
       <p>{t('privacy.location')}</p>
       <p>{t('privacy.records')}</p>
       <p>{t('privacy.browser')}</p>
+      <a className="teacher-guide-link" href={`${import.meta.env.BASE_URL}guide.html`}>{t('privacy.guide')}</a>
       {notice && <p role="status">{notice}</p>}
       <div className="playback-controls">
         <button ref={erase} type="button" onClick={onConfirm}>{t('privacy.clear')}</button>

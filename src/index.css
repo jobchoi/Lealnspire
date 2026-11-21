@@ -364,3 +364,5 @@ button small { display: block; font-size: .75rem; }
 .privacy-modal { width: min(460px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow-y: auto; box-sizing: border-box; text-align: left; }
 .privacy-modal p { overflow-wrap: anywhere; line-height: 1.5; }
 .privacy-modal button { min-width: 44px; min-height: 44px; }
+
+.teacher-guide-link { display: inline-flex; align-items: center; min-width: 44px; min-height: 44px; color: #1e40af; text-decoration: underline; }
