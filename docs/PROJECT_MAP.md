@@ -154,3 +154,9 @@ E2E 시나리오는 e2e/*.e2e.ts: 기호로 1~8 완주, 연타·실행 중 조�
 T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - React 19.3 useSyncExternalStore: https://react.dev/reference/react/useSyncExternalStore
 - Vite glob import: https://vite.dev/guide/features.html#glob-import
+
+### T17 예측 도전 (잠정)
+
+- `src/model/predictions.ts`: 2·5·7번 도전과 변형 코드의 엔진 실행으로 계산한 후보. `predictions.test.ts`에서 후보 유일성·정답 1개 검증.
+- `src/controller/PredictionController.ts`: 후보 선택·판정·재도전. GameController의 재생과 독립 메모리 ProgressRepository를 사용하며 정규 진행 저장은 변경하지 않음. `PredictionController.test.ts`에서 잠금·재생·저장 분리·화면 이탈 검증.
+- `src/view/pages/PredictionPage.tsx`, `PredictionPage.css` (렌더링 검증 `PredictionPage.test.tsx`): 월드 맵·후보 오버레이·고정 BlockTiles·결과. 완료한 해당 스테이지의 목록 버튼에서 진입, 돌아가면 목록. AppController가 진입 조건과 타이머 정리를 담당.

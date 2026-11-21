@@ -4,6 +4,7 @@ import { AppController } from '../controller/AppController'
 import { useController } from './hooks/useController'
 import { HomePage } from './pages/HomePage'
 import { StageSelectPage } from './pages/StageSelectPage'
+import { PredictionPage } from './pages/PredictionPage'
 import { PlayPage } from './pages/PlayPage'
 function App({ controller: supplied }: { controller?: AppController } = {}) {
   const [controller] = useState(() => supplied ?? new AppController())
@@ -14,7 +15,8 @@ function App({ controller: supplied }: { controller?: AppController } = {}) {
   const progress = controller.progress
   return <main className="app" ref={main}>
     {screen.page === 'home' && <HomePage progress={progress} onStart={controller.start} onContinue={controller.openStage} onList={controller.list} persistent={controller.repository.persistent} onClear={controller.clearProgress} />}
-    {screen.page === 'list' && <StageSelectPage progress={progress} onSelect={controller.openStage} onHome={controller.home} />}
+    {screen.page === 'list' && <StageSelectPage progress={progress} onSelect={controller.openStage} onHome={controller.home} onPrediction={controller.openPrediction} />}
+    {screen.page === 'prediction' && controller.prediction && <PredictionPage controller={controller.prediction} onBack={controller.list} />}
     {screen.page === 'play' && <PlayPage key={screen.index} stage={stages[screen.index]} progressStore={controller.repository} controller={controller.game} onList={controller.list} lastStage={screen.index === stages.length - 1} onNext={controller.next} />}
   </main>
 }

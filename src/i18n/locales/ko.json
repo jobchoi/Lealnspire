@@ -181,5 +181,17 @@
     "cancel": "취소",
     "unavailable": "이 브라우저에서는 저장하지 않고 있어요",
     "cleared": "기록을 지웠어요."
+  },
+  "prediction": {
+    "title": "예측 도전",
+    "back": "돌아가기",
+    "prompt": "코드를 따라가면 어디를 보고 멈출까요?",
+    "code": "예측할 코드",
+    "candidate": "후보 {letter}: {row}번째 줄 {column}번째 칸, {direction}을 봐요",
+    "correct": "예상과 같아요!",
+    "incorrect": "예상과 달라요. 로봇이 간 길을 다시 보세요",
+    "actual": "실제 위치: {row}번째 줄 {column}번째 칸, {direction}을 봐요",
+    "retry": "다시 고르기",
+    "running": "로봇이 간 길을 따라가 보세요"
   }
 }

@@ -1,5 +1,18 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-21 — T17 실행 전 예측 도전 (구현 Codex, 내용·E2E·QC Claude) [잠정]
+
+- Claude: 도전 3개 설계(2번 F R F, 5번 3[F], 7번 2[F F R]), 오답 후보는 흔한 오해(회전 방향 반대, 반복 횟수 착각)를 변형 프로그램으로 엔진 실행해 계산
+- Codex: predictions 모델(정답 미저장, 엔진 판정, 후보 검사 테스트), PredictionController·PredictionPage, 목록의 깬 스테이지에 '예측 도전'. QC 수정 1회: 폰에서 다음 카드가 버튼을 덮음, '☁' 문자 → SVG
+- 검증: verify 125개, e2e 71개 통과·1개 건너뜀, 스크린샷 육안 확인
+
+## 2026-11-21 — 기획 라운드 2: 첫 제품 완성 정의 (Claude + GPT)
+
+- Claude 독립 초안(2단원 조건문을 완성 범위에 포함)을 먼저 기록한 뒤 GPT(읽기 전용)가 독립 기획
+- GPT안 채택: 완성 = 순서·반복 첫 제품의 배포 준비 상태(C1~C5), 2단원은 명세까지만 하고 구현은 제외 목록 해제 결정 후. 조건 표현은 "앞이 막혔으면"
+- GPT가 찾은 문서 불일치(GAME_DESIGN 대상 연령, CURRICULUM "미구현", NEXT_SESSION이 T13 시점) → T23에서 정리
+- TASKS에 T23~T32 등록, ROADMAP.md 라운드 2 절 추가
+
 ## 2026-11-21 — T20 저장 기록 안내·삭제 (구현 Codex, E2E·QC Claude) [잠정]
 
 - Codex: 홈 정보 버튼(aria "내 기록 안내"), 저장 항목·기기 한정·브라우저 정리 시 삭제 안내, 확인 후 ProgressRepository.clear로 앱 키만 삭제, 저장 불가 환경 처리. 테스트 121개

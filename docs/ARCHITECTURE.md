@@ -133,3 +133,9 @@ type Frame = { pos: { x: number; y: number }; dir: Dir; activeBlockId: string | 
 - 기차 지도는 순수 `isometric` 좌표 변환을 사용하는 SVG입니다. 스케치북은 SVG 거친 선 필터, 게임기는 픽셀 로봇과 CSS 주사선을 사용합니다.
 - 의존성 추가(T13, Claude가 설치): `@fontsource/{gaegu, gamja-flower, do-hyeon, black-han-sans, press-start-2p}` 5.3.0. 이유: 월드별 손글씨·간판·도트 글꼴을 어느 기기에서나 같게 보이도록 외부 CDN 없이 자체 포함(오프라인·개인정보 요청 없음). 로컬 CSS로 import하며 한국어 subset과 Press Start 2P latin subset만 사용합니다.
 - 전체 화면 장식은 모바일에서 패딩·테두리를 줄이고 기존 고정 맵/하단 실행 행을 유지합니다. 애니메이션은 전역 prefers-reduced-motion 규칙을 따릅니다.
+
+### T17 예측 도전 (잠정)
+
+- `src/model/predictions.ts`: 2·5·7번 도전과 변형 코드의 엔진 실행으로 계산한 후보. `predictions.test.ts`에서 후보 유일성·정답 1개 검증.
+- `src/controller/PredictionController.ts`: 후보 선택·판정·재도전. GameController의 재생과 독립 메모리 ProgressRepository를 사용하며 정규 진행 저장은 변경하지 않음. `PredictionController.test.ts`에서 잠금·재생·저장 분리·화면 이탈 검증.
+- `src/view/pages/PredictionPage.tsx`, `PredictionPage.css`: 월드 맵·후보 오버레이·고정 BlockTiles·결과. 완료한 해당 스테이지의 목록 버튼에서 진입, 돌아가면 목록. AppController가 진입 조건과 타이머 정리를 담당.

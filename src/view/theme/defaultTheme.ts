@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react'
+import { createElement, type ReactNode } from 'react'
+import { Symbol } from './Symbols'
 import type { Block, Dir } from '../../model/types'
 import { t } from '../../i18n/I18n'
 export interface Theme {
@@ -15,7 +16,7 @@ export interface Theme {
 }
 export const defaultTheme: Theme = {
   blockTypes: ['forward', 'turnLeft', 'turnRight', 'repeat'],
-  blockSymbol: type => t(`icons.${type}`),
+  blockSymbol: type => createElement(Symbol, { name: type }),
   blockName: type => t(`blocks.${type}`),
   blockClass: type => `block-${type}`,
   repeat: count => `×${count}`,
