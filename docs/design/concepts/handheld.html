@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>컨셉 2 · 레트로 휴대용 게임기</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Do+Hyeon&display=swap" rel="stylesheet">
+<style>
+:root { --shell:#e8e1d3; --shell-dark:#c9bfab; --screen:#9bbc0f; --s1:#8bac0f; --s2:#306230; --s3:#0f380f; --accent:#d1345b; --navy:#2b2d42; }
+* { box-sizing:border-box; }
+body { margin:0; min-height:100vh; display:grid; place-items:center; background: repeating-linear-gradient(45deg, #2b2d42 0 14px, #32354d 14px 28px); font-family:'Do Hyeon', sans-serif; padding:20px; }
+/* 게임기 본체 */
+.device { width:min(980px, 100%); background:linear-gradient(160deg, var(--shell), var(--shell-dark)); border-radius:28px 28px 90px 28px; padding:28px 34px 40px; box-shadow: inset -8px -10px 0 #0001, inset 6px 6px 0 #fff8, 0 40px 60px -30px #000; display:grid; grid-template-columns: 1.1fr 1fr; gap:30px; }
+.bezel { background:#56586b; border-radius:16px 16px 50px 16px; padding:22px 26px 30px; box-shadow: inset 0 4px 8px #0006; }
+.bezel .brand { color:#c8c8d4; font: 9px 'Press Start 2P'; letter-spacing:2px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.led { width:9px; height:9px; border-radius:50%; background:#ff4d6d; box-shadow:0 0 8px #ff4d6d; }
+.screen { background:var(--screen); border-radius:4px; padding:10px; image-rendering:pixelated; box-shadow: inset 0 0 0 3px var(--s1), inset 0 0 30px #0f380f44; position:relative; }
+.screen::after { content:''; position:absolute; inset:0; background: repeating-linear-gradient(transparent 0 2px, #0f380f10 2px 3px); pointer-events:none; }
+.hud { display:flex; justify-content:space-between; color:var(--s3); font: 10px 'Press Start 2P'; margin-bottom:8px; }
+.screen svg { width:100%; display:block; shape-rendering:crispEdges; }
+.caption { color:#3a3c4e; font:9px 'Press Start 2P'; margin-top:14px; text-align:center; letter-spacing:1px; }
+/* 오른쪽: 카트리지 슬롯 = 프로그램, 버튼 = 블록 */
+.right { display:flex; flex-direction:column; gap:20px; }
+.slot-title { font: 10px 'Press Start 2P'; color:#6b6458; display:flex; justify-content:space-between; }
+.tape { background:#3a3c4e; border-radius:10px; padding:12px; display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; box-shadow: inset 0 4px 0 #0005; }
+.chip { aspect-ratio:1; border-radius:6px; background:#1f2030; display:grid; place-items:center; position:relative; box-shadow: inset 0 -4px 0 #0006; }
+.chip.filled { background: var(--c); box-shadow: inset 0 -5px 0 #0004, 0 0 0 2px #0003; }
+.chip svg { width:60%; height:60%; shape-rendering:crispEdges; }
+.chip .no { position:absolute; top:3px; left:4px; font:7px 'Press Start 2P'; color:#fff9; }
+.chip.loopwrap { outline:3px dashed #ffd166; outline-offset:2px; }
+.chip.now { animation: blink .4s steps(2) infinite; }
+@keyframes blink { 50% { filter: brightness(1.6); } }
+.controls { display:grid; grid-template-columns: 150px 1fr; gap:16px; align-items:center; }
+/* 방향 패드 = 블록 */
+.dpad { width:150px; height:150px; position:relative; }
+.dpad button { position:absolute; width:50px; height:50px; background:var(--navy); border:0; color:#fff; cursor:pointer; box-shadow: inset 0 -5px 0 #0007; display:grid; place-items:center; }
+.dpad button:active { box-shadow: inset 0 3px 0 #0007; }
+.dpad .u { left:50px; top:0; border-radius:8px 8px 0 0; } .dpad .l { left:0; top:50px; border-radius:8px 0 0 8px; } .dpad .r { left:100px; top:50px; border-radius:0 8px 8px 0; } .dpad .c { left:50px; top:50px; background:#1f2030; } .dpad .d { left:50px; top:100px; border-radius:0 0 8px 8px; background:#1f2030; cursor:default; }
+.dpad svg { width:24px; height:24px; shape-rendering:crispEdges; }
+.ab { display:flex; gap:18px; justify-content:center; transform:rotate(-18deg); }
+.round { width:74px; height:74px; border-radius:50%; border:0; cursor:pointer; color:#fff; font: 13px 'Press Start 2P'; box-shadow: inset 0 -6px 0 #0005, 0 6px 0 #0002; display:grid; place-items:center; }
+.round small { display:block; font: 13px 'Do Hyeon'; margin-top:4px; }
+.round.a { background:var(--accent); } .round.b { background:#ffb703; color:#3a2a00; }
+.round:active { transform:translateY(3px); box-shadow: inset 0 -2px 0 #0005; }
+.pills { display:flex; gap:14px; justify-content:center; margin-top:6px; }
+.pill { background:#8d8677; border:0; border-radius:20px; width:64px; height:16px; transform:rotate(-18deg); box-shadow: inset 0 -3px 0 #0003; cursor:pointer; }
+.pill-label { font: 8px 'Press Start 2P'; color:#6b6458; text-align:center; }
+.speaker { display:grid; grid-template-columns:repeat(6, 8px); gap:8px; justify-content:end; transform:rotate(-18deg); margin-top:6px; }
+.speaker i { width:8px; height:30px; border-radius:4px; background:#0002; box-shadow: inset 0 2px 2px #0003; }
+@media (max-width:760px) { .device { grid-template-columns:1fr; padding:18px; border-radius:24px 24px 60px 24px; } .tape { grid-template-columns:repeat(5,1fr); } }
+</style></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <symbol id="pu" viewBox="0 0 8 8"><path d="M3 1h2v1h1v1h1v1H5v3H3V4H1V3h1V2h1z" fill="currentColor"/></symbol>
+  <symbol id="pl" viewBox="0 0 8 8"><path d="M2 1h1v1h1v1h3v4H5V4H4v1H3v1H2V5H1V2h1z" fill="currentColor"/></symbol>
+  <symbol id="pr" viewBox="0 0 8 8"><path d="M5 1h1v1h1v3H6v1H5V5H4V4H3v3H1V3h3V2h1z" fill="currentColor"/></symbol>
+  <symbol id="pp" viewBox="0 0 8 8"><path d="M1 2h5V1h1v2H2v3H1zM7 5v1H2v1H1V5h5V2h1z" fill="currentColor"/></symbol>
+</defs></svg>
+<div class="device">
+  <div>
+    <div class="bezel">
+      <div class="brand"><span class="led"></span>BATTERY · CODE BOY</div>
+      <div class="screen">
+        <div class="hud"><span>STAGE 6</span><span>★★☆</span><span>06/10</span></div>
+        <svg viewBox="0 0 64 64">
+          <rect width="64" height="64" fill="#9bbc0f"/>
+          <!-- 벽 벽돌 -->
+          <g fill="#306230">
+            <rect x="0" y="0" width="16" height="16"/><rect x="16" y="0" width="16" height="16"/><rect x="32" y="0" width="16" height="16"/>
+            <rect x="0" y="16" width="16" height="16"/><rect x="16" y="16" width="16" height="16"/>
+            <rect x="0" y="32" width="16" height="16"/><rect x="48" y="32" width="16" height="16"/>
+            <rect x="32" y="48" width="16" height="16"/><rect x="48" y="48" width="16" height="16"/>
+          </g>
+          <g fill="#0f380f"><path d="M0 7h16v1H0zM7 0h1v7H7zM0 15h48v1H0zM16 23h16v1H16zM0 39h16v1H0zM48 39h16v1H48zM32 55h32v1H32zM24 16h1v7h-1zM8 32h1v7H8zM56 48h1v7h-1z"/></g>
+          <!-- 길 점 -->
+          <g fill="#306230"><rect x="23" y="55" width="2" height="2"/><rect x="23" y="39" width="2" height="2"/><rect x="39" y="39" width="2" height="2"/><rect x="39" y="23" width="2" height="2"/><rect x="55" y="23" width="2" height="2"/></g>
+          <!-- 깃발 -->
+          <g><rect x="52" y="3" width="1" height="11" fill="#0f380f"/><path d="M53 3h6v1h-1v1h1v1h-6z" fill="#0f380f"/></g>
+          <!-- 로봇 (8x8 도트) -->
+          <g transform="translate(4 52)" fill="#0f380f"><path d="M3 0h2v1H3zM1 1h6v5H1zM0 3h1v2H0zM7 3h1v2H7zM1 6h2v2H1zM5 6h2v2H5z"/><path d="M2 2h1v1H2zM5 2h1v1H5z" fill="#9bbc0f"/></g>
+        </svg>
+      </div>
+      <div class="caption">◀ STAIRS TO THE FLAG ▶</div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="slot-title"><span>PROGRAM</span><span>6/10</span></div>
+    <div class="tape" aria-label="프로그램 10칸">
+      <div class="chip filled loopwrap" style="--c:#ffb703"><span class="no">1</span><svg style="color:#3a2a00"><use href="#pp"/></svg></div>
+      <div class="chip filled now" style="--c:#4361ee"><span class="no">2</span><svg style="color:#fff"><use href="#pu"/></svg></div>
+      <div class="chip filled" style="--c:#2a9d8f"><span class="no">3</span><svg style="color:#fff"><use href="#pl"/></svg></div>
+      <div class="chip filled" style="--c:#4361ee"><span class="no">4</span><svg style="color:#fff"><use href="#pu"/></svg></div>
+      <div class="chip filled" style="--c:#2a9d8f"><span class="no">5</span><svg style="color:#fff"><use href="#pr"/></svg></div>
+      <div class="chip filled" style="--c:#4361ee"><span class="no">6</span><svg style="color:#fff"><use href="#pu"/></svg></div>
+      <div class="chip"></div><div class="chip"></div><div class="chip"></div><div class="chip"></div>
+    </div>
+    <div class="controls">
+      <div class="dpad" aria-label="블록 넣기">
+        <button class="u" aria-label="앞으로"><svg><use href="#pu"/></svg></button>
+        <button class="l" aria-label="왼쪽으로 돌기"><svg><use href="#pl"/></svg></button>
+        <button class="r" aria-label="오른쪽으로 돌기"><svg><use href="#pr"/></svg></button>
+        <span class="c"></span><span class="d"></span>
+      </div>
+      <div>
+        <div class="ab">
+          <button class="round b" aria-label="반복">B<small>반복</small></button>
+          <button class="round a" aria-label="실행">A<small>실행</small></button>
+        </div>
+        <div class="speaker"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+    <div>
+      <div class="pills"><button class="pill" aria-label="지우기"></button><button class="pill" aria-label="한 단계"></button></div>
+      <div class="pills"><span class="pill-label">ERASE</span><span class="pill-label">STEP</span></div>
+    </div>
+  </div>
+</div>
+</body></html>

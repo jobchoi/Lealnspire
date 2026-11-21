@@ -1,0 +1,36 @@
+/* Replaceable horizontal workspace layout with configurable tile dimensions. */
+.workspace { --tile-size: 76px; --tile-gap: 6px; }
+.tile-list { display: flex; flex-wrap: wrap; align-items: flex-start; align-content: flex-start; gap: var(--tile-gap); list-style: none; padding: 0; margin: 0; min-width: 0; max-width: 100%; }
+.tile-item { display: flex; align-items: center; gap: 3px; }
+/* Wrapping determines visual row ends, so omit separators at every boundary. */
+.block-tile { position: relative; width: var(--tile-size); height: var(--tile-size); flex: 0 0 var(--tile-size); padding: 12px 2px 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.block-tile small { position: absolute; top: 1px; left: 5px; font-size: .65rem; }
+.block-tile strong { line-height: 1; }
+.block-tile[aria-pressed='true'] { outline: 3px solid #2563eb; outline-offset: -3px; }
+.repeat-frame { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--tile-gap); border: 2px solid #bb701c; border-radius: 10px; padding: 4px; max-width: 100%; min-width: 0; background: #fff7eb; }
+.repeat-frame > .tile-list { flex: 1 1 var(--tile-size); }
+.frame-selected { border-color: #713e0b; box-shadow: inset 0 0 0 2px #713e0b; }
+.empty-repeat { width: var(--tile-size); height: var(--tile-size); border: 2px dashed #9b5b13; border-radius: 8px; display: grid; place-items: center; font-size: .7rem; }
+.insertion-marker { color: #713e0b; font-weight: bold; }
+.tile-toolbar { display: flex; align-items: center; gap: 4px; min-height: 48px; }
+.tile-toolbar button { padding: 2px; flex: 0 0 48px; }
+.slot-dots { display: flex; gap: 4px; font-size: .9rem; line-height: 1; color: #64748b; }
+.slot-dots .filled { color: #173d70; }
+.slot-dots .unavailable { opacity: .25; }
+@media (max-width: 700px) { .workspace { --tile-size: 56px; --tile-gap: 4px; } .block-tile .block-symbol { font-size: 1.6rem; } }
+
+.block-budget { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.workspace-shell { position: relative; display: flex; flex: 1; min-height: 0; }
+.editor > .workspace-shell { flex-shrink: 1; }
+.workspace-shell .workspace { width: 100%; }
+.has-selection .workspace { padding-top: 58px; }
+.tile-toolbar { position: absolute; top: 1px; left: 1px; right: 1px; z-index: 1; padding: 3px; border-radius: 9px 9px 0 0; background: #f7f9fc; }
+.tile-toolbar button { font-size: 1.25rem; }
+@media (max-width: 700px) {
+  .editor h2, .editor h3, .insertion-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .palette { grid-template-columns: repeat(4, 56px); justify-content: start; }
+  .palette button { width: 56px; height: 56px; }
+  .palette small { display: none; }
+  .tile-toolbar { gap: 2px; }
+  .tile-toolbar button { flex-basis: 48px; }
+}

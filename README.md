@@ -85,6 +85,7 @@ npx -y @playwright/mcp@0.0.84 install-browser chrome-for-testing
 | `npm run lint` | oxlint 정적 검사(경고도 실패로 처리) |
 | `npm run test` | Vitest 단위 테스트 1회 실행 |
 | `npm run build` | 타입 검사(`tsc -b`) + 프로덕션 빌드 |
+| `npm run e2e` | 사용자 시나리오 E2E(Playwright, 처음 한 번 `npx playwright install chromium`) |
 | `npm run verify` | 위 세 가지를 순서대로 실행 |
 
 변경을 올리기 전에 실행합니다.

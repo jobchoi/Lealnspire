@@ -9,11 +9,11 @@ const onChange = () => {}
 describe('Editor', () => {
   it('renders nested order, repeat counts and accessible editing controls', () => {
     const html = renderToString(<Editor program={program} onChange={onChange} />)
-    expect(html.replaceAll('<!-- -->', '')).toContain('1.1.1. 앞으로')
-    expect(html).toContain('1.1번 N번 반복 반복 횟수')
+    expect(html.replaceAll('<!-- -->', '')).toContain('aria-label="1.1.1번 앞으로"')
+    expect(html).toContain('aria-label="1.1번 반복 2번"')
     expect(html.replaceAll('<!-- -->', '')).toContain('×2')
     expect(html.replaceAll('<!-- -->', '')).toContain('×3')
-    expect(html).toContain(ko.total(3))
+    expect(html).toContain(ko.total(3, 10))
     expect(html).not.toContain(ko.limit)
     expect(html).not.toContain('value="11"')
   })
@@ -43,18 +43,20 @@ describe('재생 중 편집기', () => {
   })
 })
 
-it('반복 횟수의 경계에서 해당 버튼만 비활성화하고 아이콘 이름을 유지한다', () => {
-  for (const count of [2, 3, 10]) {
-    const html = renderToString(<Editor program={[{ id: 'r', type: 'repeat', count, body: [] }]} onChange={onChange} />)
-    for (const [action, disabled] of [[ko.decrease, count === 2], [ko.increase, count === 10]] as const) {
-      const button = (html.match(/<button[^>]*>/g) ?? []).find(tag => tag.includes(`aria-label="${ko.action('1', ko.blocks.repeat, action)}"`))
-      expect(button).toBeDefined()
-      expect(button!.includes('disabled=""')).toBe(disabled)
-    }
-    for (const type of ['forward', 'turnLeft', 'turnRight', 'repeat'] as const) {
-      expect(html).toContain(`aria-label="${ko.blocks[type]}"`)
-      expect(html).toContain(`title="${ko.blocks[type]}"`)
-      expect(html).toContain(ko.icons[type])
-    }
+it('빈 반복 자리와 주황 틀을 렌더링하고 타일에 편집 버튼을 넣지 않는다', () => {
+  const html = renderToString(<Editor program={[{ id: 'r', type: 'repeat', count: 2, body: [] }]} onChange={onChange} />)
+  expect(html).toContain('class="repeat-frame"')
+  expect(html).toContain(ko.emptyRepeat)
+  expect(html).toContain('aria-label="1번 반복 2번"')
+  expect(html).toContain('aria-pressed="false"')
+  expect(html).not.toContain('aria-label="1번 N번 반복 삭제"')
+})
+it('스테이지 제한이 없어도 10개 상한을 적용한다', () => {
+  const ten: Program = Array.from({ length: 10 }, (_, i) => ({ id: String(i), type: 'forward' }))
+  for (const maxBlocks of [undefined, 20]) {
+    const html = renderToString(<Editor program={ten} maxBlocks={maxBlocks} onChange={onChange} />)
+    expect(html).toContain(ko.total(10, 10))
+    expect(html.split('aria-label="블록 추가">')[1].split('</div>')[0].match(/disabled=""/g)).toHaveLength(4)
+    expect(html.match(/class="filled"/g)).toHaveLength(10)
   }
 })

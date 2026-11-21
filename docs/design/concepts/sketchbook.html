@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>컨셉 1 · 크레용 스케치북</title>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gamja+Flower&display=swap" rel="stylesheet">
+<style>
+:root { --paper:#fffaf0; --ink:#3b3a36; --red:#e4572e; --blue:#2e86de; --green:#47a447; --yellow:#f6c343; --tape:#f7e3a1cc; }
+* { box-sizing: border-box; }
+body { margin:0; min-height:100vh; font-family:'Gaegu',cursive; color:var(--ink); background:#e9dfcc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E"); }
+/* 스케치북: 스프링 + 줄 공책 */
+.book { max-width:1100px; margin:24px auto; background:var(--paper); border-radius:6px 18px 18px 6px; padding:34px 40px 40px 70px; position:relative; box-shadow: 0 2px 0 #d8ccb4, 0 30px 60px -30px #6b5b3e88;
+  background-image: repeating-linear-gradient(transparent 0 37px, #c9dcf0 37px 38px), linear-gradient(90deg, transparent 54px, #f2a7a7 54px 56px, transparent 56px); }
+.book::before { content:''; position:absolute; left:14px; top:30px; bottom:30px; width:22px; background: radial-gradient(circle at 11px 11px, #9aa3ad 0 7px, #5b636c 7px 9px, transparent 9px) 0 0/22px 38px repeat-y; }
+h1 { font-family:'Gamja Flower'; font-size:46px; margin:0 0 4px; transform:rotate(-1.5deg); }
+h1 .scribble { background: linear-gradient(transparent 60%, #f6c34399 60%); padding:0 6px; }
+.sub { font-size:22px; margin:0 0 20px; }
+.grid { display:grid; grid-template-columns: 1fr 1.2fr; gap:36px; }
+/* 크레용 맵: 손으로 그린 테두리 */
+.map { position:relative; padding:18px; transform:rotate(.6deg); }
+.map svg { width:100%; height:auto; overflow:visible; }
+.tape { position:absolute; width:90px; height:26px; background:var(--tape); top:-8px; left:40%; transform:rotate(-4deg); box-shadow:0 1px 2px #0002; }
+/* 스티커 블록 */
+.label { font-size:26px; font-weight:700; margin:0 0 6px; }
+.stickers { display:flex; gap:16px; margin-bottom:18px; }
+.sticker { width:84px; height:84px; border:0; cursor:pointer; background:#fff; border-radius:50% 46% 52% 48% / 48% 52% 46% 50%; box-shadow: 0 0 0 4px var(--c), 3px 5px 0 4px #0001; display:grid; place-items:center; font-family:inherit; transition: transform .15s; }
+.sticker:nth-child(odd) { transform:rotate(-5deg); } .sticker:nth-child(even) { transform:rotate(4deg); }
+.sticker:hover { transform:rotate(0) scale(1.08); }
+.sticker svg { width:52px; height:52px; }
+/* 프로그램 = 줄 공책 위 그림 일기 */
+.program { display:flex; flex-wrap:wrap; gap:8px 6px; align-items:center; padding:12px 4px; min-height:200px; }
+.step { width:70px; height:70px; display:grid; place-items:center; position:relative; }
+.step svg { width:64px; height:64px; }
+.step .n { position:absolute; top:-6px; left:-2px; font-size:18px; font-weight:700; color:#a49a87; }
+.arrow { width:26px; color:#a49a87; }
+.loop { display:flex; align-items:center; gap:6px; padding:10px 16px 10px 12px; position:relative; }
+.loop > svg.bracket { position:absolute; inset:-6px -8px; width:calc(100% + 16px); height:calc(100% + 12px); }
+.loop .times { font-family:'Gamja Flower'; font-size:34px; color:var(--red); margin-right:4px; }
+.step.now svg { animation: wiggle .5s ease-in-out infinite alternate; }
+@keyframes wiggle { to { transform: rotate(6deg) scale(1.08); } }
+/* 크레용 버튼 */
+.go { margin-top:18px; display:flex; gap:14px; align-items:center; }
+.crayon { border:0; cursor:pointer; font-family:'Gamja Flower'; font-size:32px; color:#fff; padding:10px 34px 10px 26px; background:var(--green); clip-path: polygon(0 12%, 88% 0, 100% 50%, 88% 100%, 0 88%); filter: url(#rough); }
+.crayon.small { font-size:24px; background:var(--blue); padding:8px 28px 8px 20px; }
+.note { position:absolute; right:40px; top:34px; width:200px; background:#fff59d; padding:14px 16px; font-size:21px; transform:rotate(3deg); box-shadow: 0 8px 14px -8px #0005; }
+@media (max-width:760px) { .book { padding:24px 16px 24px 46px; margin:10px; } .grid { grid-template-columns:1fr; gap:10px; } .note { display:none; } .sticker { width:64px; height:64px; } .sticker svg { width:40px; height:40px; } h1 { font-size:36px; } }
+</style></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="rough"><feTurbulence baseFrequency=".04" numOctaves="3" seed="3"/><feDisplacementMap in="SourceGraphic" scale="3"/></filter>
+  <symbol id="up" viewBox="0 0 60 60"><path d="M30 8 C31 20 30 36 30 52 M16 22 C22 16 26 11 30 8 C35 13 39 17 45 23" stroke="#2e86de" stroke-width="6" fill="none" stroke-linecap="round" filter="url(#rough)"/></symbol>
+  <symbol id="left" viewBox="0 0 60 60"><path d="M44 50 C46 30 40 18 22 18 M30 8 C25 12 21 15 18 18 C22 22 26 25 30 29" stroke="#47a447" stroke-width="6" fill="none" stroke-linecap="round" filter="url(#rough)"/></symbol>
+  <symbol id="right" viewBox="0 0 60 60"><path d="M16 50 C14 30 20 18 38 18 M30 8 C35 12 39 15 42 18 C38 22 34 25 30 29" stroke="#47a447" stroke-width="6" fill="none" stroke-linecap="round" filter="url(#rough)"/></symbol>
+  <symbol id="loop" viewBox="0 0 60 60"><path d="M46 22 C40 8 16 10 13 28 C10 46 38 54 47 38 M47 38 C47 45 48 46 50 50 M47 38 C41 39 40 40 37 42" stroke="#e4572e" stroke-width="6" fill="none" stroke-linecap="round" filter="url(#rough)"/></symbol>
+  <symbol id="arr" viewBox="0 0 26 20"><path d="M2 10 C9 9 16 11 22 10 M16 4 L22 10 L16 16" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/></symbol>
+</defs></svg>
+<div class="book">
+  <h1>오늘의 <span class="scribble">로봇 일기</span> ✎</h1>
+  <p class="sub">6쪽 · 계단을 올라 별까지 가 보자!</p>
+  <div class="note">힌트: 앞으로, 왼쪽, 앞으로, 오른쪽… 이게 계속 반복되지 않아?</div>
+  <div class="grid">
+    <div class="map"><span class="tape"></span>
+      <svg viewBox="0 0 320 320">
+        <g filter="url(#rough)" stroke="#3b3a36" stroke-width="3" fill="none">
+          <path d="M8 8 H312 V312 H8 Z"/>
+          <path d="M8 88 H312 M8 168 H312 M8 248 H312 M88 8 V312 M168 8 V312 M248 8 V312" stroke-width="1.5" stroke-dasharray="4 6"/>
+        </g>
+        <!-- 벽: 크레용 빗금 -->
+        <g filter="url(#rough)" stroke="#8d7b68" stroke-width="5" opacity=".7">
+          <path d="M14 20 l60 60 M14 50 l40 40 M40 14 l40 40 M94 20 l60 60 M94 50 l40 40 M120 14 l40 40 M174 20 l60 60 M200 14 l40 40 M14 100 l60 60 M40 94 l40 40 M94 100 l60 60 M120 94 l40 40 M14 180 l60 60 M40 174 l40 40 M254 180 l60 60 M280 174 l40 40 M174 260 l60 60 M200 254 l40 40 M254 260 l60 60 M280 254 l40 40"/>
+        </g>
+        <!-- 지나갈 길: 점선 발자국 -->
+        <path d="M48 288 C80 288 120 288 128 250 C130 220 150 210 208 208 C215 180 220 140 270 128 C285 110 288 80 288 48" stroke="#2e86de" stroke-width="4" fill="none" stroke-dasharray="2 12" stroke-linecap="round" filter="url(#rough)"/>
+        <!-- 별 -->
+        <path d="M288 22 l8 18 20 2 -15 13 5 20 -18 -11 -18 11 5 -20 -15 -13 20 -2z" fill="#f6c343" stroke="#3b3a36" stroke-width="2.5" filter="url(#rough)"/>
+        <!-- 로봇 낙서 -->
+        <g transform="translate(18 252)" filter="url(#rough)">
+          <rect x="6" y="8" width="48" height="38" rx="10" fill="#bfe3ff" stroke="#3b3a36" stroke-width="3"/>
+          <circle cx="22" cy="26" r="4" fill="#3b3a36"/><circle cx="38" cy="26" r="4" fill="#3b3a36"/>
+          <path d="M24 37 q6 5 12 0" stroke="#3b3a36" stroke-width="3" fill="none"/>
+          <path d="M30 8 V0" stroke="#3b3a36" stroke-width="3"/><circle cx="30" cy="0" r="4" fill="#e4572e"/>
+          <path d="M56 22 l10 6 -10 6z" fill="#e4572e"/>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <p class="label">스티커 고르기</p>
+      <div class="stickers">
+        <button class="sticker" style="--c:var(--blue)" aria-label="앞으로"><svg><use href="#up"/></svg></button>
+        <button class="sticker" style="--c:var(--green)" aria-label="왼쪽으로 돌기"><svg><use href="#left"/></svg></button>
+        <button class="sticker" style="--c:var(--green)" aria-label="오른쪽으로 돌기"><svg><use href="#right"/></svg></button>
+        <button class="sticker" style="--c:var(--red)" aria-label="반복"><svg><use href="#loop"/></svg></button>
+      </div>
+      <p class="label">내 계획</p>
+      <div class="program">
+        <div class="loop">
+          <svg class="bracket" viewBox="0 0 100 40" preserveAspectRatio="none"><path d="M6 4 C2 4 2 36 6 36 M94 4 C98 4 98 36 94 36" stroke="#e4572e" stroke-width="2.4" fill="none" vector-effect="non-scaling-stroke" filter="url(#rough)"/></svg>
+          <span class="times">3번</span>
+          <div class="step now"><span class="n">1</span><svg><use href="#up"/></svg></div><svg class="arrow"><use href="#arr"/></svg>
+          <div class="step"><span class="n">2</span><svg><use href="#left"/></svg></div><svg class="arrow"><use href="#arr"/></svg>
+          <div class="step"><span class="n">3</span><svg><use href="#up"/></svg></div><svg class="arrow"><use href="#arr"/></svg>
+          <div class="step"><span class="n">4</span><svg><use href="#right"/></svg></div>
+        </div>
+      </div>
+      <div class="go"><button class="crayon">해 보기!</button><button class="crayon small">한 걸음</button></div>
+    </div>
+  </div>
+</div>
+</body></html>

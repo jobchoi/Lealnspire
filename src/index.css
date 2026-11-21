@@ -143,3 +143,13 @@ button small { display: block; font-size: .75rem; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
 }
+
+/* T10: give the tile workspace most of the desktop width. */
+.app:has(.play-page) { max-width: 1280px; }
+.play-page .game-layout { grid-template-columns: minmax(240px, 300px) minmax(0, 1fr); gap: 1rem; }
+.palette { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.workspace { overflow: auto; }
+@media (max-width: 700px) {
+  .play-page .game-layout { grid-template-columns: minmax(0, 1fr); gap: .35rem; }
+  .map-panel .board { width: min(100%, var(--compact-board-width), max(var(--mobile-board-width), var(--min-board-width))); }
+}

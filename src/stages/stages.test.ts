@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { run } from '../engine/interpreter'
-import { countBlocks } from '../engine/program'
+import { countBlocks, MAX_PROGRAM_BLOCKS } from '../engine/program'
 import { stages } from './index'
 import type { Program } from '../engine/types'
 
@@ -10,6 +10,7 @@ describe('스테이지 정답', () => {
   })
   for (const stage of stages) {
     it(`${stage.id}번 정답이 도착하고 블록 제한을 지킨다`, () => {
+      expect(countBlocks(stage.solution)).toBeLessThanOrEqual(MAX_PROGRAM_BLOCKS)
       expect(run(stage, stage.solution).result).toBe('success')
       expect(countBlocks(stage.solution)).toBeLessThanOrEqual(stage.starBlocks)
       if (stage.maxBlocks !== undefined) expect(countBlocks(stage.solution)).toBeLessThanOrEqual(stage.maxBlocks)

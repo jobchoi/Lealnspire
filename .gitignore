@@ -33,3 +33,7 @@ dist-ssr
 
 # Playwright MCP 출력
 .playwright-mcp/
+
+# Playwright E2E
+e2e-results/
+playwright-report/

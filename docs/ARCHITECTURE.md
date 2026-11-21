@@ -110,3 +110,14 @@ type Frame = { pos: { x: number; y: number }; dir: Dir; activeBlockId: string | 
 - `saveProgram`은 완료 여부와 최고 별을 유지합니다. `completeStage`는 완료를 기록하고 최고 별을 최댓값으로 유지합니다. 입출력 프로그램은 복사하여 외부 변경으로부터 보호합니다.
 - `isUnlocked(progress, stageIndex)`는 0 기반 인덱스를 사용합니다. 첫 스테이지는 항상 열리고 이후에는 `stages` 배열의 직전 스테이지가 완료되어야 열립니다. 유효하지 않은 인덱스는 닫힘입니다(T6에서 사용).
 - App은 저장 코드 → `initialProgram` → 빈 프로그램 순으로 시작합니다. 편집 이벤트마다 즉시 저장하고 재생이 성공으로 끝나면 완료 여부·최고 별을 기록합니다. 빈 저장 코드도 유지합니다.
+
+## 7. 타일 작업 공간 (T10)
+
+- 작업 공간 레이아웃은 교체 가능한 컴포넌트 `src/components/BlockTiles.tsx`와 `BlockTiles.css`로 분리합니다. `--tile-size`, `--tile-gap`으로 타일 크기와 간격을 조절합니다.
+- Editor는 선택 블록 ID와 반복 추가 대상 ID를 따로 관리합니다. 타일 선택 후 고정 작업 막대에서 앞/뒤 이동·삭제·횟수 변경을 하고, 반복의 안에 넣기를 켜면 해당 몸체 끝에 추가합니다.
+- `program.ts`의 `MAX_PROGRAM_BLOCKS = 10`과 `addBlock`이 반복 몸체를 포함한 전체 추가 상한을 지킵니다. 실행기는 기존 저장 프로그램의 실행 의미를 유지합니다.
+
+
+## E2E 테스트 의존성 (2026-11-21)
+
+- `@playwright/test` 1.64.1(devDependency, 버전 고정): 사용자 시나리오 E2E(`npm run e2e`, `e2e/`). 이유: 사용자 요청으로 실제 사용자 수준 검증 필요. CI에는 아직 넣지 않음(브라우저 설치 시간). 타입 검사는 `tsconfig.e2e.json`

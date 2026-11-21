@@ -1,5 +1,7 @@
 import type { Block, Program } from './types'
 
+export const MAX_PROGRAM_BLOCKS = 10
+
 // Paths contain an index at each nesting level; an empty parent path is the root.
 function updateList(program: Program, path: number[], update: (list: Program) => Program): Program {
   if (!path.length) return update(program)
@@ -16,6 +18,7 @@ function checkIndex(list: Program, index: number): void {
   if (!Number.isInteger(index) || index < 0 || index >= list.length) throw new Error('Invalid block index')
 }
 export function addBlock(program: Program, block: Block, parentPath: number[] = []): Program {
+  if (countBlocks(program) + countBlocks([block]) > MAX_PROGRAM_BLOCKS) return program
   return updateList(program, parentPath, list => [...list, block])
 }
 export function deleteBlock(program: Program, path: number[]): Program {

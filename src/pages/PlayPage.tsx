@@ -37,7 +37,7 @@ export function PlayPage({ stage, progressStore, onList, onNext, lastStage }: Pr
       {showHint && <p id="stage-hint" className="stage-hint">{stage.hint}</p>}
       <p className="stage-goal"><span className="goal-symbol" aria-hidden="true">{ko.goalIcon}</span> {stage.goal}</p>
       <div className="game-layout">
-        <div className="map-panel" style={{ '--board-ratio': stage.grid[0].length / stage.grid.length, '--mobile-board-width': `calc((22dvh - 8px) * ${stage.grid[0].length} / ${stage.grid.length})` } as CSSProperties}>
+        <div className="map-panel" style={{ '--min-board-width': `${stage.grid[0].length * 40 + (stage.grid[0].length - 1) * 4 + 8}px`, '--compact-board-width': `${stage.grid[0].length * 56 + (stage.grid[0].length - 1) * 4 + 8}px`, '--board-ratio': stage.grid[0].length / stage.grid.length, '--mobile-board-width': `calc((22dvh - 8px) * ${stage.grid[0].length} / ${stage.grid.length})` } as CSSProperties}>
           <Board stage={stage} position={playback.frame?.pos} direction={playback.frame?.dir} bump={playback.frame?.event === 'bump'} />
           <div className="playback-controls execution-controls">
             <button className="run-button" type="button" disabled={!program.length || playback.playing} onClick={playback.play} aria-label={ko.run} title={ko.run}><span className="control-symbol" aria-hidden="true">{ko.icons.run}</span><small>{ko.run}</small></button>

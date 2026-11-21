@@ -34,7 +34,7 @@ describe('화면 렌더링', () => {
     const store = createProgressStore()
     store.saveProgram('4', [{ id: 'saved', type: 'turnRight' }])
     const html = renderToString(<PlayPage stage={stages[3]} progressStore={store} onList={noop} onNext={noop} lastStage={false} />)
-    expect(html.replaceAll('<!-- -->', '')).toContain('1. 오른쪽으로 돌기')
+    expect(html.replaceAll('<!-- -->', '')).toContain('aria-label="1번 오른쪽으로 돌기"')
     expect(html).toContain('aria-expanded="false"')
     expect(html).not.toContain(stages[3].hint)
     expect(html).not.toContain('role="dialog"')

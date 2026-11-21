@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lealnspire 디자인 시안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+<style>
+/* ===== 디자인 토큰: 테마만 바꾸면 전체가 바뀜 ===== */
+:root, [data-theme="bright"] {
+  --bg: #f4f7fb; --bg-art: radial-gradient(circle at 10% 0%, #e0f2fe 0, transparent 40%), radial-gradient(circle at 90% 10%, #fef3c7 0, transparent 35%);
+  --surface: #ffffff; --surface-2: #f1f5f9; --ink: #1e293b; --ink-soft: #64748b; --line: #e2e8f0;
+  --move: #3b82f6; --move-dark: #1d4ed8; --move-soft: #dbeafe;
+  --turn: #22c55e; --turn-dark: #15803d; --turn-soft: #dcfce7;
+  --loop: #f59e0b; --loop-dark: #b45309; --loop-soft: #fef3c7;
+  --run: #22c55e; --run-dark: #15803d; --accent: #8b5cf6;
+  --tile-floor: #bbf7d0; --tile-floor-2: #86efac; --tile-wall: #94a3b8; --tile-wall-top: #cbd5e1; --tile-goal: #fde68a;
+  --radius: 18px; --radius-sm: 14px; --depth: 5px;
+  --shadow: 0 10px 30px -12px rgb(15 23 42 / .18);
+  --font-head: 'Jua', 'Noto Sans KR', sans-serif; --font-body: 'Noto Sans KR', system-ui, sans-serif;
+}
+[data-theme="pastel"] {
+  --bg: #faf7f2; --bg-art: radial-gradient(circle at 0% 100%, #ede9fe 0, transparent 45%), radial-gradient(circle at 100% 0%, #dcfce7 0, transparent 40%);
+  --surface: #fffdf9; --surface-2: #f5f1ea; --ink: #3f3a4b; --ink-soft: #8a8496; --line: #ece6dc;
+  --move: #8fb5f5; --move-dark: #6a92d6; --move-soft: #e8f0fe;
+  --turn: #8fd4b0; --turn-dark: #63b08a; --turn-soft: #e6f6ee;
+  --loop: #f5bf8f; --loop-dark: #d99a63; --loop-soft: #fdf0e3;
+  --run: #9b87f5; --run-dark: #7a66d6; --accent: #f08fb3;
+  --tile-floor: #f0ece4; --tile-floor-2: #e7e1d6; --tile-wall: #cfc6d8; --tile-wall-top: #e3dcea; --tile-goal: #fde7c7;
+  --radius: 24px; --radius-sm: 18px; --depth: 3px;
+  --shadow: 0 18px 40px -18px rgb(80 60 120 / .25);
+  --font-head: 'Jua', 'Noto Sans KR', sans-serif;
+}
+[data-theme="space"] {
+  --bg: #0b1026; --bg-art: radial-gradient(1px 1px at 20% 30%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 70% 60%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 40% 80%, #c4b5fd 50%, transparent 51%), radial-gradient(1px 1px at 85% 20%, #fff 50%, transparent 51%), radial-gradient(circle at 80% 0%, #312e81 0, transparent 50%);
+  --surface: #151b3b; --surface-2: #1d2550; --ink: #e2e8f0; --ink-soft: #94a3b8; --line: #2a3470;
+  --move: #38bdf8; --move-dark: #0369a1; --move-soft: #0c2a4a;
+  --turn: #4ade80; --turn-dark: #15803d; --turn-soft: #0d3324;
+  --loop: #f472b6; --loop-dark: #9d174d; --loop-soft: #3b1230;
+  --run: #a78bfa; --run-dark: #5b21b6; --accent: #fbbf24;
+  --tile-floor: #1e2a5a; --tile-floor-2: #243270; --tile-wall: #0b1026; --tile-wall-top: #334155; --tile-goal: #3b2f0b;
+  --radius: 16px; --radius-sm: 12px; --depth: 4px;
+  --shadow: 0 0 0 1px #2a3470, 0 20px 40px -20px #000;
+  --font-head: 'Orbitron', 'Jua', sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: var(--bg-art), var(--bg); color: var(--ink); font-family: var(--font-body); transition: background .3s; }
+.switcher { position: sticky; top: 0; z-index: 5; display: flex; gap: 8px; justify-content: center; padding: 10px; background: color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter: blur(8px); }
+.switcher button { font: 600 14px var(--font-body); border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 8px 14px; border-radius: 999px; cursor: pointer; }
+.switcher button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+
+.app { max-width: 1180px; margin: 0 auto; padding: 12px 20px 40px; }
+/* 상단 바 */
+.topbar { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.icon-btn { width: 48px; height: 48px; border-radius: 14px; border: 0; background: var(--surface); box-shadow: 0 var(--depth) 0 var(--line), var(--shadow); display: grid; place-items: center; cursor: pointer; color: var(--ink); }
+.icon-btn:active { transform: translateY(var(--depth)); box-shadow: 0 0 0 var(--line); }
+.stage-title { flex: 1; }
+.stage-title small { display: block; color: var(--ink-soft); font-weight: 600; font-size: 13px; letter-spacing: .02em; }
+.stage-title h1 { margin: 0; font: 28px/1.15 var(--font-head); }
+.progress { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; width: 160px; }
+.progress span { display: block; height: 100%; width: 37%; background: linear-gradient(90deg, var(--turn), var(--move)); border-radius: inherit; }
+.stars { display: flex; gap: 2px; }
+
+/* 레이아웃 */
+.layout { display: grid; grid-template-columns: minmax(300px, 420px) 1fr; gap: 20px; align-items: start; }
+.card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; }
+.mission { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; font-weight: 600; }
+.mission .bubble { background: var(--surface-2); padding: 8px 12px; border-radius: 12px; font-size: 14px; color: var(--ink-soft); }
+
+/* 맵 */
+.board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 10px; border-radius: var(--radius-sm); background: var(--surface-2); position: relative; }
+.cell { aspect-ratio: 1; border-radius: 12px; background: linear-gradient(135deg, var(--tile-floor), var(--tile-floor-2)); position: relative; display: grid; place-items: center; }
+.cell.wall { background: var(--tile-wall); box-shadow: inset 0 -8px 0 rgb(0 0 0 / .15), inset 0 6px 0 var(--tile-wall-top); }
+.cell.goal { background: var(--tile-goal); }
+.cell.path::after { content: ''; width: 12px; height: 12px; border-radius: 50%; background: var(--move); opacity: .35; }
+.robot { width: 78%; filter: drop-shadow(0 6px 4px rgb(0 0 0 / .2)); animation: bob 1.6s ease-in-out infinite; }
+.flag { width: 70%; animation: wave 2s ease-in-out infinite; transform-origin: 30% 90%; }
+@keyframes bob { 50% { transform: translateY(-4px); } }
+@keyframes wave { 50% { transform: rotate(-6deg); } }
+
+/* 실행 컨트롤 */
+.controls { display: flex; gap: 10px; margin-top: 14px; align-items: center; }
+.btn3d { --c: var(--surface); --d: var(--line); --t: var(--ink); border: 0; cursor: pointer; border-radius: var(--radius-sm); background: var(--c); color: var(--t); box-shadow: 0 var(--depth) 0 var(--d); font: 700 15px var(--font-body); display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 16px; transition: transform .06s, box-shadow .06s; }
+.btn3d:active { transform: translateY(var(--depth)); box-shadow: 0 0 0 var(--d); }
+.run { --c: var(--run); --d: var(--run-dark); --t: #fff; flex: 1; font-size: 20px; font-family: var(--font-head); min-height: 60px; }
+.speed { display: flex; background: var(--surface-2); border-radius: 999px; padding: 4px; gap: 2px; }
+.speed button { border: 0; background: transparent; color: var(--ink-soft); border-radius: 999px; padding: 8px 10px; font-weight: 800; cursor: pointer; letter-spacing: -2px; }
+.speed button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 2px 6px rgb(0 0 0 / .12); }
+
+/* 편집기 */
+.editor-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.editor-head h2 { margin: 0; font: 20px var(--font-head); }
+.slots { display: flex; gap: 5px; }
+.slots i { width: 12px; height: 12px; border-radius: 50%; background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--line); }
+.slots i.on { background: var(--accent); box-shadow: none; }
+.palette { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+.block { --c: var(--move); --d: var(--move-dark); border: 0; cursor: pointer; aspect-ratio: 1; border-radius: var(--radius-sm); background: var(--c); color: #fff; box-shadow: 0 var(--depth) 0 var(--d); display: grid; place-items: center; transition: transform .06s, box-shadow .06s; position: relative; }
+.block:hover { filter: brightness(1.05); }
+.block:active { transform: translateY(var(--depth)); box-shadow: 0 0 0 var(--d); }
+.block.turn { --c: var(--turn); --d: var(--turn-dark); }
+.block.loop { --c: var(--loop); --d: var(--loop-dark); }
+.block svg { width: 46%; height: 46%; }
+.palette .block { max-height: 96px; }
+.block .no { position: absolute; top: 6px; left: 8px; font: 800 11px var(--font-body); opacity: .8; }
+.block .x { position: absolute; bottom: 6px; right: 8px; font: 800 14px var(--font-body); }
+.workspace { background: var(--surface-2); border-radius: var(--radius-sm); padding: 14px; min-height: 230px; display: flex; flex-wrap: wrap; gap: 10px; align-content: flex-start; border: 2px dashed var(--line); }
+.workspace .block { width: 72px; }
+.workspace .block.active { outline: 4px solid var(--accent); outline-offset: 3px; animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 50% { outline-color: transparent; } }
+.frame { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px; border-radius: calc(var(--radius-sm) + 6px); background: var(--loop-soft); box-shadow: inset 0 0 0 3px var(--loop); align-items: center; }
+.frame .slot { width: 72px; aspect-ratio: 1; border-radius: var(--radius-sm); border: 3px dashed var(--loop); display: grid; place-items: center; color: var(--loop-dark); font-weight: 800; font-size: 26px; }
+.toolbar { display: flex; gap: 8px; margin-top: 12px; }
+.toolbar .btn3d { min-width: 52px; }
+
+/* 결과 토스트 미리보기 */
+.result { margin-top: 20px; display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: var(--radius); background: linear-gradient(135deg, var(--turn-soft), var(--move-soft)); }
+.result .big { font: 34px var(--font-head); color: #fbbf24; text-shadow: 0 2px 0 #d97706; }
+.result .btn3d { white-space: nowrap; }
+.result .btn3d { margin-left: auto; --c: var(--move); --d: var(--move-dark); --t: #fff; }
+
+@media (max-width: 760px) {
+  .app { padding: 8px 12px 24px; }
+  .layout { grid-template-columns: 1fr; gap: 12px; }
+  .stage-title h1 { font-size: 22px; }
+  .progress { display: none; }
+  .board { max-width: 260px; margin: 0 auto; }
+  .palette .block { max-height: 64px; }
+  .workspace { min-height: 150px; }
+  .workspace .block, .frame .slot { width: 56px; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body data-theme="bright">
+<div class="switcher" role="group" aria-label="디자인 시안 고르기">
+  <button aria-pressed="true" data-t="bright">A. 밝은 게임형</button>
+  <button aria-pressed="false" data-t="pastel">B. 파스텔</button>
+  <button aria-pressed="false" data-t="space">C. 우주 탐험</button>
+</div>
+
+<!-- 아이콘 정의: 이모지 대신 SVG (어느 기기에서나 같은 모양) -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 4l7 8h-4v8H9v-8H5z" fill="currentColor"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M9 7V3L3 9l6 6v-4h5a4 4 0 0 1 0 8h-2v3h2a7 7 0 0 0 0-14z" fill="currentColor"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M15 7V3l6 6-6 6v-4h-5a4 4 0 0 0 0 8h2v3h-2a7 7 0 0 1 0-14z" fill="currentColor"/></symbol>
+  <symbol id="i-loop" viewBox="0 0 24 24"><path d="M17 2l4 4-4 4V7H8a3 3 0 0 0-3 3v1H2v-1a6 6 0 0 1 6-6h9zM7 22l-4-4 4-4v3h9a3 3 0 0 0 3-3v-1h3v1a6 6 0 0 1-6 6H7z" fill="currentColor"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z" fill="currentColor"/></symbol>
+  <symbol id="i-step" viewBox="0 0 24 24"><path d="M5 5l9 7-9 7zM16 5h3v14h-3z" fill="currentColor"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7a5 5 0 1 1-5 5H4a8 8 0 1 0 8-7z" fill="currentColor"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16v2.5H4zm0 5h16v2.5H4zm0 5h16v2.5H4z" fill="currentColor"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2zM9 19h6v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z" fill="currentColor"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.5 7L12 17.6 5.7 21l1.5-7L2 9.3l7-.8z" fill="currentColor"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M9 3h6l1 2h4v2H4V5h4zM6 9h12l-1 12H7z" fill="currentColor"/></symbol>
+  <symbol id="i-l" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-r" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/></symbol>
+</svg>
+
+<main class="app">
+  <header class="topbar">
+    <button class="icon-btn" aria-label="스테이지 목록"><svg width="22" height="22"><use href="#i-menu"/></svg></button>
+    <div class="stage-title"><small>STAGE 6 / 8</small><h1>계단 오르기</h1></div>
+    <div class="progress" aria-label="전체 진행 37%"><span></span></div>
+    <div class="stars" aria-label="최고 별 2개">
+      <svg width="26" height="26" style="color:#fbbf24"><use href="#i-star"/></svg>
+      <svg width="26" height="26" style="color:#fbbf24"><use href="#i-star"/></svg>
+      <svg width="26" height="26" style="color:var(--line)"><use href="#i-star"/></svg>
+    </div>
+    <button class="icon-btn" aria-label="힌트" style="color:#f59e0b"><svg width="22" height="22"><use href="#i-bulb"/></svg></button>
+  </header>
+
+  <div class="layout">
+    <section class="card">
+      <p class="mission"><span class="bubble">반복으로 계단을 올라 깃발까지 가요</span></p>
+      <div class="board" aria-label="지도">
+        <div class="cell wall"></div><div class="cell wall"></div><div class="cell wall"></div><div class="cell goal"><svg class="flag" viewBox="0 0 40 40"><rect x="9" y="4" width="3" height="32" rx="1.5" fill="#64748b"/><path d="M12 5h20l-5 6 5 6H12z" fill="#ef4444"/></svg></div>
+        <div class="cell wall"></div><div class="cell wall"></div><div class="cell path"></div><div class="cell path"></div>
+        <div class="cell wall"></div><div class="cell path"></div><div class="cell path"></div><div class="cell wall"></div>
+        <div class="cell"><svg class="robot" viewBox="0 0 64 64" aria-label="로봇, 오른쪽을 봄">
+          <rect x="30" y="4" width="4" height="8" rx="2" fill="#64748b"/><circle cx="32" cy="4" r="4" fill="#f59e0b"/>
+          <rect x="10" y="12" width="44" height="34" rx="12" fill="#3b82f6"/><rect x="16" y="18" width="32" height="20" rx="8" fill="#e0f2fe"/>
+          <circle cx="29" cy="28" r="4" fill="#1e293b"/><circle cx="41" cy="28" r="4" fill="#1e293b"/><circle cx="42.5" cy="26.5" r="1.3" fill="#fff"/><circle cx="30.5" cy="26.5" r="1.3" fill="#fff"/>
+          <path d="M54 26l8 6-8 6z" fill="#1d4ed8"/>
+          <rect x="16" y="46" width="10" height="10" rx="4" fill="#1d4ed8"/><rect x="38" y="46" width="10" height="10" rx="4" fill="#1d4ed8"/>
+        </svg></div><div class="cell path"></div><div class="cell wall"></div><div class="cell wall"></div>
+      </div>
+      <div class="controls">
+        <button class="btn3d run"><svg width="22" height="22"><use href="#i-play"/></svg>실행</button>
+        <button class="btn3d" aria-label="한 단계"><svg width="20" height="20"><use href="#i-step"/></svg></button>
+        <button class="btn3d" aria-label="처음으로"><svg width="20" height="20"><use href="#i-reset"/></svg></button>
+      </div>
+      <div class="controls" style="justify-content:center">
+        <div class="speed" role="group" aria-label="속도"><button aria-label="느리게">▶</button><button aria-pressed="true" aria-label="보통">▶▶</button><button aria-label="빠르게">▶▶▶</button></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="editor-head"><h2>내 코드</h2><div class="slots" aria-label="블록 6 / 10"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="palette" role="group" aria-label="블록 추가">
+        <button class="block" aria-label="앞으로"><svg><use href="#i-up"/></svg></button>
+        <button class="block turn" aria-label="왼쪽으로 돌기"><svg><use href="#i-left"/></svg></button>
+        <button class="block turn" aria-label="오른쪽으로 돌기"><svg><use href="#i-right"/></svg></button>
+        <button class="block loop" aria-label="반복"><svg><use href="#i-loop"/></svg></button>
+      </div>
+      <div class="workspace" aria-label="작업 공간">
+        <div class="frame">
+          <button class="block loop" aria-label="1번 반복 3번"><span class="no">1</span><svg><use href="#i-loop"/></svg><span class="x">×3</span></button>
+          <button class="block active" aria-label="1.1번 앞으로"><span class="no">1.1</span><svg><use href="#i-up"/></svg></button>
+          <button class="block turn" aria-label="1.2번 왼쪽으로 돌기"><span class="no">1.2</span><svg><use href="#i-left"/></svg></button>
+          <button class="block" aria-label="1.3번 앞으로"><span class="no">1.3</span><svg><use href="#i-up"/></svg></button>
+          <button class="block turn" aria-label="1.4번 오른쪽으로 돌기"><span class="no">1.4</span><svg><use href="#i-right"/></svg></button>
+        </div>
+        <button class="block" aria-label="2번 앞으로"><span class="no">2</span><svg><use href="#i-up"/></svg></button>
+        <div class="frame"><button class="block loop"><span class="no">3</span><svg><use href="#i-loop"/></svg><span class="x">×2</span></button><span class="slot">+</span></div>
+      </div>
+      <div class="toolbar" aria-label="선택한 블록">
+        <button class="btn3d" aria-label="앞으로 옮기기"><svg width="18" height="18"><use href="#i-l"/></svg></button>
+        <button class="btn3d" aria-label="뒤로 옮기기"><svg width="18" height="18"><use href="#i-r"/></svg></button>
+        <button class="btn3d" aria-label="삭제" style="--t:#ef4444"><svg width="18" height="18"><use href="#i-trash"/></svg></button>
+      </div>
+      <div class="result"><span class="big">★★★</span><div><b>성공!</b><br><small>블록 5개로 해냈어요</small></div><button class="btn3d">다음 스테이지 <svg width="18" height="18"><use href="#i-r"/></svg></button></div>
+    </section>
+  </div>
+</main>
+<script>
+document.querySelectorAll('.switcher button').forEach(b => b.onclick = () => {
+  document.body.dataset.theme = b.dataset.t
+  document.querySelectorAll('.switcher button').forEach(x => x.setAttribute('aria-pressed', x === b))
+})
+document.querySelectorAll('.speed button').forEach(b => b.onclick = () => document.querySelectorAll('.speed button').forEach(x => x.setAttribute('aria-pressed', x === b)))
+</script>
+</body>
+</html>
