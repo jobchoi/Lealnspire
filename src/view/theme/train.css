@@ -26,7 +26,7 @@
 .theme-train .palette { display:flex; gap:14px; padding-bottom:6px; }
 .theme-train .palette button { flex:0 0 auto; width:92px; height:78px; border:0; border-radius:14px; color:#fff; background:var(--c); box-shadow:0 6px #0003; font-size:15px; }
 .theme-train .block-forward { --c:#2563eb; }
-.theme-train .block-turnLeft,.theme-train .block-turnRight { --c:#16a34a; }
+.theme-train .block-turnLeft,.theme-train .block-turnRight { --c:#15803d; }
 .theme-train .block-repeat { --c:#f59e0b; }
 .theme-train .workspace { border:0; border-radius:0; background:transparent; padding-bottom:16px; }
 .theme-train .workspace > .tile-list { padding-top:12px; padding-bottom:18px; }
@@ -80,3 +80,7 @@
 /* Palette symbols and labels occupy separate, fixed rows. */
 .theme-train .palette .block-repeat .block-symbol { display:block; }
 .theme-train .palette small { white-space:nowrap; }
+
+/* Keep the sunny orange cars with readable dark ink. */
+.theme-train .palette button.block-repeat,.theme-train .block-tile.block-repeat { color:#422006; }
+.theme-train .block-tile[aria-pressed="true"] { outline:3px solid #172554; outline-offset:-3px; box-shadow:inset 0 0 0 5px white; }

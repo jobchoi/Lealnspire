@@ -15,9 +15,9 @@ describe('world presentation', () => {
     }
   })
   it('projects grid neighbors onto opposite island diagonals', () => {
-    expect(isometric(0, 0, 3)).toEqual({ x: 72, y: 20 })
-    expect(isometric(1, 0, 3)).toEqual({ x: 96, y: 32 })
-    expect(isometric(0, 1, 3)).toEqual({ x: 48, y: 32 })
+    expect(isometric(0, 0, 3)).toEqual({ x: 144, y: 65 })
+    expect(isometric(1, 0, 3)).toEqual({ x: 184, y: 85 })
+    expect(isometric(0, 1, 3)).toEqual({ x: 104, y: 85 })
   })
   for (const world of worlds) it(`${world} preserves editing names and supplies distinct repeat artwork`, () => {
     const theme = themes[world]
@@ -49,6 +49,12 @@ it('draws exactly one island tile per stage cell and reserves margins around the
     const html = renderToString(<Board stage={stage} theme={themes.train} />)
     expect(html.match(/M0-20 40 0 0 20-40 0Z/g)).toHaveLength(stage.grid.length * stage.grid[0].length)
     expect(html).toContain(`viewBox="0 0 ${(stage.grid.length + stage.grid[0].length)*40+48} ${(stage.grid.length + stage.grid[0].length)*20+120}"`)
+    for (let y = 0; y < stage.grid.length; y++) {
+      for (let x = 0; x < stage.grid[0].length; x++) {
+        const point = isometric(x, y, stage.grid.length)
+        expect(html).toContain(`transform="translate(${point.x} ${point.y})"`)
+      }
+    }
     expect(html).not.toContain('foreignObject')
   }
 })
@@ -57,4 +63,10 @@ it('renders LCD brick and scanline patterns and the original pixel flag', () => 
   expect(html).toContain('id="pixel-wall"')
   expect(html).toContain('fill="url(#lcd-scan)"')
   expect(html).toContain('M6 3h1v11H6zM7 3h6v1h-1v1h1v1H7z')
+})
+
+it('keeps every enclosing repeat ribbon on nested tiles', () => {
+  const html = renderToString(<Editor theme={themes.train} program={[{ id:'outer', type:'repeat', count:2, body:[{ id:'f', type:'forward' }, { id:'inner', type:'repeat', count:3, body:[{ id:'l', type:'turnLeft' }] }, { id:'r', type:'turnRight' }] }]} onChange={() => {}} />)
+  expect(html.match(/data-ribbon-depth="1"/g)).toHaveLength(5)
+  expect(html.match(/data-ribbon-depth="2"/g)).toHaveLength(2)
 })

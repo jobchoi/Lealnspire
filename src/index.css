@@ -291,16 +291,23 @@ button small { display: block; font-size: .75rem; }
 .theme-handheld .workspace .empty-repeat { display:none; }
 .theme-handheld .workspace .empty-repeat-label { display:block; position:absolute; bottom:0; font-size:10px; line-height:12px; white-space:nowrap; }
 .theme-handheld .workspace .block-repeat:has(.empty-repeat-label) strong { transform:translateY(-5px); }
-.theme-handheld .frame-selected > .block-tile .repeat-ribbon,
-.theme-handheld .frame-selected > .tile-list .repeat-ribbon { border-color:#2563eb; }
 @media(max-width:700px) {
  .play-page .workspace .block-tile { isolation:isolate; }
  .play-page .repeat-frame .repeat-ribbon { display:block; position:absolute; inset:-3px; border-block:3px solid var(--repeat-ink); background:transparent; box-shadow:inset 0 0 0 5px var(--repeat-paper); pointer-events:none; z-index:-1; }
  .play-page.theme-sketchbook .repeat-ribbon { border-radius:8px; border-inline:2px solid var(--repeat-ink); }
  .play-page.theme-handheld .repeat-ribbon { border:2px dashed var(--repeat-ink); }
- .play-page .frame-selected > .block-tile .repeat-ribbon,
- .play-page .frame-selected > .tile-list .repeat-ribbon { border-color:#2563eb; }
  .play-page .workspace .empty-repeat { display:none; }
  .play-page .workspace .empty-repeat-label { display:block; position:absolute; bottom:0; font-size:10px; line-height:12px; white-space:nowrap; }
  .play-page .workspace .block-repeat:has(.empty-repeat-label) strong { transform:translateY(-5px); }
+}
+
+/* Disabled controls retain legible ink; desaturation supplies the muted state. */
+.play-page .palette button:disabled,
+.play-page .block-tile:disabled,
+.play-page button.run-button:disabled { opacity:1; filter:grayscale(1); }
+
+/* Each enclosing repeat owns a separate lane, including through nested frames. */
+.theme-handheld .repeat-frame .repeat-ribbon { inset:auto -3px calc(-3px + var(--ribbon-depth) * 3px); height:0; border:0; border-bottom:2px solid var(--ribbon-ink); box-shadow:none; }
+@media(max-width:700px) {
+ .play-page .repeat-frame .repeat-ribbon { inset:auto -3px calc(-3px + var(--ribbon-depth) * 3px); height:0; border:0; border-bottom:2px solid var(--ribbon-ink); border-radius:0; box-shadow:none; }
 }

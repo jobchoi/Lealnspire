@@ -33,15 +33,15 @@
 .theme-sketchbook .block-repeat { --c:#e4572e; }
 .theme-sketchbook .block-tile { background:transparent; border:0; box-shadow:none; border-radius:0; }
 .theme-sketchbook .block-tile .theme-symbol { width:58px; height:58px; }
-.theme-sketchbook .block-tile small { font-size:18px; color:#a49a87; }
+.theme-sketchbook .block-tile small { font-size:18px; color:#665b49; }
 .theme-sketchbook .tile-item::after { content:''; width:18px; height:20px; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 20'%3E%3Cpath d='M2 10 C9 9 16 11 22 10 M16 4 L22 10 L16 16' stroke='%23a49a87' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat; }
 .theme-sketchbook .repeat-frame { border:0; background:transparent; border-radius:0; box-shadow:none; position:relative; padding:9px 12px; }
 .theme-sketchbook .repeat-frame::before { content:''; position:absolute; inset:0; pointer-events:none; border-left:4px solid #e4572e; border-right:4px solid #e4572e; border-radius:18px; filter:url(#sketchbook-rough); }
 .theme-sketchbook .block-repeat .block-symbol { display:none; }
-.theme-sketchbook .block-repeat strong { font:32px 'Gamja Flower'; color:#e4572e; }
+.theme-sketchbook .block-repeat strong { font:32px 'Gamja Flower'; color:#a83b1b; }
 .theme-sketchbook button:not(.block-tile):not(.run-button):not(.palette button) { background:#fffdf5; border:2px solid #a49a87; border-radius:45% 8% 20% 6% / 8% 20% 8% 20%; box-shadow:2px 3px #0001; }
 .theme-sketchbook .execution-controls { background:transparent; }
-.theme-sketchbook .run-button { clip-path:polygon(0 12%,88% 0,100% 50%,88% 100%,0 88%); background:#47a447; border:0; border-radius:0; font-family:'Gamja Flower'; filter:url(#sketchbook-rough); }
+.theme-sketchbook .run-button { clip-path:polygon(0 12%,88% 0,100% 50%,88% 100%,0 88%); background:#287a36; border:0; border-radius:0; font-family:'Gamja Flower'; filter:url(#sketchbook-rough); }
 .theme-sketchbook .run-button .control-symbol { display:none; }
 .theme-sketchbook .run-button small { font-size:26px; }
 .theme-sketchbook .tile-toolbar { background:#fffaf0; }
@@ -83,3 +83,6 @@ body:has(.theme-sketchbook) { background:#e9dfcc url("data:image/svg+xml,%3Csvg 
  .theme-sketchbook .palette .theme-symbol { width:28px; height:28px; }
  .theme-sketchbook .palette { padding-block:0; }
 }
+
+/* Opaque paper keeps notebook ruling from reducing command-icon contrast. */
+.theme-sketchbook .block-tile { background:#fffaf0; }
