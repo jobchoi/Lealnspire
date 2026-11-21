@@ -8,15 +8,15 @@ import type { ProgressRepository } from '../model/ProgressRepository'
 import { isLastFrame, nextFrameIndex, playbackSpeeds } from './playback'
 export type Scheduler = { set(callback: () => void, delay: number): unknown; clear(handle: unknown): void }
 const scheduler: Scheduler = { set: (callback, delay) => setTimeout(callback, delay), clear: handle => clearTimeout(handle as ReturnType<typeof setTimeout>) }
-type State = { program: Program; execution: RunResult | null; index: number; playing: boolean; dismissed: boolean; speed: keyof typeof playbackSpeeds; hintStep: 0 | 1 | 2; failure: ReturnType<typeof failurePoint> }
+type State = { undoProgram: Program | null; program: Program; execution: RunResult | null; index: number; playing: boolean; dismissed: boolean; speed: keyof typeof playbackSpeeds; hintStep: 0 | 1 | 2; failure: ReturnType<typeof failurePoint> }
 export class GameController extends Observable<State> {
-  readonly editor = new EditorController(() => { if (this.finished) this.reset() })
+  readonly editor = new EditorController(() => { if (this.finished) this.reset() }, { undo: () => this.undo(), available: () => this.canUndo })
   readonly stage: Stage
   readonly repository: ProgressRepository
   private clock: Scheduler
   private timer: unknown
   constructor(stage: Stage, repository: ProgressRepository, clock: Scheduler = scheduler) {
-    super({ program: repository.getProgram(stage), execution: null, index: 0, playing: false, dismissed: false, speed: 'normal', hintStep: 0, failure: null })
+    super({ undoProgram: null, program: repository.getProgram(stage), execution: null, index: 0, playing: false, dismissed: false, speed: 'normal', hintStep: 0, failure: null })
     this.stage = stage; this.repository = repository; this.clock = clock
   }
   get failure() { return this.state.failure ?? (this.finished && this.state.execution ? failurePoint(this.state.execution) : null) }
@@ -39,10 +39,18 @@ export class GameController extends Observable<State> {
       this.publish({ ...this.state, index, playing: !isLastFrame(index, this.state.execution!.frames.length) })
     }, playbackSpeeds[next.speed])
   }
+  get canUndo() { return !this.locked && this.state.undoProgram !== null }
+  undo = () => {
+    if (!this.canUndo) return
+    const program = structuredClone(this.state.undoProgram!)
+    this.repository.saveProgram(this.stage.id, program)
+    this.editor.reconcile(program)
+    this.publish({ ...this.state, program, undoProgram: null, execution: null, index: 0, playing: false, dismissed: false, failure: null })
+  }
   edit = (program: Program) => {
     if (this.locked) return
     this.repository.saveProgram(this.stage.id, program)
-    this.publish({ ...this.state, program: structuredClone(program), execution: null, index: 0, playing: false, dismissed: false, failure: null })
+    this.publish({ ...this.state, undoProgram: JSON.stringify(program) === JSON.stringify(this.state.program) ? this.state.undoProgram : structuredClone(this.state.program), program: structuredClone(program), execution: null, index: 0, playing: false, dismissed: false, failure: null })
   }
   play = () => {
     if (!this.state.program.length || this.state.playing) return

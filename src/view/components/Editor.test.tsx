@@ -1,6 +1,9 @@
 import { renderToString } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { Editor } from './Editor'
+import { GameController } from '../../controller/GameController'
+import { ProgressRepository } from '../../model/ProgressRepository'
+import { stages } from '../../model/stages'
 import type { Program } from '../../model/types'
 import { t } from '../../i18n/I18n'
 
@@ -29,7 +32,9 @@ describe('Editor', () => {
   it('offers additions below the limit and explains an empty workspace', () => {
     const html = renderToString(<Editor program={[]} onChange={onChange} maxBlocks={4} />)
     expect(html).toContain(t('empty'))
-    expect(html).not.toContain('disabled=""')
+    const palette = html.split('aria-label="블록 추가">')[1].split('</div>')[0]
+    expect(palette).not.toContain('disabled=""')
+    expect(html.match(/<button[^>]*aria-label="되돌리기"[^>]*>/)?.[0]).toContain('disabled=""')
     expect(html).toContain(t('root'))
   })
 })
@@ -59,4 +64,17 @@ it('스테이지 제한이 없어도 10개 상한을 적용한다', () => {
     expect(html.split('aria-label="블록 추가">')[1].split('</div>')[0].match(/disabled=""/g)).toHaveLength(4)
     expect(html.match(/class="filled"/g)).toHaveLength(10)
   }
+})
+
+
+it('enables undo only with history and disables it during playback or after consuming history', () => {
+  const game = new GameController(stages[0], new ProgressRepository())
+  const undoTag = (locked = game.locked) => renderToString(<Editor controller={game.editor} program={game.getSnapshot().program} onChange={game.edit} locked={locked} />).match(/<button[^>]*aria-label="되돌리기"[^>]*>/)?.[0]
+  expect(undoTag()).toContain('disabled=""')
+  game.edit(stages[0].solution)
+  expect(undoTag()).not.toContain('disabled=""')
+  game.step()
+  expect(undoTag()).toContain('disabled=""')
+  game.reset(); game.undo()
+  expect(undoTag()).toContain('disabled=""')
 })

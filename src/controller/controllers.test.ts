@@ -205,3 +205,73 @@ it('preserves completed progress when the first edit resets a successful run', (
   expect(game.getSnapshot().program).toHaveLength(stages[0].solution.length + 1)
   expect(repository.getProgress().stages[stages[0].id]).toMatchObject({ completed: true, bestStars: 3 })
 })
+
+
+it('undoes repeat deletion including body, IDs and count, saves it and consumes the single history entry', () => {
+  const repository = new ProgressRepository(), game = new GameController(stages[0], repository)
+  const program = [{ id: 'loop', type: 'repeat' as const, count: 2, body: [{ id: 'inner', type: 'forward' as const }] }]
+  game.edit(program)
+  game.editor.configure(game.getSnapshot().program, game.edit, false)
+  game.editor.select('loop'); game.editor.toggleTarget(); game.editor.remove()
+  expect(game.editor.total).toBe(0)
+  game.editor.undo()
+  expect(game.getSnapshot().program).toEqual(program)
+  expect(game.editor.total).toBe(2)
+  expect(repository.getProgram(stages[0])).toEqual(program)
+  expect(game.editor.getSnapshot()).toMatchObject({ selectedId: null, targetId: null })
+  const restored = game.getSnapshot()
+  game.undo(); expect(game.getSnapshot()).toBe(restored)
+  expect(game.canUndo).toBe(false)
+})
+
+it('keeps only the latest changed program and clears invalid selection and insertion targets on undo', () => {
+  const game = new GameController(stages[0], new ProgressRepository())
+  game.editor.configure(game.getSnapshot().program, game.edit, false)
+  game.editor.add('forward'); game.editor.add('repeat')
+  const loop = game.editor.program[1].id
+  game.editor.select(loop); game.editor.toggleTarget()
+  game.editor.setCount((game.editor.selectedBlock as { count: number }).count); game.editor.move('down') // unchanged edits do not replace history
+  game.undo()
+  expect(game.getSnapshot().program.map(block => block.type)).toEqual(['forward'])
+  expect(game.editor.getSnapshot()).toEqual({ selectedId: null, targetId: null, addedId: null })
+  expect(game.canUndo).toBe(false)
+})
+
+it('preserves history through reset and fix, rejects locked undo and resets completed playback on undo', () => {
+  vi.useFakeTimers()
+  const game = new GameController(stages[0], new ProgressRepository())
+  game.edit([{ id: 'r', type: 'turnRight' }])
+  game.reset(); expect(game.canUndo).toBe(true)
+  game.play()
+  const snapshot = game.getSnapshot()
+  game.undo(); expect(game.getSnapshot()).toBe(snapshot)
+  vi.runAllTimers(); game.fix(); expect(game.canUndo).toBe(true)
+  game.play(); vi.runAllTimers(); game.undo()
+  expect(game.getSnapshot()).toMatchObject({ program: [], undoProgram: null, execution: null, index: 0, playing: false, failure: null })
+  expect(vi.getTimerCount()).toBe(0)
+})
+
+it('starts a new undo history on stage navigation, including reopening a saved stage', () => {
+  const app = new AppController()
+  app.start(); app.game!.edit(stages[0].solution)
+  expect(app.game!.canUndo).toBe(true)
+  app.list(); app.openStage(0)
+  expect(app.game!.canUndo).toBe(false)
+  app.game!.undo(); expect(app.game!.getSnapshot().program).toEqual(stages[0].solution)
+})
+
+for (const action of ['add', 'move', 'setCount'] as const) {
+  it(`undoes ${action} and preserves valid selection and target`, () => {
+    const game = new GameController(stages[0], new ProgressRepository())
+    const program = [{ id: 'loop', type: 'repeat' as const, count: 2, body: [] }, { id: 'f', type: 'forward' as const }]
+    game.edit(program); game.editor.configure(game.getSnapshot().program, game.edit, false)
+    game.editor.select('loop'); game.editor.toggleTarget()
+    if (action === 'add') game.editor.add('forward')
+    else if (action === 'move') game.editor.move('down')
+    else game.editor.setCount(4)
+    game.undo()
+    expect(game.getSnapshot().program).toEqual(program)
+    expect(game.editor.getSnapshot()).toMatchObject({ selectedId: 'loop', targetId: 'loop' })
+    expect(game.editor.selectedPath).toEqual([0])
+  })
+}

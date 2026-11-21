@@ -1,4 +1,5 @@
 {
+  "undo": "Undo",
   "fix": "Fix",
   "failureBlock": "Failure block",
   "failureCell": "Failure location",

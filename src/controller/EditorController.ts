@@ -7,9 +7,11 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   maxBlocks?: number
   onChange: (program: Program) => void = () => {}
   private beforeEdit: () => void
-  constructor(beforeEdit: () => void = () => {}) {
+  private undoControls?: { undo: () => void; available: () => boolean }
+  constructor(beforeEdit: () => void = () => {}, undoControls?: { undo: () => void; available: () => boolean }) {
     super({ selectedId: null, targetId: null, addedId: null })
     this.beforeEdit = beforeEdit
+    this.undoControls = undoControls
   }
   private prepareEdit() {
     if (this.locked) return false
@@ -18,6 +20,17 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   }
   configure(program: Program, onChange: (program: Program) => void, locked: boolean, maxBlocks?: number) {
     this.program = program; this.onChange = onChange; this.locked = locked; this.maxBlocks = maxBlocks
+  }
+  get canUndo() { return !this.locked && (this.undoControls?.available() ?? false) }
+  undo = () => { if (this.canUndo) this.undoControls?.undo() }
+  reconcile(program: Program) {
+    const model = new ProgramModel(program)
+    this.program = program
+    this.update({
+      selectedId: this.state.selectedId && model.find(this.state.selectedId) ? this.state.selectedId : null,
+      targetId: this.state.targetId && model.find(this.state.targetId) ? this.state.targetId : null,
+      addedId: null,
+    })
   }
   get selectedPath() { return this.state.selectedId ? new ProgramModel(this.program).find(this.state.selectedId) : undefined }
   get targetPath() { return this.state.targetId ? new ProgramModel(this.program).find(this.state.targetId) : undefined }

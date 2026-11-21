@@ -53,3 +53,14 @@
   .block-tile.has-loop-progress .block-symbol { font-size: 1.1rem; line-height: 1; }
   .play-page .workspace .block-tile.has-loop-progress strong { font-size: 16px; line-height: 20px; padding: 0 2px; }
 }
+
+.palette-row .undo-button { flex: 0 0 44px; width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 4px; display: grid; place-items: center; }
+
+/* Undo shares the existing palette height, independently of tile selection. */
+.palette-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.palette-row .palette { min-width: 0; }
+@media (max-width: 700px) {
+  .theme-sketchbook .palette-row .palette { gap: 6px; }
+  .theme-train .palette-row .palette { gap: 4px; }
+  .theme-train .palette-row .palette button { width: 60px; }
+}
