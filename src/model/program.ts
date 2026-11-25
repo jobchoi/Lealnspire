@@ -59,6 +59,33 @@ export class Program {
       return list.map((item, i) => i === index ? { ...block, count } : item)
     })
   }
+  static setVariableValue(program: BlockTree, path: number[], value: number): BlockTree {
+    if (!Number.isInteger(value) || value < 0 || value > 20) throw new Error('Invalid variable value')
+    return Program.editVariableBlock(program, path, block => {
+      if (block.type !== 'set') throw new Error('Block is not a set')
+      return { ...block, value }
+    })
+  }
+  static toggleChange(program: BlockTree, path: number[]): BlockTree {
+    return Program.editVariableBlock(program, path, block => {
+      if (block.type !== 'change') throw new Error('Block is not a change')
+      return { ...block, by: block.by === 1 ? -1 : 1 }
+    })
+  }
+  static setRepeatSource(program: BlockTree, path: number[], source: 'number' | 'A'): BlockTree {
+    return Program.editVariableBlock(program, path, block => {
+      if (block.type !== 'repeat') throw new Error('Block is not a repeat')
+      const { countVariable: _variable, ...numeric } = block
+      return source === 'A' ? { ...block, countVariable: 'A' } : { ...numeric, count: block.count ?? 3 }
+    })
+  }
+  private static editVariableBlock(program: BlockTree, path: number[], edit: (block: Block) => Block): BlockTree {
+    const [parent, index] = splitPath(path)
+    return updateList(program, parent, list => {
+      checkIndex(list, index)
+      return list.map((block, i) => i === index ? edit(block) : block)
+    })
+  }
   static setElse(program: BlockTree, path: number[], enabled: boolean): BlockTree {
     const [parent, index] = splitPath(path)
     return updateList(program, parent, list => {
@@ -96,11 +123,18 @@ export function validDocument(value: unknown, palette?: Block['type'][]): value 
       ids.add(block.id)
       if (palette && !palette.includes(block.type as Block['type'])) return false
       switch (block.type) {
+      case 'set': if (block.variable !== 'A' || !Number.isInteger(block.value) || Number(block.value) < 0 || Number(block.value) > 20) return false; break
+      case 'change': if (block.variable !== 'A' || block.by !== 1 && block.by !== -1) return false; break
       case 'call': if (inFunction || typeof block.fn !== 'string' || !functions.has(block.fn)) return false; break
       case 'forward': case 'turnLeft': case 'turnRight': break
       case 'repeat': case 'if': case 'while':
         if (!Array.isArray(block.body)) return false
-        if (block.type === 'repeat' && (!Number.isInteger(block.count) || Number(block.count) < 2 || Number(block.count) > 10)) return false
+        if (block.type === 'repeat') {
+          if (block.countVariable !== undefined && block.countVariable !== 'A') return false
+          if (block.countVariable !== 'A' || block.count !== undefined) {
+            if (!Number.isInteger(block.count) || Number(block.count) < 2 || Number(block.count) > 10) return false
+          }
+        }
         if (block.type === 'while' && (block.condition !== 'clearAhead' || 'else' in block)) return false
         if (block.type === 'if' && (block.condition !== 'blockedAhead' || 'else' in block && !Array.isArray(block.else))) return false
         if (!list(block.body, depth + 1, inFunction)) return false

@@ -19,8 +19,8 @@ it('checks walls, boundaries and open cells without moving or turning; empty bod
     const execution = run(stage([...grid], dir), [iff()])
     expect(execution.result).toBe('unfinished')
     expect(execution.frames).toEqual([
-      { pos: { x: 0, y: 0 }, dir, activeBlockId: null },
-      { pos: { x: 0, y: 0 }, dir, activeBlockId: 'if', event: 'check', check: { blockId: 'if', condition: 'blockedAhead', result } },
+      { variables: { A: 0 }, pos: { x: 0, y: 0 }, dir, activeBlockId: null },
+      { variables: { A: 0 }, pos: { x: 0, y: 0 }, dir, activeBlockId: 'if', event: 'check', check: { blockId: 'if', condition: 'blockedAhead', result } },
     ])
     expect(run(stage([...grid], dir), [iff([r])]).frames.map(frame => frame.event)).toEqual(result ? [undefined, 'check', 'turn'] : [undefined, 'check'])
   }

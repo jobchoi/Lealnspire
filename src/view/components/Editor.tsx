@@ -60,8 +60,8 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
           {selectedBlock.else && <button disabled={locked} aria-label={label(t('selectElse'))} onClick={() => controller.toggleTarget(true)}>{t('selectElse')}</button>}
         </>}
         {selectedBlock.type === 'repeat'  && <>
-          <button disabled={locked || selectedBlock.count <= 2} aria-label={label(t('decrease'))} onClick={() => controller.setCount(selectedBlock.count - 1)}>−</button>
-          <button disabled={locked || selectedBlock.count >= 10} aria-label={label(t('increase'))} onClick={() => controller.setCount(selectedBlock.count + 1)}>+</button>
+          <button disabled={locked || (selectedBlock.count ?? 3) <= 2} aria-label={label(t('decrease'))} onClick={() => controller.setCount((selectedBlock.count ?? 3) - 1)}>−</button>
+          <button disabled={locked || (selectedBlock.count ?? 3) >= 10} aria-label={label(t('increase'))} onClick={() => controller.setCount((selectedBlock.count ?? 3) + 1)}>+</button>
         </>}
         {hasBody(selectedBlock) && <>
           <button disabled={locked} aria-pressed={targetId === selectedId && !controller.targetElse} aria-label={label(targetId === selectedId ? t('deselect') : t('select'))} onClick={() => controller.toggleTarget()}><span aria-hidden="true"><Symbol name="repeat" /></span></button>

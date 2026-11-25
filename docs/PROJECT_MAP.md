@@ -247,3 +247,10 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - `model/types.ts`, `model/stages/index.ts`, `model/ProgressRepository.ts`: initialFunctions/solutionFunctions, u4-1~3, 미저장 스테이지의 초기 함수 복원. `controller/flow.ts`, `view/pages/StageSelectPage.tsx`, `ResultModal.tsx`, `PlayPage.tsx`: 4단원 진입·묶음·결과.
 - 기존 `model/stages/stages.test.ts`, `model/functions.test.ts`, `controller/flow.test.ts`, `view/components/Editor.test.tsx`에서 맵 전수 탐색·몸체 편집·저장·별·다음·ko/en×세 월드 호출 강조 회귀를 검사합니다. 새 소스 파일·의존성은 없습니다.
 - `docs/design/unit4-functions.md`: 맵·정답·전수 탐색 방법과 검증 제한. E2E 추가·최종 브라우저 QC는 Claude 담당입니다.
+
+
+### T47 변수 Model [제안·잠정]
+
+- `model/types.ts`, `interpreter.ts`: 변형별 variantVariables 시작 값(기본 A=0), set/change, 진입 시 횟수를 고정하는 repeat A, 프레임별 variables/variableChange, variableRange와 실패 호출 문맥. 함수와 main은 A를 공유하며 runAll의 변형마다 스테이지 시작 값으로 초기화합니다.
+- `model/program.ts`, `editor.ts`: 변수 블록 생성·불변 값 편집·증감 방향 전환·숫자/A 반복 전환, v2 문서 검증 확장. 실행 값은 저장하지 않습니다.
+- `model/variables.test.ts`, `model/unit4-run.fixture.json`: 변수·저장·편집·예시 맵과 4단원 전체 프레임 회귀. unit1/unit123 기준은 각 프레임 A=0만 추가합니다. 기존 while 예시는 5블록 반례로 폐기했습니다. 새 예시는 센서 없는 팔레트에서 맵별 A=2/4를 사용하고 변수 없는 6블록 이하 상태 변환 전수 탐색으로 동시 성공 불가를 검사합니다. 근거는 ARCHITECTURE의 T47 절에 기록했습니다. 화면·5단원 연결은 T48입니다.

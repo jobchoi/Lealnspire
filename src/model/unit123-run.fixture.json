@@ -1,1 +1,5825 @@
-{"1":{"results":[{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"block-0","event":"move"},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"block-1","event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"2":{"results":[{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"block-0","event":"move"},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"block-1","event":"move"},{"pos":{"x":2,"y":0},"dir":"S","activeBlockId":"block-2","event":"turn"},{"pos":{"x":2,"y":1},"dir":"S","activeBlockId":"block-3","event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"3":{"results":[{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"block-0","event":"move"},{"pos":{"x":1,"y":0},"dir":"S","activeBlockId":"block-1","event":"turn"},{"pos":{"x":1,"y":1},"dir":"S","activeBlockId":"block-2","event":"move"},{"pos":{"x":1,"y":1},"dir":"E","activeBlockId":"block-3","event":"turn"},{"pos":{"x":2,"y":1},"dir":"E","activeBlockId":"block-4","event":"move"},{"pos":{"x":2,"y":1},"dir":"S","activeBlockId":"block-5","event":"turn"},{"pos":{"x":2,"y":2},"dir":"S","activeBlockId":"block-6","event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"4":{"results":[{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"block-0","event":"move"},{"pos":{"x":1,"y":0},"dir":"S","activeBlockId":"block-1","event":"turn"},{"pos":{"x":1,"y":1},"dir":"S","activeBlockId":"block-2","event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"5":{"results":[{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":1,"count":6}],"event":"move"},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":2,"count":6}],"event":"move"},{"pos":{"x":3,"y":0},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":3,"count":6}],"event":"move"},{"pos":{"x":4,"y":0},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":4,"count":6}],"event":"move"},{"pos":{"x":5,"y":0},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":5,"count":6}],"event":"move"},{"pos":{"x":6,"y":0},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":6,"count":6}],"event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"6":{"results":[{"frames":[{"pos":{"x":0,"y":3},"dir":"E","activeBlockId":null},{"pos":{"x":1,"y":3},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":1,"count":3}],"event":"move"},{"pos":{"x":1,"y":3},"dir":"N","activeBlockId":"block-1","loops":[{"blockId":"repeat","iteration":1,"count":3}],"event":"turn"},{"pos":{"x":1,"y":2},"dir":"N","activeBlockId":"block-2","loops":[{"blockId":"repeat","iteration":1,"count":3}],"event":"move"},{"pos":{"x":1,"y":2},"dir":"E","activeBlockId":"block-3","loops":[{"blockId":"repeat","iteration":1,"count":3}],"event":"turn"},{"pos":{"x":2,"y":2},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":2,"count":3}],"event":"move"},{"pos":{"x":2,"y":2},"dir":"N","activeBlockId":"block-1","loops":[{"blockId":"repeat","iteration":2,"count":3}],"event":"turn"},{"pos":{"x":2,"y":1},"dir":"N","activeBlockId":"block-2","loops":[{"blockId":"repeat","iteration":2,"count":3}],"event":"move"},{"pos":{"x":2,"y":1},"dir":"E","activeBlockId":"block-3","loops":[{"blockId":"repeat","iteration":2,"count":3}],"event":"turn"},{"pos":{"x":3,"y":1},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":3,"count":3}],"event":"move"},{"pos":{"x":3,"y":1},"dir":"N","activeBlockId":"block-1","loops":[{"blockId":"repeat","iteration":3,"count":3}],"event":"turn"},{"pos":{"x":3,"y":0},"dir":"N","activeBlockId":"block-2","loops":[{"blockId":"repeat","iteration":3,"count":3}],"event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"7":{"results":[{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":1,"count":3}],"event":"move"},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"block-1","loops":[{"blockId":"repeat","iteration":1,"count":3}],"event":"move"},{"pos":{"x":2,"y":0},"dir":"S","activeBlockId":"block-2","loops":[{"blockId":"repeat","iteration":1,"count":3}],"event":"turn"},{"pos":{"x":2,"y":1},"dir":"S","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":2,"count":3}],"event":"move"},{"pos":{"x":2,"y":2},"dir":"S","activeBlockId":"block-1","loops":[{"blockId":"repeat","iteration":2,"count":3}],"event":"move"},{"pos":{"x":2,"y":2},"dir":"W","activeBlockId":"block-2","loops":[{"blockId":"repeat","iteration":2,"count":3}],"event":"turn"},{"pos":{"x":1,"y":2},"dir":"W","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":3,"count":3}],"event":"move"},{"pos":{"x":0,"y":2},"dir":"W","activeBlockId":"block-1","loops":[{"blockId":"repeat","iteration":3,"count":3}],"event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"8":{"results":[{"frames":[{"pos":{"x":0,"y":2},"dir":"E","activeBlockId":null},{"pos":{"x":1,"y":2},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":1,"count":2}],"event":"move"},{"pos":{"x":1,"y":2},"dir":"N","activeBlockId":"block-1","loops":[{"blockId":"repeat","iteration":1,"count":2}],"event":"turn"},{"pos":{"x":1,"y":1},"dir":"N","activeBlockId":"block-2","loops":[{"blockId":"repeat","iteration":1,"count":2}],"event":"move"},{"pos":{"x":1,"y":1},"dir":"E","activeBlockId":"block-3","loops":[{"blockId":"repeat","iteration":1,"count":2}],"event":"turn"},{"pos":{"x":2,"y":1},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":2,"count":2}],"event":"move"},{"pos":{"x":2,"y":1},"dir":"N","activeBlockId":"block-1","loops":[{"blockId":"repeat","iteration":2,"count":2}],"event":"turn"},{"pos":{"x":2,"y":0},"dir":"N","activeBlockId":"block-2","loops":[{"blockId":"repeat","iteration":2,"count":2}],"event":"move"},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"block-3","loops":[{"blockId":"repeat","iteration":2,"count":2}],"event":"turn"},{"pos":{"x":3,"y":0},"dir":"E","activeBlockId":"last-forward","event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"b1":{"results":[{"frames":[{"pos":{"x":0,"y":2},"dir":"E","activeBlockId":null},{"pos":{"x":1,"y":2},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":1,"count":2}],"event":"move"},{"pos":{"x":2,"y":2},"dir":"E","activeBlockId":"block-1","loops":[{"blockId":"repeat","iteration":1,"count":2}],"event":"move"},{"pos":{"x":2,"y":2},"dir":"N","activeBlockId":"block-2","loops":[{"blockId":"repeat","iteration":1,"count":2}],"event":"turn"},{"pos":{"x":2,"y":1},"dir":"N","activeBlockId":"block-3","loops":[{"blockId":"repeat","iteration":1,"count":2}],"event":"move"},{"pos":{"x":2,"y":1},"dir":"E","activeBlockId":"block-4","loops":[{"blockId":"repeat","iteration":1,"count":2}],"event":"turn"},{"pos":{"x":3,"y":1},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":2,"count":2}],"event":"move"},{"pos":{"x":4,"y":1},"dir":"E","activeBlockId":"block-1","loops":[{"blockId":"repeat","iteration":2,"count":2}],"event":"move"},{"pos":{"x":4,"y":1},"dir":"N","activeBlockId":"block-2","loops":[{"blockId":"repeat","iteration":2,"count":2}],"event":"turn"},{"pos":{"x":4,"y":0},"dir":"N","activeBlockId":"block-3","loops":[{"blockId":"repeat","iteration":2,"count":2}],"event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"b2":{"results":[{"frames":[{"pos":{"x":0,"y":4},"dir":"E","activeBlockId":null},{"pos":{"x":1,"y":4},"dir":"E","activeBlockId":"first-forward","event":"move"},{"pos":{"x":2,"y":4},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":1,"count":2}],"event":"move"},{"pos":{"x":2,"y":4},"dir":"N","activeBlockId":"block-1","loops":[{"blockId":"repeat","iteration":1,"count":2}],"event":"turn"},{"pos":{"x":2,"y":3},"dir":"N","activeBlockId":"block-2","loops":[{"blockId":"repeat","iteration":1,"count":2}],"event":"move"},{"pos":{"x":2,"y":2},"dir":"N","activeBlockId":"block-3","loops":[{"blockId":"repeat","iteration":1,"count":2}],"event":"move"},{"pos":{"x":2,"y":2},"dir":"E","activeBlockId":"block-4","loops":[{"blockId":"repeat","iteration":1,"count":2}],"event":"turn"},{"pos":{"x":3,"y":2},"dir":"E","activeBlockId":"block-0","loops":[{"blockId":"repeat","iteration":2,"count":2}],"event":"move"},{"pos":{"x":3,"y":2},"dir":"N","activeBlockId":"block-1","loops":[{"blockId":"repeat","iteration":2,"count":2}],"event":"turn"},{"pos":{"x":3,"y":1},"dir":"N","activeBlockId":"block-2","loops":[{"blockId":"repeat","iteration":2,"count":2}],"event":"move"},{"pos":{"x":3,"y":0},"dir":"N","activeBlockId":"block-3","loops":[{"blockId":"repeat","iteration":2,"count":2}],"event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"u2-1":{"results":[{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":"u2-if","loops":[{"blockId":"u2-repeat","iteration":1,"count":4}],"event":"check","check":{"blockId":"u2-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u2-forward","loops":[{"blockId":"u2-repeat","iteration":1,"count":4}],"event":"move"},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u2-if","loops":[{"blockId":"u2-repeat","iteration":2,"count":4}],"event":"check","check":{"blockId":"u2-if","condition":"blockedAhead","result":false}},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u2-forward","loops":[{"blockId":"u2-repeat","iteration":2,"count":4}],"event":"move"},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u2-if","loops":[{"blockId":"u2-repeat","iteration":3,"count":4}],"event":"check","check":{"blockId":"u2-if","condition":"blockedAhead","result":true}},{"pos":{"x":2,"y":0},"dir":"S","activeBlockId":"u2-right","loops":[{"blockId":"u2-repeat","iteration":3,"count":4}],"event":"turn"},{"pos":{"x":2,"y":1},"dir":"S","activeBlockId":"u2-forward","loops":[{"blockId":"u2-repeat","iteration":3,"count":4}],"event":"move"},{"pos":{"x":2,"y":1},"dir":"S","activeBlockId":"u2-if","loops":[{"blockId":"u2-repeat","iteration":4,"count":4}],"event":"check","check":{"blockId":"u2-if","condition":"blockedAhead","result":false}},{"pos":{"x":2,"y":2},"dir":"S","activeBlockId":"u2-forward","loops":[{"blockId":"u2-repeat","iteration":4,"count":4}],"event":"goal"}],"result":"success"},{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":"u2-if","loops":[{"blockId":"u2-repeat","iteration":1,"count":4}],"event":"check","check":{"blockId":"u2-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u2-forward","loops":[{"blockId":"u2-repeat","iteration":1,"count":4}],"event":"move"},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u2-if","loops":[{"blockId":"u2-repeat","iteration":2,"count":4}],"event":"check","check":{"blockId":"u2-if","condition":"blockedAhead","result":true}},{"pos":{"x":1,"y":0},"dir":"S","activeBlockId":"u2-right","loops":[{"blockId":"u2-repeat","iteration":2,"count":4}],"event":"turn"},{"pos":{"x":1,"y":1},"dir":"S","activeBlockId":"u2-forward","loops":[{"blockId":"u2-repeat","iteration":2,"count":4}],"event":"move"},{"pos":{"x":1,"y":1},"dir":"S","activeBlockId":"u2-if","loops":[{"blockId":"u2-repeat","iteration":3,"count":4}],"event":"check","check":{"blockId":"u2-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":2},"dir":"S","activeBlockId":"u2-forward","loops":[{"blockId":"u2-repeat","iteration":3,"count":4}],"event":"move"},{"pos":{"x":1,"y":2},"dir":"S","activeBlockId":"u2-if","loops":[{"blockId":"u2-repeat","iteration":4,"count":4}],"event":"check","check":{"blockId":"u2-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":3},"dir":"S","activeBlockId":"u2-forward","loops":[{"blockId":"u2-repeat","iteration":4,"count":4}],"event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"u2-2":{"results":[{"frames":[{"pos":{"x":0,"y":2},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":2},"dir":"E","activeBlockId":"u22-if","loops":[{"blockId":"u22-repeat","iteration":1,"count":4}],"event":"check","check":{"blockId":"u22-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":2},"dir":"E","activeBlockId":"u22-forward","loops":[{"blockId":"u22-repeat","iteration":1,"count":4}],"event":"move"},{"pos":{"x":1,"y":2},"dir":"E","activeBlockId":"u22-if","loops":[{"blockId":"u22-repeat","iteration":2,"count":4}],"event":"check","check":{"blockId":"u22-if","condition":"blockedAhead","result":false}},{"pos":{"x":2,"y":2},"dir":"E","activeBlockId":"u22-forward","loops":[{"blockId":"u22-repeat","iteration":2,"count":4}],"event":"move"},{"pos":{"x":2,"y":2},"dir":"E","activeBlockId":"u22-if","loops":[{"blockId":"u22-repeat","iteration":3,"count":4}],"event":"check","check":{"blockId":"u22-if","condition":"blockedAhead","result":true}},{"pos":{"x":2,"y":2},"dir":"N","activeBlockId":"u22-turn","loops":[{"blockId":"u22-repeat","iteration":3,"count":4}],"event":"turn"},{"pos":{"x":2,"y":1},"dir":"N","activeBlockId":"u22-forward","loops":[{"blockId":"u22-repeat","iteration":3,"count":4}],"event":"move"},{"pos":{"x":2,"y":1},"dir":"N","activeBlockId":"u22-if","loops":[{"blockId":"u22-repeat","iteration":4,"count":4}],"event":"check","check":{"blockId":"u22-if","condition":"blockedAhead","result":false}},{"pos":{"x":2,"y":0},"dir":"N","activeBlockId":"u22-forward","loops":[{"blockId":"u22-repeat","iteration":4,"count":4}],"event":"goal"}],"result":"success"},{"frames":[{"pos":{"x":0,"y":3},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":3},"dir":"E","activeBlockId":"u22-if","loops":[{"blockId":"u22-repeat","iteration":1,"count":4}],"event":"check","check":{"blockId":"u22-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":3},"dir":"E","activeBlockId":"u22-forward","loops":[{"blockId":"u22-repeat","iteration":1,"count":4}],"event":"move"},{"pos":{"x":1,"y":3},"dir":"E","activeBlockId":"u22-if","loops":[{"blockId":"u22-repeat","iteration":2,"count":4}],"event":"check","check":{"blockId":"u22-if","condition":"blockedAhead","result":true}},{"pos":{"x":1,"y":3},"dir":"N","activeBlockId":"u22-turn","loops":[{"blockId":"u22-repeat","iteration":2,"count":4}],"event":"turn"},{"pos":{"x":1,"y":2},"dir":"N","activeBlockId":"u22-forward","loops":[{"blockId":"u22-repeat","iteration":2,"count":4}],"event":"move"},{"pos":{"x":1,"y":2},"dir":"N","activeBlockId":"u22-if","loops":[{"blockId":"u22-repeat","iteration":3,"count":4}],"event":"check","check":{"blockId":"u22-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":1},"dir":"N","activeBlockId":"u22-forward","loops":[{"blockId":"u22-repeat","iteration":3,"count":4}],"event":"move"},{"pos":{"x":1,"y":1},"dir":"N","activeBlockId":"u22-if","loops":[{"blockId":"u22-repeat","iteration":4,"count":4}],"event":"check","check":{"blockId":"u22-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":0},"dir":"N","activeBlockId":"u22-forward","loops":[{"blockId":"u22-repeat","iteration":4,"count":4}],"event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"u2-3":{"results":[{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":"u23-if","loops":[{"blockId":"u23-repeat","iteration":1,"count":5}],"event":"check","check":{"blockId":"u23-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u23-forward","loops":[{"blockId":"u23-repeat","iteration":1,"count":5}],"event":"move"},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u23-if","loops":[{"blockId":"u23-repeat","iteration":2,"count":5}],"event":"check","check":{"blockId":"u23-if","condition":"blockedAhead","result":false}},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u23-forward","loops":[{"blockId":"u23-repeat","iteration":2,"count":5}],"event":"move"},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u23-if","loops":[{"blockId":"u23-repeat","iteration":3,"count":5}],"event":"check","check":{"blockId":"u23-if","condition":"blockedAhead","result":true}},{"pos":{"x":2,"y":0},"dir":"S","activeBlockId":"u23-turn","loops":[{"blockId":"u23-repeat","iteration":3,"count":5}],"event":"turn"},{"pos":{"x":2,"y":1},"dir":"S","activeBlockId":"u23-forward","loops":[{"blockId":"u23-repeat","iteration":3,"count":5}],"event":"move"},{"pos":{"x":2,"y":1},"dir":"S","activeBlockId":"u23-if","loops":[{"blockId":"u23-repeat","iteration":4,"count":5}],"event":"check","check":{"blockId":"u23-if","condition":"blockedAhead","result":false}},{"pos":{"x":2,"y":2},"dir":"S","activeBlockId":"u23-forward","loops":[{"blockId":"u23-repeat","iteration":4,"count":5}],"event":"move"},{"pos":{"x":2,"y":2},"dir":"S","activeBlockId":"u23-if","loops":[{"blockId":"u23-repeat","iteration":5,"count":5}],"event":"check","check":{"blockId":"u23-if","condition":"blockedAhead","result":true}},{"pos":{"x":2,"y":2},"dir":"W","activeBlockId":"u23-turn","loops":[{"blockId":"u23-repeat","iteration":5,"count":5}],"event":"turn"},{"pos":{"x":1,"y":2},"dir":"W","activeBlockId":"u23-forward","loops":[{"blockId":"u23-repeat","iteration":5,"count":5}],"event":"goal"}],"result":"success"},{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":"u23-if","loops":[{"blockId":"u23-repeat","iteration":1,"count":5}],"event":"check","check":{"blockId":"u23-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u23-forward","loops":[{"blockId":"u23-repeat","iteration":1,"count":5}],"event":"move"},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u23-if","loops":[{"blockId":"u23-repeat","iteration":2,"count":5}],"event":"check","check":{"blockId":"u23-if","condition":"blockedAhead","result":true}},{"pos":{"x":1,"y":0},"dir":"S","activeBlockId":"u23-turn","loops":[{"blockId":"u23-repeat","iteration":2,"count":5}],"event":"turn"},{"pos":{"x":1,"y":1},"dir":"S","activeBlockId":"u23-forward","loops":[{"blockId":"u23-repeat","iteration":2,"count":5}],"event":"move"},{"pos":{"x":1,"y":1},"dir":"S","activeBlockId":"u23-if","loops":[{"blockId":"u23-repeat","iteration":3,"count":5}],"event":"check","check":{"blockId":"u23-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":2},"dir":"S","activeBlockId":"u23-forward","loops":[{"blockId":"u23-repeat","iteration":3,"count":5}],"event":"move"},{"pos":{"x":1,"y":2},"dir":"S","activeBlockId":"u23-if","loops":[{"blockId":"u23-repeat","iteration":4,"count":5}],"event":"check","check":{"blockId":"u23-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":3},"dir":"S","activeBlockId":"u23-forward","loops":[{"blockId":"u23-repeat","iteration":4,"count":5}],"event":"move"},{"pos":{"x":1,"y":3},"dir":"S","activeBlockId":"u23-if","loops":[{"blockId":"u23-repeat","iteration":5,"count":5}],"event":"check","check":{"blockId":"u23-if","condition":"blockedAhead","result":true}},{"pos":{"x":1,"y":3},"dir":"W","activeBlockId":"u23-turn","loops":[{"blockId":"u23-repeat","iteration":5,"count":5}],"event":"turn"},{"pos":{"x":0,"y":3},"dir":"W","activeBlockId":"u23-forward","loops":[{"blockId":"u23-repeat","iteration":5,"count":5}],"event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"u2-4":{"results":[{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":"u24-if","loops":[{"blockId":"u24-repeat","iteration":1,"count":4}],"event":"check","check":{"blockId":"u24-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u24-forward","loops":[{"blockId":"u24-repeat","iteration":1,"count":4}],"event":"move"},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u24-if","loops":[{"blockId":"u24-repeat","iteration":2,"count":4}],"event":"check","check":{"blockId":"u24-if","condition":"blockedAhead","result":false}},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u24-forward","loops":[{"blockId":"u24-repeat","iteration":2,"count":4}],"event":"move"},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u24-if","loops":[{"blockId":"u24-repeat","iteration":3,"count":4}],"event":"check","check":{"blockId":"u24-if","condition":"blockedAhead","result":false}},{"pos":{"x":3,"y":0},"dir":"E","activeBlockId":"u24-forward","loops":[{"blockId":"u24-repeat","iteration":3,"count":4}],"event":"move"},{"pos":{"x":3,"y":0},"dir":"E","activeBlockId":"u24-if","loops":[{"blockId":"u24-repeat","iteration":4,"count":4}],"event":"check","check":{"blockId":"u24-if","condition":"blockedAhead","result":true}},{"pos":{"x":3,"y":0},"dir":"S","activeBlockId":"u24-turn","loops":[{"blockId":"u24-repeat","iteration":4,"count":4}],"event":"turn"},{"pos":{"x":3,"y":1},"dir":"S","activeBlockId":"u24-forward","loops":[{"blockId":"u24-repeat","iteration":4,"count":4}],"event":"goal"}],"result":"success"},{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":"u24-if","loops":[{"blockId":"u24-repeat","iteration":1,"count":4}],"event":"check","check":{"blockId":"u24-if","condition":"blockedAhead","result":true}},{"pos":{"x":0,"y":0},"dir":"S","activeBlockId":"u24-turn","loops":[{"blockId":"u24-repeat","iteration":1,"count":4}],"event":"turn"},{"pos":{"x":0,"y":1},"dir":"S","activeBlockId":"u24-forward","loops":[{"blockId":"u24-repeat","iteration":1,"count":4}],"event":"move"},{"pos":{"x":0,"y":1},"dir":"S","activeBlockId":"u24-if","loops":[{"blockId":"u24-repeat","iteration":2,"count":4}],"event":"check","check":{"blockId":"u24-if","condition":"blockedAhead","result":false}},{"pos":{"x":0,"y":2},"dir":"S","activeBlockId":"u24-forward","loops":[{"blockId":"u24-repeat","iteration":2,"count":4}],"event":"move"},{"pos":{"x":0,"y":2},"dir":"S","activeBlockId":"u24-if","loops":[{"blockId":"u24-repeat","iteration":3,"count":4}],"event":"check","check":{"blockId":"u24-if","condition":"blockedAhead","result":false}},{"pos":{"x":0,"y":3},"dir":"S","activeBlockId":"u24-forward","loops":[{"blockId":"u24-repeat","iteration":3,"count":4}],"event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"u2-5":{"results":[{"frames":[{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u2-5-if","loops":[{"blockId":"u2-5-repeat","iteration":1,"count":5}],"event":"check","check":{"blockId":"u2-5-if","condition":"blockedAhead","result":true}},{"pos":{"x":2,"y":0},"dir":"S","activeBlockId":"u2-5-turn","loops":[{"blockId":"u2-5-repeat","iteration":1,"count":5}],"event":"turn"},{"pos":{"x":2,"y":0},"dir":"S","activeBlockId":"u2-5-if","loops":[{"blockId":"u2-5-repeat","iteration":2,"count":5}],"event":"check","check":{"blockId":"u2-5-if","condition":"blockedAhead","result":true}},{"pos":{"x":2,"y":0},"dir":"W","activeBlockId":"u2-5-turn","loops":[{"blockId":"u2-5-repeat","iteration":2,"count":5}],"event":"turn"},{"pos":{"x":2,"y":0},"dir":"W","activeBlockId":"u2-5-if","loops":[{"blockId":"u2-5-repeat","iteration":3,"count":5}],"event":"check","check":{"blockId":"u2-5-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":0},"dir":"W","activeBlockId":"u2-5-forward","loops":[{"blockId":"u2-5-repeat","iteration":3,"count":5}],"event":"move"},{"pos":{"x":1,"y":0},"dir":"W","activeBlockId":"u2-5-if","loops":[{"blockId":"u2-5-repeat","iteration":4,"count":5}],"event":"check","check":{"blockId":"u2-5-if","condition":"blockedAhead","result":false}},{"pos":{"x":0,"y":0},"dir":"W","activeBlockId":"u2-5-forward","loops":[{"blockId":"u2-5-repeat","iteration":4,"count":5}],"event":"goal"}],"result":"success"},{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":"u2-5-if","loops":[{"blockId":"u2-5-repeat","iteration":1,"count":5}],"event":"check","check":{"blockId":"u2-5-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u2-5-forward","loops":[{"blockId":"u2-5-repeat","iteration":1,"count":5}],"event":"move"},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u2-5-if","loops":[{"blockId":"u2-5-repeat","iteration":2,"count":5}],"event":"check","check":{"blockId":"u2-5-if","condition":"blockedAhead","result":false}},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u2-5-forward","loops":[{"blockId":"u2-5-repeat","iteration":2,"count":5}],"event":"move"},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u2-5-if","loops":[{"blockId":"u2-5-repeat","iteration":3,"count":5}],"event":"check","check":{"blockId":"u2-5-if","condition":"blockedAhead","result":false}},{"pos":{"x":3,"y":0},"dir":"E","activeBlockId":"u2-5-forward","loops":[{"blockId":"u2-5-repeat","iteration":3,"count":5}],"event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"u2-6":{"results":[{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":"u2-6-if","loops":[{"blockId":"u2-6-repeat","iteration":1,"count":6}],"event":"check","check":{"blockId":"u2-6-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u2-6-forward","loops":[{"blockId":"u2-6-repeat","iteration":1,"count":6}],"event":"move"},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u2-6-if","loops":[{"blockId":"u2-6-repeat","iteration":2,"count":6}],"event":"check","check":{"blockId":"u2-6-if","condition":"blockedAhead","result":false}},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u2-6-forward","loops":[{"blockId":"u2-6-repeat","iteration":2,"count":6}],"event":"move"},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u2-6-if","loops":[{"blockId":"u2-6-repeat","iteration":3,"count":6}],"event":"check","check":{"blockId":"u2-6-if","condition":"blockedAhead","result":true}},{"pos":{"x":2,"y":0},"dir":"S","activeBlockId":"u2-6-turn","loops":[{"blockId":"u2-6-repeat","iteration":3,"count":6}],"event":"turn"},{"pos":{"x":2,"y":0},"dir":"S","activeBlockId":"u2-6-if","loops":[{"blockId":"u2-6-repeat","iteration":4,"count":6}],"event":"check","check":{"blockId":"u2-6-if","condition":"blockedAhead","result":false}},{"pos":{"x":2,"y":1},"dir":"S","activeBlockId":"u2-6-forward","loops":[{"blockId":"u2-6-repeat","iteration":4,"count":6}],"event":"move"},{"pos":{"x":2,"y":1},"dir":"S","activeBlockId":"u2-6-if","loops":[{"blockId":"u2-6-repeat","iteration":5,"count":6}],"event":"check","check":{"blockId":"u2-6-if","condition":"blockedAhead","result":false}},{"pos":{"x":2,"y":2},"dir":"S","activeBlockId":"u2-6-forward","loops":[{"blockId":"u2-6-repeat","iteration":5,"count":6}],"event":"goal"}],"result":"success"},{"frames":[{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u2-6-if","loops":[{"blockId":"u2-6-repeat","iteration":1,"count":6}],"event":"check","check":{"blockId":"u2-6-if","condition":"blockedAhead","result":true}},{"pos":{"x":2,"y":0},"dir":"S","activeBlockId":"u2-6-turn","loops":[{"blockId":"u2-6-repeat","iteration":1,"count":6}],"event":"turn"},{"pos":{"x":2,"y":0},"dir":"S","activeBlockId":"u2-6-if","loops":[{"blockId":"u2-6-repeat","iteration":2,"count":6}],"event":"check","check":{"blockId":"u2-6-if","condition":"blockedAhead","result":true}},{"pos":{"x":2,"y":0},"dir":"W","activeBlockId":"u2-6-turn","loops":[{"blockId":"u2-6-repeat","iteration":2,"count":6}],"event":"turn"},{"pos":{"x":2,"y":0},"dir":"W","activeBlockId":"u2-6-if","loops":[{"blockId":"u2-6-repeat","iteration":3,"count":6}],"event":"check","check":{"blockId":"u2-6-if","condition":"blockedAhead","result":false}},{"pos":{"x":1,"y":0},"dir":"W","activeBlockId":"u2-6-forward","loops":[{"blockId":"u2-6-repeat","iteration":3,"count":6}],"event":"move"},{"pos":{"x":1,"y":0},"dir":"W","activeBlockId":"u2-6-if","loops":[{"blockId":"u2-6-repeat","iteration":4,"count":6}],"event":"check","check":{"blockId":"u2-6-if","condition":"blockedAhead","result":false}},{"pos":{"x":0,"y":0},"dir":"W","activeBlockId":"u2-6-forward","loops":[{"blockId":"u2-6-repeat","iteration":4,"count":6}],"event":"goal"}],"result":"success"},{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":"u2-6-if","loops":[{"blockId":"u2-6-repeat","iteration":1,"count":6}],"event":"check","check":{"blockId":"u2-6-if","condition":"blockedAhead","result":true}},{"pos":{"x":0,"y":0},"dir":"S","activeBlockId":"u2-6-turn","loops":[{"blockId":"u2-6-repeat","iteration":1,"count":6}],"event":"turn"},{"pos":{"x":0,"y":0},"dir":"S","activeBlockId":"u2-6-if","loops":[{"blockId":"u2-6-repeat","iteration":2,"count":6}],"event":"check","check":{"blockId":"u2-6-if","condition":"blockedAhead","result":false}},{"pos":{"x":0,"y":1},"dir":"S","activeBlockId":"u2-6-forward","loops":[{"blockId":"u2-6-repeat","iteration":2,"count":6}],"event":"move"},{"pos":{"x":0,"y":1},"dir":"S","activeBlockId":"u2-6-if","loops":[{"blockId":"u2-6-repeat","iteration":3,"count":6}],"event":"check","check":{"blockId":"u2-6-if","condition":"blockedAhead","result":false}},{"pos":{"x":0,"y":2},"dir":"S","activeBlockId":"u2-6-forward","loops":[{"blockId":"u2-6-repeat","iteration":3,"count":6}],"event":"move"},{"pos":{"x":0,"y":2},"dir":"S","activeBlockId":"u2-6-if","loops":[{"blockId":"u2-6-repeat","iteration":4,"count":6}],"event":"check","check":{"blockId":"u2-6-if","condition":"blockedAhead","result":false}},{"pos":{"x":0,"y":3},"dir":"S","activeBlockId":"u2-6-forward","loops":[{"blockId":"u2-6-repeat","iteration":4,"count":6}],"event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"u3-1":{"results":[{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":"u31-w","loops":[{"blockId":"u31-w","iteration":1}],"event":"check","check":{"blockId":"u31-w","condition":"clearAhead","result":true}},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u31-w-f","loops":[{"blockId":"u31-w","iteration":1}],"event":"move"},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u31-w","loops":[{"blockId":"u31-w","iteration":2}],"event":"check","check":{"blockId":"u31-w","condition":"clearAhead","result":true}},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u31-w-f","loops":[{"blockId":"u31-w","iteration":2}],"event":"move"},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u31-w","loops":[{"blockId":"u31-w","iteration":3}],"event":"check","check":{"blockId":"u31-w","condition":"clearAhead","result":false}},{"pos":{"x":2,"y":0},"dir":"S","activeBlockId":"u31-r","event":"turn"},{"pos":{"x":2,"y":1},"dir":"S","activeBlockId":"u31-f","event":"goal"}],"result":"success"},{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":"u31-w","loops":[{"blockId":"u31-w","iteration":1}],"event":"check","check":{"blockId":"u31-w","condition":"clearAhead","result":true}},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u31-w-f","loops":[{"blockId":"u31-w","iteration":1}],"event":"move"},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u31-w","loops":[{"blockId":"u31-w","iteration":2}],"event":"check","check":{"blockId":"u31-w","condition":"clearAhead","result":true}},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u31-w-f","loops":[{"blockId":"u31-w","iteration":2}],"event":"move"},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u31-w","loops":[{"blockId":"u31-w","iteration":3}],"event":"check","check":{"blockId":"u31-w","condition":"clearAhead","result":true}},{"pos":{"x":3,"y":0},"dir":"E","activeBlockId":"u31-w-f","loops":[{"blockId":"u31-w","iteration":3}],"event":"move"},{"pos":{"x":3,"y":0},"dir":"E","activeBlockId":"u31-w","loops":[{"blockId":"u31-w","iteration":4}],"event":"check","check":{"blockId":"u31-w","condition":"clearAhead","result":true}},{"pos":{"x":4,"y":0},"dir":"E","activeBlockId":"u31-w-f","loops":[{"blockId":"u31-w","iteration":4}],"event":"move"},{"pos":{"x":4,"y":0},"dir":"E","activeBlockId":"u31-w","loops":[{"blockId":"u31-w","iteration":5}],"event":"check","check":{"blockId":"u31-w","condition":"clearAhead","result":false}},{"pos":{"x":4,"y":0},"dir":"S","activeBlockId":"u31-r","event":"turn"},{"pos":{"x":4,"y":1},"dir":"S","activeBlockId":"u31-f","event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"u3-2":{"results":[{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":1,"count":3},{"blockId":"u32-w","iteration":1}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":true}},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u32-w-f","loops":[{"blockId":"u32-repeat","iteration":1,"count":3},{"blockId":"u32-w","iteration":1}],"event":"move"},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":1,"count":3},{"blockId":"u32-w","iteration":2}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":true}},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u32-w-f","loops":[{"blockId":"u32-repeat","iteration":1,"count":3},{"blockId":"u32-w","iteration":2}],"event":"move"},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":1,"count":3},{"blockId":"u32-w","iteration":3}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":false}},{"pos":{"x":2,"y":0},"dir":"S","activeBlockId":"u32-r","loops":[{"blockId":"u32-repeat","iteration":1,"count":3}],"event":"turn"},{"pos":{"x":2,"y":0},"dir":"S","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":2,"count":3},{"blockId":"u32-w","iteration":1}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":true}},{"pos":{"x":2,"y":1},"dir":"S","activeBlockId":"u32-w-f","loops":[{"blockId":"u32-repeat","iteration":2,"count":3},{"blockId":"u32-w","iteration":1}],"event":"move"},{"pos":{"x":2,"y":1},"dir":"S","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":2,"count":3},{"blockId":"u32-w","iteration":2}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":true}},{"pos":{"x":2,"y":2},"dir":"S","activeBlockId":"u32-w-f","loops":[{"blockId":"u32-repeat","iteration":2,"count":3},{"blockId":"u32-w","iteration":2}],"event":"move"},{"pos":{"x":2,"y":2},"dir":"S","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":2,"count":3},{"blockId":"u32-w","iteration":3}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":false}},{"pos":{"x":2,"y":2},"dir":"W","activeBlockId":"u32-r","loops":[{"blockId":"u32-repeat","iteration":2,"count":3}],"event":"turn"},{"pos":{"x":2,"y":2},"dir":"W","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":3,"count":3},{"blockId":"u32-w","iteration":1}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":true}},{"pos":{"x":1,"y":2},"dir":"W","activeBlockId":"u32-w-f","loops":[{"blockId":"u32-repeat","iteration":3,"count":3},{"blockId":"u32-w","iteration":1}],"event":"move"},{"pos":{"x":1,"y":2},"dir":"W","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":3,"count":3},{"blockId":"u32-w","iteration":2}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":true}},{"pos":{"x":0,"y":2},"dir":"W","activeBlockId":"u32-w-f","loops":[{"blockId":"u32-repeat","iteration":3,"count":3},{"blockId":"u32-w","iteration":2}],"event":"goal"}],"result":"success"},{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":1,"count":3},{"blockId":"u32-w","iteration":1}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":true}},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u32-w-f","loops":[{"blockId":"u32-repeat","iteration":1,"count":3},{"blockId":"u32-w","iteration":1}],"event":"move"},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":1,"count":3},{"blockId":"u32-w","iteration":2}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":false}},{"pos":{"x":1,"y":0},"dir":"S","activeBlockId":"u32-r","loops":[{"blockId":"u32-repeat","iteration":1,"count":3}],"event":"turn"},{"pos":{"x":1,"y":0},"dir":"S","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":2,"count":3},{"blockId":"u32-w","iteration":1}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":true}},{"pos":{"x":1,"y":1},"dir":"S","activeBlockId":"u32-w-f","loops":[{"blockId":"u32-repeat","iteration":2,"count":3},{"blockId":"u32-w","iteration":1}],"event":"move"},{"pos":{"x":1,"y":1},"dir":"S","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":2,"count":3},{"blockId":"u32-w","iteration":2}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":true}},{"pos":{"x":1,"y":2},"dir":"S","activeBlockId":"u32-w-f","loops":[{"blockId":"u32-repeat","iteration":2,"count":3},{"blockId":"u32-w","iteration":2}],"event":"move"},{"pos":{"x":1,"y":2},"dir":"S","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":2,"count":3},{"blockId":"u32-w","iteration":3}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":true}},{"pos":{"x":1,"y":3},"dir":"S","activeBlockId":"u32-w-f","loops":[{"blockId":"u32-repeat","iteration":2,"count":3},{"blockId":"u32-w","iteration":3}],"event":"move"},{"pos":{"x":1,"y":3},"dir":"S","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":2,"count":3},{"blockId":"u32-w","iteration":4}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":true}},{"pos":{"x":1,"y":4},"dir":"S","activeBlockId":"u32-w-f","loops":[{"blockId":"u32-repeat","iteration":2,"count":3},{"blockId":"u32-w","iteration":4}],"event":"move"},{"pos":{"x":1,"y":4},"dir":"S","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":2,"count":3},{"blockId":"u32-w","iteration":5}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":false}},{"pos":{"x":1,"y":4},"dir":"W","activeBlockId":"u32-r","loops":[{"blockId":"u32-repeat","iteration":2,"count":3}],"event":"turn"},{"pos":{"x":1,"y":4},"dir":"W","activeBlockId":"u32-w","loops":[{"blockId":"u32-repeat","iteration":3,"count":3},{"blockId":"u32-w","iteration":1}],"event":"check","check":{"blockId":"u32-w","condition":"clearAhead","result":true}},{"pos":{"x":0,"y":4},"dir":"W","activeBlockId":"u32-w-f","loops":[{"blockId":"u32-repeat","iteration":3,"count":3},{"blockId":"u32-w","iteration":1}],"event":"goal"}],"result":"success"}],"result":"success","failedVariant":null},"u3-3":{"results":[{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":"u33-w","loops":[{"blockId":"u33-w","iteration":1}],"event":"check","check":{"blockId":"u33-w","condition":"clearAhead","result":true}},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u33-w-f","loops":[{"blockId":"u33-w","iteration":1}],"event":"move"},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u33-w","loops":[{"blockId":"u33-w","iteration":2}],"event":"check","check":{"blockId":"u33-w","condition":"clearAhead","result":true}},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u33-w-f","loops":[{"blockId":"u33-w","iteration":2}],"event":"move"},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u33-w","loops":[{"blockId":"u33-w","iteration":3}],"event":"check","check":{"blockId":"u33-w","condition":"clearAhead","result":true}},{"pos":{"x":3,"y":0},"dir":"E","activeBlockId":"u33-w-f","loops":[{"blockId":"u33-w","iteration":3}],"event":"move"},{"pos":{"x":3,"y":0},"dir":"E","activeBlockId":"u33-w","loops":[{"blockId":"u33-w","iteration":4}],"event":"check","check":{"blockId":"u33-w","condition":"clearAhead","result":true}},{"pos":{"x":4,"y":0},"dir":"E","activeBlockId":"u33-w-f","loops":[{"blockId":"u33-w","iteration":4}],"event":"goal"}],"result":"success"},{"frames":[{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":null},{"pos":{"x":0,"y":0},"dir":"E","activeBlockId":"u33-w","loops":[{"blockId":"u33-w","iteration":1}],"event":"check","check":{"blockId":"u33-w","condition":"clearAhead","result":true}},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u33-w-f","loops":[{"blockId":"u33-w","iteration":1}],"event":"move"},{"pos":{"x":1,"y":0},"dir":"E","activeBlockId":"u33-w","loops":[{"blockId":"u33-w","iteration":2}],"event":"check","check":{"blockId":"u33-w","condition":"clearAhead","result":true}},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u33-w-f","loops":[{"blockId":"u33-w","iteration":2}],"event":"move"},{"pos":{"x":2,"y":0},"dir":"E","activeBlockId":"u33-w","loops":[{"blockId":"u33-w","iteration":3}],"event":"check","check":{"blockId":"u33-w","condition":"clearAhead","result":true}},{"pos":{"x":3,"y":0},"dir":"E","activeBlockId":"u33-w-f","loops":[{"blockId":"u33-w","iteration":3}],"event":"move"},{"pos":{"x":3,"y":0},"dir":"E","activeBlockId":"u33-w","loops":[{"blockId":"u33-w","iteration":4}],"event":"check","check":{"blockId":"u33-w","condition":"clearAhead","result":true}},{"pos":{"x":4,"y":0},"dir":"E","activeBlockId":"u33-w-f","loops":[{"blockId":"u33-w","iteration":4}],"event":"move"},{"pos":{"x":4,"y":0},"dir":"E","activeBlockId":"u33-w","loops":[{"blockId":"u33-w","iteration":5}],"event":"check","check":{"blockId":"u33-w","condition":"clearAhead","result":true}},{"pos":{"x":5,"y":0},"dir":"E","activeBlockId":"u33-w-f","loops":[{"blockId":"u33-w","iteration":5}],"event":"move"},{"pos":{"x":5,"y":0},"dir":"E","activeBlockId":"u33-w","loops":[{"blockId":"u33-w","iteration":6}],"event":"check","check":{"blockId":"u33-w","condition":"clearAhead","result":true}},{"pos":{"x":6,"y":0},"dir":"E","activeBlockId":"u33-w-f","loops":[{"blockId":"u33-w","iteration":6}],"event":"move"},{"pos":{"x":6,"y":0},"dir":"E","activeBlockId":"u33-w","loops":[{"blockId":"u33-w","iteration":7}],"event":"check","check":{"blockId":"u33-w","condition":"clearAhead","result":true}},{"pos":{"x":7,"y":0},"dir":"E","activeBlockId":"u33-w-f","loops":[{"blockId":"u33-w","iteration":7}],"event":"goal"}],"result":"success"}],"result":"success","failedVariant":null}}
+{
+  "1": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "block-1",
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "2": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "block-1",
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "block-2",
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "block-3",
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "3": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "block-1",
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "block-2",
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "block-3",
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "block-4",
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "block-5",
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "block-6",
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "4": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "block-1",
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "block-2",
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "5": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 6
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 6
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 3,
+                "count": 6
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 4,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 4,
+                "count": 6
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 5,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 5,
+                "count": 6
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 6,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 6,
+                "count": 6
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "6": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 3
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 3
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 3
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 3
+            },
+            "dir": "N",
+            "activeBlockId": "block-1",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 3
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "N",
+            "activeBlockId": "block-2",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 3
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": "block-3",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 3
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 3
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "N",
+            "activeBlockId": "block-1",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 3
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "block-2",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 3
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "block-3",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 3
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 3,
+                "count": 3
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "block-1",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 3,
+                "count": 3
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "N",
+            "activeBlockId": "block-2",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 3,
+                "count": 3
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "7": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 3
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "block-1",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 3
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "block-2",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 3
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 3
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "block-1",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 3
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "W",
+            "activeBlockId": "block-2",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 3
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "W",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 3,
+                "count": 3
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 2
+            },
+            "dir": "W",
+            "activeBlockId": "block-1",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 3,
+                "count": 3
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "8": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "N",
+            "activeBlockId": "block-1",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "block-2",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "block-3",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "block-1",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 2
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "N",
+            "activeBlockId": "block-2",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "block-3",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 2
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "last-forward",
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "b1": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": "block-1",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "N",
+            "activeBlockId": "block-2",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "block-3",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "block-4",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 4,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "block-1",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 4,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "block-2",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 2
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 4,
+              "y": 0
+            },
+            "dir": "N",
+            "activeBlockId": "block-3",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 2
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "b2": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 4
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 4
+            },
+            "dir": "E",
+            "activeBlockId": "first-forward",
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 4
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 4
+            },
+            "dir": "N",
+            "activeBlockId": "block-1",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 3
+            },
+            "dir": "N",
+            "activeBlockId": "block-2",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "N",
+            "activeBlockId": "block-3",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": "block-4",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": "block-0",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 2
+            },
+            "dir": "N",
+            "activeBlockId": "block-1",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 2
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "block-2",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "N",
+            "activeBlockId": "block-3",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 2
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "u2-1": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-if",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 1,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-forward",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 1,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-if",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-forward",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-if",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u2-right",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u2-forward",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u2-if",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 4,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u2-forward",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 4,
+                "count": 4
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      },
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-if",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 1,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-forward",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 1,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-if",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u2-right",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u2-forward",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u2-if",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u2-forward",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u2-if",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 4,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 3
+            },
+            "dir": "S",
+            "activeBlockId": "u2-forward",
+            "loops": [
+              {
+                "blockId": "u2-repeat",
+                "iteration": 4,
+                "count": 4
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "u2-2": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": "u22-if",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 1,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u22-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": "u22-forward",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 1,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": "u22-if",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u22-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": "u22-forward",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": "u22-if",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u22-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "N",
+            "activeBlockId": "u22-turn",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "u22-forward",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "u22-if",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 4,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u22-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "N",
+            "activeBlockId": "u22-forward",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 4,
+                "count": 4
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      },
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 3
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 3
+            },
+            "dir": "E",
+            "activeBlockId": "u22-if",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 1,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u22-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 3
+            },
+            "dir": "E",
+            "activeBlockId": "u22-forward",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 1,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 3
+            },
+            "dir": "E",
+            "activeBlockId": "u22-if",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u22-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 3
+            },
+            "dir": "N",
+            "activeBlockId": "u22-turn",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "N",
+            "activeBlockId": "u22-forward",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "N",
+            "activeBlockId": "u22-if",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u22-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "u22-forward",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "u22-if",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 4,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u22-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "N",
+            "activeBlockId": "u22-forward",
+            "loops": [
+              {
+                "blockId": "u22-repeat",
+                "iteration": 4,
+                "count": 4
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "u2-3": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u23-if",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 1,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u23-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u23-forward",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 1,
+                "count": 5
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u23-if",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 2,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u23-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u23-forward",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 2,
+                "count": 5
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u23-if",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 3,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u23-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u23-turn",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 3,
+                "count": 5
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u23-forward",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 3,
+                "count": 5
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u23-if",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 4,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u23-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u23-forward",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 4,
+                "count": 5
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u23-if",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 5,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u23-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "W",
+            "activeBlockId": "u23-turn",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 5,
+                "count": 5
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "W",
+            "activeBlockId": "u23-forward",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 5,
+                "count": 5
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      },
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u23-if",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 1,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u23-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u23-forward",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 1,
+                "count": 5
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u23-if",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 2,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u23-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u23-turn",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 2,
+                "count": 5
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u23-forward",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 2,
+                "count": 5
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u23-if",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 3,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u23-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u23-forward",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 3,
+                "count": 5
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u23-if",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 4,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u23-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 3
+            },
+            "dir": "S",
+            "activeBlockId": "u23-forward",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 4,
+                "count": 5
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 3
+            },
+            "dir": "S",
+            "activeBlockId": "u23-if",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 5,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u23-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 3
+            },
+            "dir": "W",
+            "activeBlockId": "u23-turn",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 5,
+                "count": 5
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 3
+            },
+            "dir": "W",
+            "activeBlockId": "u23-forward",
+            "loops": [
+              {
+                "blockId": "u23-repeat",
+                "iteration": 5,
+                "count": 5
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "u2-4": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u24-if",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 1,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u24-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u24-forward",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 1,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u24-if",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u24-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u24-forward",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u24-if",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u24-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u24-forward",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u24-if",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 4,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u24-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u24-turn",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 4,
+                "count": 4
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u24-forward",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 4,
+                "count": 4
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      },
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u24-if",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 1,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u24-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u24-turn",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 1,
+                "count": 4
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u24-forward",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 1,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u24-if",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u24-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u24-forward",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u24-if",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u24-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 3
+            },
+            "dir": "S",
+            "activeBlockId": "u24-forward",
+            "loops": [
+              {
+                "blockId": "u24-repeat",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "u2-5": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-5-if",
+            "loops": [
+              {
+                "blockId": "u2-5-repeat",
+                "iteration": 1,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-5-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u2-5-turn",
+            "loops": [
+              {
+                "blockId": "u2-5-repeat",
+                "iteration": 1,
+                "count": 5
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u2-5-if",
+            "loops": [
+              {
+                "blockId": "u2-5-repeat",
+                "iteration": 2,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-5-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "u2-5-turn",
+            "loops": [
+              {
+                "blockId": "u2-5-repeat",
+                "iteration": 2,
+                "count": 5
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "u2-5-if",
+            "loops": [
+              {
+                "blockId": "u2-5-repeat",
+                "iteration": 3,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-5-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "u2-5-forward",
+            "loops": [
+              {
+                "blockId": "u2-5-repeat",
+                "iteration": 3,
+                "count": 5
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "u2-5-if",
+            "loops": [
+              {
+                "blockId": "u2-5-repeat",
+                "iteration": 4,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-5-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "u2-5-forward",
+            "loops": [
+              {
+                "blockId": "u2-5-repeat",
+                "iteration": 4,
+                "count": 5
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      },
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-5-if",
+            "loops": [
+              {
+                "blockId": "u2-5-repeat",
+                "iteration": 1,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-5-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-5-forward",
+            "loops": [
+              {
+                "blockId": "u2-5-repeat",
+                "iteration": 1,
+                "count": 5
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-5-if",
+            "loops": [
+              {
+                "blockId": "u2-5-repeat",
+                "iteration": 2,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-5-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-5-forward",
+            "loops": [
+              {
+                "blockId": "u2-5-repeat",
+                "iteration": 2,
+                "count": 5
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-5-if",
+            "loops": [
+              {
+                "blockId": "u2-5-repeat",
+                "iteration": 3,
+                "count": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-5-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-5-forward",
+            "loops": [
+              {
+                "blockId": "u2-5-repeat",
+                "iteration": 3,
+                "count": 5
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "u2-6": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-6-if",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 1,
+                "count": 6
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-6-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-6-forward",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 1,
+                "count": 6
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-6-if",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 2,
+                "count": 6
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-6-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-6-forward",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 2,
+                "count": 6
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-6-if",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 3,
+                "count": 6
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-6-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u2-6-turn",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 3,
+                "count": 6
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u2-6-if",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 4,
+                "count": 6
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-6-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u2-6-forward",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 4,
+                "count": 6
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u2-6-if",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 5,
+                "count": 6
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-6-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u2-6-forward",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 5,
+                "count": 6
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      },
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-6-if",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 1,
+                "count": 6
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-6-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u2-6-turn",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 1,
+                "count": 6
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u2-6-if",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 2,
+                "count": 6
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-6-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "u2-6-turn",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 2,
+                "count": 6
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "u2-6-if",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 3,
+                "count": 6
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-6-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "u2-6-forward",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 3,
+                "count": 6
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "u2-6-if",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 4,
+                "count": 6
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-6-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "u2-6-forward",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 4,
+                "count": 6
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      },
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u2-6-if",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 1,
+                "count": 6
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-6-if",
+              "condition": "blockedAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u2-6-turn",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 1,
+                "count": 6
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u2-6-if",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 2,
+                "count": 6
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-6-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u2-6-forward",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 2,
+                "count": 6
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u2-6-if",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 3,
+                "count": 6
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-6-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u2-6-forward",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 3,
+                "count": 6
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u2-6-if",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 4,
+                "count": 6
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u2-6-if",
+              "condition": "blockedAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 3
+            },
+            "dir": "S",
+            "activeBlockId": "u2-6-forward",
+            "loops": [
+              {
+                "blockId": "u2-6-repeat",
+                "iteration": 4,
+                "count": 6
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "u3-1": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u31-w",
+            "loops": [
+              {
+                "blockId": "u31-w",
+                "iteration": 1
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u31-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u31-w-f",
+            "loops": [
+              {
+                "blockId": "u31-w",
+                "iteration": 1
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u31-w",
+            "loops": [
+              {
+                "blockId": "u31-w",
+                "iteration": 2
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u31-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u31-w-f",
+            "loops": [
+              {
+                "blockId": "u31-w",
+                "iteration": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u31-w",
+            "loops": [
+              {
+                "blockId": "u31-w",
+                "iteration": 3
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u31-w",
+              "condition": "clearAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u31-r",
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u31-f",
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      },
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u31-w",
+            "loops": [
+              {
+                "blockId": "u31-w",
+                "iteration": 1
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u31-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u31-w-f",
+            "loops": [
+              {
+                "blockId": "u31-w",
+                "iteration": 1
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u31-w",
+            "loops": [
+              {
+                "blockId": "u31-w",
+                "iteration": 2
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u31-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u31-w-f",
+            "loops": [
+              {
+                "blockId": "u31-w",
+                "iteration": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u31-w",
+            "loops": [
+              {
+                "blockId": "u31-w",
+                "iteration": 3
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u31-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u31-w-f",
+            "loops": [
+              {
+                "blockId": "u31-w",
+                "iteration": 3
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u31-w",
+            "loops": [
+              {
+                "blockId": "u31-w",
+                "iteration": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u31-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 4,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u31-w-f",
+            "loops": [
+              {
+                "blockId": "u31-w",
+                "iteration": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 4,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u31-w",
+            "loops": [
+              {
+                "blockId": "u31-w",
+                "iteration": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u31-w",
+              "condition": "clearAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 4,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u31-r",
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 4,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u31-f",
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "u3-2": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 1,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 1
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u32-w-f",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 1,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 1
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 1,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 2
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u32-w-f",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 1,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 1,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 3
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u32-r",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 1,
+                "count": 3
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 1
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u32-w-f",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 1
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 2
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u32-w-f",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 3
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "W",
+            "activeBlockId": "u32-r",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 2
+            },
+            "dir": "W",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 3,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 1
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "W",
+            "activeBlockId": "u32-w-f",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 3,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 1
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "W",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 3,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 2
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 2
+            },
+            "dir": "W",
+            "activeBlockId": "u32-w-f",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 3,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 2
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      },
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 1,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 1
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u32-w-f",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 1,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 1
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 1,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 2
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u32-r",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 1,
+                "count": 3
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "S",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 1
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u32-w-f",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 1
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "S",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 2
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u32-w-f",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 2
+            },
+            "dir": "S",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 3
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 3
+            },
+            "dir": "S",
+            "activeBlockId": "u32-w-f",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 3
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 3
+            },
+            "dir": "S",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 4
+            },
+            "dir": "S",
+            "activeBlockId": "u32-w-f",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 4
+            },
+            "dir": "S",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": false
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 4
+            },
+            "dir": "W",
+            "activeBlockId": "u32-r",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 2,
+                "count": 3
+              }
+            ],
+            "event": "turn",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 4
+            },
+            "dir": "W",
+            "activeBlockId": "u32-w",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 3,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 1
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u32-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 4
+            },
+            "dir": "W",
+            "activeBlockId": "u32-w-f",
+            "loops": [
+              {
+                "blockId": "u32-repeat",
+                "iteration": 3,
+                "count": 3
+              },
+              {
+                "blockId": "u32-w",
+                "iteration": 1
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "u3-3": {
+    "results": [
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 1
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u33-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w-f",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 1
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 2
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u33-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w-f",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 3
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u33-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w-f",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 3
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u33-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 4,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w-f",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 4
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      },
+      {
+        "frames": [
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": null,
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 0,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 1
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u33-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w-f",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 1
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 2
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u33-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w-f",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 2
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 3
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u33-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w-f",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 3
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 4
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u33-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 4,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w-f",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 4
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 4,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 5
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u33-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 5,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w-f",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 5
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 5,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 6
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u33-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 6,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w-f",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 6
+              }
+            ],
+            "event": "move",
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 6,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 7
+              }
+            ],
+            "event": "check",
+            "check": {
+              "blockId": "u33-w",
+              "condition": "clearAhead",
+              "result": true
+            },
+            "variables": {
+              "A": 0
+            }
+          },
+          {
+            "pos": {
+              "x": 7,
+              "y": 0
+            },
+            "dir": "E",
+            "activeBlockId": "u33-w-f",
+            "loops": [
+              {
+                "blockId": "u33-w",
+                "iteration": 7
+              }
+            ],
+            "event": "goal",
+            "variables": {
+              "A": 0
+            }
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  }
+}

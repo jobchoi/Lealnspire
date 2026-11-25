@@ -9,7 +9,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -18,7 +21,10 @@
           },
           "dir": "E",
           "activeBlockId": "block-0",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -27,7 +33,10 @@
           },
           "dir": "E",
           "activeBlockId": "block-1",
-          "event": "goal"
+          "event": "goal",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "success"
@@ -40,7 +49,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "unfinished"
@@ -53,7 +65,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -62,7 +77,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -71,7 +89,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "goal"
+          "event": "goal",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "success"
@@ -88,7 +109,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -97,7 +121,10 @@
           },
           "dir": "E",
           "activeBlockId": "block-0",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -106,7 +133,10 @@
           },
           "dir": "E",
           "activeBlockId": "block-1",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -115,7 +145,10 @@
           },
           "dir": "S",
           "activeBlockId": "block-2",
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -124,7 +157,10 @@
           },
           "dir": "S",
           "activeBlockId": "block-3",
-          "event": "goal"
+          "event": "goal",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "success"
@@ -137,7 +173,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "unfinished"
@@ -150,7 +189,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -159,7 +201,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -168,7 +213,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -177,7 +225,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "bump"
+          "event": "bump",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "collision"
@@ -194,7 +245,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -203,7 +257,10 @@
           },
           "dir": "E",
           "activeBlockId": "block-0",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -212,7 +269,10 @@
           },
           "dir": "S",
           "activeBlockId": "block-1",
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -221,7 +281,10 @@
           },
           "dir": "S",
           "activeBlockId": "block-2",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -230,7 +293,10 @@
           },
           "dir": "E",
           "activeBlockId": "block-3",
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -239,7 +305,10 @@
           },
           "dir": "E",
           "activeBlockId": "block-4",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -248,7 +317,10 @@
           },
           "dir": "S",
           "activeBlockId": "block-5",
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -257,7 +329,10 @@
           },
           "dir": "S",
           "activeBlockId": "block-6",
-          "event": "goal"
+          "event": "goal",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "success"
@@ -270,7 +345,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "unfinished"
@@ -283,7 +361,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -292,7 +373,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -301,7 +385,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "bump"
+          "event": "bump",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "collision"
@@ -318,7 +405,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -327,7 +417,10 @@
           },
           "dir": "E",
           "activeBlockId": "block-0",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -336,7 +429,10 @@
           },
           "dir": "S",
           "activeBlockId": "block-1",
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -345,7 +441,10 @@
           },
           "dir": "S",
           "activeBlockId": "block-2",
-          "event": "goal"
+          "event": "goal",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "success"
@@ -358,7 +457,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "unfinished"
@@ -371,7 +473,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -380,7 +485,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -389,7 +497,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "bump"
+          "event": "bump",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "collision"
@@ -402,7 +513,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -411,7 +525,10 @@
           },
           "dir": "E",
           "activeBlockId": "block-0",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -420,7 +537,10 @@
           },
           "dir": "N",
           "activeBlockId": "block-1",
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -429,7 +549,10 @@
           },
           "dir": "N",
           "activeBlockId": "block-2",
-          "event": "bump"
+          "event": "bump",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "collision"
@@ -445,7 +568,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -461,7 +587,10 @@
               "count": 6
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -477,7 +606,10 @@
               "count": 6
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -493,7 +625,10 @@
               "count": 6
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -509,7 +644,10 @@
               "count": 6
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -525,7 +663,10 @@
               "count": 6
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -541,7 +682,10 @@
               "count": 6
             }
           ],
-          "event": "goal"
+          "event": "goal",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "success"
@@ -554,7 +698,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "unfinished"
@@ -567,7 +714,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -576,7 +726,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -585,7 +738,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -594,7 +750,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -603,7 +762,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -612,7 +774,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -621,7 +786,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "goal"
+          "event": "goal",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "success"
@@ -638,7 +806,10 @@
             "y": 3
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -654,7 +825,10 @@
               "count": 3
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -670,7 +844,10 @@
               "count": 3
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -686,7 +863,10 @@
               "count": 3
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -702,7 +882,10 @@
               "count": 3
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -718,7 +901,10 @@
               "count": 3
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -734,7 +920,10 @@
               "count": 3
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -750,7 +939,10 @@
               "count": 3
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -766,7 +958,10 @@
               "count": 3
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -782,7 +977,10 @@
               "count": 3
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -798,7 +996,10 @@
               "count": 3
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -814,7 +1015,10 @@
               "count": 3
             }
           ],
-          "event": "goal"
+          "event": "goal",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "success"
@@ -827,7 +1031,10 @@
             "y": 3
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "unfinished"
@@ -840,7 +1047,10 @@
             "y": 3
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -849,7 +1059,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -858,7 +1071,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "bump"
+          "event": "bump",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "collision"
@@ -875,7 +1091,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -891,7 +1110,10 @@
               "count": 3
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -907,7 +1129,10 @@
               "count": 3
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -923,7 +1148,10 @@
               "count": 3
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -939,7 +1167,10 @@
               "count": 3
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -955,7 +1186,10 @@
               "count": 3
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -971,7 +1205,10 @@
               "count": 3
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -987,7 +1224,10 @@
               "count": 3
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1003,7 +1243,10 @@
               "count": 3
             }
           ],
-          "event": "goal"
+          "event": "goal",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "success"
@@ -1016,7 +1259,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "unfinished"
@@ -1029,7 +1275,10 @@
             "y": 0
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1038,7 +1287,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1047,7 +1299,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1056,7 +1311,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "bump"
+          "event": "bump",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "collision"
@@ -1073,7 +1331,10 @@
             "y": 2
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1089,7 +1350,10 @@
               "count": 2
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1105,7 +1369,10 @@
               "count": 2
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1121,7 +1388,10 @@
               "count": 2
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1137,7 +1407,10 @@
               "count": 2
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1153,7 +1426,10 @@
               "count": 2
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1169,7 +1445,10 @@
               "count": 2
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1185,7 +1464,10 @@
               "count": 2
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1201,7 +1483,10 @@
               "count": 2
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1210,7 +1495,10 @@
           },
           "dir": "E",
           "activeBlockId": "last-forward",
-          "event": "goal"
+          "event": "goal",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "success"
@@ -1223,7 +1511,10 @@
             "y": 2
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "unfinished"
@@ -1236,7 +1527,10 @@
             "y": 2
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1245,7 +1539,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1254,7 +1551,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "bump"
+          "event": "bump",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "collision"
@@ -1271,7 +1571,10 @@
             "y": 2
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1287,7 +1590,10 @@
               "count": 2
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1303,7 +1609,10 @@
               "count": 2
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1319,7 +1628,10 @@
               "count": 2
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1335,7 +1647,10 @@
               "count": 2
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1351,7 +1666,10 @@
               "count": 2
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1367,7 +1685,10 @@
               "count": 2
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1383,7 +1704,10 @@
               "count": 2
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1399,7 +1723,10 @@
               "count": 2
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1415,7 +1742,10 @@
               "count": 2
             }
           ],
-          "event": "goal"
+          "event": "goal",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "success"
@@ -1428,7 +1758,10 @@
             "y": 2
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "unfinished"
@@ -1441,7 +1774,10 @@
             "y": 2
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1450,7 +1786,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1459,7 +1798,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1468,7 +1810,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "bump"
+          "event": "bump",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "collision"
@@ -1485,7 +1830,10 @@
             "y": 4
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1494,7 +1842,10 @@
           },
           "dir": "E",
           "activeBlockId": "first-forward",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1510,7 +1861,10 @@
               "count": 2
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1526,7 +1880,10 @@
               "count": 2
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1542,7 +1899,10 @@
               "count": 2
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1558,7 +1918,10 @@
               "count": 2
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1574,7 +1937,10 @@
               "count": 2
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1590,7 +1956,10 @@
               "count": 2
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1606,7 +1975,10 @@
               "count": 2
             }
           ],
-          "event": "turn"
+          "event": "turn",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1622,7 +1994,10 @@
               "count": 2
             }
           ],
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1638,7 +2013,10 @@
               "count": 2
             }
           ],
-          "event": "goal"
+          "event": "goal",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "success"
@@ -1651,7 +2029,10 @@
             "y": 4
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "unfinished"
@@ -1664,7 +2045,10 @@
             "y": 4
           },
           "dir": "E",
-          "activeBlockId": null
+          "activeBlockId": null,
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1673,7 +2057,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1682,7 +2069,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "move"
+          "event": "move",
+          "variables": {
+            "A": 0
+          }
         },
         {
           "pos": {
@@ -1691,7 +2081,10 @@
           },
           "dir": "E",
           "activeBlockId": "baseline-f",
-          "event": "bump"
+          "event": "bump",
+          "variables": {
+            "A": 0
+          }
         }
       ],
       "result": "collision"

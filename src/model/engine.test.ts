@@ -22,7 +22,7 @@ describe('grid', () => {
 describe('run', () => {
   it('moves straight and stops immediately at the goal', () => {
     const result = run(stage(['S.G']), [forward, forward, forward])
-    expect(result.result).toBe('success'); expect(result.frames).toHaveLength(3); expect(result.frames[2]).toEqual({ pos: { x: 2, y: 0 }, dir: 'E', activeBlockId: 'f', event: 'goal' })
+    expect(result.result).toBe('success'); expect(result.frames).toHaveLength(3); expect(result.frames[2]).toEqual({ variables: { A: 0 }, pos: { x: 2, y: 0 }, dir: 'E', activeBlockId: 'f', event: 'goal' })
   })
   it('reports wall and boundary collisions without moving', () => {
     for (const grid of [['S#G'], ['S.G']]) {
