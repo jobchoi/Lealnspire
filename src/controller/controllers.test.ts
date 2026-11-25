@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AppController } from './AppController'
 import { GameController } from './GameController'
 import { EditorController } from './EditorController'
-import { ProgressRepository, progressKey } from '../model/ProgressRepository'
+import { ProgressRepository, progressV2Key } from '../model/ProgressRepository'
 import { stages } from '../model/stages'
 
 afterEach(() => vi.useRealTimers())
@@ -46,7 +46,7 @@ describe('Controller without React', () => {
     const repository = new ProgressRepository({ getItem: key => data.get(key) ?? null, setItem: (key, value) => { data.set(key, value) } })
     const game = new GameController(stages[0], repository)
     game.edit(stages[0].solution)
-    expect(JSON.parse(data.get(progressKey)!).stages['1'].completed).toBe(false)
+    expect(JSON.parse(data.get(progressV2Key)!).stages['1'].completed).toBe(false)
     game.setSpeed('fast'); game.play()
     expect(game.locked).toBe(true)
     game.edit([]); expect(game.getSnapshot().program).toEqual(stages[0].solution)

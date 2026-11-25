@@ -5,6 +5,7 @@ import { expect, fontsReady, test } from './helpers'
 
 const press = async (page: Page, name: string | RegExp) => {
   const l = page.getByRole('button', { name, exact: typeof name === 'string' }).first()
+  await fontsReady(page)
   if (await page.evaluate(() => matchMedia('(pointer: coarse)').matches)) await l.tap(); else await l.click()
 }
 const hangul = (page: Page) => page.evaluate(() => {
@@ -29,7 +30,7 @@ test.describe('영어 화면', () => {
     await press(page, 'Start')
     await press(page, 'Hint')
     await expect(page.locator('#stage-hint')).toContainText('Count the cells')
-    const add = (n: string) => page.locator('.palette').getByRole('button', { name: n, exact: true }).first().click()
+    const add = async (n: string) => { await fontsReady(page); await page.locator('.palette').getByRole('button', { name: n, exact: true }).first().click() }
     await add('Move forward'); await add('Turn right'); await add('Move forward')
     await press(page, 'Fast')
     await press(page, 'Run')
@@ -64,9 +65,9 @@ test.describe('영어 화면', () => {
       await page.evaluate(() => localStorage.setItem('lealnspire.progress', JSON.stringify({ version: 1, stages: { 1: { completed: true, bestStars: 3, lastProgram: [{ id: 'a', type: 'forward' }, { id: 'r', type: 'repeat', count: 3, body: [{ id: 'b', type: 'turnLeft' }] }] } } })))
       await page.reload()
       await press(page, 'Stages')
-      await page.locator('.stage-card').first().click()
+      await fontsReady(page); await page.locator('.stage-card').first().click()
       await press(page, `Switch to the ${world} world`)
-      await page.getByRole('button', { name: /^Block 2: repeat/ }).first().click()
+      await fontsReady(page); await page.getByRole('button', { name: /^Block 2: repeat/ }).first().click()
       await fontsReady(page)
     const bad = await page.locator('button:visible').evaluateAll(es => es.flatMap(e => {
         const r = e.getBoundingClientRect(); const label = e.getAttribute('aria-label') ?? e.textContent?.trim() ?? ''

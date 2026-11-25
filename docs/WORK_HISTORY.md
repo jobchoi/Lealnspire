@@ -1,5 +1,12 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-25 — T36 저장 v2와 v1 보존 이행 (설계·E2E·QC Claude, 구현 Codex) [잠정]
+
+- 설계(Claude): 새 키 `lealnspire.progress.v2` `{ version: 2, stages: { id: { completed, bestStars, lastProgram: { main, functions: [] } } } }`. v2가 없으면 v1을 스테이지별로 변환해 v2에 저장, **v1 키는 읽기만**(v1.0.0으로 롤백해도 옛 기록 유지). 검증 상한(블록 종류, 반복 2~10, 깊이 8, 노드 60, ID 중복). 기록 삭제는 v1·v2 모두, 언어 설정은 유지
+- Codex: ProgressRepository v2·migrateV1toV2·단위 테스트, ARCHITECTURE·PROJECT_MAP. QC 수정 1회: 코드만 손상된 스테이지가 통째로 버려져 완료·별이 사라지고 다음 스테이지가 잠김 → 코드만 비우고 완료·별 유지(Claude가 "손상 격리"를 구체화)
+- Claude E2E: v1→v2 이행·v1 원본 불변·손상 스테이지 처리·삭제 시 두 키 삭제(records), bonus·privacy·predict 저장 확인을 v2 기준으로. 내 실수 1건: 배열을 toBe로 비교(→ toEqual). 영어 E2E의 직접 click에도 글꼴 대기 추가(small-phone 간헐 클릭 시간 초과)
+- 검증: verify 153개, e2e 115개 통과·4개 건너뜀(2회 연속), e2e:prod 4개 통과
+
 ## 2026-11-25 — T35 1단원 영어 완성 (번역·E2E·QC Claude, 구현 Codex) [잠정], E2E 간헐 실패 원인 보강
 
 - Claude 번역(AI 번역, 유료 API 없음): en.json 전체 182키(용어집 기준, 아이 눈높이, `repeat` 개념어 유지), public/guide-en.html

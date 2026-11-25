@@ -22,7 +22,7 @@
 src/
   main.tsx                 # 브라우저 어댑터: storage 주입, 언어 선택, React 시작
   model/                   # 순수 TS: Program, GridModel, Interpreter, Score, 타입
-    ProgressRepository.ts  # 주입 storage 읽기·쓰기, 버전 1 검증·메모리 대체
+    ProgressRepository.ts  # 주입 storage 읽기·쓰기, v2 검증·v1 이행·메모리 대체
     stages/index.ts        # 스테이지 1~8, 정답과 world
   controller/              # 순수 TS: AppController, GameController, EditorController
     Observable.ts          # 안정된 snapshot/subscribe
@@ -54,11 +54,11 @@ src/
 
 - 의존 방향: **View → Controller → Model**. View는 Model 타입을 참조할 수 있지만 규칙은 Controller에 맡깁니다. Model/Controller에는 React·DOM·브라우저 전역이 없습니다.
 - Model: `program.ts`의 `Program`은 입력·출력을 복사하는 불변 트리 객체이며 add/remove/move/setCount/count/find를 제공합니다. 정적 편집 메서드와 기존 함수 별칭은 같은 구현을 사용합니다. `GridModel`, `Interpreter`, `Score`는 순수 계산 클래스입니다. Stage와 Frame 등 직렬화 데이터는 타입·레코드로 유지합니다.
-- `ProgressRepository(storage?)`는 storage를 주입받습니다. `main.tsx`에서 localStorage 접근 실패 시 메모리 저장소로 생성합니다. 저장 형식·키·버전·검증은 기존과 같습니다.
+- `ProgressRepository(storage?)`는 storage를 주입받습니다. `main.tsx`에서 localStorage 접근 실패 시 메모리 저장소로 생성합니다. 외부 API는 기존 Progress(version:1, lastProgram: Block[])를 유지하고 내부에서 v2 문서로 변환합니다.
 - `AppController`: 화면 전환·잠금·이어하기·다음 이동, 게임 생성·해제. `GameController`: 코드 저장, 실행·프레임·속도·결과·성공 저장. `EditorController`: 블록 선택·추가 대상·상한·편집. 타이머는 GameController에만 있고 Scheduler 주입으로 테스트합니다.
 - `Observable`은 상태가 변경될 때만 snapshot 객체를 교체합니다. React View는 `useController`로 구독합니다. 포커스, 모달 키보드 처리, 작업 공간 스크롤은 View 책임입니다.
 - 언어 추가: `src/i18n/locales/<언어>.json` 파일 하나 추가. Vite glob으로 자동 등록하며 `?lang=<언어>`로 개발 확인합니다. UI 선택기는 없습니다. 점 구분 키와 `{count}` 등의 치환을 사용하며 해당 언어 → ko → 키 자체 순으로 대체합니다. `I18n.ts`의 `supportedLocales`가 공식 지원 목록(현재 ko)입니다. 공식 locale은 ko와 모든 leaf key·치환 인자가 같아야 하며, 개발용 부분 locale(en)은 ko 키의 부분집합과 같은 치환 인자를 지킵니다.
-- `Stage.world`는 1~3 sketchbook, 4~6 train, 7~8 handheld입니다. View의 `themes.ts`에서 월드별 Theme를 선택합니다. 완료한 스테이지에서만 View의 임시 선택 상태로 다른 월드를 적용하며 저장 형식은 버전 1을 유지합니다. T13은 Model/Controller의 블록 타입과 실행 규칙을 바꾸지 않습니다.
+- `Stage.world`는 1~3 sketchbook, 4~6 train, 7~8 handheld입니다. View의 `themes.ts`에서 월드별 Theme를 선택합니다. 완료한 스테이지에서만 View의 임시 선택 상태로 다른 월드를 적용하며 테마 선택은 저장하지 않습니다. T13은 Model/Controller의 블록 타입과 실행 규칙을 바꾸지 않습니다.
 - 기본 테마는 블록 종류·기호·이름·색 클래스·반복 표현·버튼 라벨·방향 기호를 정의합니다. CSS 클래스와 접근성 이름은 E2E 계약입니다.
 
 ## 4. 데이터 구조 초안 [제안]
@@ -106,15 +106,17 @@ type Frame = { pos: { x: number; y: number }; dir: Dir; activeBlockId: string | 
 | D15 | 언어 리소스 JSON + I18n, 파일 자동 탐색과 ko fallback | [확정, T12] | 사용자 요청. 의존성 없이 언어 파일 하나로 확장 |
 | D10 | 유료 API·자동 실행 없음. CI는 lint/test/build만 | [확정, 0단계] | 사용자 운영 원칙. 추가하려면 방식과 비용을 먼저 설명 |
 
-## 6. 진행 상황 저장 (T5)
+## 6. 진행 상황 저장 (T36, [제안·잠정])
 
-- `src/model/ProgressRepository.ts`만 주입된 storage를 읽고 씁니다. 브라우저 localStorage의 선택과 예외 처리는 main.tsx가 담당합니다. 키는 `lealnspire.progress`, 저장 구조 버전은 `1`입니다.
-- 저장 예: `{"version":1,"stages":{"1":{"completed":true,"bestStars":3,"lastProgram":[{"id":"f1","type":"forward"}]}}}`. 스테이지 키는 `Stage.id`입니다.
-- `createProgressStore(storage?)`는 `getItem`/`setItem`만 가진 저장소를 주입받을 수 있습니다. 브라우저 어댑터의 저장소 접근, 읽기 또는 쓰기가 실패하면 메모리 상태로 계속 동작합니다. 새로고침을 넘는 보존은 브라우저 저장소가 사용 가능할 때만 보장합니다.
-- JSON 파싱 실패·다른 버전·잘못된 최상위 구조는 빈 진행 상황으로 초기화합니다. 잘못된 스테이지 항목은 개별적으로 버립니다. 완료 여부, 정수 별 0~3, 프로그램 블록 타입·고유한 비어 있지 않은 ID·반복 몸체·정수 횟수 2~10을 검증합니다.
-- `saveProgram`은 완료 여부와 최고 별을 유지합니다. `completeStage`는 완료를 기록하고 최고 별을 최댓값으로 유지합니다. 입출력 프로그램은 복사하여 외부 변경으로부터 보호합니다.
-- `isUnlocked(progress, stageIndex)`는 0 기반 인덱스를 사용합니다. 첫 스테이지는 항상 열리고 이후에는 `stages` 배열의 직전 스테이지가 완료되어야 열립니다. 유효하지 않은 인덱스는 닫힘입니다(T6에서 사용).
-- GameController는 저장 코드 → `initialProgram` → 빈 프로그램 순으로 시작합니다. 편집 이벤트마다 즉시 저장하고 재생이 성공으로 끝나면 완료 여부·최고 별을 기록합니다. 빈 저장 코드도 유지합니다.
+- `src/model/ProgressRepository.ts`만 주입 storage를 읽고 씁니다. 브라우저 localStorage 선택은 main.tsx가 담당합니다.
+- 쓰기 키는 `lealnspire.progress.v2`, 문서는 `{ version: 2, stages: { [stageId]: { completed, bestStars, lastProgram: { main: Block[], functions: [] } } } }`입니다. `functions`는 빈 배열만 허용합니다. Controller·View와 `getProgress`는 기존 version:1·Block[] API를 유지합니다.
+- 유효한 v2 최상위 구조를 우선합니다. 없거나 무효면 v1 키 `lealnspire.progress`를 읽고 순수 함수 `migrateV1toV2(raw)`로 스테이지별 이행 후 v2에 저장합니다. migrations 배열은 향후 단계별 변환을 추가할 자리입니다. v1 키는 이행·편집·완료 때 변경하지 않아 v1.0.0 롤백 시 과거 기록을 복원할 수 있습니다.
+- 알 수 없는 버전은 v1 이행 없이 빈 상태로 시작하며 읽을 때 키를 삭제하거나 덮어쓰지 않습니다. 이후 일반 저장은 v2 키에만 씁니다. 최상위 구조가 유효하면 알려진 스테이지의 필드를 개별 보정하고, 알 수 없는 스테이지 ID의 항목만 제외합니다. v1 이행과 v2 읽기에 같은 규칙을 적용하고 다른 스테이지는 보존합니다.
+- 완료 여부 boolean, 별 정수 0~3, forward/turnLeft/turnRight/repeat만 허용합니다. 반복 횟수 정수 2~10, 비어 있지 않은 고유 ID, 최상위 블록 깊이 1 기준 최대 깊이 8, 전체 노드 60개까지 허용합니다. 코드가 무효면 완료 여부·최고 별을 보존하고 lastProgram만 `{ main: [], functions: [] }`로 비웁니다(v2 래퍼·functions가 무효인 경우 포함). 완료 여부가 boolean이 아니면 false, 별이 0~3 정수가 아니면 0으로 해당 필드만 보정합니다.
+- 읽기·쓰기 실패 시 메모리 상태로 계속 동작합니다. 이행 쓰기가 실패해도 복원한 메모리 기록과 v1 키는 유지됩니다. 입력·출력은 복사하여 외부 변경을 막습니다.
+- 기록 삭제는 v1·v2 두 키를 모두 삭제 시도하고 메모리도 초기화합니다. `lealnspire.settings`의 언어 설정과 다른 앱 키는 유지합니다. 기존 기록 안내 문구는 저장 위치·내용·삭제 범위가 동일하여 유지합니다.
+- `saveProgram`은 완료 여부와 최고 별을 유지하고 `completeStage`는 최고 별을 최댓값으로 유지합니다. GameController는 저장 코드 → 초기 코드 → 빈 코드 순으로 시작합니다. 빈 저장 코드도 유지합니다.
+- `isUnlocked`는 첫 스테이지를 열고 이후에는 직전 스테이지 완료 여부를 봅니다. 유효하지 않은 인덱스는 닫힙니다.
 
 ## 7. 타일 작업 공간 (T10)
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { createProgressStore, isUnlocked, parseProgress, progressKey, settingsKey } from './ProgressRepository'
-import { stages } from './stages'
+import { createProgressStore, isUnlocked, parseProgress, progressKey, progressV2Key, migrateV1toV2, settingsKey } from './ProgressRepository'
+import { allStages, stages } from './stages'
 import type { Program } from './types'
 
 const program: Program = [{ id: 'r', type: 'repeat', count: 2, body: [{ id: 'f', type: 'forward' }] }]
@@ -49,10 +49,10 @@ describe('진행 상황 저장', () => {
       [{ id: 'x', type: 'repeat', count: 1, body: [] }], [{ id: 'x', type: 'repeat', count: 11, body: [] }],
       [{ id: 'x', type: 'repeat', count: 2.5, body: [] }], [{ id: 'x', type: 'repeat', count: 2, body: {} }],
       [{ id: 'x', type: 'repeat', count: 2, body: [{ id: 'x', type: 'forward' }] }]]) {
-      expect(parseProgress(serialize(invalid)).stages).toEqual({})
+      expect(parseProgress(serialize(invalid)).stages['1']).toEqual({ completed: true, bestStars: 3, lastProgram: [] })
     }
-    for (const stars of [-1, 4, 1.5, '3']) expect(parseProgress(serialize(program, stars)).stages).toEqual({})
-    expect(parseProgress(serialize(program, 3, 'true')).stages).toEqual({})
+    for (const stars of [-1, 4, 1.5, '3']) expect(parseProgress(serialize(program, stars)).stages['1']).toEqual({ completed: true, bestStars: 0, lastProgram: program })
+    expect(parseProgress(serialize(program, 3, 'true')).stages['1']).toEqual({ completed: false, bestStars: 3, lastProgram: program })
     expect(parseProgress(serialize()).stages[stages[0].id].lastProgram).toEqual(program)
   })
   it('손상 항목만 버리고 정상 스테이지는 보존한다', () => {
@@ -163,5 +163,137 @@ describe('language settings', () => {
     const blocked = createProgressStore({ ...storage, setItem() { throw Error('blocked') } })
     blocked.saveLanguage('en')
     expect(blocked.getLanguage()).toBe('en')
+  })
+})
+
+
+describe('T36 v2 migration', () => {
+  it('migrates all regular and bonus stages without changing v1 through later writes', () => {
+    const raw = JSON.stringify({ version: 1, stages: Object.fromEntries(allStages.map(stage =>
+      [stage.id, { completed: true, bestStars: 3, lastProgram: stage.solution }])) })
+    const storage = fakeStorage(raw)
+    const migrated = migrateV1toV2(raw)
+    expect(Object.keys(migrated.stages)).toHaveLength(10)
+    expect(migrated.stages.b1.lastProgram.functions).toEqual([])
+    const store = createProgressStore(storage)
+    expect(JSON.parse(storage.getItem(progressV2Key)!)).toEqual(migrated)
+    for (const stage of allStages) expect(store.getProgram(stage)).toEqual(stage.solution)
+    store.saveProgram('1', [])
+    store.completeStage('2', 2, program)
+    expect(storage.getItem(progressKey)).toBe(raw)
+    expect(createProgressStore(storage).getProgram(stages[0])).toEqual([])
+  })
+  it('isolates corrupt stages in both versions and keeps a valid v2 ahead of v1', () => {
+    const storage = fakeStorage(serialize())
+    const document = migrateV1toV2(serialize())
+    const bad = { completed: true, bestStars: 3, lastProgram: { main: [{ id: 'bad', type: 'if' }], functions: [] } }
+    storage.setItem(progressV2Key, JSON.stringify({ ...document, stages: { ...document.stages, bad } }))
+    expect(createProgressStore(storage).getProgress().stages).toEqual(parseProgress(serialize()).stages)
+    storage.setItem(progressV2Key, JSON.stringify({ version: 2, stages: {} }))
+    expect(createProgressStore(storage).getProgress().stages).toEqual({})
+    const v1 = JSON.parse(serialize())
+    v1.stages.bad = { completed: true, bestStars: 3, lastProgram: [{ id: 'bad', type: 'if' }] }
+    expect(Object.keys(migrateV1toV2(JSON.stringify(v1)).stages)).toEqual(['1'])
+  })
+  it('preserves achievements with corrupt code through migration, v2 reads and save/reload', () => {
+    for (const version of [1, 2]) {
+      const entries = {
+        '1': { completed: true, bestStars: 3, lastProgram: program },
+        '2': { completed: true, bestStars: 2, lastProgram: [{ type: 'jump' }] },
+        '3': { completed: 'true', bestStars: 2, lastProgram: program },
+        '4': { completed: true, bestStars: 4, lastProgram: program },
+        '5': null,
+        unknown: { completed: true, bestStars: 3, lastProgram: program },
+      }
+      const raw = JSON.stringify({ version, stages: version === 1 ? entries : Object.fromEntries(
+        Object.entries(entries).map(([id, entry]) => [id, entry && {
+          ...entry, lastProgram: { main: entry.lastProgram, functions: [] },
+        }])) })
+      const storage = fakeStorage()
+      storage.setItem(version === 1 ? progressKey : progressV2Key, raw)
+      const expected = {
+        '1': { completed: true, bestStars: 3, lastProgram: program },
+        '2': { completed: true, bestStars: 2, lastProgram: [] },
+        '3': { completed: false, bestStars: 2, lastProgram: program },
+        '4': { completed: true, bestStars: 0, lastProgram: program },
+        '5': { completed: false, bestStars: 0, lastProgram: [] },
+      }
+      const store = createProgressStore(storage)
+      expect(store.getProgress().stages).toEqual(expected)
+      expect(isUnlocked(store.getProgress(), 2)).toBe(true)
+      // Saving a sibling must persist every repaired field without losing achievements.
+      store.saveProgram('1', program)
+      expect(createProgressStore(storage).getProgress().stages).toEqual(expected)
+      expect(JSON.parse(storage.getItem(progressV2Key)!).stages['2']).toEqual({
+        completed: true, bestStars: 2, lastProgram: { main: [], functions: [] },
+      })
+      if (version === 1) expect(storage.getItem(progressKey)).toBe(raw)
+    }
+  })
+  it('retries v1 for invalid v2 envelopes but preserves unknown versions without migration', () => {
+    for (const raw of ['{', 'null', '{"version":2,"stages":[]}']) {
+      const storage = fakeStorage(serialize())
+      storage.setItem(progressV2Key, raw)
+      expect(createProgressStore(storage).getProgram(stages[0])).toEqual(program)
+      expect(JSON.parse(storage.getItem(progressV2Key)!).version).toBe(2)
+    }
+    for (const key of [progressKey, progressV2Key]) {
+      const storage = fakeStorage(serialize())
+      const raw = '{"version":3,"stages":{}}'
+      storage.setItem(key, raw)
+      expect(createProgressStore(storage).getProgress().stages).toEqual({})
+      expect(storage.getItem(key)).toBe(raw)
+      if (key === progressKey) expect(storage.getItem(progressV2Key)).toBeNull()
+    }
+    const storage = fakeStorage()
+    expect(createProgressStore(storage).getProgress().stages).toEqual({})
+    expect(storage.getItem(progressV2Key)).toBeNull()
+  })
+  it('clears invalid v2 code while preserving completion, stars and sibling stages', () => {
+    for (const lastProgram of [{ main: program, functions: [program] }, { main: program }, { main: null, functions: [] }]) {
+      const storage = fakeStorage()
+      const document = migrateV1toV2(serialize())
+      storage.setItem(progressV2Key, JSON.stringify({ ...document, stages: { ...document.stages,
+        '2': { completed: true, bestStars: 2, lastProgram } } }))
+      expect(createProgressStore(storage).getProgress().stages).toEqual({
+        '1': { completed: true, bestStars: 3, lastProgram: program },
+        '2': { completed: true, bestStars: 2, lastProgram: [] },
+      })
+    }
+  })
+  it('enforces depth eight, sixty nodes and unique IDs across the whole program', () => {
+    const nested = (depth: number): Program => {
+      let blocks: Program = [{ id: 'leaf', type: 'forward' }]
+      for (let i = 1; i < depth; i++) blocks = [{ id: `r${i}`, type: 'repeat', count: 2, body: blocks }]
+      return blocks
+    }
+    const nodes = (count: number): Program => Array.from({ length: count }, (_, i) => ({ id: `f${i}`, type: 'forward' }))
+    for (const blocks of [nested(8), nodes(60)]) expect(migrateV1toV2(serialize(blocks)).stages['1']).toBeDefined()
+    for (const blocks of [nested(9), nodes(61), [...program, ...program]]) expect(migrateV1toV2(serialize(blocks)).stages['1']).toEqual({ completed: true, bestStars: 3, lastProgram: { main: [], functions: [] } })
+  })
+  it('deletes both keys even when one removal throws and preserves settings', () => {
+    const storage = fakeStorage(serialize())
+    storage.setItem(settingsKey, '{"version":1,"lang":"en"}')
+    const store = createProgressStore(storage)
+    expect(store.clear()).toBe(true)
+    expect(storage.getItem(progressKey)).toBeNull()
+    expect(storage.getItem(progressV2Key)).toBeNull()
+    expect(createProgressStore(storage).getLanguage()).toBe('en')
+    const calls: string[] = []
+    const failed = createProgressStore({ ...storage, removeItem(key) {
+      calls.push(key)
+      if (key === progressKey) throw Error('denied')
+      storage.removeItem(key)
+    } })
+    expect(failed.clear()).toBe(false)
+    expect(calls).toEqual([progressKey, progressV2Key])
+  })
+  it('keeps migrated progress in memory when migration write fails', () => {
+    const storage = fakeStorage(serialize())
+    const store = createProgressStore({ ...storage, setItem() { throw Error('quota') } })
+    expect(store.persistent).toBe(false)
+    expect(store.getProgram(stages[0])).toEqual(program)
+    expect(storage.getItem(progressKey)).toBe(serialize())
+    expect(storage.getItem(progressV2Key)).toBeNull()
   })
 })

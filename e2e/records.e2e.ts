@@ -60,7 +60,35 @@ test.describe('기록 신뢰성', () => {
     await g.add('L'); await g.add('R')
     await g.speed('빠르게')
     expect(await g.runToEnd()).toMatch(/성공|별 \d개|★/)
-    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('lealnspire.progress')!))
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('lealnspire.progress.v2')!))
     expect(saved.stages['1'].bestStars, '최고 별 유지').toBe(3)
+  })
+
+  test('T36: 이전 버전(v1) 기록을 v2로 옮기고, v1 원본은 그대로 남겨 v1.0.0으로 되돌려도 기록이 살아 있다', async ({ page }) => {
+    const g = new Game(page)
+    await g.fresh()
+    const v1 = JSON.stringify({ version: 1, stages: {
+      1: { completed: true, bestStars: 3, lastProgram: [{ id: 'a', type: 'forward' }, { id: 'b', type: 'forward' }] },
+      2: { completed: true, bestStars: 2, lastProgram: [{ id: 'x', type: 'jump' }] },
+      3: { completed: false, bestStars: 0, lastProgram: [{ id: 'r', type: 'repeat', count: 2, body: [{ id: 'c', type: 'turnLeft' }] }] },
+    } })
+    await page.evaluate(v => localStorage.setItem('lealnspire.progress', v), v1)
+    await page.reload()
+    await expect(g.button('이어하기')).toBeVisible()
+    const v2 = await page.evaluate(() => JSON.parse(localStorage.getItem('lealnspire.progress.v2') ?? 'null'))
+    expect(v2?.version).toBe(2)
+    expect(v2.stages['1'].lastProgram, '코드는 { main, functions } 문서로').toEqual({ main: [{ id: 'a', type: 'forward' }, { id: 'b', type: 'forward' }], functions: [] })
+    expect(v2.stages['3'].lastProgram.main[0].body[0].type).toBe('turnLeft')
+    expect(v2.stages['2'], '코드만 손상된 스테이지 2: 완료·별은 지키고 코드만 비움(아이가 깬 기록을 잃지 않게)').toEqual({ completed: true, bestStars: 2, lastProgram: { main: [], functions: [] } })
+    // 새로 플레이하면 v2만 바뀌고 v1 원본은 그대로
+    await g.press(g.button('스테이지 목록')); await g.press(page.locator('.stage-card').nth(2))
+    await g.add('F')
+    expect(await page.evaluate(() => localStorage.getItem('lealnspire.progress')), 'v1 원본 불변(롤백 대비)').toBe(v1)
+    // 기록 지우기는 두 버전을 모두 지운다
+    await page.goto('/')
+    await g.press(g.button('내 기록 안내'))
+    await g.press(page.getByRole('dialog').getByRole('button', { name: '기록 지우기' }))
+    await g.press(page.getByRole('dialog').getByRole('button', { name: '지우기', exact: true }))
+    expect(await page.evaluate(() => [localStorage.getItem('lealnspire.progress'), localStorage.getItem('lealnspire.progress.v2')])).toEqual([null, null])
   })
 })

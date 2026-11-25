@@ -42,7 +42,7 @@ E2E는 Chromium과 로컬 포트 실행 권한이 필요합니다. 실행 못 �
 | `index.css` | 기본 화면 배치·색·반응형 스타일 |
 | `main.tsx` | 브라우저 storage 주입, ?lang 선택, React mount |
 | `model/ProgressRepository.test.ts` | 손상·버전·검증·예외·복사·최고 별·저장·잠금 |
-| `model/ProgressRepository.ts` | 주입 storage의 버전 1 진행 검증·복사·저장·메모리 대체와 잠금 계산 |
+| `model/ProgressRepository.ts` | 주입 storage의 v2 문서 저장·v1 순수 이행·검증·복사·메모리 대체와 잠금 계산 |
 | `model/editor.test.ts` | ID 경로·중첩 탐색·새 블록 생성 |
 | `model/editor.ts` | 재귀 ID 경로 찾기, 새 블록 ID와 기본 반복 생성 |
 | `model/engine.test.ts` | 맵 오류·회전·충돌·중첩 반복·성공·명령/반복 안전 상한 |
@@ -100,7 +100,7 @@ View는 포커스, 모달 키보드, 타일 스크롤과 CSS를 담당합니다.
 
 Program 상한은 반복 몸체까지 합쳐 10개이며 스테이지 제한은 더 낮을 수 있습니다.
 Interpreter는 목표에 도착하면 즉시 멈추고, 명령 1000개와 반복 진입 1000회에 안전장치를 둡니다.
-저장 키는 lealnspire.progress이며 구조 변경 시 버전을 올리고 검증·마이그레이션 정책을 함께 결정합니다.
+저장 키는 lealnspire.progress.v2(version:2)이며 lastProgram은 { main: Block[], functions: [] }입니다. ProgressRepository의 외부 Progress API는 기존 version:1·Block[] 형태를 유지합니다. v2가 없거나 최상위 구조가 무효면 lealnspire.progress(v1)를 스테이지별로 이행하고 v1은 보존합니다. v1 이행·v2 읽기 모두 무효 코드는 빈 코드로, 무효 completed·bestStars는 각각 false·0으로 보정하며 다른 필드는 보존합니다. 알 수 없는 스테이지 ID만 제외합니다. 알 수 없는 버전은 이행 없이 빈 상태로 시작합니다. 삭제는 두 진행 키만 제거하고 설정은 유지합니다.
 Stage.world는 1~3 sketchbook, 4~6 train, 7~8 handheld입니다. View는 world별 테마를 선택하며 완주한 스테이지는 세 월드로 다시 풀 수 있습니다.
 
 ## 화면 흐름과 메서드
