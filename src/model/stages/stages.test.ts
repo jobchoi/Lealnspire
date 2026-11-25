@@ -85,12 +85,20 @@ for (const stage of bonusStages) {
 }
 
 for (const stage of unit2Stages.slice(1)) {
-  it(stage.id + ': solution passes both maps within the limit', () => {
-    expect(runAll(stage, stage.solution).results.map(result => result.result)).toEqual(['success', 'success'])
+  it(stage.id + ': solution passes every variant within the limit', () => {
+    expect(runAll(stage, stage.solution).results.map(result => result.result)).toEqual(stage.variants!.map(() => 'success'))
     expect(countBlocks(stage.solution)).toBeLessThanOrEqual(stage.maxBlocks!)
+    if (stage.id === 'u2-5' || stage.id === 'u2-6') {
+      runAll(stage, stage.solution).results.forEach((execution, variant) => {
+        const visited = new Set(execution.frames.map(frame => `${frame.pos.x},${frame.pos.y}`))
+        stage.variants![variant].forEach((row, y) => [...row].forEach((cell, x) => {
+          if (cell !== '#') expect(visited.has(`${x},${y}`)).toBe(true)
+        }))
+      })
+    }
     for (const key of [stage.title, stage.goal, ...stage.hints.keys]) expect(t(key)).not.toBe(key)
   })
-  it(stage.id + ': no if-free program up to maxBlocks, including arbitrary repeat nesting, succeeds on both maps', () => {
+  it(stage.id + ': no program without the required concept succeeds within maxBlocks', () => {
     // Exhaust every program's state transformation, merging equivalent trees at their
     // cheapest node count. Unbounded execution is a superset of the engine's capped
     // execution, so proving impossibility here also excludes capped shortcuts.
@@ -116,6 +124,12 @@ for (const stage of unit2Stages.slice(1)) {
       const y = grid.findIndex(row => row.includes('S')), x = grid[y].indexOf('S')
       return states.findIndex(state => state.map === map && state.x === x && state.y === y && state.dir === stage.startDir)
     })
+    const blocked = states.map(state => {
+      const offsets = { N: [0, -1], E: [1, 0], S: [0, 1], W: [-1, 0] }
+      const [dx, dy] = offsets[state.dir]
+      const cell = stage.variants![state.map][state.y + dy]?.[state.x + dx]
+      return cell === undefined || cell === '#'
+    })
     const bySize: number[][][] = [[identity]]
     const seen = new Set([identity.join(',')])
     for (let size = 1; size <= stage.maxBlocks!; size++) {
@@ -123,7 +137,7 @@ for (const stage of unit2Stages.slice(1)) {
       const add = (transform: number[]) => {
         const key = transform.join(',')
         if (seen.has(key)) return
-        if (starts.every(index => transform[index] === success)) throw new Error('if-free shortcut at size ' + size)
+        if (starts.every(index => transform[index] === success)) throw new Error('shortcut without required concept at size ' + size)
         seen.add(key); current.push(transform)
       }
       for (const command of commands) for (const tail of bySize[size - 1]) add(compose(command, tail))
@@ -132,6 +146,14 @@ for (const stage of unit2Stages.slice(1)) {
         for (let count = 2; count <= 10; count++) {
           repeated = compose(repeated, body)
           for (const tail of bySize[size - bodySize - 1]) add(compose(repeated, tail))
+        }
+      }
+      if (stage.id === 'u2-5' || stage.id === 'u2-6') {
+        // Every else-free tree starts with a primitive, repeat, or if; tails
+        // enumerate concatenation. Equal transformations retain cheapest size.
+        for (let bodySize = 0; bodySize < size; bodySize++) for (const body of bySize[bodySize]) {
+          const conditional = identity.map((value, index) => blocked[index] ? body[index] : value)
+          for (const tail of bySize[size - bodySize - 1]) add(compose(conditional, tail))
         }
       }
       bySize.push(current)

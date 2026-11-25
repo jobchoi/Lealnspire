@@ -37,7 +37,7 @@ export class Interpreter {
           if (block.condition !== 'blockedAhead') throw new Error('Unknown condition')
           const checked = blockedAhead()
           frames.push({ pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'check', check: { blockId: block.id, condition: block.condition, result: checked } })
-          if (checked && execute(block.body, loops)) return true
+          if (execute(checked ? block.body : block.else ?? [], loops)) return true
           break
         }
         case 'forward': {

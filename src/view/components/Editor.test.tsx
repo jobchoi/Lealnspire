@@ -96,3 +96,42 @@ it('describes the insertion target using its block type in both languages', () =
     }
   } finally { i18n.locale = previous }
 })
+
+it('edits the else branch separately and removes its subtree without mutating the previous program', () => {
+  const controller = new EditorController()
+  let tree: Program = [{ id: 'choose', type: 'if', condition: 'blockedAhead', body: [] }]
+  controller.configure(tree, next => { tree = next }, false)
+  controller.select('choose')
+  controller.toggleElse()
+  controller.toggleTarget(true)
+  controller.add('forward')
+  expect(controller.total).toBe(2)
+  const alternative = tree[0].type === 'if' ? tree[0].else! : []
+  controller.select(alternative[0].id)
+  expect(controller.selectedPath).toEqual([0, -1, 0])
+  controller.remove()
+  expect(controller.total).toBe(1)
+  expect(alternative).toHaveLength(1)
+  controller.select('choose')
+  const html = renderToString(<Editor conditions program={tree} onChange={() => {}} controller={controller} />)
+  expect(html).toContain('else 빼기')
+  expect(html).toContain('else 안에 넣기')
+  expect(html).toContain('else-branches')
+})
+
+it('numbers else tiles after the if branch and names branches in both languages', () => {
+  const code: Program = [{ id: 'r', type: 'repeat', count: 3, body: [{ id: 'i', type: 'if', condition: 'blockedAhead', body: [{ id: 'right', type: 'turnRight' }], else: [{ id: 'f', type: 'forward' }] }] }]
+  const previous = i18n.locale
+  try {
+    for (const locale of ['ko', 'en']) {
+      i18n.locale = locale
+      const controller = new EditorController()
+      controller.configure(code, onChange, false)
+      controller.select('f')
+      const html = renderToString(<Editor conditions program={code} controller={controller} onChange={onChange} />)
+      expect(html).toContain(locale === 'ko' ? 'aria-label="1.1.2번 앞으로 (else)"' : 'aria-label="Block 1.1.2: Move forward (else)"')
+      expect(html).not.toContain('1.1.0.1')
+      expect(html).toContain(t('action', { order: '1.1.2', name: locale === 'ko' ? '앞으로' : 'Move forward', action: t('before') }))
+    }
+  } finally { i18n.locale = previous }
+})

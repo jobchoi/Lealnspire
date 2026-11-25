@@ -4,7 +4,7 @@ import { cloneBlock, createBlock, findBlockPath } from './editor'
 import { Program, addBlock, countBlocks, deleteBlock, moveBlock } from './program'
 import { ProgressRepository, progressV2Key } from './ProgressRepository'
 import baseline from './unit1-run.fixture.json'
-import { allStages, stages } from './stages'
+import { allStages, stages, unit2Stages } from './stages'
 import type { Block, Stage } from './types'
 
 const f: Block = { id: 'f', type: 'forward' }
@@ -136,4 +136,27 @@ it('preserves unit 1 solutions, failures and every frame against the pre-T37 eng
     collision: run(stage, Array.from({ length: 10 }, () => ({ id: 'baseline-f', type: 'forward' }))),
     initial: stage.initialProgram ? run(stage, stage.initialProgram) : null,
   }))).toEqual(baseline)
+})
+
+it('executes exactly one else branch, counts and edits both branches with fresh clone IDs', () => {
+  const tree: Block[] = [{ id: 'choose', type: 'if', condition: 'blockedAhead', body: [{ id: 'yes', type: 'turnRight' }], else: [{ id: 'no', type: 'forward' }] }]
+  const stage = { ...unit2Stages[0], grid: ['SG'], variants: undefined }
+  const execution = run(stage, tree)
+  expect(execution.result).toBe('success')
+  expect(execution.frames.map(frame => frame.activeBlockId)).toEqual([null, 'choose', 'no'])
+  expect(countBlocks(tree)).toBe(3)
+  const removed = Program.setElse(tree, [0], false)
+  expect(countBlocks(removed)).toBe(2)
+  expect(countBlocks(tree)).toBe(3)
+  const added = addBlock(tree, { id: 'tail', type: 'turnLeft' }, [0, -1])
+  expect(findBlockPath(moveBlock(added, [0, -1, 1], 'up'), 'tail')).toEqual([0, -1, 0])
+  expect(countBlocks(deleteBlock(added, [0, -1, 0]))).toBe(3)
+  const values = new Map<string, string>()
+  const storage = { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => { values.set(key, value) } }
+  new ProgressRepository(storage).saveProgram('u2-5', tree)
+  expect(new ProgressRepository(storage).getProgress().stages['u2-5'].lastProgram).toEqual(tree)
+
+  expect(findBlockPath(tree, 'no')).toEqual([0, -1, 0])
+  const cloned = cloneBlock(tree, tree[0])
+  expect(cloned.type === 'if' && cloned.else?.[0].id).not.toBe('no')
 })

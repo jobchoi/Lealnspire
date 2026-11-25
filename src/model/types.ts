@@ -3,7 +3,7 @@ export type Dir = 'N' | 'E' | 'S' | 'W'
 export type Block =
   | { id: string; type: 'forward' | 'turnLeft' | 'turnRight' }
   | { id: string; type: 'repeat'; count: number; body: Block[] }
-  | { id: string; type: 'if'; condition: 'blockedAhead'; body: Block[] }
+  | { id: string; type: 'if'; condition: 'blockedAhead'; body: Block[]; else?: Block[] }
 export type Program = Block[]
 export type Stage = {
   id: string; world: 'sketchbook' | 'train' | 'handheld'; title: string; goal: string; hints: { keys: [string, string]; highlight: HintHighlight }

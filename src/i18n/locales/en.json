@@ -231,5 +231,17 @@
   "u24Goal": "Fix the code that's already there to get through both maps.",
   "u24Hint1": "Run the starting code and see which map fails.",
   "u24Hint2": "When does if check? Where should if be so it also checks when the wall appears?",
-  "unit2Congratulations": "Unit 2 complete!"
+  "unit2Congratulations": "Unit 2 complete!",
+  "addElse": "Add else",
+  "removeElse": "Remove else",
+  "selectElse": "Put inside else",
+  "targetElse": "Add inside else of {order}",
+  "u25Title": "Unit 2-5: Blocked or Clear",
+  "u25Goal": "Turn when blocked, move when clear — the same code for both maps.",
+  "u25Hint1": "On map 1, what is in front of the robot at the start?",
+  "u25Hint2": "If the path is still blocked after one turn, what should happen next?",
+  "u26Title": "Unit 2-6: Three Maps",
+  "u26Goal": "Get through all three maps with the same code.",
+  "u26Hint1": "Compare where and how many times the robot must turn on each map.",
+  "u26Hint2": "In one round of the repeat, should the robot turn and move, or only one of them?"
 }

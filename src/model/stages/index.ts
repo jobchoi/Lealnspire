@@ -50,5 +50,15 @@ unit2Stages.push(
     initialProgram: [{ id: 'u24-initial-if', type: 'if', condition: 'blockedAhead', body: [{ id: 'u24-initial-turn', type: 'turnRight' }] }, { id: 'u24-initial-repeat', type: 'repeat', count: 4, body: [{ id: 'u24-initial-forward', type: 'forward' }] }],
     solution: [conditionalLoop('u24', 4, 'turnRight')] },
 )
+// T41 [제안·잠정]: a dead end requires two turns before moving.
+for (const [id, world, variants, startDir, turn, count, highlight] of [
+  ['u2-5', 'train', [['G.S'], ['S..G']], 'E', 'turnRight', 5, 'start'],
+  ['u2-6', 'handheld', [['S..#', '##.#', '##G#'], ['G.S'], ['S#', '.#', '.#', 'G#']], 'E', 'turnRight', 6, 'walls'],
+] as const) {
+  unit2Stages.push({ id, world, grid: [...variants[0]], variants: variants.map(grid => [...grid]), startDir,
+    title: id.replace('-', '') + 'Title', goal: id.replace('-', '') + 'Goal', hints: { keys: [id.replace('-', '') + 'Hint1', id.replace('-', '') + 'Hint2'], highlight },
+    maxBlocks: 4, starBlocks: 4, solution: [{ id: id + '-repeat', type: 'repeat', count, body: [{ id: id + '-if', type: 'if', condition: 'blockedAhead', body: [{ id: id + '-turn', type: turn }], else: [{ id: id + '-forward', type: 'forward' }] }] }],
+  })
+}
 export const allStages = [...stages, ...bonusStages, ...unit2Stages]
 export const isLastStage = (index: number) => index === stages.length - 1 || index === stages.length + bonusStages.length - 1 || index === allStages.length - 1

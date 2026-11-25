@@ -97,7 +97,7 @@ test.describe('2단원 조건 if', () => {
     await expect(ifBlock(page)).toHaveCount(0)
   })
 
-  test('T39: 2단원을 처음부터 끝까지 — u2-1~u2-4를 풀고(u2-4는 미리 놓인 코드가 1번 맵에서 실패) "2단원 완주"', async ({ page }) => {
+  test('T39: 2단원 if 구간 — u2-1~u2-4를 이어서 풀고(u2-4는 미리 놓인 코드가 1번 맵에서 실패) else 구간으로 넘어간다', async ({ page }) => {
     test.setTimeout(120_000)
     const g = await openU21(page)
     await g.speed('빠르게')
@@ -121,7 +121,11 @@ test.describe('2단원 조건 if', () => {
     await g.select('1.2'); await g.press(g.action(/앞으로 옮기기$/))
     await g.select('1.1'); await into(g); await g.add('R'); await out(g)
     expect(await g.blockCount()).toBe(4)
-    expect(await g.runToEnd()).toContain('2단원 완주')
+    // T41부터 2단원은 u2-6까지(if/else) — u2-4 성공은 "다음 스테이지"
+    const last = await g.runToEnd()
+    expect(last).toMatch(/성공/)
+    expect(last).not.toContain('2단원 완주')
+    await expect(g.dialog.getByRole('button', { name: '다음 스테이지' })).toBeVisible()
   })
 
   test('T39: 조건 예측 도전 — u2-1을 깬 뒤 "if는 한 번만 검사한다"를 예측, 정답은 하나', async ({ page }) => {

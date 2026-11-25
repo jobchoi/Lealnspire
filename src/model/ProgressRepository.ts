@@ -24,7 +24,8 @@ function validProgram(value: unknown): value is Program {
     if (!record(block) || typeof block.id !== 'string' || !block.id || ids.has(block.id)) return false
     ids.add(block.id)
     if (block.type === 'if') {
-      if (block.condition !== 'blockedAhead' || !Array.isArray(block.body)) return false
+      if (block.condition !== 'blockedAhead' || !Array.isArray(block.body) || ('else' in block && !Array.isArray(block.else))) return false
+      if (Array.isArray(block.else)) for (const child of block.else) pending.push({ block: child, depth: depth + 1 })
       for (const child of block.body) pending.push({ block: child, depth: depth + 1 })
     } else if (block.type === 'repeat') {
       if (!Number.isInteger(block.count) || (block.count as number) < 2 || (block.count as number) > 10 || !Array.isArray(block.body)) return false

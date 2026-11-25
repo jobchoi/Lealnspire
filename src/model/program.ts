@@ -9,6 +9,7 @@ function updateList(program: BlockTree, path: number[], update: (list: BlockTree
   const [index, ...rest] = path
   const block = program[index]
   if (!block || !hasBody(block)) throw new Error('Invalid body path')
+  if (block.type === 'if' && rest[0] === -1) return program.map((item, i) => i === index ? { ...block, else: updateList(block.else ?? [], rest.slice(1), update) } : item)
   return program.map((item, i) => i === index ? { ...block, body: updateList(block.body, rest, update) } : item)
 }
 function splitPath(path: number[]): [number[], number] {
@@ -58,8 +59,18 @@ export class Program {
       return list.map((item, i) => i === index ? { ...block, count } : item)
     })
   }
+  static setElse(program: BlockTree, path: number[], enabled: boolean): BlockTree {
+    const [parent, index] = splitPath(path)
+    return updateList(program, parent, list => {
+      checkIndex(list, index)
+      const block = list[index]
+      if (block.type !== 'if') throw new Error('Block is not an if')
+      const { else: alternative, ...plain } = block
+      return list.map((item, i) => i === index ? enabled ? { ...block, else: alternative ?? [] } : plain : item)
+    })
+  }
   static countBlocks(program: BlockTree): number {
-    return program.reduce((sum, block) => sum + 1 + (hasBody(block) ? countBlocks(block.body) : 0), 0)
+    return program.reduce((sum, block) => sum + 1 + (hasBody(block) ? countBlocks(block.body) : 0) + (block.type === 'if' ? countBlocks(block.else ?? []) : 0), 0)
   }
 }
 export const addBlock = Program.addBlock

@@ -67,7 +67,7 @@ export function PlayPage({ stage, progressStore, onList, onNext, lastStage, cont
             })}
           </div>
         </div>
-        <Editor conditions={!!stage.variants} check={check} controller={controller.editor} failedBlockId={controller.visibleFailure?.blockId} theme={theme} program={program} onChange={controller.edit} maxBlocks={stage.maxBlocks} locked={playback.locked} activeBlockId={playback.frame?.activeBlockId} loops={playback.frame?.loops} />
+        <Editor conditions={!!stage.variants} check={controller.branchCheck} controller={controller.editor} failedBlockId={controller.visibleFailure?.blockId} theme={theme} program={program} onChange={controller.edit} maxBlocks={stage.maxBlocks} locked={playback.locked} activeBlockId={playback.frame?.activeBlockId} loops={playback.frame?.loops} />
       </div>
       {playback.showResult && playback.result && <ResultModal stageLabel={stage.variants ? t(stage.title) : undefined} unit2={!!stage.variants} failureMessage={stage.variants && playback.result !== 'success' ? t('variantFailure', { number: (controller.getSnapshot().all?.failedVariant ?? 0) + 1, reason: t(`failures.${playback.result}`) }) : undefined} restoreFocus={restoreFocus} onFix={controller.fix} result={playback.result} stars={controller.stars} onRetry={playback.reset} onClose={playback.dismiss} onNext={onNext} lastStage={lastStage} bonusStage={bonusStages.some(bonus => bonus.id === stage.id)} />}
     </section>

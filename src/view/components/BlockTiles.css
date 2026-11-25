@@ -132,3 +132,19 @@
   .conditions-page .palette button { padding: 3px; }
   .conditions-page .palette .sensor-icon { width: 16px; height: 16px; }
 }
+
+.else-branches { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; border-top: 2px dashed #69439b; padding: 6px; width: 100%; }
+.branch-skipped { opacity: .5; }
+.branch-label { font-weight: bold; }
+.tile-toolbar { flex-wrap: wrap; }
+
+/* Keep both alternatives inside their conditional container. */
+.if-branch, .else-branches { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; border: 1px solid #69439b; border-radius: 5px; padding: 4px; min-width: 0; max-width: 100%; width: auto; }
+.branch-label { font: bold 12px/16px monospace; }
+.theme-handheld .workspace:has(.has-else) { display: flex; }
+.play-page.theme-handheld .workspace .if-frame.has-else { display: flex; border: 2px solid #ffd166; border-radius: 4px; padding: 4px; }
+.theme-handheld .workspace .has-else .tile-list { display: flex; }
+.theme-handheld .workspace :is(.if-branch, .else-branches) { border-color: #ffd166; color: #fff0ba; }
+
+.play-page .workspace .if-frame.has-else { display: flex; }
+.play-page .workspace .if-skipped > .if-branch .block-tile { opacity: .45; }

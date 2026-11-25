@@ -217,3 +217,7 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - model/stages/index.ts: U2-2~U2-4, 지정된 두 변형 맵·초기 코드·정답. stages.test.ts에서 정답·U2-4 초기 실패·if 없는 상한 이하 코드의 상태 변환 전수 탐색 검증.
 - ProgressRepository.isUnlocked: 정규 8개 완료 뒤 2단원을 순차 개방. flow.test.ts에서 이어하기·다음·마지막 목록 복귀 검증.
 - model/predictions.ts: p-u2-1의 별도 단일 Stage와 엔진 기반 세 후보. PredictionController는 해당 Stage로 독립 재생하며 끝난 후 첫 검사 결과를 제공. PredictionPage와 ResultModal은 검사 설명·2단원 완주 문구를 locale에서 표시.
+
+### T41 if/else [제안·잠정]
+
+기존 model/types·editor·program·interpreter·ProgressRepository에 선택적 else 가지와 경로 표식 -1을 확장했다. EditorController·Editor·BlockTiles는 가지 편집과 건너뜀을 표시한다. u2-5(train)·u2-6(handheld)을 unit2Stages에 이어 붙이며 stages.test.ts는 else 없는 프로그램(if 포함)의 상태 변환을 전수 탐색한다. conditions.test.ts에서 else 실행·편집·복제·저장 회귀를 검사한다. 새 소스 파일은 없다.

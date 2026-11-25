@@ -25,6 +25,7 @@ export class GameController extends Observable<State> {
     return failure && (failure.variant ?? 0) === this.variant ? failure : null
   }
   get frame() { return this.state.execution?.frames[this.state.index] }
+  get branchCheck() { return this.state.execution?.frames.slice(0, this.state.index + 1).reverse().find(frame => frame.check)?.check }
   get result() { return this.state.all?.result ?? this.state.execution?.result }
   get variant() { return this.state.variant }
   get displayStage() { return { ...this.stage, grid: this.stage.variants?.[this.variant] ?? this.stage.grid } }
