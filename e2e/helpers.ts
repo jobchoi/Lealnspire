@@ -102,3 +102,21 @@ export class Game {
 export const SOLUTIONS: Record<number, string> = {
   1: 'F F', 2: 'F F R F', 3: 'F R F L F R F', 4: 'F R F', 5: '6[F]', 6: '3[F L F R]', 7: '3[F F R]', 8: '2[F L F R] F',
 }
+
+/** 요소 안 글자·SVG 기호의 전경색과 가장 가까운 불투명 배경색의 대비(배경 이미지면 null) */
+export async function contrastOf(l: Locator) {
+  return l.evaluate(el => {
+    const parse = (c: string) => { const m = c.match(/[\d.]+/g)?.map(Number) ?? [0, 0, 0, 0]; return { r: m[0], g: m[1], b: m[2], a: m[3] ?? 1 } }
+    const lum = ({ r, g, b }: { r: number, g: number, b: number }) => { const f = (v: number) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b) }
+    const target = (el.querySelector('small, strong, svg') ?? el) as HTMLElement
+    const cs = getComputedStyle(target)
+    const fg = parse(target instanceof SVGElement ? (cs.stroke !== 'none' ? cs.stroke : cs.fill) : cs.color)
+    let bg = null as null | ReturnType<typeof parse>
+    for (let a: HTMLElement | null = target; a; a = a.parentElement) {
+      const s = getComputedStyle(a); if (s.backgroundImage !== 'none') return null
+      const c = parse(s.backgroundColor); if (c.a > 0.9) { bg = c; break }
+    }
+    if (!bg) return null
+    const L1 = lum(fg), L2 = lum(bg); return (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05)
+  })
+}

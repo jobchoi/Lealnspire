@@ -238,3 +238,7 @@ S......#  S......#
 `variantVariables: [{ A: 2 }, { A: 4 }]`, `maxBlocks: 6`, 팔레트는 앞·왼·오·repeat(숫자/A)·set·change로 제한합니다. if·while·call은 없습니다. 정답 `repeat A [F], L, F`는 최상위 명령 3개이며 기존 몸체 포함 계산으로는 **4블록**입니다. 각 변형에서 A칸 직진 후 왼쪽 한 칸으로 도착합니다.
 
 변수 블록을 제외하면 두 맵에서 동일한 명령열을 실행합니다. 성공·충돌로 멈추기 전까지 위치·방향이 같으며, 첫 번째로 서로 다른 칸에 진입할 때 한쪽 도착 칸은 다른 쪽 벽입니다. 따라서 한 맵의 성공은 다른 맵의 충돌을 뜻하므로 동시에 성공할 수 없습니다(블록 수와 무관). `variables.test.ts`는 비도착 칸×4방향 상태에 성공/실패 흡수 상태를 더한 변환으로 F/L/R, 숫자 repeat 2~10의 중첩·빈 몸체·순차 조합을 6블록까지 전수 탐색합니다. 동일한 전체 상태 변환은 최소 비용 대표 하나로 합칩니다. 실제 엔진의 실행 상한을 완화한 의미에서조차 해가 없으므로 상한 안에서도 해가 없습니다. 이전 while 예시는 반례 회귀와 while 안 change의 실행 검증으로만 남깁니다.
+
+### T48 변수 화면 [제안·잠정]
+
+5단원은 기존 variantVariables·프레임 variables/variableChange를 View에서 표시한다. 편집은 EditorController가 Program의 setVariableValue/toggleChange/setRepeatSource를 호출하며 저장은 기존 문서 경로를 사용한다. u5-3도 단일 변형으로 등록해 통과 중심 별 3개·순차 개방·단원 경계를 기존 변형 흐름과 공유한다. 파일 지도와 세부 규칙·전수 탐색은 PROJECT_MAP의 T48 절과 design/unit5-variables.md를 참고한다.

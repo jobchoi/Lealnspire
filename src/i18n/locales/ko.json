@@ -59,7 +59,8 @@
   "failures": {
     "collision": "벽에 부딪혔어요",
     "unfinished": "목적지에 도달하지 못했어요",
-    "stepLimit": "실행 단계가 너무 많아요. 반복 횟수와 블록을 줄여 보세요."
+    "stepLimit": "실행 단계가 너무 많아요. 반복 횟수와 블록을 줄여 보세요.",
+    "variableRange": "상자 A의 값이 0보다 작거나 20보다 커졌어요"
   },
   "title": "Lealnspire",
   "stage": "스테이지",
@@ -71,7 +72,9 @@
     "turnRight": "오른쪽으로 돌기",
     "repeat": "N번 반복",
     "if": "앞이 막혔으면",
-    "while": "앞이 열려 있는 동안"
+    "while": "앞이 열려 있는 동안",
+    "set": "상자 A에 값 넣기",
+    "change": "상자 A 1 바꾸기"
   },
   "tools": "블록 작업 막대",
   "chooseTile": "블록을 눌러 선택하세요.",
@@ -271,7 +274,10 @@
     "addMain": "추가: main 끝",
     "views": "작업 공간 보기",
     "showMain": "main 보기",
-    "show": { "star": "별 함수 보기", "moon": "달 함수 보기" },
+    "show": {
+      "star": "별 함수 보기",
+      "moon": "달 함수 보기"
+    },
     "adding": {
       "star": "추가 위치: 별 함수 안 끝",
       "moon": "추가 위치: 달 함수 안 끝"
@@ -315,5 +321,34 @@
   "u43Title": "4단원 3: 부르지 않으면 쉬어요",
   "u43Goal": "만들어 둔 함수가 실행되게 고쳐요.",
   "u43Hint1": "실행하면 로봇이 움직이나요?",
-  "u43Hint2": "함수를 만들기만 하면 실행될까요, 불러야 실행될까요?"
+  "u43Hint2": "함수를 만들기만 하면 실행될까요, 불러야 실행될까요?",
+  "unit5": "5단원: 변수 (variable)",
+  "unit5Congratulations": "5단원 완주!",
+  "u51Title": "5단원 1: 상자에 든 수만큼",
+  "u51Goal": "맵마다 상자 A에 든 수가 달라요. 같은 코드로 두 맵을 지나가요.",
+  "u51Hint1": "두 맵에서 상자 A의 수와 꺾는 곳까지의 칸 수를 비교해 보세요.",
+  "u51Hint2": "반복 횟수에 숫자 대신 A를 쓰면 어떻게 될까요?",
+  "u52Title": "5단원 2: 점점 길어지는 길",
+  "u52Goal": "길이 한 칸씩 길어져요. 상자 A를 바꿔 가며 두 맵을 지나가요.",
+  "u52Hint1": "꺾일 때마다 길이 몇 칸씩 길어지나요?",
+  "u52Hint2": "한 번 꺾고 나서 A에 1을 더하면, 다음 길은 몇 칸이 될까요?",
+  "u53Title": "5단원 3: 값을 넣는 순서",
+  "u53Goal": "미리 놓인 코드를 고쳐 도착해요.",
+  "u53Hint1": "처음 코드를 실행하면 로봇은 몇 칸 가나요?",
+  "u53Hint2": "repeat A가 시작될 때 상자 A에는 몇이 들어 있나요?",
+  "variables": {
+    "map": "{number}/{total}",
+    "status": "상자 A: {value}",
+    "changed": "상자 A: {from} → {to}",
+    "increase": "값 늘리기",
+    "decrease": "값 줄이기",
+    "toggleChange": "+1/−1 바꾸기",
+    "useA": "횟수를 A로",
+    "useNumber": "횟수를 숫자로",
+    "repeatA": "A로 반복",
+    "repeatNumber": "숫자로 반복",
+    "changeLabel": "바꾸기",
+    "setTile": "{order}번 상자 A에 {value} 넣기",
+    "changeTile": "{order}번 상자 A {by} 바꾸기"
+  }
 }

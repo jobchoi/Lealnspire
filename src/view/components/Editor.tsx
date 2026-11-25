@@ -11,10 +11,10 @@ import { BlockTiles } from './BlockTiles'
 import { Engine, Symbol } from '../theme/Symbols'
 import { t } from '../../i18n/I18n'
 
-type EditorProps = { theme?: Theme; program: Program; onChange: (program: Program) => void; maxBlocks?: number; locked?: boolean; activeBlockId?: string | null; conditions?: boolean; functionsEnabled?: boolean; call?: Frame['call']; palette?: BlockType[]; check?: Frame['check']; checks?: NonNullable<Frame['check']>[]; loops?: Frame['loops']; failedBlockId?: string | null; controller?: EditorController }
+type EditorProps = { theme?: Theme; program: Program; onChange: (program: Program) => void; maxBlocks?: number; locked?: boolean; activeBlockId?: string | null; conditions?: boolean; functionsEnabled?: boolean; variablesEnabled?: boolean; call?: Frame['call']; palette?: BlockType[]; check?: Frame['check']; checks?: NonNullable<Frame['check']>[]; loops?: Frame['loops']; failedBlockId?: string | null; controller?: EditorController }
 const types = defaultTheme.blockTypes
 
-export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, locked = false, activeBlockId, conditions = false, functionsEnabled = false, call, palette, check, checks, loops, failedBlockId, controller: supplied }: EditorProps) {
+export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, locked = false, activeBlockId, conditions = false, functionsEnabled = false, variablesEnabled = false, call, palette, check, checks, loops, failedBlockId, controller: supplied }: EditorProps) {
   const editor = useRef<HTMLElement>(null)
   const workspace = useRef<HTMLDivElement>(null)
   const [controller] = useState(() => supplied ?? new EditorController())
@@ -39,12 +39,12 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
     if (block) {
       const area = block.closest<HTMLElement>('.workspace') ?? workspace.current
       const outer = area.getBoundingClientRect(), inner = block.getBoundingClientRect()
-      const visibleTop = outer.top + (area.parentElement?.classList.contains('has-selection') ? 58 : 0)
+      const visibleTop = outer.top + (area.parentElement?.classList.contains('has-selection') && !variablesEnabled ? 58 : 0)
       if (inner.top < visibleTop || inner.height > outer.bottom - visibleTop) area.scrollTop += inner.top - visibleTop
       else if (inner.bottom > outer.bottom) area.scrollTop += inner.bottom - outer.bottom
     }
     controller.acknowledgeAdded()
-  }, [program, activeBlockId, addedId, controller, visiblePanel])
+  }, [program, activeBlockId, addedId, controller, visiblePanel, variablesEnabled])
   const targetFunction = controller.functions.find(fn => fn.id === controller.functionId)
   const editing = controller.editProgram
   const targetBlock = targetPath ? blockAt(editing, targetPath) : undefined
@@ -59,7 +59,13 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
           <button disabled={locked} aria-label={t(selectedBlock.else ? 'removeElse' : 'addElse')} onClick={controller.toggleElse}>{t(selectedBlock.else ? 'removeElse' : 'addElse')}</button>
           {selectedBlock.else && <button disabled={locked} aria-label={label(t('selectElse'))} onClick={() => controller.toggleTarget(true)}>{t('selectElse')}</button>}
         </>}
-        {selectedBlock.type === 'repeat'  && <>
+        {selectedBlock.type === 'set' && <>
+          <button disabled={locked || selectedBlock.value <= 0} aria-label={label(t('variables.decrease'))} onClick={() => controller.setVariableValue(selectedBlock.value - 1)}>−</button>
+          <button disabled={locked || selectedBlock.value >= 20} aria-label={label(t('variables.increase'))} onClick={() => controller.setVariableValue(selectedBlock.value + 1)}>+</button>
+        </>}
+        {selectedBlock.type === 'change' && <button disabled={locked} aria-label={t('variables.toggleChange')} onClick={controller.toggleChange}>{t('variables.toggleChange')}</button>}
+        {selectedBlock.type === 'repeat' && variablesEnabled && <button disabled={locked} aria-label={t(selectedBlock.countVariable ? 'variables.useNumber' : 'variables.useA')} onClick={controller.toggleRepeatSource}>{t(selectedBlock.countVariable ? 'variables.repeatNumber' : 'variables.repeatA')}</button>}
+        {selectedBlock.type === 'repeat' && !selectedBlock.countVariable && <>
           <button disabled={locked || (selectedBlock.count ?? 3) <= 2} aria-label={label(t('decrease'))} onClick={() => controller.setCount((selectedBlock.count ?? 3) - 1)}>−</button>
           <button disabled={locked || (selectedBlock.count ?? 3) >= 10} aria-label={label(t('increase'))} onClick={() => controller.setCount((selectedBlock.count ?? 3) + 1)}>+</button>
         </>}
@@ -73,7 +79,7 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
     <div className="block-budget"><p aria-live="polite">{t('total', { count: total, max: limit })}</p>
     <span className="slot-dots" aria-hidden="true">{Array.from({ length: MAX_PROGRAM_BLOCKS }, (_, i) => <span key={i} className={i < total ? 'filled' : i >= limit ? 'unavailable' : ''}>{i < total ? '●' : '○'}</span>)}</span>{functionsEnabled && atLimit && <span className="function-limit" role="status">{t('limit')}</span>}</div>
     <p className="insertion-status" aria-live="polite">{targetPath ? t(controller.targetElse ? 'targetElse' : targetBlock?.type === 'if' ? 'targetIf' : targetBlock?.type === 'while' ? 'targetWhile' : 'target', { order: blockOrder(editing, targetPath) }) : controller.functionTarget && targetFunction ? t(`functions.adding.${targetFunction.icon}`) : t('root')}</p>
-    <div className="palette-row"><div className="palette" role="group" aria-label={t('palette')}>{(palette ?? (conditions ? [...types, 'if' as const] : types)).filter(type => type !== 'call').map(type => <button type="button" key={type} className={theme.blockClass(type)} aria-label={theme.blockName(type)} title={theme.blockName(type)} disabled={locked || atLimit} onClick={() => addBlock(type)}><span className="block-symbol" aria-hidden="true">{theme.blockSymbol(type)}</span>{conditions && theme.world === 'handheld' && type === 'repeat' && <span className="handheld-button-letter" aria-hidden="true">B</span>}{type === 'while' && <span className="sensor-icon" aria-hidden="true"><Symbol name="clearAhead" /></span>}{type === 'if' && <span className="sensor-icon" aria-hidden="true"><Symbol name="blockedAhead" /></span>}<small>{type === 'while' ? glossary.while.keyword : type === 'if' ? glossary.if.keyword : theme.paletteName?.(type) ?? theme.blockName(type)}</small></button>)}{functionsEnabled && controller.functions.map(fn => <button type="button" key={fn.id} className="block-call" aria-label={t(`functions.call.${fn.icon}`)} disabled={locked || atLimit || controller.addingToFunction} title={controller.addingToFunction ? t('functions.noNestedCalls') : t(`functions.call.${fn.icon}`)} onClick={() => addBlock('call', fn.id)}><span aria-hidden="true"><Symbol name={fn.icon} />()</span></button>)}</div><button type="button" className="undo-button" aria-label={t('undo')} title={t('undo')} disabled={locked || !controller.canUndo} onClick={controller.undo}><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M9 4 3 10l6 6M3 10h11a6 6 0 0 1 0 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg></button></div>
+    <div className="palette-row"><div className="palette" role="group" aria-label={t('palette')}>{(palette ?? (conditions ? [...types, 'if' as const] : types)).filter(type => type !== 'call').map(type => <button type="button" key={type} className={theme.blockClass(type)} aria-label={theme.blockName(type)} title={theme.blockName(type)} disabled={locked || atLimit} onClick={() => addBlock(type)}><span className="block-symbol" aria-hidden="true">{theme.blockSymbol(type)}</span>{conditions && theme.world === 'handheld' && type === 'repeat' && <span className="handheld-button-letter" aria-hidden="true">B</span>}{type === 'while' && <span className="sensor-icon" aria-hidden="true"><Symbol name="clearAhead" /></span>}{type === 'if' && <span className="sensor-icon" aria-hidden="true"><Symbol name="blockedAhead" /></span>}<small>{type === 'set' ? glossary.variable.keyword : type === 'change' ? t('variables.changeLabel') : type === 'while' ? glossary.while.keyword : type === 'if' ? glossary.if.keyword : theme.paletteName?.(type) ?? theme.blockName(type)}</small></button>)}{functionsEnabled && controller.functions.map(fn => <button type="button" key={fn.id} className="block-call" aria-label={t(`functions.call.${fn.icon}`)} disabled={locked || atLimit || controller.addingToFunction} title={controller.addingToFunction ? t('functions.noNestedCalls') : t(`functions.call.${fn.icon}`)} onClick={() => addBlock('call', fn.id)}><span aria-hidden="true"><Symbol name={fn.icon} />()</span></button>)}</div><button type="button" className="undo-button" aria-label={t('undo')} title={t('undo')} disabled={locked || !controller.canUndo} onClick={controller.undo}><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M9 4 3 10l6 6M3 10h11a6 6 0 0 1 0 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg></button></div>
     {atLimit && !functionsEnabled && <p role="status">{t('limit')}</p>}
     {functionsEnabled && <div className="function-navigation"><div className="function-actions"><button disabled={locked || controller.functions.length >= 2} onClick={controller.createFunction}>{t('functions.create')}</button><button disabled={locked} aria-pressed={!controller.addingToFunction && !targetId} onClick={() => { controller.chooseFunction(); showPanel() }}>{t('functions.addMain')}</button></div>
     {controller.addingToFunction && <p className="function-notice" role="status">{t('functions.noNestedCalls')}</p>}

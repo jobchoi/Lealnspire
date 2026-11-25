@@ -254,3 +254,10 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - `model/types.ts`, `interpreter.ts`: 변형별 variantVariables 시작 값(기본 A=0), set/change, 진입 시 횟수를 고정하는 repeat A, 프레임별 variables/variableChange, variableRange와 실패 호출 문맥. 함수와 main은 A를 공유하며 runAll의 변형마다 스테이지 시작 값으로 초기화합니다.
 - `model/program.ts`, `editor.ts`: 변수 블록 생성·불변 값 편집·증감 방향 전환·숫자/A 반복 전환, v2 문서 검증 확장. 실행 값은 저장하지 않습니다.
 - `model/variables.test.ts`, `model/unit4-run.fixture.json`: 변수·저장·편집·예시 맵과 4단원 전체 프레임 회귀. unit1/unit123 기준은 각 프레임 A=0만 추가합니다. 기존 while 예시는 5블록 반례로 폐기했습니다. 새 예시는 센서 없는 팔레트에서 맵별 A=2/4를 사용하고 변수 없는 6블록 이하 상태 변환 전수 탐색으로 동시 성공 불가를 검사합니다. 근거는 ARCHITECTURE의 T47 절에 기록했습니다. 화면·5단원 연결은 T48입니다.
+
+### T48 변수 화면·5단원 [제안·잠정]
+
+- `model/stages/index.ts`: unit5Stages u5-1~3, 맵별 시작 A·팔레트·초기 코드·정답. `model/unit5.test.ts`: 정답·개방·편집·변수/change 없는 코드 전수 탐색.
+- 기존 EditorController/Editor/BlockTiles에 set 값·change 부호·repeat 횟수 원천 편집과 변수 타일·고정 반복 횟수 표시를 연결한다.
+- PlayPage/index.css/Symbols에 상자 값·전후·시작 값 카드·반응형 표시, StageSelectPage/flow/ResultModal에 5단원 묶음·이어하기·완주를 연결한다. ko/en 문구와 pages.test.tsx의 세 월드 렌더링 회귀를 포함한다.
+- 설계·검증 한계는 `docs/design/unit5-variables.md`. E2E 작성·최종 브라우저 QC는 Claude 담당이다.

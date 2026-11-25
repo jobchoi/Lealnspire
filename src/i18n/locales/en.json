@@ -59,7 +59,8 @@
   "failures": {
     "collision": "The robot hit a wall",
     "unfinished": "The robot didn't reach the star",
-    "stepLimit": "Too many steps. Try fewer repeats or fewer blocks."
+    "stepLimit": "Too many steps. Try fewer repeats or fewer blocks.",
+    "variableRange": "Box A went below 0 or above 20"
   },
   "title": "Lealnspire",
   "stage": "Stage",
@@ -71,7 +72,9 @@
     "turnRight": "Turn right",
     "repeat": "Repeat N times",
     "if": "if the path ahead is blocked",
-    "while": "while the path ahead is clear"
+    "while": "while the path ahead is clear",
+    "set": "Set box A",
+    "change": "Change box A by 1"
   },
   "tools": "Block tools",
   "chooseTile": "Tap a block to select it.",
@@ -271,7 +274,10 @@
     "addMain": "Add: main end",
     "views": "Workspace views",
     "showMain": "Show main",
-    "show": { "star": "Show star function", "moon": "Show moon function" },
+    "show": {
+      "star": "Show star function",
+      "moon": "Show moon function"
+    },
     "adding": {
       "star": "Adding to: end of the star function",
       "moon": "Adding to: end of the moon function"
@@ -315,5 +321,34 @@
   "u43Title": "Unit 4-3: Nothing Happens Until You Call It",
   "u43Goal": "Fix the code so the function you made actually runs.",
   "u43Hint1": "When you run it, does the robot move?",
-  "u43Hint2": "Does making a function run it, or do you need to call it?"
+  "u43Hint2": "Does making a function run it, or do you need to call it?",
+  "unit5": "Unit 5: Variables",
+  "unit5Congratulations": "Unit 5 complete!",
+  "u51Title": "Unit 5-1: As Many as the Box Says",
+  "u51Goal": "Box A holds a different number on each map. Use the same code for both maps.",
+  "u51Hint1": "Compare the number in box A with the cells before the turn on each map.",
+  "u51Hint2": "What happens if you use A instead of a number for the repeat count?",
+  "u52Title": "Unit 5-2: The Path Gets Longer",
+  "u52Goal": "Each part of the path is one cell longer. Change box A as you go to get through both maps.",
+  "u52Hint1": "How much longer does the path get after each turn?",
+  "u52Hint2": "If you add 1 to A after each turn, how long will the next part be?",
+  "u53Title": "Unit 5-3: When the Value Goes In",
+  "u53Goal": "Fix the code that's already there and reach the star.",
+  "u53Hint1": "When you run the starting code, how many cells does the robot move?",
+  "u53Hint2": "When repeat A starts, what number is in box A?",
+  "variables": {
+    "map": "Map {number}/{total}",
+    "status": "Box A: {value}",
+    "changed": "Box A changed from {from} to {to}",
+    "increase": "Increase value",
+    "decrease": "Decrease value",
+    "toggleChange": "Switch +1/−1",
+    "useA": "Use A as the count",
+    "useNumber": "Use a number as the count",
+    "repeatA": "Repeat with A",
+    "repeatNumber": "Repeat with a number",
+    "changeLabel": "Change",
+    "setTile": "Block {order}: Set box A to {value}",
+    "changeTile": "Block {order}: Change box A by {by}"
+  }
 }

@@ -133,5 +133,8 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   move = (direction: 'up' | 'down') => { if (this.selectedPath && this.prepareEdit()) this.change(new ProgramModel(this.editProgram).move(this.selectedPath, direction).toBlocks()) }
   remove = () => { if (this.selectedPath && this.prepareEdit()) this.change(new ProgramModel(this.editProgram).remove(this.selectedPath).toBlocks()) }
   toggleElse = () => { if (this.selectedPath && this.selectedBlock?.type === 'if' && this.prepareEdit()) { this.targetElse = false; this.change(ProgramModel.setElse(this.editProgram, this.selectedPath, !this.selectedBlock.else)) } }
+  setVariableValue = (value: number) => { if (this.selectedPath && this.selectedBlock?.type === 'set' && this.prepareEdit()) this.change(ProgramModel.setVariableValue(this.editProgram, this.selectedPath, value)) }
+  toggleChange = () => { if (this.selectedPath && this.selectedBlock?.type === 'change' && this.prepareEdit()) this.change(ProgramModel.toggleChange(this.editProgram, this.selectedPath)) }
+  toggleRepeatSource = () => { if (this.selectedPath && this.selectedBlock?.type === 'repeat' && this.prepareEdit()) this.change(ProgramModel.setRepeatSource(this.editProgram, this.selectedPath, this.selectedBlock.countVariable ? 'number' : 'A')) }
   setCount = (count: number) => { if (this.selectedPath && this.prepareEdit()) this.change(new ProgramModel(this.editProgram).setCount(this.selectedPath, count).toBlocks()) }
 }

@@ -100,7 +100,7 @@ it('combines node budgets and depth across all bodies', () => {
 })
 
 it('preserves every unit 1–3 solution frame when wrapped in a doc', () => {
-  for (const puzzle of allStages.filter(puzzle => !puzzle.id.startsWith('u4-'))) {
+  for (const puzzle of allStages.filter(puzzle => !puzzle.id.startsWith('u4-') && !puzzle.id.startsWith('u5-'))) {
     expect(runAll(puzzle, { main: puzzle.solution, functions: [] })).toEqual(baseline[puzzle.id as keyof typeof baseline])
     expect(runAll(puzzle, puzzle.solution)).toEqual(baseline[puzzle.id as keyof typeof baseline])
     expect(new FunctionProgram({ main: puzzle.solution, functions: [] }).count()).toBe(Program.countBlocks(puzzle.solution))

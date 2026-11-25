@@ -90,5 +90,14 @@ unit4Stages[0].solutionFunctions![0].body = [
   { id: 'u41-a', type: 'forward' }, { id: 'u41-b', type: 'turnLeft' }, { id: 'u41-c', type: 'forward' },
 ]
 unit4Stages[0].solution.splice(2, 0, { id: 'u41-separator-turn', type: 'turnRight' })
-export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages]
-export const isLastStage = (index: number) => index === stages.length - 1 || index === stages.length + bonusStages.length - 1 || index === stages.length + bonusStages.length + unit2Stages.length - 1 || index === stages.length + bonusStages.length + unit2Stages.length + unit3Stages.length - 1 || index === allStages.length - 1
+// T48: map-provided values, one shared program per puzzle.
+const variablePalette: Stage['palette'] = ['forward', 'turnLeft', 'turnRight', 'repeat', 'set', 'change']
+const variableRepeat = (id: string): Block => ({ id, type: 'repeat', countVariable: 'A', body: [{ id: `${id}-f`, type: 'forward' }] })
+const variableFinish = (): Block[] => [{ id: 'left', type: 'turnLeft' }, { id: 'finish', type: 'forward' }]
+export const unit5Stages: Stage[] = [
+  { id: 'u5-1', world: 'sketchbook', title: 'u51Title', goal: 'u51Goal', hints: { keys: ['u51Hint1', 'u51Hint2'], highlight: 'goal' }, grid: ['##G####', 'S......'], variants: [['##G####', 'S......'], ['####G##', 'S......']], variantVariables: [{ A: 2 }, { A: 4 }], startDir: 'E', maxBlocks: 4, starBlocks: 4, palette: variablePalette, solution: [variableRepeat('repeat'), ...variableFinish()] },
+  { id: 'u5-2', world: 'train', title: 'u52Title', goal: 'u52Goal', hints: { keys: ['u52Hint1', 'u52Hint2'], highlight: 'path' }, grid: ['#G...', '####.', '###S.'], variants: [['#G...', '####.', '###S.'], ['##G....', '######.', '######.', '####S..']], variantVariables: [{ A: 1 }, { A: 2 }], startDir: 'E', maxBlocks: 6, starBlocks: 6, palette: variablePalette, solution: [{ id: 'outer', type: 'repeat', count: 3, body: [variableRepeat('inner'), { id: 'left', type: 'turnLeft' }, { id: 'change', type: 'change', variable: 'A', by: 1 }] }] },
+  { id: 'u5-3', world: 'handheld', title: 'u53Title', goal: 'u53Goal', hints: { keys: ['u53Hint1', 'u53Hint2'], highlight: 'start' }, grid: ['###G##', 'S.....'], variants: [['###G##', 'S.....']], variantVariables: [{ A: 0 }], startDir: 'E', maxBlocks: 5, starBlocks: 5, palette: variablePalette, initialProgram: [variableRepeat('repeat'), { id: 'set', type: 'set', variable: 'A', value: 3 }, ...variableFinish()], solution: [{ id: 'set', type: 'set', variable: 'A', value: 3 }, variableRepeat('repeat'), ...variableFinish()] },
+]
+export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages]
+export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)

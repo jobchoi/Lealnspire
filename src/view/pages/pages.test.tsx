@@ -8,7 +8,7 @@ import { HomePage, RecordDialog } from './HomePage'
 import { StageSelectPage } from './StageSelectPage'
 import { PlayPage } from './PlayPage'
 import { createProgressStore } from '../../model/ProgressRepository'
-import { stages, bonusStages, allStages, unit2Stages, unit3Stages, unit4Stages, isLastStage } from '../../model/stages'
+import { stages, bonusStages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, isLastStage } from '../../model/stages'
 import { t, i18n } from '../../i18n/I18n'
 
 const noop = () => {}
@@ -22,7 +22,7 @@ describe('화면 렌더링', () => {
     expect(home()).toContain(t('continue'))
     for (const stage of stages) store.completeStage(stage.id, 3, [])
     expect(home()).toContain(t('continue'))
-    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages]) store.completeStage(stage.id, 3, [])
+    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages]) store.completeStage(stage.id, 3, [])
     expect(home()).not.toContain(t('continue'))
   })
   it('정규 8개와 보너스 2개 카드, 잠김, 최고 별을 표시하고 이전 완료 시 다음 카드가 열린다', () => {
@@ -309,6 +309,35 @@ it('renders stepLimit notices, the failed map and the correct while or repeat ex
         expect(modal).toContain(whileLoop ? t('variantFailure', { number: 1, reason }) : reason)
         if (!whileLoop) expect(modal).not.toContain(t('whileStepLimit'))
         controller.dispose()
+      }
+    }
+  } finally { i18n.locale = previous }
+})
+
+it('renders unit 5 values, variable controls and range failures in both locales and all worlds', () => {
+  const previous = i18n.locale
+  try {
+    for (const locale of ['ko', 'en']) {
+      i18n.locale = locale
+      for (const world of ['sketchbook', 'train', 'handheld'] as const) {
+        const stage = { ...unit5Stages[2], world }
+        const store = createProgressStore()
+        const game = new GameController(stage, store)
+        const render = () => renderToString(<PlayPage stage={stage} progressStore={store} controller={game} lastStage onList={noop} onNext={noop} />)
+        let html = render()
+        expect(html).toContain(t('variables.status', { value: 0 }))
+        expect(html).toContain(t('blocks.set'))
+        expect(html).toContain('×A')
+        expect(html).not.toContain('×undefined')
+        game.editor.select('repeat')
+        expect(render()).toContain(t('variables.useNumber'))
+        game.edit([{ id: 's', type: 'set', variable: 'A', value: 20 }, { id: 'c', type: 'change', variable: 'A', by: 1 }])
+        game.step()
+        html = render()
+        expect(html).toContain(t('variables.changed', { from: 0, to: 20 }))
+        game.step()
+        expect(render()).toContain(t('failures.variableRange'))
+        game.dispose()
       }
     }
   } finally { i18n.locale = previous }
