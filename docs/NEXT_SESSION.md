@@ -11,6 +11,8 @@
 - 검증: `npm run verify`, `npm run e2e`, `npm run e2e:prod`(배포 빌드, 루트·/lealnspire/)
 - 다른 PC에서 이어 갈 때: [RESUME_ELSEWHERE.md](RESUME_ELSEWHERE.md)
 
+> 2026-11-23 다른 세션(GPT)이 남긴 기록: 다음 작업 점검(당시 T28 진행 중), 재사용 패턴 문서 [playbook/patterns/](playbook/patterns/), QC 교훈, 진행판 백업. 2026-11-25에 이 파일을 최신 상태로 다시 썼습니다.
+
 ## 현재 상태
 
 - **첫 제품 완성(v1.0.0)**: 1단원(순서·반복) 정규 8 + 보너스 2, 테마 월드 3종, 실패 지점 고치기, 요청형 2단계 힌트, 예측 도전, 반복 회차, 되돌리기, 저장 기록 안내·삭제, 교사·보호자 안내(`/guide.html`), 접근성 점검, 정적 배포 준비. 완성 정의 C1~C5는 [ROADMAP.md](ROADMAP.md) 라운드 2

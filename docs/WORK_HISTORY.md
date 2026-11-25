@@ -9,6 +9,11 @@
 - 사용자 결정(2026-11-25): 연령 구분 안 함(필요 시 함께 논의), 2단원부터 프로그래밍 기본 개념 모두(글자 암기 아닌 개념), 영어는 AI 번역으로 세밀하게·과한 한글화 지양, 오프라인=설치 파일인지 질문(PWA 설명, 보류), 배포 호스트는 라즈베리파이(배포는 아직), 병합·버전 태그 요청 → GAME_DESIGN 5·10·11절, TASKS T30~T32, CHANGELOG.md, docs/RELEASE.md, DEPLOY.md 라즈베리파이 메모, package.json version 1.0.0
 - 병합·태그: develop·master push는 .claude/settings.json이 AI에게 금지(사용자가 정한 안전장치)하고 gh도 없어, Claude는 로컬에서 병합·태그까지 하고 push 명령을 사용자에게 전달
 
+## 2026-11-23 — 다음 작업 확인 (GPT)
+
+- T28은 진행 중이고 T29는 이를 선행 조건으로 하므로 착수 가능한 대기 작업이 없다. T30~T32와 T7·T8은 결정 또는 승인 대기.
+- `npm run verify` 통과: lint, 테스트 133개, 빌드. 신규 구현이 없어 테스트 추가 없음.
+
 ## 2026-11-21 — T25 기록 신뢰성 E2E (Claude), T26 앱 연결·T27 정적 배포 준비 (구현 Codex, 배포 E2E·QC Claude) [잠정]
 
 - T25: e2e/records.e2e.ts 10개 통과, 코드 수정 불필요(기존 ProgressRepository 검증이 망가진 기록·저장 차단을 처리)

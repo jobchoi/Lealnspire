@@ -139,3 +139,153 @@
 | 11-20 12:32 | 스크립트 | Rt_journeyPrjNum1 | 금액 0 행 건너뛰기 | 완료 | exit=0, QC 대기 |
 | 11-20 12:35 | GPT | toyproject-HowToEasy | 로그인·백업 | 4/4 | 격리 테스트·프런트 검사 및 문서 갱신 |
 | 11-20 12:35 | 스크립트 | toyproject-HowToEasy | 로그인·백업 | 완료 | exit=0, QC 대기 |
+| 11-23 09:15 | 스크립트 | playX-mas | 다음 작업 | 시작 | - |
+| 11-23 09:15 | 스크립트 | toyproject-HowToEasy | 다음 작업 | 시작 | - |
+| 11-23 09:15 | 스크립트 | Rt_journeyPrjNum1 | 다음 작업 | 시작 | - |
+| 11-23 09:15 | 스크립트 | Lealnspire | 다음 작업 | 시작 | - |
+| 11-23 09:16 | GPT | playX-mas | 다음 작업 | 1/4 | 지침과 작업 상태 확인, 콘텐츠 2건 결정 대기 |
+| 11-23 09:16 | GPT | Lealnspire | 다음 작업 | 1/3 | 작업 목록 확인: T29는 T28 완료 대기 |
+| 11-23 09:16 | GPT | Rt_journeyPrjNum1 | 다음 작업 | 1/3 | 인계 문서와 작업 목록 확인, 사용자 결정 및 실제 자료가 필요한 미완료 항목 식별 |
+| 11-23 09:17 | GPT | toyproject-HowToEasy | 다음 작업 | 1/4 | 작업 문서와 우선순위 확인; 격리 복구 검증 선정 |
+| 11-23 09:17 | GPT | playX-mas | 다음 작업 | 2/4 | QC 지시서와 화면 구조 확인, 카드 격자와 favicon 수정 선정 |
+| 11-23 09:17 | GPT | playX-mas | 다음 작업 | 3/4 | 기억 카드 격자와 두 페이지 favicon 및 회귀 테스트 추가 |
+| 11-23 09:17 | GPT | toyproject-HowToEasy | 다음 작업 | 2/4 | 복구 전 자동 백업을 이용한 재복구 테스트 추가 |
+| 11-23 09:17 | GPT | Lealnspire | 다음 작업 | 2/3 | verify 통과: 테스트 133개, lint 및 빌드 성공 |
+| 11-23 09:17 | GPT | Lealnspire | 다음 작업 | 3/3 | 작업 현황과 검증 결과를 문서에 기록 |
+| 11-23 09:17 | GPT | Rt_journeyPrjNum1 | 다음 작업 | 2/3 | 전체 pytest 실행이 출력 없이 대기해 중단, 테스트 결과 미검증 |
+| 11-23 09:17 | 스크립트 | Lealnspire | 다음 작업 | 완료 | exit=0, QC 대기 |
+| 11-23 09:17 | GPT | playX-mas | 다음 작업 | 4/4 | 테스트 통과 및 문서 갱신, 브라우저와 독립 QC 미검증 기록 |
+| 11-23 09:17 | 스크립트 | playX-mas | 다음 작업 | 완료 | exit=0, QC 대기 |
+| 11-23 09:18 | GPT | Rt_journeyPrjNum1 | 다음 작업 | 3/3 | 착수 불가 사유와 테스트 미검증 결과를 작업 목록 및 인계 기록에 반영 |
+| 11-23 09:18 | 스크립트 | Rt_journeyPrjNum1 | 다음 작업 | 완료 | exit=0, QC 대기 |
+| 11-23 09:18 | GPT | toyproject-HowToEasy | 다음 작업 | 3/4 | 신규 테스트 통과; 전체 unittest는 pytest 미설치로 오류 1건 |
+| 11-23 09:18 | GPT | toyproject-HowToEasy | 다음 작업 | 4/4 | 작업 이력과 인수인계 갱신 및 변경 점검 완료 |
+| 11-23 09:18 | 스크립트 | toyproject-HowToEasy | 다음 작업 | 완료 | exit=0, QC 대기 |
+| 11-23 09:25 | 스크립트 | toyproject-HowToEasy | UI 정리 | 시작 | - |
+| 11-23 09:26 | GPT | toyproject-HowToEasy | UI 정리 | 1/4 | 작업 지침과 브랜치·기존 상태 확인 |
+| 11-23 09:26 | GPT | toyproject-HowToEasy | UI 정리 | 2/4 | 장학 기금 템플릿과 화면 구조 비교 완료 |
+| 11-23 09:28 | GPT | toyproject-HowToEasy | UI 정리 | 3/4 | 기능별 메뉴와 스타일·접근성 정리 |
+| 11-23 09:28 | GPT | toyproject-HowToEasy | UI 정리 | 4/4 | 린트·빌드 통과 및 인수인계 기록, 화면 검증 대기 |
+| 11-23 09:28 | 스크립트 | toyproject-HowToEasy | UI 정리 | 완료 | exit=0, QC 대기 |
+| 11-23 09:37 | 스크립트 | toyproject-HowToEasy | 좌석 선택 기획 | 시작 | - |
+| 11-23 09:37 | GPT | toyproject-HowToEasy | 좌석 선택 기획 | 1/4 | 작업 범위와 저장소 상태 확인 |
+| 11-23 09:38 | GPT | toyproject-HowToEasy | 좌석 선택 기획 | 2/4 | 현행 화면·API·저장 제약 정적 분석 |
+| 11-23 09:39 | GPT | toyproject-HowToEasy | 좌석 선택 기획 | 3/4 | 서비스 패턴과 좌석 선택 설계 작성 |
+| 11-23 09:39 | GPT | toyproject-HowToEasy | 좌석 선택 기획 | 4/4 | 재사용 패턴·작업 목록 작성 및 문서 점검 |
+| 11-23 09:39 | 스크립트 | toyproject-HowToEasy | 좌석 선택 기획 | 완료 | exit=0, QC 대기 |
+| 11-23 09:39 | 스크립트 | toyproject-HowToEasy | 좌석 선택 구현 | 시작 | - |
+| 11-23 09:39 | GPT | toyproject-HowToEasy | 좌석 선택 구현 | 1/4 | 작업 범위와 기존 변경·계획 확인 |
+| 11-23 09:40 | GPT | toyproject-HowToEasy | 좌석 선택 구현 | 2/4 | 번호·식별자 정책과 원자적 일괄 API 구현 |
+| 11-23 09:41 | GPT | toyproject-HowToEasy | 좌석 선택 구현 | 3/4 | 미리보기·좌석 선택·확인 및 연속 배정 화면 연결 |
+| 11-23 09:42 | GPT | toyproject-HowToEasy | 좌석 선택 구현 | 4/4 | 임시 DB 테스트와 프런트 검증·미완료 항목 문서화 |
+| 11-23 09:42 | 스크립트 | toyproject-HowToEasy | 좌석 선택 구현 | 완료 | exit=0, QC 대기 |
+| 11-23 09:45 | 스크립트 | toyproject-HowToEasy | QC 수정: 배치도 | 시작 | - |
+| 11-23 09:45 | GPT | toyproject-HowToEasy | QC 수정: 배치도 | 1/4 | 공간활용 지침과 기존 변경 및 구현 확인 |
+| 11-23 09:46 | GPT | toyproject-HowToEasy | QC 수정: 배치도 | 2/4 | 자연 정렬과 전체 폭 좌석 격자 및 연속 배정 수정 |
+| 11-23 09:49 | GPT | toyproject-HowToEasy | QC 수정: 배치도 | 3/4 | 백엔드 26개 테스트와 프런트 lint·build 통과 |
+| 11-23 09:49 | GPT | toyproject-HowToEasy | QC 수정: 배치도 | 4/4 | 작업 문서와 검증 결과 기록 완료 |
+| 11-23 09:49 | 스크립트 | toyproject-HowToEasy | QC 수정: 배치도 | 완료 | exit=0, QC 대기 |
+| 11-23 09:58 | 스크립트 | toyproject-HowToEasy | 셀프 선택 기획 | 시작 | - |
+| 11-23 09:59 | GPT | toyproject-HowToEasy | 셀프 선택 기획 | 1/3 | 기존 기획과 작업 상태 확인 |
+| 11-23 10:00 | GPT | toyproject-HowToEasy | 셀프 선택 기획 | 2/3 | 셀프 선택 계획과 UX 및 작업 목록 작성 |
+| 11-23 10:00 | GPT | toyproject-HowToEasy | 셀프 선택 기획 | 3/3 | 인수인계와 이력 반영 및 문서 점검 |
+| 11-23 10:00 | 스크립트 | toyproject-HowToEasy | 셀프 선택 기획 | 완료 | exit=0, QC 대기 |
+| 11-23 10:00 | 스크립트 | toyproject-HowToEasy | 셀프 선택 구현 | 시작 | - |
+| 11-23 10:00 | GPT | toyproject-HowToEasy | 셀프 선택 구현 | 1/4 | 기존 문서와 브랜치 및 작업 범위 확인 |
+| 11-23 10:01 | GPT | toyproject-HowToEasy | 셀프 선택 구현 | 2/4 | 시작 마이그레이션과 담당자 정책·대상·일회성 코드 발급 API 추가 |
+| 11-23 10:02 | GPT | toyproject-HowToEasy | 셀프 선택 구현 | 3/4 | 임시 DB 보안 회귀 테스트와 프런트 정적 검증 수행 |
+| 11-23 10:03 | GPT | toyproject-HowToEasy | 셀프 선택 구현 | 4/4 | 검증 결과와 미완료 범위 인수인계 기록 |
+| 11-23 10:03 | 스크립트 | toyproject-HowToEasy | 셀프 선택 구현 | 완료 | exit=0, QC 대기 |
+| 11-23 10:04 | 스크립트 | toyproject-HowToEasy | 셀프 선택 구현 2 | 시작 | - |
+| 11-23 10:05 | GPT | toyproject-HowToEasy | 셀프 선택 구현 2 | 1/4 | 기획·기존 구현과 복구 회귀 원인 확인 |
+| 11-23 10:06 | GPT | toyproject-HowToEasy | 셀프 선택 구현 2 | 2/4 | 과거 백업 격리 마이그레이션·복구 및 세션 폐기 구현 |
+| 11-23 10:07 | GPT | toyproject-HowToEasy | 셀프 선택 구현 2 | 3/4 | 담당자 선택 현황·미선택자 조회 API와 합성 데이터 검사 추가 |
+| 11-23 10:08 | GPT | toyproject-HowToEasy | 셀프 선택 구현 2 | 4/4 | 백엔드 21개 테스트·프런트 lint/build 통과 및 문서 갱신 |
+| 11-23 10:08 | 스크립트 | toyproject-HowToEasy | 셀프 선택 구현 2 | 완료 | exit=0, QC 대기 |
+| 11-23 10:30 | 스크립트 | toyproject-HowToEasy | 층별 접기·포화도 표시 | 시작 | - |
+| 11-23 10:30 | GPT | toyproject-HowToEasy | 층별 접기·포화도 표시 | 1/4 | 공간활용 지침과 기존 구현·복구 구조 확인 |
+| 11-23 10:31 | GPT | toyproject-HowToEasy | 층별 접기·포화도 표시 | 2/4 | 006 층 필드와 기간별 좌석 집계·접이식 화면 연결 |
+| 11-23 10:32 | GPT | toyproject-HowToEasy | 층별 접기·포화도 표시 | 3/4 | 경계값 테스트와 재사용 패턴·인수인계 기록 |
+| 11-23 10:35 | GPT | toyproject-HowToEasy | 층별 접기·포화도 표시 | 4/4 | unittest 22개·lint·build 통과, 미구현 및 브라우저 미검증 기록 |
+| 11-23 10:36 | 스크립트 | toyproject-HowToEasy | 층별 접기·포화도 표시 | 완료 | exit=0, QC 대기 |
+| 11-23 10:39 | 스크립트 | toyproject-HowToEasy | 층별 접기 QC 수정 | 시작 | - |
+| 11-23 10:40 | GPT | toyproject-HowToEasy | 층별 접기 QC 수정 | 1/4 | 작업 문서와 기존 변경 확인 |
+| 11-23 10:41 | GPT | toyproject-HowToEasy | 층별 접기 QC 수정 | 2/4 | 층 합계 API와 화면 구성 및 공간 수정 구현 |
+| 11-23 10:42 | GPT | toyproject-HowToEasy | 층별 접기 QC 수정 | 3/4 | 층 정렬과 비활성 좌석 집계 테스트 및 프런트 검사 |
+| 11-23 10:43 | GPT | toyproject-HowToEasy | 층별 접기 QC 수정 | 4/4 | 회귀 검증과 인수인계 기록 완료 |
+| 11-23 10:43 | 스크립트 | toyproject-HowToEasy | 층별 접기 QC 수정 | 완료 | exit=0, QC 대기 |
+| 11-23 10:47 | 스크립트 | toyproject-HowToEasy | 층별 접기 QC 수정 2 | 시작 | - |
+| 11-23 10:47 | GPT | toyproject-HowToEasy | 층별 접기 QC 수정 2 | 1/3 | 기존 변경과 층 선택·스타일 구조 확인 |
+| 11-23 10:48 | GPT | toyproject-HowToEasy | 층별 접기 QC 수정 2 | 2/3 | 층 목록·스크롤·여백·인쇄와 선택 상태 수정 |
+| 11-23 10:49 | GPT | toyproject-HowToEasy | 층별 접기 QC 수정 2 | 3/3 | unittest 24개·lint·build 통과, 브라우저 미검증 기록 |
+| 11-23 10:49 | 스크립트 | toyproject-HowToEasy | 층별 접기 QC 수정 2 | 완료 | exit=0, QC 대기 |
+| 11-23 11:20 | 스크립트 | duct-tape | ZIP 정리·키 화면 겹침 | 시작 | - |
+| 11-23 11:21 | GPT | duct-tape | ZIP 정리·키 화면 겹침 | 1/4 | 문서와 실행 경로 및 관리자 레이아웃 조사 완료 |
+| 11-23 11:21 | GPT | duct-tape | ZIP 정리·키 화면 겹침 | 2/4 | 내부 실행 경로와 키 오류 안내 및 패널 CSS 수정 완료 |
+| 11-23 11:22 | GPT | duct-tape | ZIP 정리·키 화면 겹침 | 3/4 | 수동 설치 안내와 우선순위별 후속 제안 작성 완료 |
+| 11-23 11:24 | GPT | duct-tape | ZIP 정리·키 화면 겹침 | 4/4 | ZIP 회귀와 로컬 검사 완료, 전체 pytest 중단 및 Windows·브라우저 미검증 기록 |
+| 11-23 11:24 | 스크립트 | duct-tape | ZIP 정리·키 화면 겹침 | 완료 | exit=0, QC 대기 |
+| 11-23 11:28 | 스크립트 | duct-tape | ZIP 정리 QC 수정 | 시작 | - |
+| 11-23 11:28 | GPT | duct-tape | ZIP 정리 QC 수정 | 1/4 | 기존 변경과 Main.bat 참조 및 업그레이드 경로 점검 완료 |
+| 11-23 11:29 | GPT | duct-tape | ZIP 정리 QC 수정 | 2/4 | Docker 입력과 운영 문서 정리 및 안전한 구 실행 파일 제거 적용 |
+| 11-23 11:30 | GPT | duct-tape | ZIP 정리 QC 수정 | 3/4 | COPY 대상 검증 추가 및 파일별 pytest 정체 지점 조사 시작 |
+| 11-23 11:34 | GPT | duct-tape | ZIP 정리 QC 수정 | 4/4 | 관련 테스트 9개 통과 및 pytest 300초 정체 위치 기록 완료 |
+| 11-23 11:35 | 스크립트 | duct-tape | ZIP 정리 QC 수정 | 완료 | exit=0, QC 대기 |
+| 11-23 11:43 | 스크립트 | duct-tape | 핫픽스 후속 높음 3건 | 시작 | - |
+| 11-23 11:43 | 스크립트 | toyproject-HowToEasy | 이용자 셀프 선택 화면 | 시작 | - |
+| 11-23 11:44 | GPT | duct-tape | 핫픽스 후속 높음 3건 | 1/4 | 요구사항과 기존 구조 확인 |
+| 11-23 11:44 | GPT | toyproject-HowToEasy | 이용자 셀프 선택 화면 | 1/4 | 기획과 기존 구현 및 작업 상태 확인 |
+| 11-23 11:45 | GPT | duct-tape | 핫픽스 후속 높음 3건 | 2/4 | 배포 상태와 패키지 버전 및 키 검사 구현 |
+| 11-23 11:45 | GPT | toyproject-HowToEasy | 이용자 셀프 선택 화면 | 2/4 | 이용자 인증·잠금·세션 분리 기반과 임시 DB 단위 검증 |
+| 11-23 11:45 | GPT | duct-tape | 핫픽스 후속 높음 3건 | 3/4 | 설치 전달 경로와 배포 체크리스트 및 점검 명령 작성 |
+| 11-23 11:46 | GPT | toyproject-HowToEasy | 이용자 셀프 선택 화면 | 3/4 | 잠정 정책과 미구현 범위 및 브라우저 미검증 기록 |
+| 11-23 11:49 | GPT | toyproject-HowToEasy | 이용자 셀프 선택 화면 | 4/4 | 임시 DB unittest 26개 및 프런트 lint·build 검증, 이용자 흐름 미완료 |
+| 11-23 11:49 | 스크립트 | toyproject-HowToEasy | 이용자 셀프 선택 화면 | 완료 | exit=0, QC 대기 |
+| 11-23 11:49 | GPT | duct-tape | 핫픽스 후속 높음 3건 | 4/4 | 로컬 단위 검증 및 HTTP 테스트 환경 제한 확인 |
+| 11-23 11:49 | 스크립트 | duct-tape | 핫픽스 후속 높음 3건 | 완료 | exit=0, QC 대기 |
+| 11-23 11:51 | 스크립트 | toyproject-HowToEasy | 셀프 선택 API | 시작 | - |
+| 11-23 11:51 | GPT | toyproject-HowToEasy | 셀프 선택 API | 1/4 | 기존 인증·정책·배정 구조 조사 |
+| 11-23 11:52 | GPT | toyproject-HowToEasy | 셀프 선택 API | 2/4 | 이력 보존 스키마와 이용자 API 구현 |
+| 11-23 11:54 | GPT | toyproject-HowToEasy | 셀프 선택 API | 3/4 | 동시성·마감·익명성·재선택 테스트 작성과 기존 조회 연계 |
+| 11-23 11:56 | 스크립트 | duct-tape | 후속 3건 회귀 수정·헤더 레이아웃 | 시작 | - |
+| 11-23 11:57 | GPT | duct-tape | 후속 3건 회귀 수정·헤더 레이아웃 | 1/4 | 키 판정·매체 전달·헤더 구조 확인, 기존 테스트 픽스처에 유효하지 않은 키 발견 |
+| 11-23 11:57 | GPT | duct-tape | 후속 3건 회귀 수정·헤더 레이아웃 | 2/4 | 공통 키 판정과 작업 생성·매체 검사 연결 |
+| 11-23 11:57 | GPT | duct-tape | 후속 3건 회귀 수정·헤더 레이아웃 | 3/4 | 공통 반응형 헤더와 설계 기록 반영 |
+| 11-23 11:59 | GPT | toyproject-HowToEasy | 셀프 선택 API | 4/4 | 합성 DB 회귀·lint·build 검증 및 인수인계 기록 |
+| 11-23 11:59 | 스크립트 | toyproject-HowToEasy | 셀프 선택 API | 완료 | exit=0, QC 대기 |
+| 11-23 12:00 | GPT | duct-tape | 후속 3건 회귀 수정·헤더 레이아웃 | 4/4 | 파일별 검증 완료: 3개 통과, 5개 시간 초과, 키 판정 단위 검사 통과·브라우저 미검증 |
+| 11-23 12:00 | 스크립트 | duct-tape | 후속 3건 회귀 수정·헤더 레이아웃 | 완료 | exit=0, QC 대기 |
+| 11-23 12:02 | 스크립트 | toyproject-HowToEasy | 셀프 선택 화면 | 시작 | - |
+| 11-23 12:02 | GPT | toyproject-HowToEasy | 셀프 선택 화면 | 1/4 | 문서·기존 화면과 API 계약 조사 |
+| 11-23 12:03 | GPT | toyproject-HowToEasy | 셀프 선택 화면 | 2/4 | 이용자 선택·키오스크 화면 구현, 기간 목록 API 부재 확인 |
+| 11-23 12:04 | GPT | toyproject-HowToEasy | 셀프 선택 화면 | 3/4 | 담당자 코드 인쇄·현황 화면과 확정 정책 문서 반영 |
+| 11-23 12:05 | 스크립트 | duct-tape | 키 사전확인 설계 조정 | 시작 | - |
+| 11-23 12:05 | GPT | duct-tape | 키 사전확인 설계 조정 | 1/4 | 기존 enqueue·claim·매체 판정과 화면 흐름 확인 |
+| 11-23 12:06 | GPT | duct-tape | 키 사전확인 설계 조정 | 2/4 | enqueue 경고와 claim 키 차단 및 화면 상태 반영 |
+| 11-23 12:06 | GPT | duct-tape | 키 사전확인 설계 조정 | 3/4 | 키 경고·차단·로컬 준비·파일 키 시나리오 추가 |
+| 11-23 12:07 | GPT | duct-tape | 키 사전확인 설계 조정 | 4/4 | 문법 검사 통과, pytest 실행 멈춤으로 미검증 기록 |
+| 11-23 12:07 | 스크립트 | duct-tape | 키 사전확인 설계 조정 | 완료 | exit=0, QC 대기 |
+| 11-23 12:07 | GPT | toyproject-HowToEasy | 셀프 선택 화면 | 4/4 | lint·build·백엔드 unittest 28개 통과, API 결손과 브라우저 미검증 기록 |
+| 11-23 12:07 | 스크립트 | toyproject-HowToEasy | 셀프 선택 화면 | 완료 | exit=0, QC 대기 |
+| 11-23 12:10 | 스크립트 | duct-tape | 후속 테스트 설계 반영 | 시작 | - |
+| 11-23 12:10 | GPT | duct-tape | 후속 테스트 설계 반영 | 1/3 | 대상 테스트와 기존 기대값 확인 |
+| 11-23 12:10 | 스크립트 | toyproject-HowToEasy | 셀프 선택 화면 보완 | 시작 | - |
+| 11-23 12:11 | GPT | toyproject-HowToEasy | 셀프 선택 화면 보완 | 1/4 | 기존 변경과 공간활용 계약 확인 |
+| 11-23 12:11 | GPT | duct-tape | 후속 테스트 설계 반영 | 2/3 | enqueue 경고와 claim 키 판정 및 경합 테스트 수정 |
+| 11-23 12:11 | GPT | toyproject-HowToEasy | 셀프 선택 화면 보완 | 2/4 | 자격 기간 API와 이용자 기간 선택 연결 |
+| 11-23 12:12 | GPT | toyproject-HowToEasy | 셀프 선택 화면 보완 | 3/4 | 대상자 등록 후 발급과 층 표시 공통화 |
+| 11-23 12:15 | GPT | toyproject-HowToEasy | 셀프 선택 화면 보완 | 4/4 | 합성 DB 테스트와 lint·build 통과, 브라우저 미검증 |
+| 11-23 12:15 | 스크립트 | toyproject-HowToEasy | 셀프 선택 화면 보완 | 완료 | exit=0, QC 대기 |
+| 11-23 12:15 | GPT | duct-tape | 후속 테스트 설계 반영 | 3/3 | 경합 테스트 통과, API 테스트는 TestClient 시작 단계에서 중단 |
+| 11-23 12:16 | 스크립트 | duct-tape | 후속 테스트 설계 반영 | 완료 | exit=0, QC 대기 |
+| 11-23 12:17 | 스크립트 | duct-tape | 버전 표시 넘침 수정 | 시작 | - |
+| 11-23 12:18 | GPT | duct-tape | 버전 표시 넘침 수정 | 1/3 | 버전 표시와 전체 해시 비교 위치 확인 |
+| 11-23 12:18 | GPT | duct-tape | 버전 표시 넘침 수정 | 2/3 | 버전 축약과 전체값 확인 및 한국 시간 표시 적용 |
+| 11-23 12:20 | GPT | duct-tape | 버전 표시 넘침 수정 | 3/3 | 포털 14개 및 ZIP 해시 확인, 서버 연동 테스트 지연 확인 |
+| 11-23 12:20 | 스크립트 | duct-tape | 버전 표시 넘침 수정 | 완료 | exit=0, QC 대기 |
+| 11-23 12:32 | 스크립트 | toyproject-HowToEasy | 셀프 선택 QC 수정 | 시작 | - |
+| 11-23 12:33 | GPT | toyproject-HowToEasy | 셀프 선택 QC 수정 | 1/4 | 문서와 인증·화면·정책 구현 조사 |
+| 11-23 12:34 | GPT | toyproject-HowToEasy | 셀프 선택 QC 수정 | 2/4 | 정책 타이머·코드 호환·이용자 화면 수정 |
+| 11-23 12:34 | GPT | toyproject-HowToEasy | 셀프 선택 QC 수정 | 3/4 | 코드 호환·잠금 및 타이머 경계 테스트 추가 |
+| 11-23 12:36 | GPT | toyproject-HowToEasy | 셀프 선택 QC 수정 | 4/4 | 임시 DB 테스트·lint·build 통과 및 인수인계 기록 |
+| 11-23 12:36 | 스크립트 | toyproject-HowToEasy | 셀프 선택 QC 수정 | 완료 | exit=0, QC 대기 |

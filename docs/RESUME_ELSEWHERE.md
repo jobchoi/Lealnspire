@@ -1,3 +1,14 @@
+# 2026-11-23 갱신 — 먼저 읽기
+
+| 프로젝트 | 작업 브랜치 | 상태 | 다음 |
+|---|---|---|---|
+| 학습실 HowToEasy | `feature/V1-user-select` | 이용자 셀프 선택 화면·키오스크·코드 인쇄 브라우저 QC 통과, 정책 5개 추천안 확정 | 실제 DB 적용 전 백업(마이그레이션 007·008 자동 적용), develop PR |
+| duct-tape | 머지본 `feature/develop-merge-20261123` | 두 브랜치(ZIP 정리·키 화면 수정 / 배포 안전장치)를 develop에 머지한 커밋. 원격 develop push는 사용자가 수행 | `git switch develop && git merge --ff-only origin/feature/develop-merge-20261123 && git push origin develop` |
+| duct-tape 운영 서버 | — | **배포 보류**: 운영 이미지가 develop과 계보가 달라(파일 다수 상이) 전체 빌드는 v1→v2 전환에 해당 | 결정 필요: 시험 서버 먼저 / 필요한 수정만 오버레이 / 백업·롤백 리허설 후 전환 |
+
+- 운영 서버 접속 정보·현장 PC 정보는 공개 레포에 적지 않습니다(각 레포의 비공개 메모 또는 개인 노트 참고).
+- 2026-11-23 교훈은 `docs/playbook/03-lessons.md`
+
 # 다른 PC에서 이어서 작업하기 (2026-11-20 기준)
 
 이 PC에서 진행한 4개 프로젝트의 상태와, 다른 PC에서 재개하는 방법입니다. 모든 작업은 GitHub에 push되어 있습니다.
