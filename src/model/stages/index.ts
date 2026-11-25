@@ -66,5 +66,29 @@ export const unit3Stages: Stage[] = [
   { id: 'u3-2', world: 'train', title: 'u32Title', goal: 'u32Goal', hints: { keys: ['u32Hint1', 'u32Hint2'], highlight: 'path' }, grid: ['S..#', '##.#', 'G..#'], variants: [['S..#', '##.#', 'G..#'], ['S.#', '#.#', '#.#', '#.#', 'G.#']], startDir: 'E', maxBlocks: 5, starBlocks: 4, palette: ['forward', 'turnLeft', 'turnRight', 'repeat', 'while'], solution: [{ id: 'u32-repeat', type: 'repeat', count: 3, body: [whileForward('u32-w'), { id: 'u32-r', type: 'turnRight' }] }] },
   { id: 'u3-3', world: 'handheld', title: 'u33Title', goal: 'u33Goal', hints: { keys: ['u33Hint1', 'u33Hint2'], highlight: 'start' }, grid: ['S...G'], variants: [['S...G'], ['S......G']], startDir: 'E', maxBlocks: 3, starBlocks: 2, palette: ['forward', 'turnLeft', 'turnRight', 'while'], initialProgram: [{ id: 'u33-initial', type: 'while', condition: 'clearAhead', body: [{ id: 'u33-l', type: 'turnLeft' }, { id: 'u33-r', type: 'turnRight' }] }], solution: [whileForward('u33-w')] },
 ]
-export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages]
-export const isLastStage = (index: number) => index === stages.length - 1 || index === stages.length + bonusStages.length - 1 || index === stages.length + bonusStages.length + unit2Stages.length - 1 || index === allStages.length - 1
+// T45 [제안·잠정]: each map excludes every function-free tree within its budget.
+const functionPuzzle = (number: number, world: Stage['world'], grid: string[], prefix: Program, suffix: Program, budget: number, turn: 'turnLeft' | 'turnRight'): Stage => {
+  const id = `u4-${number}`, fn = id + '-star'
+  const body: Program = [...prefix, { id: id + '-repeat', type: 'repeat', count: 2, body: [
+    { id: id + '-f1', type: 'forward' }, { id: id + '-turn', type: turn }, { id: id + '-f2', type: 'forward' },
+  ] }, ...suffix]
+  const functions = [{ id: fn, icon: 'star' as const, body }]
+  return { id, world, title: `u4${number}Title`, goal: `u4${number}Goal`, hints: { keys: [`u4${number}Hint1`, `u4${number}Hint2`], highlight: number === 3 ? 'start' : 'path' },
+    grid, variants: [grid], startDir: 'E', maxBlocks: budget, starBlocks: budget,
+    palette: ['forward', 'turnLeft', 'turnRight', 'repeat', 'call'],
+    solution: [{ id: id + '-call1', type: 'call', fn }, { id: id + '-gap', type: 'forward' }, { id: id + '-call2', type: 'call', fn }, { id: id + '-call3', type: 'call', fn }],
+    solutionFunctions: functions, ...(number === 3 ? { initialProgram: [], initialFunctions: structuredClone(functions) } : {}),
+  }
+}
+export const unit4Stages: Stage[] = [
+  functionPuzzle(1, 'sketchbook', ['#G.', '##.', '#..', '#.#', 'S.#'], [], [], 8, 'turnLeft'),
+  functionPuzzle(2, 'train', ['##...#', '...#.#', '.###.#', '.G##..', '#####.', '###S..'], [{ id: 'u42-prefix', type: 'forward' }], [{ id: 'u42-suffix', type: 'turnRight' }], 10, 'turnLeft'),
+  functionPuzzle(3, 'handheld', ['###S.', '.G##.', '.##..', '..#.#', '#...#'], [], [{ id: 'u43-suffix', type: 'turnLeft' }], 9, 'turnRight'),
+]
+// The introductory card is a plain three-command shape, before nested repeat.
+unit4Stages[0].solutionFunctions![0].body = [
+  { id: 'u41-a', type: 'forward' }, { id: 'u41-b', type: 'turnLeft' }, { id: 'u41-c', type: 'forward' },
+]
+unit4Stages[0].solution.splice(2, 0, { id: 'u41-separator-turn', type: 'turnRight' })
+export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages]
+export const isLastStage = (index: number) => index === stages.length - 1 || index === stages.length + bonusStages.length - 1 || index === stages.length + bonusStages.length + unit2Stages.length - 1 || index === stages.length + bonusStages.length + unit2Stages.length + unit3Stages.length - 1 || index === allStages.length - 1

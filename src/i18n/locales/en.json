@@ -266,5 +266,53 @@
   "u33Title": "Unit 3-3: The Loop That Never Ends",
   "u33Goal": "Fix the code that never stops and reach the star.",
   "u33Hint1": "When you run the starting code, how far does the robot get?",
-  "u33Hint2": "Can the blocks inside while ever change whether the path ahead is clear?"
+  "u33Hint2": "Can the blocks inside while ever change whether the path ahead is clear?",
+  "functions": {
+    "views": "Workspace views",
+    "showMain": "Show main",
+    "show": { "star": "Show star function", "moon": "Show moon function" },
+    "adding": {
+      "star": "Adding to: end of the star function",
+      "moon": "Adding to: end of the moon function"
+    },
+    "stop": {
+      "star": "Stop adding to the star function",
+      "moon": "Stop adding to the moon function"
+    },
+    "panel": "Function cards",
+    "create": "Make a function",
+    "noNestedCalls": "You cannot call a function inside a function.",
+    "running": "Running",
+    "deleteNotice": "Blocks that call this function are deleted too. You can undo this.",
+    "call": {
+      "star": "Call the star function",
+      "moon": "Call the moon function"
+    },
+    "target": {
+      "star": "Put blocks in the star function",
+      "moon": "Put blocks in the moon function"
+    },
+    "remove": {
+      "star": "Delete the star function",
+      "moon": "Delete the moon function"
+    },
+    "body": {
+      "star": "Star function body",
+      "moon": "Moon function body"
+    }
+  },
+  "unit4": "Unit 4: Functions",
+  "unit4Congratulations": "Unit 4 complete!",
+  "u41Title": "Unit 4-1: Find the Same Shape",
+  "u41Goal": "Make the repeating shape into a function and use it.",
+  "u41Hint1": "Find how many times the same shape appears on the path.",
+  "u41Hint2": "What if you could build that shape once and call it many times?",
+  "u42Title": "Unit 4-2: Repeat Inside a Function",
+  "u42Goal": "Put repeat inside a function to save blocks.",
+  "u42Hint1": "Does the shape you’ll make into a function have a repeating part too?",
+  "u42Hint2": "If you put repeat inside a function, what repeats every time you call it?",
+  "u43Title": "Unit 4-3: Nothing Happens Until You Call It",
+  "u43Goal": "Fix the code so the function you made actually runs.",
+  "u43Hint1": "When you run it, does the robot move?",
+  "u43Hint2": "Does making a function run it, or do you need to call it?"
 }

@@ -1,7 +1,7 @@
 import { selectTheme, worlds } from '../theme/themes'
 import { ConceptDefs, Symbol } from '../theme/Symbols'
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
-import { countBlocks } from '../../model/program'
+import { FunctionProgram } from '../../model/program'
 import type { Stage } from '../../model/types'
 import { bonusStages } from '../../model/stages'
 import { Editor } from '../components/Editor'
@@ -18,7 +18,7 @@ type Props = { stage: Stage; progressStore: ReturnType<typeof createProgressStor
 export function PlayPage({ stage, progressStore, onList, onNext, lastStage, controller: supplied }: Props) {
   const page = useRef<HTMLElement>(null)
   const [controller] = useState(() => supplied ?? new GameController(stage, progressStore))
-  const { program, hintStep, playing, speed } = useController(controller)
+  const { doc, program, hintStep, playing, speed } = useController(controller)
   useEffect(() => () => controller.dispose(), [controller])
   const [requestedWorld, setWorld] = useState<Stage['world']>()
   const completed = !!progressStore.getProgress().stages[stage.id]?.completed
@@ -36,7 +36,7 @@ export function PlayPage({ stage, progressStore, onList, onNext, lastStage, cont
     if (!available(target) || document.activeElement !== target) root.querySelector<HTMLButtonElement>('.run-button')?.focus()
   }, [controller])
   return (
-    <section ref={page} className={`play-page theme-${theme.world}${stage.variants ? ' conditions-page' : ''}${stage.id.startsWith('u3-') ? ' while-page' : ''}`}>
+    <section ref={page} className={`play-page theme-${theme.world}${stage.variants ? ' conditions-page' : ''}${stage.id.startsWith('u3-') ? ' while-page' : ''}${stage.id.startsWith('u4-') ? ' functions-page' : ''}`}>
       <ConceptDefs /><h1 tabIndex={-1} data-page-title>{stage.variants || bonusStages.some(bonus => bonus.id === stage.id) ? '' : `${t('stage')} ${stage.id}: `}{t(stage.title)}</h1>
       <div className="playback-controls stage-controls">
         <button type="button" onClick={onList} aria-label={theme.buttonLabel('stageList')} title={theme.buttonLabel('stageList')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="stageList" /></span><small>{theme.buttonLabel('stageList')}</small></button>
@@ -52,13 +52,13 @@ export function PlayPage({ stage, progressStore, onList, onNext, lastStage, cont
       {hintStep === 0 && <p className="stage-goal"><span className="goal-symbol" aria-hidden="true"><Symbol world={theme.world} name="goal" /></span> {t(stage.goal)}</p>}
       <div className="game-layout">
         <div className="map-panel" style={{ '--min-board-width': `${stage.grid[0].length * 40 + (stage.grid[0].length - 1) * 4 + 8}px`, '--compact-board-width': `${stage.grid[0].length * 56 + (stage.grid[0].length - 1) * 4 + 8}px`, '--board-ratio': stage.grid[0].length / stage.grid.length, '--mobile-board-width': `calc((22dvh - 8px) * ${stage.grid[0].length} / ${stage.grid.length})` } as CSSProperties}>
-          {theme.world === 'handheld' && <div className="lcd-hud" aria-hidden="true"><span>{stage.variants ? stage.id.toUpperCase() : `STAGE ${stage.id}`}</span><span><Symbol name="goal" /></span><span>{countBlocks(program)}/{stage.maxBlocks ?? 10}</span></div>}
-          {stage.variants && <div className="variant-cards" role="group" aria-label={t(stage.id.startsWith('u3-') ? 'unit3' : 'unit2')}>{stage.variants.map((grid, index) => <button type="button" key={index} disabled={!!controller.getSnapshot().execution} aria-pressed={controller.variant === index} aria-label={t('variantLabel', { number: index + 1, total: stage.variants!.length })} onClick={() => controller.selectVariant(index)}><svg viewBox={`0 0 ${grid[0].length * 10} ${grid.length * 10}`} aria-hidden="true">{grid.flatMap((row, y) => [...row].map((cell, x) => <rect key={`${x},${y}`} x={x * 10 + 1} y={y * 10 + 1} width="8" height="8" fill={cell === '#' ? '#4b5563' : cell === 'G' ? '#986000' : cell === 'S' ? '#2563eb' : '#fff'} stroke="currentColor" />))}</svg><span>{index + 1}/{stage.variants!.length} {controller.variantResults?.[index] ? controller.variantResults[index] === 'success' ? '✓' : '!' : ''}</span></button>)}</div>}
+          {theme.world === 'handheld' && <div className="lcd-hud" aria-hidden="true"><span>{stage.variants ? stage.id.toUpperCase() : `STAGE ${stage.id}`}</span><span><Symbol name="goal" /></span><span>{new FunctionProgram(doc).count()}/{stage.maxBlocks ?? 10}</span></div>}
+          {stage.variants && <div className="variant-cards" role="group" aria-label={t(stage.id.startsWith('u4-') ? 'unit4' : stage.id.startsWith('u3-') ? 'unit3' : 'unit2')}>{stage.variants.map((grid, index) => <button type="button" key={index} disabled={!!controller.getSnapshot().execution} aria-pressed={controller.variant === index} aria-label={t('variantLabel', { number: index + 1, total: stage.variants!.length })} onClick={() => controller.selectVariant(index)}><svg viewBox={`0 0 ${grid[0].length * 10} ${grid.length * 10}`} aria-hidden="true">{grid.flatMap((row, y) => [...row].map((cell, x) => <rect key={`${x},${y}`} x={x * 10 + 1} y={y * 10 + 1} width="8" height="8" fill={cell === '#' ? '#4b5563' : cell === 'G' ? '#986000' : cell === 'S' ? '#2563eb' : '#fff'} stroke="currentColor" />))}</svg><span>{index + 1}/{stage.variants!.length} {controller.variantResults?.[index] ? controller.variantResults[index] === 'success' ? '✓' : '!' : ''}</span></button>)}</div>}
           {stage.variants && <p className="sensor-status" role="status">{check && <><Symbol name={check.result ? 'yes' : 'no'} />{t(check.condition === 'clearAhead' ? check.result ? 'whileContinue' : 'whileStop' : check.result ? 'sensorBlocked' : 'sensorClear')}</>}</p>}
           <Board check={check} hintHighlight={hintStep > 0 ? stage.hints.highlight : undefined} failurePosition={controller.visibleFailure?.position} theme={theme} stage={displayStage} position={playback.frame?.pos} direction={playback.frame?.dir} bump={playback.frame?.event === 'bump'} />
           <div className="playback-controls execution-controls">
-            <button className="run-button" type="button" disabled={!program.length || playback.playing} onClick={playback.play} aria-label={theme.buttonLabel('run')} title={theme.buttonLabel('run')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="run" /></span><small>{theme.runText?.()}</small></button>
-            <button type="button" disabled={!program.length || playback.playing || playback.finished} onClick={playback.step} aria-label={theme.buttonLabel('step')} title={theme.buttonLabel('step')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="step" /></span><small>{theme.buttonLabel('step')}</small></button>
+            <button className="run-button" type="button" disabled={!program.length && !doc.functions.length || playback.playing} onClick={playback.play} aria-label={theme.buttonLabel('run')} title={theme.buttonLabel('run')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="run" /></span><small>{theme.runText?.()}</small></button>
+            <button type="button" disabled={!program.length && !doc.functions.length || playback.playing || playback.finished} onClick={playback.step} aria-label={theme.buttonLabel('step')} title={theme.buttonLabel('step')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="step" /></span><small>{theme.buttonLabel('step')}</small></button>
             <button type="button" onClick={playback.reset} aria-label={theme.buttonLabel('reset')} title={theme.buttonLabel('reset')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="reset" /></span><small>{theme.buttonLabel('reset')}</small></button>
 
             {Object.keys(playbackSpeeds).map(key => {
@@ -67,9 +67,9 @@ export function PlayPage({ stage, progressStore, onList, onNext, lastStage, cont
             })}
           </div>
         </div>
-        <Editor palette={stage.palette} conditions={!!stage.variants} checks={controller.branchChecks} controller={controller.editor} failedBlockId={controller.visibleFailure?.blockId} theme={theme} program={program} onChange={controller.edit} maxBlocks={stage.maxBlocks} locked={playback.locked} activeBlockId={playback.frame?.activeBlockId} loops={playback.frame?.loops} />
+        <Editor functionsEnabled={stage.id.startsWith('u4-')} call={playback.frame?.call} palette={stage.palette} conditions={!!stage.variants} checks={controller.branchChecks} controller={controller.editor} failedBlockId={controller.visibleFailure?.blockId} theme={theme} program={program} onChange={controller.edit} maxBlocks={stage.maxBlocks} locked={playback.locked} activeBlockId={playback.frame?.activeBlockId} loops={playback.frame?.loops} />
       </div>
-      {playback.showResult && playback.result && <ResultModal notice={playback.result === 'stepLimit' ? t('stepLimitNotice') : undefined} stageLabel={stage.variants ? t(stage.title) : undefined} unit3={stage.id.startsWith('u3-')} unit2={!!stage.variants} failureMessage={stage.variants && playback.result !== 'success' ? t('variantFailure', { number: (controller.getSnapshot().all?.failedVariant ?? 0) + 1, reason: t(controller.whileLimited ? 'whileStepLimit' : `failures.${playback.result}`) }) : controller.whileLimited ? t('whileStepLimit') : undefined} restoreFocus={restoreFocus} onFix={controller.fix} result={playback.result} stars={controller.stars} onRetry={playback.reset} onClose={playback.dismiss} onNext={onNext} lastStage={lastStage} bonusStage={bonusStages.some(bonus => bonus.id === stage.id)} />}
+      {playback.showResult && playback.result && <ResultModal notice={playback.result === 'stepLimit' ? t('stepLimitNotice') : undefined} stageLabel={stage.variants ? t(stage.title) : undefined} unit4={stage.id.startsWith('u4-')} unit3={stage.id.startsWith('u3-')} unit2={!!stage.variants} failureMessage={stage.variants && playback.result !== 'success' ? t('variantFailure', { number: (controller.getSnapshot().all?.failedVariant ?? 0) + 1, reason: t(controller.whileLimited ? 'whileStepLimit' : `failures.${playback.result}`) }) : controller.whileLimited ? t('whileStepLimit') : undefined} restoreFocus={restoreFocus} onFix={controller.fix} result={playback.result} stars={controller.stars} onRetry={playback.reset} onClose={playback.dismiss} onNext={onNext} lastStage={lastStage} bonusStage={bonusStages.some(bonus => bonus.id === stage.id)} />}
     </section>
   )
 }

@@ -236,3 +236,11 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - `model/interpreter.ts`: 배열/문서 호환, 함수 호출 후 main 복귀, 호출별 프레임·실패 문맥 유지.
 - `model/ProgressRepository.ts`: v2 함수 왕복·손상 격리, getDocument. `controller/GameController.ts`·`EditorController.ts`: 문서 편집·저장·되돌리기, 기존 화면은 main 유지.
 - `model/functions.test.ts`, `model/unit123-run.fixture.json`: 함수 실행·검증·편집·저장·Controller 회귀 및 T44 이전 실행기에서 추출한 1~3단원 정답 전체 프레임 기준.
+
+### T45 함수 화면·4단원 [제안·잠정]
+
+- `controller/EditorController.ts`: functionId/editProgram으로 main·함수 몸체 편집 범위를 선택. 함수별 호출 추가, 중첩 몸체 편집·이동·삭제·횟수 변경과 문서 단위 되돌리기.
+- `view/components/Editor.tsx`, `BlockTiles.tsx`, `index.css`: 4단원 전용 함수 카드·호출 팔레트, 호출 타일·실행 카드·몸체 동시 강조, main/함수 편집 영역 배치.
+- `model/types.ts`, `model/stages/index.ts`, `model/ProgressRepository.ts`: initialFunctions/solutionFunctions, u4-1~3, 미저장 스테이지의 초기 함수 복원. `controller/flow.ts`, `view/pages/StageSelectPage.tsx`, `ResultModal.tsx`, `PlayPage.tsx`: 4단원 진입·묶음·결과.
+- 기존 `model/stages/stages.test.ts`, `model/functions.test.ts`, `controller/flow.test.ts`, `view/components/Editor.test.tsx`에서 맵 전수 탐색·몸체 편집·저장·별·다음·ko/en×세 월드 호출 강조 회귀를 검사합니다. 새 소스 파일·의존성은 없습니다.
+- `docs/design/unit4-functions.md`: 맵·정답·전수 탐색 방법과 검증 제한. E2E 추가·최종 브라우저 QC는 Claude 담당입니다.

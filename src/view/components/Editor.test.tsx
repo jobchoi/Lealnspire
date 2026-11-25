@@ -171,3 +171,153 @@ it('labels while insertion targets in both official languages', () => {
     }
   } finally { i18n.locale = 'ko' }
 })
+
+it('renders function cards and distinct active call sites in each world and language', async () => {
+  const { unit4Stages } = await import('../../model/stages')
+  const { themes, worlds } = await import('../theme/themes')
+  const { run } = await import('../../model/interpreter')
+  const stage = unit4Stages[0]
+  const doc = { main: stage.solution, functions: stage.solutionFunctions! }
+  const frames = run(stage, doc).frames
+  try {
+    for (const locale of ['ko', 'en']) for (const world of worlds) {
+      i18n.locale = locale
+      const controller = new EditorController()
+      controller.configureDocument(doc, () => {}, false, stage.maxBlocks)
+      const draw = (call?: typeof frames[number]['call'], activeBlockId?: string | null) => renderToString(<Editor theme={themes[world]} program={doc.main} onChange={() => {}} controller={controller} functionsEnabled palette={['forward', 'turnLeft', 'turnRight', 'repeat']} call={call} activeBlockId={activeBlockId} />)
+      expect(draw()).toContain(t('functions.create'))
+      expect(draw()).toContain(t('functions.target.star'))
+      expect(draw()).toContain(t('functions.call.star'))
+      expect(draw()).toContain(t('total', { count: 8, max: 10 }))
+      expect(draw()).toContain('concept-keyword">function</span>')
+      for (const block of doc.main.filter(block => block.type === 'call')) {
+        const frame = frames.find(frame => frame.call?.callId === block.id)!
+        const html = draw(frame.call, frame.activeBlockId)
+        expect(html).toContain('function-card function-active')
+        const callTag = html.split(`data-block-id="${block.id}"`)[1].split('>')[0]
+        expect(callTag).toContain('block-active')
+        for (const other of doc.main.filter(other => other.type === 'call' && other.id !== block.id)) expect(html.split(`data-block-id="${other.id}"`)[1].split('>')[0]).not.toContain('block-active')
+        expect(html.split(`data-block-id="${frame.activeBlockId}"`)[1].split('>')[0]).toContain('block-active')
+      }
+      controller.chooseFunction(doc.functions[0].id)
+      const html = draw()
+      expect(html).toContain(t('functions.noNestedCalls'))
+      expect(html.split(`aria-label="${t('functions.call.star')}"`)[1].split('>')[0]).toContain('disabled')
+    }
+  } finally { i18n.locale = 'ko' }
+})
+
+
+it('keeps function insertion exclusive, labels nested targets, and clears vanished targets', async () => {
+  const { themes, worlds } = await import('../theme/themes')
+  const controller = new EditorController()
+  controller.configureDocument({ main: [{ id: 'main-repeat', type: 'repeat', count: 2, body: [] }], functions: [
+    { id: 'star', icon: 'star', body: [{ id: 'inner', type: 'repeat', count: 2, body: [] }] },
+    { id: 'moon', icon: 'moon', body: [] },
+  ] }, () => {}, false)
+  const draw = (world: typeof worlds[number]) => renderToString(<Editor theme={themes[world]} program={controller.program} onChange={() => {}} controller={controller} functionsEnabled />)
+  try {
+    for (const locale of ['ko', 'en']) for (const world of worlds) for (const icon of ['star', 'moon']) {
+      i18n.locale = locale
+      controller.chooseFunction(icon)
+      let html = draw(world)
+      expect(html).toContain(t(`functions.adding.${icon}`))
+      expect(html).toContain(`aria-pressed="true" aria-label="${t(`functions.target.${icon}`)}"`)
+      expect(html).toContain(t(`functions.stop.${icon}`))
+      expect(html.split(`aria-label="${t('functions.call.star')}"`)[1].split('>')[0]).toContain('disabled')
+      controller.chooseFunction()
+      html = draw(world)
+      expect(html).not.toContain(t('functions.noNestedCalls'))
+      expect(html.split(`aria-label="${t('functions.call.star')}"`)[1].split('>')[0]).not.toContain('disabled')
+    }
+    controller.chooseFunction('star')
+    controller.selectFunctionBlock('star', 'inner')
+    expect(controller.functionTarget).toBe(false)
+    expect(controller.addingToFunction).toBe(false)
+    controller.add('call', 'moon')
+    expect(controller.program.at(-1)).toMatchObject({ type: 'call', fn: 'moon' })
+    controller.selectFunctionBlock('star', 'inner')
+    controller.toggleTarget()
+    expect(controller.addingToFunction).toBe(true)
+    expect(draw('sketchbook')).toContain(t('target', { order: 1 }))
+    controller.add('forward')
+    expect(controller.functions[0].body[0]).toMatchObject({ body: [{ type: 'forward' }] })
+    controller.selectFunctionBlock(undefined, 'main-repeat')
+    controller.toggleTarget()
+    expect(controller.addingToFunction).toBe(false)
+    controller.add('turnLeft')
+    expect(controller.program[0]).toMatchObject({ body: [{ type: 'turnLeft' }] })
+    controller.chooseFunction('moon')
+    controller.removeFunction('moon')
+    expect(controller.functionId).toBeUndefined()
+    expect(controller.functionTarget).toBe(false)
+  } finally { i18n.locale = 'ko' }
+})
+
+it('clears function insertion when undo removes the targeted function', async () => {
+  const { GameController } = await import('../../controller/GameController')
+  const { createProgressStore } = await import('../../model/ProgressRepository')
+  const { unit4Stages } = await import('../../model/stages')
+  const game = new GameController(unit4Stages[0], createProgressStore())
+  game.editor.createFunction()
+  game.editor.chooseFunction(game.editor.functions[0].id)
+  game.undo()
+  expect(game.editor.functionId).toBeUndefined()
+  expect(game.editor.functionTarget).toBe(false)
+  game.editor.add('forward')
+  expect(game.getSnapshot().program).toMatchObject([{ type: 'forward' }])
+  game.dispose()
+})
+
+it('selects compact workspace views for insertion, playback return, and fixing in every world and locale', async () => {
+  const { themes, worlds } = await import('../theme/themes')
+  const controller = new EditorController()
+  controller.configureDocument({ main: [{ id: 'call', type: 'call', fn: 'star' }], functions: [
+    { id: 'star', icon: 'star', body: [{ id: 'first', type: 'forward' }] },
+    { id: 'moon', icon: 'moon', body: [] },
+  ] }, () => {}, false)
+  try {
+    for (const locale of ['ko', 'en']) for (const world of worlds) {
+      i18n.locale = locale
+      const draw = (locked = false, call?: { fn: string; callId: string }) => renderToString(<Editor theme={themes[world]} program={controller.program} onChange={() => {}} controller={controller} functionsEnabled locked={locked} call={call} />)
+      const selected = (html: string, key: string) => expect(html).toContain(`aria-pressed="true">${t(key)}</button>`)
+      controller.chooseFunction('star')
+      selected(draw(), 'functions.show.star')
+      expect(draw()).toContain(`role="group" aria-label="${t('functions.body.star')}"`)
+      controller.chooseFunction('moon')
+      selected(draw(), 'functions.show.moon')
+      controller.chooseFunction()
+      selected(draw(), 'functions.showMain')
+      selected(draw(true, { fn: 'star', callId: 'call' }), 'functions.show.star')
+      selected(draw(true), 'functions.showMain')
+      draw(false)
+      controller.reveal('first', 'star')
+      selected(draw(), 'functions.show.star')
+    }
+  } finally { i18n.locale = 'ko' }
+})
+
+
+it('opens and targets each newly created function, keeps repeated target selection, and returns to main on undo', async () => {
+  const { GameController } = await import('../../controller/GameController')
+  const { createProgressStore } = await import('../../model/ProgressRepository')
+  const { unit4Stages } = await import('../../model/stages')
+  const game = new GameController(unit4Stages[0], createProgressStore())
+  const controller = game.editor
+  const draw = () => renderToString(<Editor program={controller.program} onChange={() => {}} controller={controller} functionsEnabled />)
+  for (const icon of ['star', 'moon']) {
+    controller.createFunction()
+    const fn = controller.functions.find(fn => fn.icon === icon)!
+    expect(controller.functionId).toBe(fn.id)
+    expect(controller.addingToFunction).toBe(true)
+    expect(draw()).toContain(`aria-pressed="true">${t(`functions.show.${icon}`)}</button>`)
+    expect(draw()).toContain(`aria-pressed="true" aria-label="${t(`functions.target.${icon}`)}"`)
+    controller.chooseFunction(fn.id)
+    expect(controller.addingToFunction).toBe(true)
+  }
+  game.undo()
+  expect(controller.functionId).toBeUndefined()
+  expect(controller.addingToFunction).toBe(false)
+  expect(draw()).toContain(`aria-pressed="true">${t('functions.showMain')}</button>`)
+  game.dispose()
+})

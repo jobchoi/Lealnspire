@@ -3,7 +3,7 @@ import { t } from '../../i18n/I18n'
 import { describe, expect, it } from 'vitest'
 import { run, runAll } from '../interpreter'
 import { countBlocks, MAX_PROGRAM_BLOCKS } from '../program'
-import { stages, bonusStages, unit2Stages, unit3Stages } from './index'
+import { stages, bonusStages, unit2Stages, unit3Stages, unit4Stages } from './index'
 import type { Program, Dir } from '../types'
 
 describe('스테이지 정답', () => {
@@ -84,12 +84,12 @@ for (const stage of bonusStages) {
   })
 }
 
-for (const stage of [...unit2Stages.slice(1), ...unit3Stages]) {
+for (const stage of [...unit2Stages.slice(1), ...unit3Stages, ...unit4Stages]) {
   it(stage.id + ': solution passes every variant within the limit', () => {
-    expect(runAll(stage, stage.solution).results.map(result => result.result)).toEqual(stage.variants!.map(() => 'success'))
-    expect(countBlocks(stage.solution)).toBeLessThanOrEqual(stage.maxBlocks!)
-    if (stage.id === 'u2-5' || stage.id === 'u2-6') {
-      runAll(stage, stage.solution).results.forEach((execution, variant) => {
+    expect(runAll(stage, { main: stage.solution, functions: stage.solutionFunctions ?? [] }).results.map(result => result.result)).toEqual(stage.variants!.map(() => 'success'))
+    expect(countBlocks(stage.solution) + (stage.solutionFunctions ?? []).reduce((sum, fn) => sum + countBlocks(fn.body), 0)).toBeLessThanOrEqual(stage.maxBlocks!)
+    if (stage.id === 'u2-5' || stage.id === 'u2-6' || stage.id.startsWith('u4-')) {
+      runAll(stage, { main: stage.solution, functions: stage.solutionFunctions ?? [] }).results.forEach((execution, variant) => {
         const visited = new Set(execution.frames.map(frame => `${frame.pos.x},${frame.pos.y}`))
         stage.variants![variant].forEach((row, y) => [...row].forEach((cell, x) => {
           if (cell !== '#') expect(visited.has(`${x},${y}`)).toBe(true)
@@ -170,3 +170,11 @@ it('u2-4 initial code collides on the fourth forward in A and succeeds in B', ()
   expect(results[0].frames.filter(frame => frame.event === 'check').map(frame => frame.check?.result)).toEqual([false])
   expect(results[1].frames.filter(frame => frame.event === 'check').map(frame => frame.check?.result)).toEqual([true])
 })
+
+for (const stage of unit4Stages) {
+  it(stage.id + ': fits 8×6 and exposes only the unit 4 palette', () => {
+    expect(stage.grid.length).toBeLessThanOrEqual(6)
+    expect(stage.grid[0].length).toBeLessThanOrEqual(8)
+    expect(stage.palette).toEqual(['forward', 'turnLeft', 'turnRight', 'repeat', 'call'])
+  })
+}

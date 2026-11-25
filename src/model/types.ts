@@ -16,6 +16,7 @@ export type Stage = {
   id: string; world: 'sketchbook' | 'train' | 'handheld'; title: string; goal: string; hints: { keys: [string, string]; highlight: HintHighlight }
   grid: string[]; variants?: string[][]; startDir: Dir; maxBlocks?: number; starBlocks: number
   palette?: BlockType[]
+  initialFunctions?: FunctionDef[]; solutionFunctions?: FunctionDef[]
   initialProgram?: Program; solution: Program
 }
 export type Position = { x: number; y: number }

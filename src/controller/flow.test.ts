@@ -2,7 +2,7 @@ import { AppController } from './AppController'
 import { isUnlocked, ProgressRepository, progressKey } from '../model/ProgressRepository'
 import { describe, expect, it } from 'vitest'
 import { createProgressStore } from '../model/ProgressRepository'
-import { stages, allStages, unit2Stages, unit3Stages } from '../model/stages'
+import { stages, allStages, unit2Stages, unit3Stages, unit4Stages } from '../model/stages'
 import { continueStageIndex, showNextStage } from './flow'
 
 describe('이어하기 대상', () => {
@@ -25,7 +25,7 @@ describe('이어하기 대상', () => {
     const store = createProgressStore()
     for (const stage of stages) store.completeStage(stage.id, 3, stage.solution)
     expect(continueStageIndex(store.getProgress())).toBe(allStages.indexOf(unit2Stages[0]))
-    for (const stage of [...unit2Stages, ...unit3Stages]) store.completeStage(stage.id, 3, stage.solution)
+    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages]) store.completeStage(stage.id, 3, stage.solution)
     expect(continueStageIndex(store.getProgress())).toBeUndefined()
   })
 })
@@ -101,6 +101,34 @@ it('continues through unit 3 and returns to the list after its final stage', () 
     repository.completeStage(stage.id, 3, stage.solution)
     app.next()
     expect(app.getSnapshot()).toEqual(offset === 2 ? { page: 'list' } : { page: 'play', index: index + 1 })
+  }
+  expect(continueStageIndex(app.progress)).toBe(allStages.indexOf(unit4Stages[0]))
+})
+
+it('opens unit 4 after u3-3, preserves its initial card, saves three stars and finishes at the list', () => {
+  const repository = new ProgressRepository()
+  for (const stage of [...stages, ...unit2Stages, ...unit3Stages.slice(0, -1)]) repository.completeStage(stage.id, 3, stage.solution)
+  expect(isUnlocked(repository.getProgress(), allStages.indexOf(unit4Stages[0]))).toBe(false)
+  repository.completeStage('u3-3', 3, unit3Stages[2].solution)
+  const app = new AppController(repository)
+  for (const stage of unit4Stages) {
+    expect(continueStageIndex(app.progress)).toBe(allStages.indexOf(stage))
+    app.continue()
+    const game = app.game!
+    if (stage.id === 'u4-3') {
+      expect(game.getSnapshot().doc.functions).toEqual(stage.initialFunctions)
+      game.step()
+      expect(game.result).toBe('unfinished')
+      expect(game.frame?.pos).toEqual({ x: 3, y: 0 })
+      game.fix()
+    }
+    game.edit({ main: stage.solution, functions: stage.solutionFunctions! })
+    while (!game.finished) game.step()
+    expect(game.result).toBe('success')
+    expect(repository.getProgress().stages[stage.id].bestStars).toBe(3)
+    expect(repository.getDocument(stage)).toEqual(game.getSnapshot().doc)
+    app.next()
+    if (stage.id === 'u4-3') expect(app.getSnapshot().page).toBe('list')
   }
   expect(continueStageIndex(app.progress)).toBeUndefined()
 })

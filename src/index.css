@@ -551,3 +551,73 @@ button small { display: block; font-size: .75rem; }
   grid-column:auto; grid-row:auto; width:100%; height:52px; border-radius:8px;
 }
 .play-page.conditions-page.while-page .palette .block-while { grid-template-rows:18px 12px; }
+
+/* T45: the document's two editing areas share one budget and palette. */
+.functions-page .editor { min-height:0; }
+.functions-page .program-panels { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px; flex:1; min-height:0; overflow:hidden; }
+.functions-page .main-panel { display:flex; flex-direction:column; min-width:0; min-height:0; }
+.functions-page .main-panel .workspace-shell { flex:1; min-height:0; }
+.functions-page .function-panel { min-height:0; overflow:auto; display:flex; flex-direction:column; gap:8px; padding:4px; }
+.functions-page .function-card { border:3px solid #77522a; background:#fff7dc; color:#33230f; border-radius:10px; padding:5px; flex-shrink:0; }
+.functions-page .function-card header { display:flex; align-items:center; justify-content:space-between; gap:4px; }
+.functions-page .function-active,.functions-page .workspace .block-call.block-active { outline:3px solid #126b65; outline-offset:1px; background:#dbf5ef; }
+.functions-page .function-target { border-style:dashed; }
+.functions-page .function-card-actions,.functions-page .function-actions { display:flex; gap:4px; align-items:center; }
+.functions-page .function-actions button { min-height:44px; padding:3px 8px; }
+.functions-page .function-card-actions button { min-width:44px; min-height:44px; padding:3px; }
+.functions-page .function-delete-notice,.functions-page .function-notice { font-size:12px; line-height:1.25; margin:2px 0; }
+.functions-page .function-body.workspace { min-height:66px; max-height:180px; padding:5px; }
+.functions-page .call-running { font-size:10px; line-height:12px; }
+.play-page.functions-page .palette-row .palette { display:grid; flex:1; width:auto; height:52px; grid-template-columns:repeat(6,minmax(44px,1fr)); grid-template-rows:52px; gap:3px; margin:0; padding:0; }
+.play-page.functions-page .palette-row .palette button { grid-column:auto; grid-row:auto; width:100%; height:52px; min-width:44px; min-height:44px; border-radius:8px; padding:0; box-shadow:none; transform:none; aspect-ratio:auto; }
+.play-page.functions-page .palette::before,.play-page.functions-page .palette::after { display:none; }
+.play-page.functions-page .palette-row { gap:3px; }
+.functions-page .block-call { color:#33230f; background:#fff0b9; font-size:24px; }
+@media(max-width:700px) {
+ .functions-page .program-panels { grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(70px,1fr) minmax(82px,1fr); gap:2px; }
+ .functions-page .function-panel { display:block; }
+ .functions-page .function-card { position:relative; margin-bottom:6px; padding-top:5px; }
+ .functions-page .function-card header { min-height:44px; padding-right:96px; font-size:12px; }
+ .functions-page .function-card-actions { position:absolute; right:4px; top:3px; }
+ .functions-page .function-actions button { font-size:12px; }
+ .functions-page .editor h3 { margin:0; font-size:14px; }
+ .functions-page .function-body.workspace { max-height:none; }
+ .functions-page .main-panel .workspace { min-height:0; }
+ .functions-page .function-delete-notice { font-size:10px; }
+ .functions-page .function-notice { font-size:10px; }
+}
+.play-page:not(.functions-page) :is(.program-panels,.main-panel) { display:contents; }
+.play-page.functions-page .editor > .program-panels { flex-shrink:1; }
+.play-page .main-panel > h3 { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+.functions-page .variant-cards,.functions-page .sensor-status { display:none; }
+.functions-page .function-card-actions button:first-child { padding-inline:6px; font-size:12px; }
+@media(max-width:700px) {
+ .play-page.functions-page .game-layout { grid-template-rows:110px minmax(0,1fr) 64px; }
+ .play-page.functions-page .map-panel .board { height:110px; max-height:110px; }
+ .functions-page .program-panels { grid-template-rows:minmax(0,1fr) minmax(0,1fr); }
+ .functions-page .function-card header { padding-right:0; min-height:24px; }
+ .functions-page .function-card-actions { position:static; }
+}
+@media(max-width:700px) and (max-height:590px) {
+ .play-page.functions-page .game-layout { grid-template-rows:75px minmax(0,1fr) 64px; }
+ .play-page.functions-page .map-panel .board { height:75px; max-height:75px; }
+}
+
+/* Compact function views share the workspace instead of splitting its height. */
+.functions-page .function-tabs { display:none; }
+@media(max-width:700px) {
+ .functions-page .function-tabs { display:flex; gap:3px; }
+ .functions-page .function-tabs button { flex:1; min-width:44px; min-height:44px; padding:2px; font-size:12px; }
+ .functions-page .function-tabs button[aria-pressed=true] { background:#dbf5ef; border:3px solid #126b65; }
+ .functions-page .program-panels { display:flex; flex-direction:column; }
+ .functions-page .main-panel,.functions-page .function-panel { flex:1; min-height:0; }
+ .functions-page .program-panels[data-panel=body] .main-panel,
+ .functions-page .program-panels[data-panel=main] .function-panel,
+ .functions-page .function-card[data-visible=false] { display:none; }
+ .functions-page .function-panel { display:flex; overflow:hidden; padding:3px; }
+ .functions-page .function-card { display:flex; flex-direction:column; flex:1; min-height:0; margin:0; gap:2px; }
+ .functions-page .function-body.workspace { flex:1; min-height:0; overflow:auto; }
+ .functions-page .function-delete-notice { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+ .functions-page .function-card header { min-height:16px; line-height:16px; }
+ .functions-page .function-notice { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+}

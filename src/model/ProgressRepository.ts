@@ -155,7 +155,7 @@ function makeStore(storage?: ProgressStorage) {
     },
     getProgress: (): Progress => clone(progress),
     getProgram: (stage: Stage): Program => clone(progress.stages[stage.id]?.lastProgram ?? stage.initialProgram ?? []),
-    getDocument: (stage: Stage): ProgramDocument => ({ main: clone(progress.stages[stage.id]?.lastProgram ?? stage.initialProgram ?? []), functions: clone(progress.stages[stage.id]?.functions ?? []) }),
+    getDocument: (stage: Stage): ProgramDocument => ({ main: clone(progress.stages[stage.id]?.lastProgram ?? stage.initialProgram ?? []), functions: clone(progress.stages[stage.id] ? progress.stages[stage.id].functions ?? [] : stage.initialFunctions ?? []) }),
     saveProgram(stageId: string, program: ProgramInput) {
       const previous = progress.stages[stageId]
       progress.stages = { ...progress.stages, [stageId]: {

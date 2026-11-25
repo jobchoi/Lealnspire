@@ -191,3 +191,11 @@ Block에 while/clearAhead/body를 추가하며 기존 blockedAhead 판정을 반
 ### T44 함수 Model [제안·잠정]
 
 `FunctionProgram`은 함수 생성·삭제와 main/함수 몸체 공통 편집·복제를 제공하며 ID를 문서 전체에서 재발급합니다. 정의는 0블록, call은 1블록이며 몸체를 합쳐 편집 상한 10개입니다. 함수 삭제는 main의 중첩 call도 제거합니다. 실행기는 배열과 문서를 모두 받고 call 자체는 프레임 없이 몸체 프레임에 호출 정보를 남깁니다. 실패 지점은 몸체 블록과 call 정보를 반환하며 while 상한은 whileLimitCall로 호출 문맥을 보존합니다. 함수 화면·스테이지는 T45입니다.
+
+### T45 함수 화면·4단원 [제안·잠정]
+
+EditorController.functionId는 편집 중인 함수 몸체를 지정합니다(undefined는 main). 선택·반복 추가 대상·이동·삭제·횟수 변경은 editProgram을 사용하고, 함수 몸체 편집은 onDocumentChange로 문서 전체를 저장합니다. 고치기는 failure.call.fn의 몸체 블록을 선택합니다. 함수 정의만 있는 빈 main도 실행 가능하여 정의와 호출의 차이를 확인할 수 있습니다.
+
+Stage.initialFunctions/solutionFunctions는 기존 initialProgram/solution(main 배열)과 짝을 이루는 선택적 함수 정의입니다. ProgressRepository는 기록이 없을 때만 초기 함수를 사용하며 저장 이후의 빈 functions는 그대로 보존합니다. u4-1~3은 단일 variants 배열로 기존 통과 중심 별 3개 판정을 사용합니다. u3-3 뒤 순차 개방하고 각 단원 끝에서는 목록으로 돌아갑니다.
+
+Editor의 함수 패널은 4단원에서만 나타나고 공통 팔레트·합산 상한을 사용합니다. Frame.call.callId와 fn으로 호출 타일·카드를 함께 강조하며 몸체의 activeBlockId도 표시합니다. 좁은 화면은 main 아래 함수 패널을 배치하고 두 영역의 스크롤을 제한합니다. 실제 배치·44px·스크린샷 검증은 이 환경의 포트/Chromium 실행 제한으로 미검증입니다. 맵과 정답·전수 탐색은 [설계 기록](design/unit4-functions.md)에 있습니다.

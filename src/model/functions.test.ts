@@ -4,7 +4,7 @@ import { FunctionProgram, validDocument, Program } from './program'
 import { ProgressRepository, progressV2Key } from './ProgressRepository'
 import { GameController } from '../controller/GameController'
 import baseline from './unit123-run.fixture.json'
-import { allStages, stages } from './stages'
+import { allStages, stages, unit4Stages } from './stages'
 import type { Block, ProgramDocument, Stage } from './types'
 
 const f: Block = { id: 'f', type: 'forward' }
@@ -100,7 +100,7 @@ it('combines node budgets and depth across all bodies', () => {
 })
 
 it('preserves every unit 1–3 solution frame when wrapped in a doc', () => {
-  for (const puzzle of allStages) {
+  for (const puzzle of allStages.filter(puzzle => !puzzle.id.startsWith('u4-'))) {
     expect(runAll(puzzle, { main: puzzle.solution, functions: [] })).toEqual(baseline[puzzle.id as keyof typeof baseline])
     expect(runAll(puzzle, puzzle.solution)).toEqual(baseline[puzzle.id as keyof typeof baseline])
     expect(new FunctionProgram({ main: puzzle.solution, functions: [] }).count()).toBe(Program.countBlocks(puzzle.solution))
@@ -137,6 +137,7 @@ it('locks function editing during playback and enforces combined editor limits',
   game.editor.createFunction()
   const id = game.getSnapshot().doc.functions[0].id
   game.editor.editFunction(id, body => Program.addBlock(body, f))
+  game.editor.chooseFunction()
   game.editor.add('call')
   expect(game.getSnapshot().doc.main[0].type).toBe('call')
   game.editor.configure(game.getSnapshot().program, game.edit, true)
@@ -149,4 +150,71 @@ it('locks function editing during playback and enforces combined editor limits',
   game.editor.editFunction(id, body => Program.addBlock(body, { ...f, id: 'too-many' }))
   expect(game.editor.total).toBe(2)
   game.dispose()
+})
+
+it('edits nested function bodies with a shared palette, protects calls, and restores deleted calls with undo', () => {
+  const game = new GameController(stages[0], new ProgressRepository())
+  const editor = game.editor
+  editor.createFunction()
+  editor.createFunction()
+  editor.createFunction()
+  expect(editor.functions.map(fn => fn.icon)).toEqual(['star', 'moon'])
+  const [star, moon] = editor.functions
+  editor.chooseFunction(star.id)
+  editor.add('repeat')
+  const repeat = editor.editProgram[0]
+  editor.select(repeat.id)
+  editor.setCount(2)
+  editor.toggleTarget()
+  editor.add('forward')
+  editor.add('turnLeft')
+  const body = editor.editProgram[0]
+  if (body.type !== 'repeat') throw new Error('missing repeat')
+  editor.select(body.body[1].id)
+  editor.move('up')
+  expect((editor.editProgram[0] as typeof body).body.map(b => b.type)).toEqual(['turnLeft', 'forward'])
+  editor.remove()
+  editor.add('call', moon.id)
+  expect(editor.total).toBe(2)
+  editor.chooseFunction(moon.id)
+  editor.add('turnRight')
+  editor.chooseFunction()
+  editor.add('call', star.id)
+  editor.add('call', moon.id)
+  expect(editor.program.map(b => b.type === 'call' ? b.fn : '')).toEqual([star.id, moon.id])
+  const before = structuredClone(game.getSnapshot().doc)
+  editor.removeFunction(star.id)
+  expect(editor.program).toHaveLength(1)
+  game.undo()
+  expect(game.getSnapshot().doc).toEqual(before)
+  editor.locked = true
+  editor.chooseFunction(star.id)
+  editor.removeFunction(star.id)
+  editor.add('forward')
+  expect(game.getSnapshot().doc).toEqual(before)
+})
+
+it('round-trips unit 4 palettes and does not resurrect a deleted initial function', () => {
+  const values = new Map<string, string>()
+  const storage = { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => { values.set(key, value) } }
+  const repository = new ProgressRepository(storage)
+  for (const puzzle of unit4Stages) {
+    const document = { main: puzzle.solution, functions: puzzle.solutionFunctions! }
+    repository.saveProgram(puzzle.id, document)
+    expect(new ProgressRepository(storage).getDocument(puzzle)).toEqual(document)
+  }
+  repository.saveProgram('u4-3', { main: [], functions: [] })
+  expect(new ProgressRepository(storage).getDocument(unit4Stages[2])).toEqual({ main: [], functions: [] })
+})
+
+it('fixes a failure inside a function by selecting its body without losing the failure', () => {
+  const game = new GameController(stage, new ProgressRepository())
+  game.edit(doc([call], [{ id: 'bad', type: 'turnLeft' }, f]))
+  while (!game.finished) game.step()
+  expect(game.result).toBe('collision')
+  const failure = game.failure
+  game.fix()
+  expect(game.failure).toEqual(failure)
+  expect(game.editor.functionId).toBe('fn')
+  expect(game.editor.selectedBlock?.id).toBe('f')
 })

@@ -102,6 +102,7 @@ export class GameController extends Observable<State> {
     if (!this.canUndo) return
     const program = structuredClone(this.state.undoProgram!)
     this.repository.saveProgram(this.stage.id, program)
+    this.editor.functions = structuredClone(program.functions)
     this.editor.reconcile(program.main)
     this.publish({ ...this.state, program: program.main, doc: program, undoProgram: null, execution: null, all: null, index: 0, playing: false, dismissed: false, failure: null })
   }
@@ -113,13 +114,13 @@ export class GameController extends Observable<State> {
     this.publish({ ...this.state, undoProgram: JSON.stringify(doc) === JSON.stringify(this.state.doc) ? this.state.undoProgram : structuredClone(this.state.doc), doc, program: doc.main, execution: null, all: null, index: 0, playing: false, dismissed: false, failure: null })
   }
   play = () => {
-    if (!this.state.program.length || this.state.playing) return
+    if (!this.state.program.length && !this.state.doc.functions.length || this.state.playing) return
     const run = this.execute()
     const execution = run.execution
     this.publish({ ...this.state, ...run, failure: null, index: 0, playing: execution.frames.length > 1 || !!run.all && run.all.results.length > 1, dismissed: false })
   }
   step = () => {
-    if (!this.state.program.length || this.state.playing || this.finished) return
+    if (!this.state.program.length && !this.state.doc.functions.length || this.state.playing || this.finished) return
     if (!this.state.execution) this.publish({ ...this.state, ...this.execute(), failure: null, index: 0, playing: false, dismissed: false })
     this.advance(false)
   }
@@ -129,7 +130,7 @@ export class GameController extends Observable<State> {
     if (!this.finished || !this.state.execution || this.result === 'success') return
     const failure = failurePoint(this.state.all ?? this.state.execution)
     this.editor.configure(this.state.program, this.edit, false, this.stage.maxBlocks)
-    this.editor.reveal(failure?.blockId ?? null)
+    this.editor.reveal(failure?.blockId ?? null, failure?.call?.fn)
     this.publish({ ...this.state, execution: null, all: null, variant: this.state.all?.failedVariant ?? this.variant, failure, index: 0, playing: false, dismissed: false })
   }
   dismiss = () => this.update({ ...this.state, dismissed: true })
