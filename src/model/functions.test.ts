@@ -75,6 +75,7 @@ it('removes nested calls with a definition and restores the whole doc with undo'
 })
 
 it('roundtrips v2, isolates corrupt code and preserves completion and other stages', () => {
+  const stage = unit4Stages[0]
   const data = new Map<string, string>()
   const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => { data.set(key, value) } }
   const repo = new ProgressRepository(storage)

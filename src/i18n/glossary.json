@@ -462,5 +462,21 @@
       "ko": [],
       "en": []
     }
+  },
+  "change": {
+    "id": "change",
+    "keyword": "change",
+    "ko": {
+      "name": "값 바꾸기",
+      "short": "상자에 저장된 값에 1을 더하거나 빼요."
+    },
+    "en": {
+      "name": "Change",
+      "short": "Add or subtract 1 from the value in a box."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
   }
 }

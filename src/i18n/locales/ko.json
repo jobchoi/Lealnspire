@@ -339,7 +339,7 @@
   "variables": {
     "map": "{number}/{total}",
     "status": "상자 A: {value}",
-    "changed": "상자 A: {from} → {to}",
+    "changed": "상자 A의 값이 바뀌었어요: {from} → {to}",
     "increase": "값 늘리기",
     "decrease": "값 줄이기",
     "toggleChange": "+1/−1 바꾸기",
@@ -349,6 +349,7 @@
     "repeatNumber": "숫자로 반복",
     "changeLabel": "바꾸기",
     "setTile": "{order}번 상자 A에 {value} 넣기",
-    "changeTile": "{order}번 상자 A {by} 바꾸기"
+    "changeAddTile": "{order}번 상자 A에 1 더하기",
+    "changeSubtractTile": "{order}번 상자 A에서 1 빼기"
   }
 }

@@ -30,7 +30,7 @@ export function ResultModal({ notice, stageLabel, result, failureMessage, unit2,
         }
       }
     }}>
-      <div className="result-symbol" aria-hidden="true">{result === 'success' ? Array.from({ length: stars }, (_, i) => <Symbol key={i} name="goal" />) : <Symbol name="hint" />}</div>
+      <div className="result-symbol" aria-hidden="true">{result === 'success' ? Array.from({ length: stars }, (_, i) => <span key={i} className="earned-star"><Symbol name="goal" /></span>) : <Symbol name="hint" />}</div>
       {notice && <p role="status">{notice}</p>}
       {stageLabel && <p>{stageLabel}</p>}
       <h2 id="result-title">{result === 'success' ? t('success') : (failureMessage ?? t(`failures.${result}`))}</h2>

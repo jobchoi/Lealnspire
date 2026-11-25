@@ -107,7 +107,7 @@ export const setRepeatCount = Program.setRepeatCount
 export const countBlocks = Program.countBlocks
 
 /** Validate persisted documents with a shared node/ID budget across all bodies. */
-export function validDocument(value: unknown, palette?: Block['type'][]): value is import('./types').ProgramDocument {
+export function validDocument(value: unknown, palette?: Block['type'][], allowVariableCount = true): value is import('./types').ProgramDocument {
   const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
   if (!record(value) || !Array.isArray(value.main) || !Array.isArray(value.functions) || value.functions.length > 2) return false
   const functions = new Set<string>()
@@ -130,7 +130,7 @@ export function validDocument(value: unknown, palette?: Block['type'][]): value 
       case 'repeat': case 'if': case 'while':
         if (!Array.isArray(block.body)) return false
         if (block.type === 'repeat') {
-          if (block.countVariable !== undefined && block.countVariable !== 'A') return false
+          if (block.countVariable !== undefined && (!allowVariableCount || block.countVariable !== 'A')) return false
           if (block.countVariable !== 'A' || block.count !== undefined) {
             if (!Number.isInteger(block.count) || Number(block.count) < 2 || Number(block.count) > 10) return false
           }

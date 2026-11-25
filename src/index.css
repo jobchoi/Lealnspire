@@ -746,11 +746,10 @@ button small { display: block; font-size: .75rem; }
 .play-page.variables-page .variable-summary .variable-box { position:static; height:44px; margin:0; padding:2px 5px; flex-shrink:0; }
 @media(max-width:700px) {
  .play-page.variables-page .game-layout { grid-template-rows:120px minmax(0,1fr) 64px; }
- .play-page.variables-page .variable-summary { gap:4px; }
- .play-page.variables-page .variable-summary .stage-goal { font-size:14px; line-height:20px; white-space:nowrap; overflow-x:auto; max-height:44px; }
+ .play-page.variables-page .variable-summary { gap:4px; flex-wrap:wrap; flex-shrink:0; }
+ .play-page.variables-page .variable-summary .stage-goal { font-size:14px; line-height:20px; flex:0 0 100%; white-space:normal; overflow:visible; max-height:none; }
  .play-page.variables-page .variable-summary .variant-cards button { font:10px/14px sans-serif; }
  .play-page.variables-page .variable-summary .variable-box .theme-symbol { display:none; }
- .play-page.variables-page .variable-summary .variable-transition { display:none; }
  .play-page.variables-page .palette-row .palette { grid-template-rows:44px; height:44px; gap:3px; }
  .play-page.variables-page .palette-row .palette button { height:44px; }
  .play-page.variables-page .tile-toolbar button { height:44px; min-height:44px; }
@@ -775,3 +774,6 @@ button small { display: block; font-size: .75rem; }
  .play-page.variables-page .workspace .block-tile { width:44px; min-width:44px; height:44px; min-height:44px; }
  .play-page.variables-page .workspace :is(.block-set,.block-change) { width:44px; min-width:44px; }
 }
+
+/* Goals keep their intrinsic height above the map and its cards. */
+.play-page > .stage-goal { flex-shrink:0; max-height:none; overflow:visible; }

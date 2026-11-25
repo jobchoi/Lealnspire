@@ -339,7 +339,7 @@
   "variables": {
     "map": "Map {number}/{total}",
     "status": "Box A: {value}",
-    "changed": "Box A changed from {from} to {to}",
+    "changed": "Box A changed: {from} → {to}",
     "increase": "Increase value",
     "decrease": "Decrease value",
     "toggleChange": "Switch +1/−1",
@@ -349,6 +349,7 @@
     "repeatNumber": "Repeat with a number",
     "changeLabel": "Change",
     "setTile": "Block {order}: Set box A to {value}",
-    "changeTile": "Block {order}: Change box A by {by}"
+    "changeAddTile": "Block {order}: Add 1 to box A",
+    "changeSubtractTile": "Block {order}: Subtract 1 from box A"
   }
 }

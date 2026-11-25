@@ -242,3 +242,7 @@ S......#  S......#
 ### T48 변수 화면 [제안·잠정]
 
 5단원은 기존 variantVariables·프레임 variables/variableChange를 View에서 표시한다. 편집은 EditorController가 Program의 setVariableValue/toggleChange/setRepeatSource를 호출하며 저장은 기존 문서 경로를 사용한다. u5-3도 단일 변형으로 등록해 통과 중심 별 3개·순차 개방·단원 경계를 기존 변형 흐름과 공유한다. 파일 지도와 세부 규칙·전수 탐색은 PROJECT_MAP의 T48 절과 design/unit5-variables.md를 참고한다.
+
+### T50 저장 복원 경계
+
+저장 코드는 스테이지의 실효 팔레트로 검사한다. palette 생략 시 1단원은 이동·회전·repeat, 2단원은 여기에 if를 더한 기본 목록을 사용한다. repeat의 countVariable A는 변수 편집과 상자 표시를 제공하는 5단원에서만 복원한다. 위반한 스테이지의 코드(main·functions)만 비우며 완료 여부·최고 별과 다른 스테이지 기록은 유지한다. 구조 자체의 검증은 validDocument에서 별도로 유지한다.

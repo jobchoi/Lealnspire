@@ -1,6 +1,6 @@
 import { programDocument } from './types'
 import type { Program, ProgramDocument, ProgramInput, FunctionDef, Stage } from './types'
-import { MAX_PROGRAM_BLOCKS, validDocument } from './program'
+import { validDocument } from './program'
 import { allStages as stages, stages as unit1Stages } from './stages'
 
 export type StageProgress = { completed: boolean; bestStars: number; lastProgram: Program; functions?: FunctionDef[] }
@@ -15,29 +15,16 @@ const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T
 const record = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
 
-function validProgram(value: unknown, palette?: Stage['palette']): value is Program {
-  if (!Array.isArray(value)) return false
-  const pending = value.map(block => ({ block: block as unknown, depth: 1 }))
-  const ids = new Set<string>()
-  while (pending.length) {
-    const { block, depth } = pending.pop()!
-    if (depth > MAX_PROGRAM_BLOCKS || ids.size >= 60) return false
-    if (!record(block) || typeof block.id !== 'string' || !block.id || ids.has(block.id)) return false
-    if (palette && !palette.includes(block.type as Program[number]['type'])) return false
-    ids.add(block.id)
-    if (block.type === 'while') {
-      if (block.condition !== 'clearAhead' || !Array.isArray(block.body) || 'else' in block) return false
-      for (const child of block.body) pending.push({ block: child, depth: depth + 1 })
-    } else if (block.type === 'if') {
-      if (block.condition !== 'blockedAhead' || !Array.isArray(block.body) || ('else' in block && !Array.isArray(block.else))) return false
-      if (Array.isArray(block.else)) for (const child of block.else) pending.push({ block: child, depth: depth + 1 })
-      for (const child of block.body) pending.push({ block: child, depth: depth + 1 })
-    } else if (block.type === 'repeat') {
-      if (!Number.isInteger(block.count) || (block.count as number) < 2 || (block.count as number) > 10 || !Array.isArray(block.body)) return false
-      for (const child of block.body) pending.push({ block: child, depth: depth + 1 })
-    } else if (!['forward', 'turnLeft', 'turnRight'].includes(block.type as string)) return false
-  }
-  return true
+// Omitted palettes still have the unit's default commands.
+function stagePolicy(id: string) {
+  const stage = stages.find(stage => stage.id === id)
+  const palette: NonNullable<Stage['palette']> = stage?.palette ??
+    ['forward', 'turnLeft', 'turnRight', 'repeat', ...(id.startsWith('u2-') ? ['if' as const] : [])]
+  return { palette, allowVariableCount: id.startsWith('u5-') }
+}
+function validStageDocument(value: unknown, id: string): value is ProgramDocument {
+  const { palette, allowVariableCount } = stagePolicy(id)
+  return validDocument(value, palette, allowVariableCount)
 }
 
 const knownStageIds = new Set(stages.map(stage => stage.id))
@@ -50,7 +37,7 @@ function normalizeStages(entries: Record<string, unknown>, withFunctions = false
       bestStars: Number.isInteger(entry.bestStars) && (entry.bestStars as number) >= 0 && (entry.bestStars as number) <= 3
         ? entry.bestStars as number : 0,
       ...(withFunctions && Array.isArray(entry.functions) && entry.functions.length ? { functions: entry.functions as FunctionDef[] } : {}),
-      lastProgram: (withFunctions && Array.isArray(entry.functions) ? validDocument({ main: entry.lastProgram, functions: entry.functions }, stages.find(stage => stage.id === id)?.palette) : validProgram(entry.lastProgram, stages.find(stage => stage.id === id)?.palette)) ? entry.lastProgram as Program : [],
+      lastProgram: validStageDocument({ main: entry.lastProgram, functions: withFunctions ? entry.functions ?? [] : [] }, id) ? entry.lastProgram as Program : [],
     }]]
   }))
 }
@@ -83,7 +70,7 @@ function fromDocument(value: unknown): Progress | undefined {
   const entries = Object.fromEntries(Object.entries(value.stages).map(([id, value]) => {
     const entry = record(value) ? value : {}
     const code = entry.lastProgram
-    const valid = validDocument(code, stages.find(stage => stage.id === id)?.palette)
+    const valid = validStageDocument(code, id)
     return [id, { ...entry, lastProgram: valid ? code.main : [], functions: valid ? code.functions : [] }]
   }))
   return { version: 1, stages: normalizeStages(entries, true) }

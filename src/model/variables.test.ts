@@ -3,7 +3,7 @@ import { run, runAll, failurePoint } from './interpreter'
 import { Program, validDocument, FunctionProgram } from './program'
 import { createBlock, cloneBlock } from './editor'
 import { ProgressRepository, progressV2Key } from './ProgressRepository'
-import { stages, unit4Stages } from './stages'
+import { stages, unit4Stages, unit5Stages } from './stages'
 import unit4Baseline from './unit4-run.fixture.json'
 import type { Block, Stage } from './types'
 
@@ -79,6 +79,7 @@ it('validates v2 variable blocks, count-less repeats, palettes and immutable nes
   for (const edit of [() => Program.setVariableValue([forward], [0], 1), () => Program.toggleChange([set(0)], [0]), () => Program.setRepeatSource([change], [0], 'A')]) expect(edit).toThrow()
 })
 it('roundtrips code only in v2, isolates corrupt variables while retaining completion', () => {
+  const stage = unit5Stages[0]
   const data = new Map<string, string>()
   const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => { data.set(key, value) } }
   const doc = { main: [set(2), repeat([change])], functions: [] }

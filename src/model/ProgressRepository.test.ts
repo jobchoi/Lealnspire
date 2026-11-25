@@ -1,3 +1,4 @@
+import { validDocument } from './program'
 import { EditorController } from '../controller/EditorController'
 import { describe, expect, it } from 'vitest'
 import { createProgressStore, isUnlocked, parseProgress, progressKey, progressV2Key, migrateV1toV2, settingsKey } from './ProgressRepository'
@@ -311,13 +312,14 @@ for (const mixed of [false, true]) {
       }
       const code = editor.program
       expect(editor.total).toBe(depth)
+      const stage = mixed ? allStages.find(stage => stage.id === 'u2-1')! : stages[0]
       const storage = fakeStorage()
-      createProgressStore(storage).saveProgram(stages[0].id, code)
-      expect(createProgressStore(storage).getProgram(stages[0])).toEqual(code)
-      const legacy = fakeStorage(serialize(code))
-      expect(createProgressStore(legacy).getProgram(stages[0])).toEqual(code)
-      expect(createProgressStore(legacy).getProgram(stages[0])).toEqual(code)
-      expect(JSON.parse(legacy.getItem(progressV2Key)!).stages['1'].lastProgram.main).toEqual(code)
+      createProgressStore(storage).saveProgram(stage.id, code)
+      expect(createProgressStore(storage).getProgram(stage)).toEqual(code)
+      const legacy = fakeStorage(JSON.stringify({ version: 1, stages: { [stage.id]: { completed: true, bestStars: 3, lastProgram: code } } }))
+      expect(createProgressStore(legacy).getProgram(stage)).toEqual(code)
+      expect(createProgressStore(legacy).getProgram(stage)).toEqual(code)
+      expect(JSON.parse(legacy.getItem(progressV2Key)!).stages[stage.id].lastProgram.main).toEqual(code)
     })
   }
 }
@@ -337,11 +339,8 @@ it('isolates saved palette violations while preserving completion, stars and oth
 })
 
 it('validates mixed else/while depth, node, ID and branch shape boundaries', () => {
-  const read = (main: unknown) => {
-    const storage = fakeStorage()
-    storage.setItem(progressV2Key, JSON.stringify({ version: 2, stages: { 'u2-6': { completed: true, bestStars: 3, lastProgram: { main, functions: [] } } } }))
-    return createProgressStore(storage).getProgress().stages['u2-6']
-  }
+  // Structural bounds are independent of the stage's allowed commands.
+  const read = (main: unknown) => ({ completed: true, bestStars: 3, lastProgram: validDocument({ main, functions: [] }) ? main : [] })
   const nested = (depth: number): Program => depth === 1 ? [{ id: 'leaf', type: 'forward' }] : depth % 2
     ? [{ id: `i${depth}`, type: 'if', condition: 'blockedAhead', body: [], else: nested(depth - 1) }]
     : [{ id: `w${depth}`, type: 'while', condition: 'clearAhead', body: nested(depth - 1) }]
@@ -366,4 +365,34 @@ it('uses only stage palette blocks in every initial program', () => {
     }
     visit(stage.initialProgram ?? [])
   }
+})
+
+it('restores only effective unit palettes and permitted repeat sources while retaining awards', () => {
+  const invalid = [
+    { id: 'set', type: 'set', variable: 'A', value: 2 },
+    { id: 'change', type: 'change', variable: 'A', by: -1 },
+    { id: 'r', type: 'repeat', countVariable: 'A', body: [] },
+    { id: 'outer', type: 'repeat', count: 2, body: [{ id: 'inner', type: 'repeat', countVariable: 'A', body: [] }] },
+  ]
+  for (const stage of allStages.filter(stage => !stage.id.startsWith('u5-'))) {
+    for (const block of invalid) {
+      const storage = fakeStorage()
+      storage.setItem(progressV2Key, JSON.stringify({ version: 2, stages: {
+        [stage.id]: { completed: true, bestStars: 3, lastProgram: { main: [block], functions: [] } },
+        'u5-1': { completed: true, bestStars: 2, lastProgram: { main: [invalid[2]], functions: [] } },
+      } }))
+      const restored = createProgressStore(storage)
+      expect(restored.getDocument(stage)).toEqual({ main: [], functions: [] })
+      expect(restored.getProgress().stages[stage.id]).toMatchObject({ completed: true, bestStars: 3 })
+      expect(restored.getDocument(allStages.find(stage => stage.id === 'u5-1')!).main).toEqual([invalid[2]])
+    }
+  }
+  for (const stage of allStages) {
+    const storage = fakeStorage()
+    const doc = { main: stage.solution, functions: stage.solutionFunctions ?? [] }
+    storage.setItem(progressV2Key, JSON.stringify({ version: 2, stages: { [stage.id]: { completed: true, bestStars: 3, lastProgram: doc } } }))
+    expect(createProgressStore(storage).getDocument(stage), stage.id).toEqual(doc)
+  }
+  const legacy = JSON.stringify({ version: 1, stages: { '1': { completed: true, bestStars: 3, lastProgram: [invalid[2]] } } })
+  expect(parseProgress(legacy).stages['1']).toEqual({ completed: true, bestStars: 3, lastProgram: [] })
 })

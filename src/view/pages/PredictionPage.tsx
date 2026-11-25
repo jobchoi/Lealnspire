@@ -25,7 +25,10 @@ export function PredictionPage({ controller, onBack }: { controller: PredictionC
         {challenge.choices.map((choice, index) => {
           const point = train ? isometric(choice.pos.x, choice.pos.y, h) : { x: (choice.pos.x + .5)*size, y: (choice.pos.y + .5)*size }
           const scale = train ? 1 : size/80
-          return <g key={index} transform={`translate(${point.x} ${point.y}) scale(${scale})`}><g transform={`translate(0 ${-27 + index*23})`}><rect x="-29" y="-13" width="58" height="23" rx="6" fill={selected === index ? '#fde68a' : '#ffffff'} stroke="#111827" strokeWidth="2"/><text textAnchor="middle" y="4" fontSize="18" fontFamily="sans-serif" fontWeight="bold" fill="#111827">{'ABC'[index]} {theme.arrow(choice.dir)}</text></g></g>
+          const peers = challenge.choices.filter(other => other.pos.x === choice.pos.x && other.pos.y === choice.pos.y)
+          const slot = peers.indexOf(choice)
+          const offset = (slot - (peers.length - 1) / 2) * 25
+          return <g key={index} transform={`translate(${point.x} ${point.y}) scale(${scale})`}><g transform={`translate(${offset} -28)`}><rect x="-12" y="-9" width="24" height="17" rx="3" fill={selected === index ? '#fde68a' : '#ffffff'} stroke="#111827" strokeWidth="2"/><text textAnchor="middle" y="4" fontSize="12" fontFamily="sans-serif" fontWeight="bold" fill="#111827">{'ABC'[index]}{theme.arrow(choice.dir)}</text></g></g>
         })}
       </svg>
     </div>
