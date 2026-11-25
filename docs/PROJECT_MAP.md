@@ -100,7 +100,7 @@ View는 포커스, 모달 키보드, 타일 스크롤과 CSS를 담당합니다.
 
 Program 상한은 반복 몸체까지 합쳐 10개이며 스테이지 제한은 더 낮을 수 있습니다.
 Interpreter는 목표에 도착하면 즉시 멈추고, 명령 1000개와 반복 진입 1000회에 안전장치를 둡니다.
-저장 키는 lealnspire.progress.v2(version:2)이며 lastProgram은 { main: Block[], functions: [] }입니다. ProgressRepository의 외부 Progress API는 기존 version:1·Block[] 형태를 유지합니다. v2가 없거나 최상위 구조가 무효면 lealnspire.progress(v1)를 스테이지별로 이행하고 v1은 보존합니다. v1 이행·v2 읽기 모두 무효 코드는 빈 코드로, 무효 completed·bestStars는 각각 false·0으로 보정하며 다른 필드는 보존합니다. 알 수 없는 스테이지 ID만 제외합니다. 알 수 없는 버전은 이행 없이 빈 상태로 시작합니다. 삭제는 두 진행 키만 제거하고 설정은 유지합니다.
+저장 키는 lealnspire.progress.v2(version:2)이며 lastProgram은 { main: Block[], functions: FunctionDef[] }입니다. ProgressRepository의 외부 Progress API는 기존 version:1·Block[] 형태에 함수가 있을 때 선택적 functions를 제공합니다. getDocument는 문서 전체를 반환합니다. v2가 없거나 최상위 구조가 무효면 lealnspire.progress(v1)를 스테이지별로 이행하고 v1은 보존합니다. v1 이행·v2 읽기 모두 무효 코드는 빈 코드로, 무효 completed·bestStars는 각각 false·0으로 보정하며 다른 필드는 보존합니다. 알 수 없는 스테이지 ID만 제외합니다. 알 수 없는 버전은 이행 없이 빈 상태로 시작합니다. 삭제는 두 진행 키만 제거하고 설정은 유지합니다.
 Stage.world는 1~3 sketchbook, 4~6 train, 7~8 handheld입니다. View는 world별 테마를 선택하며 완주한 스테이지는 세 월드로 다시 풀 수 있습니다.
 
 ## 화면 흐름과 메서드
@@ -228,3 +228,11 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - `model/types.ts`, `interpreter.ts`, `editor.ts`, `ProgressRepository.ts`: clearAhead 조건 반복, 선택적 loops.count, whileLimitBlockId와 실패 원인 추적, v2 검증.
 - `model/stages/index.ts`: unit3Stages u3-1~u3-3, Stage.palette와 순차 개방. `controller/flow.ts`는 3단원까지 이어하기를 찾는다.
 - 기존 Editor/BlockTiles/Board/PlayPage/StageSelectPage/ResultModal에 while 팔레트·검사·회차·완주 표시. 상세 설계는 `docs/design/unit3-while.md`.
+
+### T44 함수 Model·저장 [제안·잠정]
+
+- `model/types.ts`: FunctionDef(별·달), ProgramDocument, call 블록, Frame.call·RunResult.whileLimitCall.
+- `model/program.ts`: validDocument의 합산 노드·깊이·ID 검증, FunctionProgram의 문서 편집·함수 생성/삭제·몸체 복제·합산 10개 상한. 함수 몸체 호출과 없는 함수 참조를 거부.
+- `model/interpreter.ts`: 배열/문서 호환, 함수 호출 후 main 복귀, 호출별 프레임·실패 문맥 유지.
+- `model/ProgressRepository.ts`: v2 함수 왕복·손상 격리, getDocument. `controller/GameController.ts`·`EditorController.ts`: 문서 편집·저장·되돌리기, 기존 화면은 main 유지.
+- `model/functions.test.ts`, `model/unit123-run.fixture.json`: 함수 실행·검증·편집·저장·Controller 회귀 및 T44 이전 실행기에서 추출한 1~3단원 정답 전체 프레임 기준.

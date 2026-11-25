@@ -66,11 +66,14 @@ src/
 ```ts
 type Block =
   | { id: string; type: 'forward' | 'turnLeft' | 'turnRight' }
+  | { id: string; type: 'call'; fn: string }
   | { id: string; type: 'repeat'; count: number; body: Block[] }
   | { id: string; type: 'if'; condition: 'blockedAhead'; body: Block[]; else?: Block[] }
   | { id: string; type: 'while'; condition: 'clearAhead'; body: Block[] }
 
-type Program = Block[]
+type FunctionDef = { id: string; icon: 'star' | 'moon'; body: Block[] }
+type ProgramDocument = { main: Block[]; functions: FunctionDef[] }
+type Program = Block[] // 이전 배열 API 호환
 
 type Stage = {
   id: string; world: 'sketchbook' | 'train' | 'handheld'
@@ -87,6 +90,7 @@ type Stage = {
 }
 
 type Frame = {
+  call?: { callId: string; fn: string }
   pos: { x: number; y: number }; dir: Dir; activeBlockId: string | null
   event?: 'move' | 'turn' | 'bump' | 'goal' | 'check'
   check?: { blockId: string; condition: 'blockedAhead' | 'clearAhead'; result: boolean }
@@ -119,10 +123,10 @@ type Frame = {
 ## 6. 진행 상황 저장 (T36, [제안·잠정])
 
 - `src/model/ProgressRepository.ts`만 주입 storage를 읽고 씁니다. 브라우저 localStorage 선택은 main.tsx가 담당합니다.
-- 쓰기 키는 `lealnspire.progress.v2`, 문서는 `{ version: 2, stages: { [stageId]: { completed, bestStars, lastProgram: { main: Block[], functions: [] } } } }`입니다. `functions`는 빈 배열만 허용합니다. Controller·View와 `getProgress`는 기존 version:1·Block[] API를 유지합니다.
+- 쓰기 키는 `lealnspire.progress.v2`, 문서는 `{ version: 2, stages: { [stageId]: { completed, bestStars, lastProgram: { main: Block[], functions: FunctionDef[] } } } }`입니다. [제안·잠정, T44] 함수는 최대 2개(별·달)이며 함수 몸체의 call과 없는 함수 참조를 거부합니다. `getDocument`는 문서 전체를 반환하고 기존 `getProgram`은 main을 반환합니다. `getProgress`는 version:1·Block[] 호환 표현에 함수가 있을 때만 선택적 functions 필드를 제공합니다. GameController는 doc 전체로 실행·저장·되돌리며 기존 화면용 program은 main입니다.
 - 유효한 v2 최상위 구조를 우선합니다. 없거나 무효면 v1 키 `lealnspire.progress`를 읽고 순수 함수 `migrateV1toV2(raw)`로 스테이지별 이행 후 v2에 저장합니다. migrations 배열은 향후 단계별 변환을 추가할 자리입니다. v1 키는 이행·편집·완료 때 변경하지 않아 v1.0.0 롤백 시 과거 기록을 복원할 수 있습니다.
 - 알 수 없는 버전은 v1 이행 없이 빈 상태로 시작하며 읽을 때 키를 삭제하거나 덮어쓰지 않습니다. 이후 일반 저장은 v2 키에만 씁니다. 최상위 구조가 유효하면 알려진 스테이지의 필드를 개별 보정하고, 알 수 없는 스테이지 ID의 항목만 제외합니다. v1 이행과 v2 읽기에 같은 규칙을 적용하고 다른 스테이지는 보존합니다.
-- 완료 여부 boolean, 별 정수 0~3, forward/turnLeft/turnRight/repeat/if/while만 허용합니다. 반복 횟수 정수 2~10, 비어 있지 않은 고유 ID, 최상위 블록 깊이 1 기준 최대 깊이 10, 전체 노드 60개까지 허용합니다. 코드가 무효면 완료 여부·최고 별을 보존하고 lastProgram만 `{ main: [], functions: [] }`로 비웁니다(v2 래퍼·functions가 무효인 경우 포함). 완료 여부가 boolean이 아니면 false, 별이 0~3 정수가 아니면 0으로 해당 필드만 보정합니다.
+- 완료 여부 boolean, 별 정수 0~3, forward/turnLeft/turnRight/repeat/if/while/call만 허용합니다. 반복 횟수 정수 2~10, 비어 있지 않은 고유 ID, 최상위 블록 깊이 1 기준 최대 깊이 10, main과 모든 함수 몸체를 합쳐 전체 노드 60개까지 허용합니다. 코드가 무효면 완료 여부·최고 별을 보존하고 lastProgram만 `{ main: [], functions: [] }`로 비웁니다(v2 래퍼·functions가 무효인 경우 포함). 완료 여부가 boolean이 아니면 false, 별이 0~3 정수가 아니면 0으로 해당 필드만 보정합니다.
 - 불러올 때 명시된 Stage.palette 밖 블록이 중첩 가지에라도 있으면 해당 스테이지 코드만 비우고 완료·최고 별·다른 스테이지는 보존합니다.
 - 읽기·쓰기 실패 시 메모리 상태로 계속 동작합니다. 이행 쓰기가 실패해도 복원한 메모리 기록과 v1 키는 유지됩니다. 입력·출력은 복사하여 외부 변경을 막습니다.
 - 기록 삭제는 v1·v2 두 키를 모두 삭제 시도하고 메모리도 초기화합니다. `lealnspire.settings`의 언어 설정과 다른 앱 키는 유지합니다. 기존 기록 안내 문구는 저장 위치·내용·삭제 범위가 동일하여 유지합니다.
@@ -183,3 +187,7 @@ if에 선택적 `else?: Block[]`를 추가한다. 저장 버전은 v2 유지, �
 ### T42 조건 반복 [제안·잠정]
 
 Block에 while/clearAhead/body를 추가하며 기존 blockedAhead 판정을 반전해 재사용한다. 검사마다 실행 단계와 check 프레임을 생성하여 빈 몸체도 유한 시간에 stepLimit으로 끝난다. RunResult.whileLimitBlockId는 원인 while을 고치기 화면에 전달한다. Frame.loops.count는 while에서는 생략한다. Stage.palette는 표시할 블록 종류를 지정하며 미지정 스테이지의 팔레트는 기존과 같다. 저장 문서는 v2를 유지하고 while의 조건 허용 목록은 clearAhead 하나다. 새로운 파일 model/while.test.ts와 docs/design/unit3-while.md가 실행·편집·저장 검증과 설계를 담는다.
+
+### T44 함수 Model [제안·잠정]
+
+`FunctionProgram`은 함수 생성·삭제와 main/함수 몸체 공통 편집·복제를 제공하며 ID를 문서 전체에서 재발급합니다. 정의는 0블록, call은 1블록이며 몸체를 합쳐 편집 상한 10개입니다. 함수 삭제는 main의 중첩 call도 제거합니다. 실행기는 배열과 문서를 모두 받고 call 자체는 프레임 없이 몸체 프레임에 호출 정보를 남깁니다. 실패 지점은 몸체 블록과 call 정보를 반환하며 while 상한은 whileLimitCall로 호출 문맥을 보존합니다. 함수 화면·스테이지는 T45입니다.

@@ -1,5 +1,5 @@
 import type { Block, Program as BlockTree } from './types'
-import { createBlock, findBlockPath, hasBody } from './editor'
+import { createBlock, findBlockPath, hasBody, blockAt, cloneBlock } from './editor'
 
 export const MAX_PROGRAM_BLOCKS = 10
 
@@ -78,3 +78,80 @@ export const deleteBlock = Program.deleteBlock
 export const moveBlock = Program.moveBlock
 export const setRepeatCount = Program.setRepeatCount
 export const countBlocks = Program.countBlocks
+
+/** Validate persisted documents with a shared node/ID budget across all bodies. */
+export function validDocument(value: unknown, palette?: Block['type'][]): value is import('./types').ProgramDocument {
+  const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
+  if (!record(value) || !Array.isArray(value.main) || !Array.isArray(value.functions) || value.functions.length > 2) return false
+  const functions = new Set<string>()
+  for (const fn of value.functions) {
+    if (!record(fn) || typeof fn.id !== 'string' || !fn.id || functions.has(fn.id) || (fn.icon !== 'star' && fn.icon !== 'moon') || !Array.isArray(fn.body)) return false
+    functions.add(fn.id)
+  }
+  const ids = new Set<string>()
+  let nodes = 0
+  function list(input: unknown[], depth: number, inFunction: boolean): boolean {
+    for (const block of input) {
+      if (++nodes > 60 || depth > MAX_PROGRAM_BLOCKS || !record(block) || typeof block.id !== 'string' || !block.id || ids.has(block.id)) return false
+      ids.add(block.id)
+      if (palette && !palette.includes(block.type as Block['type'])) return false
+      switch (block.type) {
+      case 'call': if (inFunction || typeof block.fn !== 'string' || !functions.has(block.fn)) return false; break
+      case 'forward': case 'turnLeft': case 'turnRight': break
+      case 'repeat': case 'if': case 'while':
+        if (!Array.isArray(block.body)) return false
+        if (block.type === 'repeat' && (!Number.isInteger(block.count) || Number(block.count) < 2 || Number(block.count) > 10)) return false
+        if (block.type === 'while' && (block.condition !== 'clearAhead' || 'else' in block)) return false
+        if (block.type === 'if' && (block.condition !== 'blockedAhead' || 'else' in block && !Array.isArray(block.else))) return false
+        if (!list(block.body, depth + 1, inFunction)) return false
+        if (block.type === 'if' && Array.isArray(block.else) && !list(block.else, depth + 1, inFunction)) return false
+        break
+      default: return false
+      }
+    }
+    return true
+  }
+  return list(value.main, 1, false) && value.functions.every(fn => list(fn.body, 1, true))
+}
+
+/** Immutable doc edits share the same tree operations for main and function bodies. */
+export class FunctionProgram {
+  private readonly doc: import('./types').ProgramDocument
+  constructor(doc: import('./types').ProgramDocument = { main: [], functions: [] }) {
+    if (!validDocument(doc)) throw new Error('Invalid program doc')
+    this.doc = structuredClone(doc)
+  }
+  toDocument() { return structuredClone(this.doc) }
+  count() { return countBlocks(this.doc.main) + this.doc.functions.reduce((n, fn) => n + countBlocks(fn.body), 0) }
+  createFunction(): FunctionProgram {
+    if (this.doc.functions.length === 2) return this
+    let serial = 1
+    while (this.doc.functions.some(fn => fn.id === `function-${serial}`)) serial++
+    const icon = this.doc.functions.some(fn => fn.icon === 'star') ? 'moon' : 'star'
+    return new FunctionProgram({ ...this.doc, functions: [...this.doc.functions, { id: `function-${serial}`, icon, body: [] }] })
+  }
+  removeFunction(id: string): FunctionProgram {
+    const strip = (blocks: BlockTree): BlockTree => blocks.filter(block => block.type !== 'call' || block.fn !== id).map(block => hasBody(block) ? { ...block, body: strip(block.body), ...(block.type === 'if' && block.else ? { else: strip(block.else) } : {}) } : block)
+    return new FunctionProgram({ main: strip(this.doc.main), functions: this.doc.functions.filter(fn => fn.id !== id) })
+  }
+  edit(body: (blocks: BlockTree) => BlockTree, fn?: string): FunctionProgram {
+    if (fn && !this.doc.functions.some(def => def.id === fn)) throw new Error('Unknown function')
+    const next = new FunctionProgram(fn ? { ...this.doc, functions: this.doc.functions.map(def => def.id === fn ? { ...def, body: body(structuredClone(def.body)) } : def) } : { ...this.doc, main: body(structuredClone(this.doc.main)) })
+    return next.count() > MAX_PROGRAM_BLOCKS ? this : next
+  }
+  create(type: Block['type'], fn = ''): Block {
+    const all = [...this.doc.main, ...this.doc.functions.flatMap(def => def.body)]
+    const block = createBlock(all, type)
+    return block.type === 'call' ? { ...block, fn } : block
+  }
+  add(block: Block, parent: number[] = [], fn?: string) { return this.edit(body => Program.addBlock(body, structuredClone(block), parent), fn) }
+  remove(path: number[], fn?: string) { return this.edit(body => Program.deleteBlock(body, path), fn) }
+  move(path: number[], direction: 'up' | 'down', fn?: string) { return this.edit(body => Program.moveBlock(body, path, direction), fn) }
+  duplicate(path: number[], fn?: string): FunctionProgram {
+    const body = fn ? this.doc.functions.find(def => def.id === fn)?.body : this.doc.main
+    if (!body) throw new Error('Unknown function')
+    const source = blockAt(body, path)
+    if (!source) throw new Error('Invalid block path')
+    return this.add(cloneBlock([...this.doc.main, ...this.doc.functions.flatMap(def => def.body)], source), path.slice(0, -1), fn)
+  }
+}

@@ -1,13 +1,14 @@
-import type { Program, Stage } from './types'
-import { MAX_PROGRAM_BLOCKS } from './program'
+import { programDocument } from './types'
+import type { Program, ProgramDocument, ProgramInput, FunctionDef, Stage } from './types'
+import { MAX_PROGRAM_BLOCKS, validDocument } from './program'
 import { allStages as stages, stages as unit1Stages } from './stages'
 
-export type StageProgress = { completed: boolean; bestStars: number; lastProgram: Program }
+export type StageProgress = { completed: boolean; bestStars: number; lastProgram: Program; functions?: FunctionDef[] }
 export type Progress = { version: 1; stages: Record<string, StageProgress> }
 export type ProgressStorage = { getItem(key: string): string | null; setItem(key: string, value: string): void; removeItem?(key: string): void }
 export const progressKey = 'lealnspire.progress'
 export const progressV2Key = 'lealnspire.progress.v2'
-export type ProgressV2 = { version: 2; stages: Record<string, Omit<StageProgress, 'lastProgram'> & { lastProgram: { main: Program; functions: [] } }> }
+export type ProgressV2 = { version: 2; stages: Record<string, Omit<StageProgress, 'lastProgram'> & { lastProgram: ProgramDocument }> }
 export const settingsKey = 'lealnspire.settings'
 const empty = (): Progress => ({ version: 1, stages: {} })
 const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T
@@ -40,7 +41,7 @@ function validProgram(value: unknown, palette?: Stage['palette']): value is Prog
 }
 
 const knownStageIds = new Set(stages.map(stage => stage.id))
-function normalizeStages(entries: Record<string, unknown>): Record<string, StageProgress> {
+function normalizeStages(entries: Record<string, unknown>, withFunctions = false): Record<string, StageProgress> {
   return Object.fromEntries(Object.entries(entries).flatMap(([id, value]) => {
     if (!knownStageIds.has(id)) return []
     const entry = record(value) ? value : {}
@@ -48,7 +49,8 @@ function normalizeStages(entries: Record<string, unknown>): Record<string, Stage
       completed: typeof entry.completed === 'boolean' ? entry.completed : false,
       bestStars: Number.isInteger(entry.bestStars) && (entry.bestStars as number) >= 0 && (entry.bestStars as number) <= 3
         ? entry.bestStars as number : 0,
-      lastProgram: validProgram(entry.lastProgram, stages.find(stage => stage.id === id)?.palette) ? entry.lastProgram : [],
+      ...(withFunctions && Array.isArray(entry.functions) && entry.functions.length ? { functions: entry.functions as FunctionDef[] } : {}),
+      lastProgram: (withFunctions && Array.isArray(entry.functions) ? validDocument({ main: entry.lastProgram, functions: entry.functions }, stages.find(stage => stage.id === id)?.palette) : validProgram(entry.lastProgram, stages.find(stage => stage.id === id)?.palette)) ? entry.lastProgram as Program : [],
     }]]
   }))
 }
@@ -71,7 +73,7 @@ const migrations = [migrateV1toV2]
 
 function toDocument(progress: Progress): ProgressV2 {
   return { version: 2, stages: Object.fromEntries(Object.entries(progress.stages).map(([id, entry]) =>
-    [id, { ...clone(entry), lastProgram: { main: clone(entry.lastProgram), functions: [] } }])) }
+    [id, { completed: entry.completed, bestStars: entry.bestStars, lastProgram: { main: clone(entry.lastProgram), functions: clone(entry.functions ?? []) } }])) }
 }
 function readJSON(raw: string | null): unknown {
   try { return JSON.parse(raw ?? 'null') } catch { return null }
@@ -81,10 +83,10 @@ function fromDocument(value: unknown): Progress | undefined {
   const entries = Object.fromEntries(Object.entries(value.stages).map(([id, value]) => {
     const entry = record(value) ? value : {}
     const code = entry.lastProgram
-    const main = record(code) && Array.isArray(code.functions) && code.functions.length === 0 ? code.main : undefined
-    return [id, { ...entry, lastProgram: main }]
+    const valid = validDocument(code, stages.find(stage => stage.id === id)?.palette)
+    return [id, { ...entry, lastProgram: valid ? code.main : [], functions: valid ? code.functions : [] }]
   }))
-  return { version: 1, stages: normalizeStages(entries) }
+  return { version: 1, stages: normalizeStages(entries, true) }
 }
 function unknownVersion(value: unknown): boolean {
   return record(value) && 'version' in value && value.version !== 1 && value.version !== 2
@@ -153,18 +155,19 @@ function makeStore(storage?: ProgressStorage) {
     },
     getProgress: (): Progress => clone(progress),
     getProgram: (stage: Stage): Program => clone(progress.stages[stage.id]?.lastProgram ?? stage.initialProgram ?? []),
-    saveProgram(stageId: string, program: Program) {
+    getDocument: (stage: Stage): ProgramDocument => ({ main: clone(progress.stages[stage.id]?.lastProgram ?? stage.initialProgram ?? []), functions: clone(progress.stages[stage.id]?.functions ?? []) }),
+    saveProgram(stageId: string, program: ProgramInput) {
       const previous = progress.stages[stageId]
       progress.stages = { ...progress.stages, [stageId]: {
-        completed: previous?.completed ?? false, bestStars: previous?.bestStars ?? 0, lastProgram: clone(program),
+        completed: previous?.completed ?? false, bestStars: previous?.bestStars ?? 0, lastProgram: clone(programDocument(program).main), ...(programDocument(program).functions.length ? { functions: clone(programDocument(program).functions) } : {}),
       } }
       persist()
     },
-    completeStage(stageId: string, stars: number, program: Program) {
+    completeStage(stageId: string, stars: number, program: ProgramInput) {
       if (!Number.isInteger(stars) || stars < 1 || stars > 3) return
       const previous = progress.stages[stageId]
       progress.stages = { ...progress.stages, [stageId]: {
-        completed: true, bestStars: Math.max(previous?.bestStars ?? 0, stars), lastProgram: clone(program),
+        completed: true, bestStars: Math.max(previous?.bestStars ?? 0, stars), lastProgram: clone(programDocument(program).main), ...(programDocument(program).functions.length ? { functions: clone(programDocument(program).functions) } : {}),
       } }
       persist()
     },
@@ -180,7 +183,8 @@ export class ProgressRepository {
   clear = () => this.store.clear()
   getProgress = () => this.store.getProgress()
   getProgram = (stage: Stage) => this.store.getProgram(stage)
-  saveProgram = (id: string, program: Program) => this.store.saveProgram(id, program)
-  completeStage = (id: string, stars: number, program: Program) => this.store.completeStage(id, stars, program)
+  getDocument = (stage: Stage) => this.store.getDocument(stage)
+  saveProgram = (id: string, program: ProgramInput) => this.store.saveProgram(id, program)
+  completeStage = (id: string, stars: number, program: ProgramInput) => this.store.completeStage(id, stars, program)
 }
 export const createProgressStore = (storage?: ProgressStorage) => new ProgressRepository(storage)

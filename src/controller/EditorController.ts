@@ -1,10 +1,28 @@
 import { hasBody, blockAt, listAt } from '../model/editor'
 import { Observable } from './Observable'
-import { MAX_PROGRAM_BLOCKS, Program as ProgramModel } from '../model/program'
-import type { Block, Program } from '../model/types'
+import { MAX_PROGRAM_BLOCKS, FunctionProgram, Program as ProgramModel } from '../model/program'
+import type { Block, Program, ProgramDocument, FunctionDef } from '../model/types'
 export class EditorController extends Observable<{ selectedId: string | null; targetId: string | null; addedId: string | null }> {
   targetElse = false
   program: Program = []
+  functions: FunctionDef[] = []
+  onDocumentChange: (doc: ProgramDocument) => void = () => {}
+  get doc(): ProgramDocument { return { main: this.program, functions: this.functions } }
+  configureDocument(doc: ProgramDocument, onChange: (doc: ProgramDocument) => void, locked: boolean, maxBlocks?: number) {
+    this.functions = structuredClone(doc.functions)
+    this.onDocumentChange = onChange
+    this.configure(doc.main, main => onChange({ main, functions: this.functions }), locked, maxBlocks)
+  }
+  private changeDocument(model: FunctionProgram) {
+    const doc = model.toDocument()
+    if (model.count() > this.limit) return
+    this.functions = doc.functions
+    this.reconcile(doc.main)
+    this.onDocumentChange(doc)
+  }
+  createFunction = () => { if (this.prepareEdit()) this.changeDocument(new FunctionProgram(this.doc).createFunction()) }
+  removeFunction = (id: string) => { if (this.prepareEdit()) this.changeDocument(new FunctionProgram(this.doc).removeFunction(id)) }
+  editFunction = (id: string, edit: (body: Program) => Program) => { if (this.prepareEdit()) this.changeDocument(new FunctionProgram(this.doc).edit(edit, id)) }
   locked = false
   maxBlocks?: number
   onChange: (program: Program) => void = () => {}
@@ -41,7 +59,7 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   get selectedPath() { return this.state.selectedId ? new ProgramModel(this.program).find(this.state.selectedId) : undefined }
   get targetPath() { return this.state.targetId ? new ProgramModel(this.program).find(this.state.targetId) : undefined }
   get selectedBlock() { return this.selectedPath ? blockAt(this.program, this.selectedPath) : undefined }
-  get total() { return new ProgramModel(this.program).count() }
+  get total() { return new FunctionProgram(this.doc).count() }
   get limit() { return Math.min(this.maxBlocks ?? MAX_PROGRAM_BLOCKS, MAX_PROGRAM_BLOCKS) }
   get atLimit() { return this.total >= this.limit }
   get siblings() { return this.selectedPath ? listAt(this.program, this.selectedPath.slice(0, -1)) : undefined }
@@ -68,7 +86,8 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   toggleTarget = (alternative = false) => { if (this.locked) return; const sameBranch = this.targetElse === alternative; this.targetElse = alternative; if (this.selectedBlock && hasBody(this.selectedBlock) && this.prepareEdit()) this.update({ ...this.state, targetId: sameBranch && this.state.targetId === this.state.selectedId ? null : this.state.selectedId }) }
   add = (type: Block['type']) => {
     if (this.locked || this.atLimit || !this.prepareEdit()) return
-    const block = new ProgramModel(this.program).create(type)
+    const block = new FunctionProgram(this.doc).create(type, this.functions[0]?.id)
+    if (type === 'call' && !this.functions.length) return
     this.update({ ...this.state, addedId: block.id })
     this.change(new ProgramModel(this.program).add(block, this.targetPath ? [...this.targetPath, ...(this.targetElse ? [-1] : [])] : []).toBlocks())
   }
