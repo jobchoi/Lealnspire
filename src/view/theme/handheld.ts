@@ -8,5 +8,5 @@ export const handheld: Theme = {
   blockSymbol: type => createElement(Symbol, { name: type, world: 'handheld' }),
   repeat: count => t('themes.handheld.repeat', { count }),
   runText: () => t('themes.handheld.run'),
-  paletteName: type => type === 'repeat' ? t('blocks.repeat') : t(`themes.handheld.${type}`),
+  paletteName: type => type === 'repeat' ? defaultTheme.paletteName!(type) : t(`themes.handheld.${type}`),
 }

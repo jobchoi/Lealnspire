@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import { defaultTheme, type Theme } from '../theme/defaultTheme'
 import type { Frame, Program } from '../../model/types'
+import glossary from '../../i18n/glossary.json'
 import { t } from '../../i18n/I18n'
 import './BlockTiles.css'
 
@@ -18,7 +19,7 @@ export function BlockTiles({ theme = defaultTheme, program, selectedId, targetId
       {loop && <span className="loop-progress" role="img" aria-label={t('loopIteration', { iteration: loop.iteration, count: loop.count })}>{loop.iteration}/{loop.count}</span>}
       {failedBlockId === block.id && <span className="failure-badge" role="img" aria-label={t('failureBlock')}>!</span>}
       {lanes.map((lane, depth) => <span key={depth} className="repeat-ribbon" aria-hidden="true" data-ribbon-depth={depth + 1} style={{ '--ribbon-depth': depth, '--ribbon-ink': lane.selected ? '#2563eb' : lane.ink } as CSSProperties} />)}
-      <small aria-hidden="true">{order}</small><span className="block-symbol" aria-hidden="true">{theme.blockSymbol(block.type)}</span>{block.type === 'repeat' && <strong aria-hidden="true">{theme.repeat(block.count)}</strong>}{block.type === 'repeat' && !block.body.length && <span className="empty-repeat-label">{t('emptyRepeat')}</span>}
+      <small aria-hidden="true">{order}</small><span className="block-symbol" aria-hidden="true">{theme.blockSymbol(block.type)}</span>{block.type === 'repeat' && <strong aria-hidden="true"><span className="concept-keyword">{glossary.repeat.keyword}</span><span className="repeat-count">×{block.count}</span>{theme.world === 'train' && <span className="repeat-world-count">{theme.repeat(block.count)}</span>}</strong>}{block.type === 'repeat' && !block.body.length && <span className="empty-repeat-label">{t('emptyRepeat')}</span>}
     </button>
     return <li key={block.id} data-repeat-tone={block.type === 'repeat' ? path.reduce((sum, i) => sum + i, parent.length) % 3 : undefined} data-repeat-depth={block.type === 'repeat' ? parent.length + 1 : undefined} className={block.type === 'repeat' ? `repeat-frame${selected || targetId === block.id ? ' frame-selected' : ''}` : 'tile-item'}>
       {theme.world === 'sketchbook' && block.type === 'repeat' && <svg className="crayon-bracket" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"><path d="M6 4 C2 4 2 36 6 36 M94 4 C98 4 98 36 94 36" stroke="#e4572e" strokeWidth="2.4" fill="none" vectorEffect="non-scaling-stroke" filter="url(#sketchbook-rough)"/></svg>}

@@ -1,0 +1,466 @@
+{
+  "forward": {
+    "id": "forward",
+    "keyword": "forward",
+    "ko": {
+      "name": "앞으로",
+      "short": "바라보는 방향으로 한 칸 이동해요."
+    },
+    "en": {
+      "name": "Forward",
+      "short": "Move one cell in the facing direction."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "turnLeft": {
+    "id": "turnLeft",
+    "keyword": "left",
+    "ko": {
+      "name": "왼쪽으로 돌기",
+      "short": "제자리에서 왼쪽으로 돌아요."
+    },
+    "en": {
+      "name": "Turn left",
+      "short": "Turn left without moving."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "turnRight": {
+    "id": "turnRight",
+    "keyword": "right",
+    "ko": {
+      "name": "오른쪽으로 돌기",
+      "short": "제자리에서 오른쪽으로 돌아요."
+    },
+    "en": {
+      "name": "Turn right",
+      "short": "Turn right without moving."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "repeat": {
+    "id": "repeat",
+    "keyword": "repeat",
+    "ko": {
+      "name": "반복",
+      "short": "안의 블록을 정해진 횟수만큼 실행해요."
+    },
+    "en": {
+      "name": "Repeat",
+      "short": "Run the blocks inside a fixed number of times."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "block": {
+    "id": "block",
+    "keyword": "block",
+    "ko": {
+      "name": "블록",
+      "short": "동작이나 규칙을 나타내는 코드 조각이에요."
+    },
+    "en": {
+      "name": "Block",
+      "short": "A piece of code representing an action or rule."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "cell": {
+    "id": "cell",
+    "keyword": "cell",
+    "ko": {
+      "name": "칸",
+      "short": "지도에서 위치를 나타내는 한 칸이에요."
+    },
+    "en": {
+      "name": "Cell",
+      "short": "One position on the grid."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "run": {
+    "id": "run",
+    "keyword": "run",
+    "ko": {
+      "name": "실행",
+      "short": "만든 코드를 실행해요."
+    },
+    "en": {
+      "name": "Run",
+      "short": "Execute your code."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "step": {
+    "id": "step",
+    "keyword": "step",
+    "ko": {
+      "name": "한 단계",
+      "short": "다음 동작 하나를 실행해요."
+    },
+    "en": {
+      "name": "Step",
+      "short": "Execute the next action."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "reset": {
+    "id": "reset",
+    "keyword": "reset",
+    "ko": {
+      "name": "처음으로",
+      "short": "코드를 지우지 않고 실행 상태를 출발점으로 되돌려요."
+    },
+    "en": {
+      "name": "Reset",
+      "short": "Return execution to the start without deleting code."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "fix": {
+    "id": "fix",
+    "keyword": "fix",
+    "ko": {
+      "name": "고치기",
+      "short": "실패한 곳을 살펴보고 코드를 고쳐요."
+    },
+    "en": {
+      "name": "Fix",
+      "short": "Inspect the failure and edit your code."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "undo": {
+    "id": "undo",
+    "keyword": "undo",
+    "ko": {
+      "name": "되돌리기",
+      "short": "바로 전 편집 한 번을 되돌려요."
+    },
+    "en": {
+      "name": "Undo",
+      "short": "Reverse the most recent edit."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "hint": {
+    "id": "hint",
+    "keyword": "hint",
+    "ko": {
+      "name": "힌트",
+      "short": "문제를 살펴볼 단서를 확인해요."
+    },
+    "en": {
+      "name": "Hint",
+      "short": "See a clue to help you examine the puzzle."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "star": {
+    "id": "star",
+    "keyword": "star",
+    "ko": {
+      "name": "별",
+      "short": "도착 목표나 풀이 평가를 나타내요."
+    },
+    "en": {
+      "name": "Star",
+      "short": "Marks the destination or rates a solution."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "stage": {
+    "id": "stage",
+    "keyword": "stage",
+    "ko": {
+      "name": "스테이지",
+      "short": "코드로 해결하는 퍼즐 하나예요."
+    },
+    "en": {
+      "name": "Stage",
+      "short": "One puzzle to solve with code."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "world": {
+    "id": "world",
+    "keyword": "world",
+    "ko": {
+      "name": "월드",
+      "short": "같은 동작을 다른 그림체로 보여 주는 세계예요."
+    },
+    "en": {
+      "name": "World",
+      "short": "A visual theme for the same actions."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "bonus": {
+    "id": "bonus",
+    "keyword": "bonus",
+    "ko": {
+      "name": "보너스",
+      "short": "배운 방법을 새 길에 적용하는 선택 퍼즐이에요."
+    },
+    "en": {
+      "name": "Bonus",
+      "short": "An optional puzzle applying what you learned."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "predict": {
+    "id": "predict",
+    "keyword": "predict",
+    "ko": {
+      "name": "예측",
+      "short": "실행 전에 코드의 결과를 예상해요."
+    },
+    "en": {
+      "name": "Predict",
+      "short": "Anticipate the result before running code."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "if": {
+    "id": "if",
+    "keyword": "if",
+    "ko": {
+      "name": "조건 실행",
+      "short": "조건이 참이면 안의 코드를 실행해요."
+    },
+    "en": {
+      "name": "If",
+      "short": "Run the code inside when a condition is true."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "else": {
+    "id": "else",
+    "keyword": "else",
+    "ko": {
+      "name": "다른 경우",
+      "short": "if 조건이 거짓일 때 실행해요."
+    },
+    "en": {
+      "name": "Else",
+      "short": "Run when the if condition is false."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "while": {
+    "id": "while",
+    "keyword": "while",
+    "ko": {
+      "name": "조건 반복",
+      "short": "조건이 참인 동안 검사와 실행을 반복해요."
+    },
+    "en": {
+      "name": "While",
+      "short": "Check and repeat while a condition is true."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "function": {
+    "id": "function",
+    "keyword": "function",
+    "ko": {
+      "name": "함수",
+      "short": "이름을 붙여 다시 부를 수 있는 동작 묶음이에요."
+    },
+    "en": {
+      "name": "Function",
+      "short": "A named group of actions you can call again."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "variable": {
+    "id": "variable",
+    "keyword": "set",
+    "ko": {
+      "name": "변수·대입",
+      "short": "이름 있는 칸에 값을 저장하거나 바꿔요."
+    },
+    "en": {
+      "name": "Variable and assignment",
+      "short": "Store or change a value in a named slot."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "return": {
+    "id": "return",
+    "keyword": "return",
+    "ko": {
+      "name": "반환",
+      "short": "함수 실행을 마치고 값을 돌려줘요."
+    },
+    "en": {
+      "name": "Return",
+      "short": "Finish a function and send a value back."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "event": {
+    "id": "event",
+    "keyword": "on",
+    "ko": {
+      "name": "이벤트",
+      "short": "정해진 일이 일어나면 연결된 코드를 실행해요."
+    },
+    "en": {
+      "name": "Event",
+      "short": "Run connected code when a specified event occurs."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "list": {
+    "id": "list",
+    "keyword": "list",
+    "ko": {
+      "name": "리스트",
+      "short": "여러 값을 순서대로 담아요."
+    },
+    "en": {
+      "name": "List",
+      "short": "Keep multiple values in order."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "index": {
+    "id": "index",
+    "keyword": "index",
+    "ko": {
+      "name": "인덱스",
+      "short": "리스트에서 값의 위치를 나타내요."
+    },
+    "en": {
+      "name": "Index",
+      "short": "Identify a value’s position in a list."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "condition": {
+    "id": "condition",
+    "keyword": "condition",
+    "ko": {
+      "name": "조건",
+      "short": "참 또는 거짓으로 판단할 수 있는 식이에요."
+    },
+    "en": {
+      "name": "Condition",
+      "short": "An expression that evaluates to true or false."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "parameter": {
+    "id": "parameter",
+    "keyword": "parameter",
+    "ko": {
+      "name": "매개변수",
+      "short": "함수가 받을 값에 붙인 이름이에요."
+    },
+    "en": {
+      "name": "Parameter",
+      "short": "A name for a value a function receives."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "argument": {
+    "id": "argument",
+    "keyword": "argument",
+    "ko": {
+      "name": "인자",
+      "short": "함수를 부를 때 실제로 전달하는 값이에요."
+    },
+    "en": {
+      "name": "Argument",
+      "short": "An actual value passed when calling a function."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  }
+}

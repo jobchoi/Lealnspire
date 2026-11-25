@@ -8,5 +8,5 @@ export const train: Theme = {
   blockSymbol: type => createElement(Symbol, { name: type, world: 'train' }),
   repeat: count => t('themes.train.repeat', { count }),
   runText: () => t('themes.train.run'),
-  paletteName: type => type === 'repeat' ? t('blocks.repeat') : t(`themes.train.${type}`),
+  paletteName: type => type === 'repeat' ? defaultTheme.paletteName!(type) : t(`themes.train.${type}`),
 }

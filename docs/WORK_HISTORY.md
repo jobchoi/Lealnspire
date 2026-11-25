@@ -1,5 +1,11 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-25 — 기획 라운드 3(Claude + GPT), T33 조건 단원 명세 (Claude)
+
+- 사용자 결정(기본 개념 전부·개념 중심, 영어는 AI 번역·과한 한글화 지양)을 받아 Claude 초안 → GPT 독립 기획 → 종합. 원본: docs/design/round3-claude-draft.md, round3-gpt-proposal.md. 종합: ROADMAP 라운드 3, TASKS T33~T57
+- T33: docs/design/unit2-conditions.md — `if [앞 막힘]` 의미(도달 시 한 번 검사, 한 단계로 셈, check 프레임), 같은 코드로 여러 맵(variants, 모두 통과해야 성공), 스테이지 초안 U2-1~4(U2-1 두 맵은 경로를 직접 추적해 확인), 예측 후보(대표 오해), 화면 표시, E2E 명세, 엔진·저장 영향. T29는 T33으로 통합
+- T34 착수(Codex): glossary.json, repeat 개념어 표기, 언어 키 검사
+
 ## 2026-11-25 — T28 첫 제품 통합 인수, 사용자 결정 반영, v1.0.0 릴리스 준비
 
 - GPT 통합 교차 검토(읽기 전용, `git diff 9e00dd6 HEAD`): 필수 1(키보드 E2E가 .focus()로 직접 이동해 Tab 도달성을 검증 못함), 권장 4(저장 불가 안내 검사가 제목만으로 통과, 코드 복원을 개수로만, 안내→앱 복귀 미검증, 8번 결과에 '모든 스테이지 완주'), 사소 2(GUIDE 예측 목록, PROJECT_MAP)

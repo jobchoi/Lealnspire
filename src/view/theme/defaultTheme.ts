@@ -1,6 +1,7 @@
 import { createElement, type ReactNode } from 'react'
 import { Symbol } from './Symbols'
 import type { Block, Dir } from '../../model/types'
+import glossary from '../../i18n/glossary.json'
 import { t } from '../../i18n/I18n'
 export interface Theme {
   world?: 'sketchbook' | 'train' | 'handheld'
@@ -20,6 +21,7 @@ export const defaultTheme: Theme = {
   blockName: type => t(`blocks.${type}`),
   blockClass: type => `block-${type}`,
   repeat: count => `×${count}`,
+  paletteName: type => type === 'repeat' ? `${glossary.repeat.keyword} · ${t('blocks.repeat')}` : t(`blocks.${type}`),
   buttonLabel: key => t(key),
   arrow: direction => ({ N: '▲', E: '▶', S: '▼', W: '◀' })[direction],
 }

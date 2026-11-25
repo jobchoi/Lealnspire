@@ -8,5 +8,5 @@ export const sketchbook: Theme = {
   blockSymbol: type => createElement(Symbol, { name: type, world: 'sketchbook' }),
   repeat: count => t('themes.sketchbook.repeat', { count }),
   runText: () => t('themes.sketchbook.run'),
-  paletteName: type => type === 'repeat' ? t('blocks.repeat') : t(`themes.sketchbook.${type}`),
+  paletteName: type => type === 'repeat' ? defaultTheme.paletteName!(type) : t(`themes.sketchbook.${type}`),
 }
