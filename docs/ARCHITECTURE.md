@@ -67,6 +67,7 @@ src/
 type Block =
   | { id: string; type: 'forward' | 'turnLeft' | 'turnRight' }
   | { id: string; type: 'repeat'; count: number; body: Block[] }
+  | { id: string; type: 'if'; condition: 'blockedAhead'; body: Block[] }
 
 type Program = Block[]
 
@@ -74,6 +75,7 @@ type Stage = {
   id: string; world: 'sketchbook' | 'train' | 'handheld'
   title: string; goal: string; hint: string // i18n 키
   grid: string[]            // 예: ["#####", "#S.G#"]  S: 출발, G: 도착, #: 벽
+  variants?: string[][]    // 없으면 [grid], 같은 코드로 모두 성공해야 통과
   startDir: 'N' | 'E' | 'S' | 'W'
   maxBlocks?: number
   starBlocks: number
@@ -148,3 +150,13 @@ type Frame = { pos: { x: number; y: number }; dir: Dir; activeBlockId: string | 
 - 타일은 영어 개념어 + 기호·값, 설명·힌트·접근성 이름과 일반 버튼은 UI 언어를 씁니다. 앞으로·돌기는 기존 기호를 유지합니다. 키워드는 JSON을 import하여 `glossary.repeat.keyword`처럼 가져오며 View에 표시용 문자열로 복제하지 않습니다.
 - 반복은 세 월드 모두 `repeat`와 `×N`을 표시합니다. 크레용 괄호·기차 바퀴 수 표지판·게임기 스타일은 유지합니다. 기차의 실행 회차 표시 중에는 공간 확보를 위해 바퀴 수 대신 회차 배지를 표시합니다. 팔레트의 보이는 이름은 키워드 + UI 언어 설명, 접근성 이름은 기존 계약을 유지합니다.
 - `glossary.test.tsx`는 공식/개발 locale 키·치환 인자, 용어 정의, View의 표시용 JSX·반환 라벨 리터럴과 세 월드 렌더링을 검사합니다. 정적 라벨 검사는 임의의 문자열 조합 전체를 분석하는 검사기가 아니므로, 새로운 표기 경로에도 glossary 참조 원칙을 적용해야 합니다. 영어 전체 번역·공식 지원 등록은 T35입니다.
+
+### T37 조건 실행 Model [제안·잠정]
+
+`if`는 도달 시 이동의 충돌 판정과 같은 함수로 센서를 한 번 검사하고 `event: 'check'`, `check: { blockId, condition: 'blockedAhead', result }`를 기록합니다. 검사 중 위치·방향과 바깥 반복 회차는 유지됩니다. 검사는 명령과 같은 1000단계 상한에 포함되며 참인 몸체만 실행합니다. 알 수 없는 블록은 exhaustive switch에서 예외로 처리합니다.
+
+`run`은 기존처럼 `grid` 하나를 실행합니다. `runAll(stage, program)`은 `variants ?? [grid]` 전체를 실행하여 `{ results, result, failedVariant }`를 반환합니다. `failedVariant`는 첫 실패의 0부터 시작하는 인덱스이며 모두 성공하면 null입니다. `failurePoint`는 이 결과도 받아 실패 변형의 원인에 `variant`를 추가합니다(기존 단일 실행 반환 형태 유지).
+
+`editor.hasBody`가 repeat/if 공통 자식 탐색을 맡으며 Program의 개수·삽입·삭제·이동에 사용합니다. `cloneBlock`은 중첩 몸체를 복제하면서 목적지 트리와 중복되지 않는 ID를 모두 재발급합니다. 저장 v2의 main 목록에서 if 조건·몸체를 검증하며 기존 깊이 8·노드 60·ID 중복 제한을 유지합니다. 저장 버전은 그대로 2입니다.
+
+`src/model/conditions.test.ts`는 조건·변형·편집·저장과 지름길 전수 탐색을 검사합니다. `unit1-run.fixture.json`은 T37 이전 엔진에서 추출한 정규 8개·보너스 2개 정답·빈 코드·직진 충돌·초기 코드의 전체 프레임 회귀 기준입니다.

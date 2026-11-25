@@ -1,5 +1,11 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-25 — T37 센서·if Model (구현 Codex, 명세·QC Claude) [잠정]
+
+- Codex: `if [blockedAhead]` 블록, 검사 프레임(event 'check', 위치·방향 불변, 단계 상한 포함), interpreter의 '그 외=회전' 분기 제거·exhaustive switch(알 수 없는 블록 예외), `runAll`(모든 변형 성공해야 성공, 첫 실패 변형·원인), repeat·if 공통 자식 목록 편집 도우미, v2 저장 검증에 if 추가, 1단원 실행 결과 고정 fixture 회귀. 테스트 162개
+- Claude QC: conditions.test.ts를 직접 읽어 확인 — 참/거짓·맵 밖, "한 번만 검사"(나중 벽에 충돌), 중첩 회차, 단계 상한, U2-1 두 맵 runAll, 지름길 전수 탐색(4블록·깊이 2, 1000개 이상, 1초 내). 지름길은 원리상으로도 불가능함을 확인(같은 위치·방향·같은 명령인데 한 맵은 직진, 한 맵은 꺾어야 함)
+- 검증: verify 162개, e2e 115개 통과·4개 건너뜀(화면 변화 없음)
+
 ## 2026-11-25 — T36 저장 v2와 v1 보존 이행 (설계·E2E·QC Claude, 구현 Codex) [잠정]
 
 - 설계(Claude): 새 키 `lealnspire.progress.v2` `{ version: 2, stages: { id: { completed, bestStars, lastProgram: { main, functions: [] } } } }`. v2가 없으면 v1을 스테이지별로 변환해 v2에 저장, **v1 키는 읽기만**(v1.0.0으로 롤백해도 옛 기록 유지). 검증 상한(블록 종류, 반복 2~10, 깊이 8, 노드 60, ID 중복). 기록 삭제는 v1·v2 모두, 언어 설정은 유지

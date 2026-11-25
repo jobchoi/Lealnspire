@@ -1,5 +1,5 @@
 import type { Block, Program as BlockTree } from './types'
-import { createBlock, findBlockPath } from './editor'
+import { createBlock, findBlockPath, hasBody } from './editor'
 
 export const MAX_PROGRAM_BLOCKS = 10
 
@@ -8,7 +8,7 @@ function updateList(program: BlockTree, path: number[], update: (list: BlockTree
   if (!path.length) return update(program)
   const [index, ...rest] = path
   const block = program[index]
-  if (!block || block.type !== 'repeat') throw new Error('Invalid repeat path')
+  if (!block || !hasBody(block)) throw new Error('Invalid body path')
   return program.map((item, i) => i === index ? { ...block, body: updateList(block.body, rest, update) } : item)
 }
 function splitPath(path: number[]): [number[], number] {
@@ -59,7 +59,7 @@ export class Program {
     })
   }
   static countBlocks(program: BlockTree): number {
-    return program.reduce((sum, block) => sum + 1 + (block.type === 'repeat' ? countBlocks(block.body) : 0), 0)
+    return program.reduce((sum, block) => sum + 1 + (hasBody(block) ? countBlocks(block.body) : 0), 0)
   }
 }
 export const addBlock = Program.addBlock

@@ -195,3 +195,11 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 ### 문서 (docs/)
 
 `TASKS.md`(작업 단일 출처), `NEXT_SESSION.md`(현재 상태), `WORK_HISTORY.md`(기록), `ROADMAP.md`(Claude+GPT 교차 기획 1·2), `GAME_DESIGN.md`, `CURRICULUM.md`, `ARCHITECTURE.md`, `GUIDE.md`(교사·보호자), `DEPLOY.md`(배포 절차), `ASSETS.md`(자산·라이선스), `RESUME_ELSEWHERE.md`(다른 PC에서 이어 가기), `handoff/`(Codex 지시서), `design/`(시안·QC 캡처), `playbook/`(오케스트레이션 기록), `progress/`(진행판 사본).
+
+### T37 조건 Model [제안·잠정]
+
+- `model/types.ts`: if/blockedAhead, check 프레임, Stage.variants, RunAllResult.
+- `model/interpreter.ts`: 센서 검사·명시적 분기, runAll의 전체 변형 판정, failurePoint의 첫 실패 variant(0부터).
+- `model/editor.ts`, `program.ts`: hasBody로 repeat/if 중첩 편집·개수·ID 탐색, cloneBlock으로 복제 및 ID 재발급.
+- `model/ProgressRepository.ts`: v2 if 조건·몸체 검증(기존 깊이·노드 제한 유지).
+- `model/conditions.test.ts`, `model/unit1-run.fixture.json`: 조건·변형·저장·지름길 전수 탐색 및 T37 이전 1단원 전체 프레임 회귀 기준. 화면·컨트롤러 연결은 T38.

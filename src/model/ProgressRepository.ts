@@ -22,7 +22,10 @@ function validProgram(value: unknown): value is Program {
     if (depth > 8 || ids.size >= 60) return false
     if (!record(block) || typeof block.id !== 'string' || !block.id || ids.has(block.id)) return false
     ids.add(block.id)
-    if (block.type === 'repeat') {
+    if (block.type === 'if') {
+      if (block.condition !== 'blockedAhead' || !Array.isArray(block.body)) return false
+      for (const child of block.body) pending.push({ block: child, depth: depth + 1 })
+    } else if (block.type === 'repeat') {
       if (!Number.isInteger(block.count) || (block.count as number) < 2 || (block.count as number) > 10 || !Array.isArray(block.body)) return false
       for (const child of block.body) pending.push({ block: child, depth: depth + 1 })
     } else if (!['forward', 'turnLeft', 'turnRight'].includes(block.type as string)) return false
