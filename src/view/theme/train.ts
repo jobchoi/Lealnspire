@@ -6,7 +6,7 @@ import './train.css'
 export const train: Theme = {
   ...defaultTheme, world: 'train',
   blockSymbol: type => createElement(Symbol, { name: type, world: 'train' }),
-  repeat: count => t('themes.train.repeat', { count }),
+  repeat: defaultTheme.repeat,
   runText: () => t('themes.train.run'),
   paletteName: type => type === 'repeat' ? defaultTheme.paletteName!(type) : t(`themes.train.${type}`),
 }

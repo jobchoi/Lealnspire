@@ -57,7 +57,7 @@ src/
 - `ProgressRepository(storage?)`는 storage를 주입받습니다. `main.tsx`에서 localStorage 접근 실패 시 메모리 저장소로 생성합니다. 저장 형식·키·버전·검증은 기존과 같습니다.
 - `AppController`: 화면 전환·잠금·이어하기·다음 이동, 게임 생성·해제. `GameController`: 코드 저장, 실행·프레임·속도·결과·성공 저장. `EditorController`: 블록 선택·추가 대상·상한·편집. 타이머는 GameController에만 있고 Scheduler 주입으로 테스트합니다.
 - `Observable`은 상태가 변경될 때만 snapshot 객체를 교체합니다. React View는 `useController`로 구독합니다. 포커스, 모달 키보드 처리, 작업 공간 스크롤은 View 책임입니다.
-- 언어 추가: `src/i18n/locales/<언어>.json` 파일 하나 추가. Vite glob으로 자동 등록하며 `?lang=<언어>`로 개발 확인합니다. UI 선택기는 없습니다. 점 구분 키와 `{count}` 등의 치환을 사용하며 해당 언어 → ko → 키 자체 순으로 대체합니다. 키 테스트는 모든 locale 키가 ko의 부분집합인지 확인합니다.
+- 언어 추가: `src/i18n/locales/<언어>.json` 파일 하나 추가. Vite glob으로 자동 등록하며 `?lang=<언어>`로 개발 확인합니다. UI 선택기는 없습니다. 점 구분 키와 `{count}` 등의 치환을 사용하며 해당 언어 → ko → 키 자체 순으로 대체합니다. `I18n.ts`의 `supportedLocales`가 공식 지원 목록(현재 ko)입니다. 공식 locale은 ko와 모든 leaf key·치환 인자가 같아야 하며, 개발용 부분 locale(en)은 ko 키의 부분집합과 같은 치환 인자를 지킵니다.
 - `Stage.world`는 1~3 sketchbook, 4~6 train, 7~8 handheld입니다. View의 `themes.ts`에서 월드별 Theme를 선택합니다. 완료한 스테이지에서만 View의 임시 선택 상태로 다른 월드를 적용하며 저장 형식은 버전 1을 유지합니다. T13은 Model/Controller의 블록 타입과 실행 규칙을 바꾸지 않습니다.
 - 기본 테마는 블록 종류·기호·이름·색 클래스·반복 표현·버튼 라벨·방향 기호를 정의합니다. CSS 클래스와 접근성 이름은 E2E 계약입니다.
 
@@ -139,3 +139,10 @@ type Frame = { pos: { x: number; y: number }; dir: Dir; activeBlockId: string | 
 - `src/model/predictions.ts`: 2·5·7번 도전과 변형 코드의 엔진 실행으로 계산한 후보. `predictions.test.ts`에서 후보 유일성·정답 1개 검증.
 - `src/controller/PredictionController.ts`: 후보 선택·판정·재도전. GameController의 재생과 독립 메모리 ProgressRepository를 사용하며 정규 진행 저장은 변경하지 않음. `PredictionController.test.ts`에서 잠금·재생·저장 분리·화면 이탈 검증.
 - `src/view/pages/PredictionPage.tsx`, `PredictionPage.css`: 월드 맵·후보 오버레이·고정 BlockTiles·결과. 완료한 해당 스테이지의 목록 버튼에서 진입, 돌아가면 목록. AppController가 진입 조건과 타이머 정리를 담당.
+
+### T34 개념어·용어집 기반 [제안·잠정]
+
+- `src/i18n/glossary.json`은 개념 ID별 `{ id, keyword, ko: { name, short }, en: { name, short }, avoid: { ko: [], en: [] } }`를 담습니다. `variable`의 키워드는 `set`, `event`는 `on`입니다. 예정 개념은 정의만 준비하며 화면에 노출하지 않습니다.
+- 타일은 영어 개념어 + 기호·값, 설명·힌트·접근성 이름과 일반 버튼은 UI 언어를 씁니다. 앞으로·돌기는 기존 기호를 유지합니다. 키워드는 JSON을 import하여 `glossary.repeat.keyword`처럼 가져오며 View에 표시용 문자열로 복제하지 않습니다.
+- 반복은 세 월드 모두 `repeat`와 `×N`을 표시합니다. 크레용 괄호·기차 바퀴 수 표지판·게임기 스타일은 유지합니다. 기차의 실행 회차 표시 중에는 공간 확보를 위해 바퀴 수 대신 회차 배지를 표시합니다. 팔레트의 보이는 이름은 키워드 + UI 언어 설명, 접근성 이름은 기존 계약을 유지합니다.
+- `glossary.test.tsx`는 공식/개발 locale 키·치환 인자, 용어 정의, View의 표시용 JSX·반환 라벨 리터럴과 세 월드 렌더링을 검사합니다. 정적 라벨 검사는 임의의 문자열 조합 전체를 분석하는 검사기가 아니므로, 새로운 표기 경로에도 glossary 참조 원칙을 적용해야 합니다. 영어 전체 번역·공식 지원 등록은 T35입니다.

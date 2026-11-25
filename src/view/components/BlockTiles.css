@@ -67,3 +67,43 @@
 
 /* Keep keyboard focus distinct from selection and the failure marker in every world. */
 .play-page .workspace .block-tile:focus-visible { outline: 3px solid #2563eb; outline-offset: -3px; box-shadow: inset 0 0 0 6px white; }
+
+/* Two compact lines leave room for order, failure and live iteration badges.
+   At 50px: 36px keyword width; 11px + 22px content height. */
+:is(.play-page, .prediction-page) :is(.workspace, .prediction-code) .block-tile.block-repeat strong,
+:is(.workspace, .prediction-code) .block-tile.block-repeat strong {
+  display: flex; flex-direction: column; align-items: center;
+  line-height: 1; white-space: nowrap; padding: 0;
+}
+:is(.workspace, .prediction-code) .block-repeat .concept-keyword { font: bold 10px/11px monospace; letter-spacing: 0; }
+:is(.workspace, .prediction-code) .block-repeat .repeat-count { font: bold 26px/28px monospace; letter-spacing: -1px; }
+.theme-sketchbook :is(.workspace, .prediction-code) .block-repeat .repeat-count { font-family: 'Gamja Flower', cursive; font-size: 32px; color: #a83b1b; }
+.theme-handheld :is(.workspace, .prediction-code) .block-repeat .repeat-count { font-family: 'Do Hyeon', sans-serif; }
+:is(.workspace, .prediction-code) .block-tile.block-repeat .block-symbol { display: none; }
+:is(.play-page, .prediction-page) :is(.workspace, .prediction-code) .block-tile.block-repeat { padding-top: 12px; padding-bottom: 2px; }
+:is(.play-page, .prediction-page) :is(.workspace, .prediction-code) .block-tile.block-repeat.has-loop-progress { padding-top: 9px; padding-bottom: 15px; }
+:is(.play-page, .prediction-page) :is(.workspace, .prediction-code) .block-tile.block-repeat:has(.empty-repeat-label) strong { transform: translateY(-3px); }
+.play-page .palette button.block-repeat small { display: block; font: bold 10px/12px monospace; white-space: nowrap; }
+@media (max-width: 700px) {
+  :is(.workspace, .prediction-code) .block-repeat .repeat-count { font-size: 22px; line-height: 22px; }
+  .theme-sketchbook :is(.workspace, .prediction-code) .block-repeat .repeat-count { font-size: 28px; }
+  :is(.workspace, .prediction-code) .block-repeat.has-loop-progress .concept-keyword { font-size: 9px; line-height: 9px; }
+  :is(.workspace, .prediction-code) .block-repeat.has-loop-progress .repeat-count { font-size: 18px; line-height: 17px; }
+}
+
+:is(.play-page, .prediction-page) :is(.workspace, .prediction-code) .block-repeat.has-loop-progress .loop-progress { font-size: 10px; line-height: 12px; bottom: 1px; border-width: 1px; }
+
+/* Fixed prediction tiles are 56px even on desktop. */
+.prediction-page .prediction-code .block-repeat .repeat-count { font-size: 22px; line-height: 22px; }
+.prediction-page .prediction-code .block-repeat.has-loop-progress .concept-keyword { font-size: 9px; line-height: 9px; }
+.prediction-page .prediction-code .block-repeat.has-loop-progress .repeat-count { font-size: 18px; line-height: 17px; }
+:is(.workspace, .prediction-code) .block-repeat .failure-badge { top: 0; right: 1px; width: 10px; height: 10px; font-size: 10px; line-height: 10px; }
+:is(.workspace, .prediction-code) .block-tile.block-repeat small { font-size: 9px; line-height: 9px; }
+
+/* Empty-body guidance uses the same reserved bottom line as iteration. */
+@media (max-width: 700px) {
+  .play-page .workspace .block-tile.block-repeat:has(.empty-repeat-label) { padding-top: 9px; padding-bottom: 15px; }
+  .play-page .workspace .block-tile.block-repeat:has(.empty-repeat-label) strong { transform: none; }
+  .play-page .workspace .block-repeat:has(.empty-repeat-label) .concept-keyword { font-size: 9px; line-height: 9px; }
+  .play-page .workspace .block-repeat:has(.empty-repeat-label) .repeat-count { font-size: 18px; line-height: 17px; }
+}

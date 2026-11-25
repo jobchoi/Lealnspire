@@ -17,7 +17,7 @@
   },
   "turnLeft": {
     "id": "turnLeft",
-    "keyword": "left",
+    "keyword": "turnleft",
     "ko": {
       "name": "왼쪽으로 돌기",
       "short": "제자리에서 왼쪽으로 돌아요."
@@ -33,7 +33,7 @@
   },
   "turnRight": {
     "id": "turnRight",
-    "keyword": "right",
+    "keyword": "turnright",
     "ko": {
       "name": "오른쪽으로 돌기",
       "short": "제자리에서 오른쪽으로 돌아요."

@@ -35,7 +35,8 @@ E2E는 Chromium과 로컬 포트 실행 권한이 필요합니다. 실행 못 �
 | `controller/playback.test.ts` | 프레임 경계·빈 프레임 |
 | `controller/playback.ts` | 속도 간격, 다음 프레임과 마지막 프레임 계산 |
 | `i18n/I18n.test.ts` | 치환·fallback·locale 키 부분집합·View 한글·MVC 플랫폼 경계 |
-| `i18n/I18n.ts` | JSON 자동 발견, 키 조회·치환, locale → ko → key fallback |
+| `i18n/glossary.json`, `glossary.test.tsx` | 개념 키워드·한영 정의, 공식/부분 locale 키·인자와 표시 키워드 검사 |
+| `i18n/I18n.ts` | 공식 지원 locale 목록(현재 ko), JSON 자동 발견, 키 조회·치환, locale → ko → key fallback |
 | `i18n/locales/en.json` | 일부 키만 있는 영어 예시, ko fallback 확인용 |
 | `i18n/locales/ko.json` | 기준 한국어 리소스, 스테이지 문구 포함 |
 | `index.css` | 기본 화면 배치·색·반응형 스타일 |

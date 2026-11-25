@@ -1,5 +1,12 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-25 — T34 개념어 방침·용어집 (구현 Codex, 방침·QC Claude) [잠정]
+
+- Codex: src/i18n/glossary.json(현재 개념 + 앞으로 쓸 if/else/while/function/variable 등 29개, ko·en 이름·짧은 설명·피할 표현), 반복 타일·팔레트에 영어 개념어 `repeat`(glossary에서 가져옴), locale 키·치환 인자 일치 검사·개념어 하드코딩 금지 검사(glossary.test.tsx), ARCHITECTURE·PROJECT_MAP 갱신
+- QC 수정 1회: 팔레트 "repeat · N번 반복"이 줄바꿈·넘침, 기차 타일 "repeat/×2/2바퀴" 세 줄 → 보이는 라벨은 `repeat`, 타일은 작은 `repeat` + 큰 `×N`, 한국어 설명은 aria-label·title
+- 검증: verify 139개, e2e 100개 통과·4개 건너뜀, 세 월드 스크린샷 육안 확인
+- 실수 기록: T33 문서 커밋 때 `git add -A`로 Codex가 작업 중이던 T34 파일 일부(glossary.json, 테마 파일)가 함께 커밋됨. 손실 없음, T34 커밋에서 완성. 이후 Codex 실행 중에는 경로를 지정해 커밋
+
 ## 2026-11-25 — 기획 라운드 3(Claude + GPT), T33 조건 단원 명세 (Claude)
 
 - 사용자 결정(기본 개념 전부·개념 중심, 영어는 AI 번역·과한 한글화 지양)을 받아 Claude 초안 → GPT 독립 기획 → 종합. 원본: docs/design/round3-claude-draft.md, round3-gpt-proposal.md. 종합: ROADMAP 라운드 3, TASKS T33~T57

@@ -1,4 +1,6 @@
 import korean from './locales/ko.json'
+// en remains a partial development locale until T35.
+export const supportedLocales = ['ko'] as const
 export type Messages = { [key: string]: string | Messages }
 export const locales = import.meta.glob<Messages>('./locales/*.json', { eager: true, import: 'default' })
 function lookup(messages: Messages, key: string): string | undefined {
