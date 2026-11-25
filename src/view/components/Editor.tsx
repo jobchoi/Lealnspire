@@ -32,12 +32,13 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
     }
     controller.acknowledgeAdded()
   }, [program, activeBlockId, addedId, controller])
+  const targetBlock = targetPath?.reduce<Program>((list, index, depth) => depth === targetPath.length - 1 ? [list[index]] : hasBody(list[index]) ? list[index].body : [], program)[0]
   const label = (action: string) => t('action', { order: selectedPath!.map(i => i + 1).join('.'), name: theme.blockName(selectedBlock!.type), action })
   return <section className="editor" aria-label={t('editor')}>
     <h2>{t('editor')}</h2>
     <div className="block-budget"><p aria-live="polite">{t('total', { count: total, max: limit })}</p>
     <span className="slot-dots" aria-hidden="true">{Array.from({ length: MAX_PROGRAM_BLOCKS }, (_, i) => <span key={i} className={i < total ? 'filled' : i >= limit ? 'unavailable' : ''}>{i < total ? '●' : '○'}</span>)}</span></div>
-    <p className="insertion-status" aria-live="polite">{targetPath ? t('target', { order: targetPath.map(i => i + 1).join('.') }) : t('root')}</p>
+    <p className="insertion-status" aria-live="polite">{targetPath ? t(targetBlock?.type === 'if' ? 'targetIf' : 'target', { order: targetPath.map(i => i + 1).join('.') }) : t('root')}</p>
     <div className="palette-row"><div className="palette" role="group" aria-label={t('palette')}>{(conditions ? [...types, 'if' as const] : types).map(type => <button type="button" key={type} className={theme.blockClass(type)} aria-label={theme.blockName(type)} title={theme.blockName(type)} disabled={locked || atLimit} onClick={() => controller.add(type)}><span className="block-symbol" aria-hidden="true">{theme.blockSymbol(type)}</span>{conditions && theme.world === 'handheld' && type === 'repeat' && <span className="handheld-button-letter" aria-hidden="true">B</span>}{type === 'if' && <span className="sensor-icon" aria-hidden="true"><Symbol name="blockedAhead" /></span>}<small>{type === 'if' ? glossary.if.keyword : theme.paletteName?.(type) ?? theme.blockName(type)}</small></button>)}</div><button type="button" className="undo-button" aria-label={t('undo')} title={t('undo')} disabled={locked || !controller.canUndo} onClick={controller.undo}><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M9 4 3 10l6 6M3 10h11a6 6 0 0 1 0 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg></button></div>
     {atLimit && <p role="status">{t('limit')}</p>}
     <h3>{t('workspace')}</h3>

@@ -1,4 +1,5 @@
 import type { Program, Stage } from './types'
+import { MAX_PROGRAM_BLOCKS } from './program'
 import { allStages as stages, stages as unit1Stages } from './stages'
 
 export type StageProgress = { completed: boolean; bestStars: number; lastProgram: Program }
@@ -19,7 +20,7 @@ function validProgram(value: unknown): value is Program {
   const ids = new Set<string>()
   while (pending.length) {
     const { block, depth } = pending.pop()!
-    if (depth > 8 || ids.size >= 60) return false
+    if (depth > MAX_PROGRAM_BLOCKS || ids.size >= 60) return false
     if (!record(block) || typeof block.id !== 'string' || !block.id || ids.has(block.id)) return false
     ids.add(block.id)
     if (block.type === 'if') {

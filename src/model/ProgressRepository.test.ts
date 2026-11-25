@@ -1,3 +1,4 @@
+import { EditorController } from '../controller/EditorController'
 import { describe, expect, it } from 'vitest'
 import { createProgressStore, isUnlocked, parseProgress, progressKey, progressV2Key, migrateV1toV2, settingsKey } from './ProgressRepository'
 import { allStages, stages } from './stages'
@@ -261,15 +262,15 @@ describe('T36 v2 migration', () => {
       })
     }
   })
-  it('enforces depth eight, sixty nodes and unique IDs across the whole program', () => {
+  it('enforces depth ten, sixty nodes and unique IDs across the whole program', () => {
     const nested = (depth: number): Program => {
       let blocks: Program = [{ id: 'leaf', type: 'forward' }]
       for (let i = 1; i < depth; i++) blocks = [{ id: `r${i}`, type: 'repeat', count: 2, body: blocks }]
       return blocks
     }
     const nodes = (count: number): Program => Array.from({ length: count }, (_, i) => ({ id: `f${i}`, type: 'forward' }))
-    for (const blocks of [nested(8), nodes(60)]) expect(migrateV1toV2(serialize(blocks)).stages['1']).toBeDefined()
-    for (const blocks of [nested(9), nodes(61), [...program, ...program]]) expect(migrateV1toV2(serialize(blocks)).stages['1']).toEqual({ completed: true, bestStars: 3, lastProgram: { main: [], functions: [] } })
+    for (const blocks of [nested(10), nodes(60)]) expect(migrateV1toV2(serialize(blocks)).stages['1'].lastProgram.main).toEqual(blocks)
+    for (const blocks of [nested(11), nodes(61), [...program, ...program]]) expect(migrateV1toV2(serialize(blocks)).stages['1']).toEqual({ completed: true, bestStars: 3, lastProgram: { main: [], functions: [] } })
   })
   it('deletes both keys even when one removal throws and preserves settings', () => {
     const storage = fakeStorage(serialize())
@@ -297,3 +298,26 @@ describe('T36 v2 migration', () => {
     expect(storage.getItem(progressV2Key)).toBeNull()
   })
 })
+
+for (const mixed of [false, true]) {
+  for (const depth of [9, 10]) {
+    it(`preserves editor-created depth ${depth} ${mixed ? 'mixed if/repeat' : 'repeat'} code through saving and v1 migration`, () => {
+      const editor = new EditorController()
+      editor.configure([], () => {}, false)
+      for (let level = 0; level < depth; level++) {
+        editor.add(mixed && level % 2 === 0 ? 'if' : 'repeat')
+        editor.select(editor.getSnapshot().addedId!)
+        editor.toggleTarget()
+      }
+      const code = editor.program
+      expect(editor.total).toBe(depth)
+      const storage = fakeStorage()
+      createProgressStore(storage).saveProgram(stages[0].id, code)
+      expect(createProgressStore(storage).getProgram(stages[0])).toEqual(code)
+      const legacy = fakeStorage(serialize(code))
+      expect(createProgressStore(legacy).getProgram(stages[0])).toEqual(code)
+      expect(createProgressStore(legacy).getProgram(stages[0])).toEqual(code)
+      expect(JSON.parse(legacy.getItem(progressV2Key)!).stages['1'].lastProgram.main).toEqual(code)
+    })
+  }
+}

@@ -113,7 +113,15 @@ test.describe('2단원 조건 if', () => {
     expect(await g.blockCount(), '미리 놓인 코드: if·오른쪽·repeat·앞으로').toBe(4)
     expect(await g.runToEnd(), '처음 한 번만 검사해서 1번 맵에서 부딪힘').toMatch(/1번 맵에서 .*부딪/)
     await g.press(g.dialog.getByRole('button', { name: '닫기' }))
-    expect(await solve('if는 계속 지켜보지 않아요', 4, 'R')).toContain('2단원 완주')
+    // 전체를 지우지 않고 고치기: 바깥 if 삭제 → 반복 안 맨 앞에 if 다시 놓기 → if 안에 오른쪽 돌기
+    await g.remove('1')
+    expect(await g.blockCount(), 'repeat 4 [앞으로]만 남음').toBe(2)
+    await g.select('1'); await into(g); await g.press(ifBlock(page)); await out(g)
+    // 새 if는 몸체 끝(1.2)에 붙으므로 앞으로 옮긴다
+    await g.select('1.2'); await g.press(g.action(/앞으로 옮기기$/))
+    await g.select('1.1'); await into(g); await g.add('R'); await out(g)
+    expect(await g.blockCount()).toBe(4)
+    expect(await g.runToEnd()).toContain('2단원 완주')
   })
 
   test('T39: 조건 예측 도전 — u2-1을 깬 뒤 "if는 한 번만 검사한다"를 예측, 정답은 하나', async ({ page }) => {
@@ -139,5 +147,27 @@ test.describe('2단원 조건 if', () => {
       if (i < 2) await g.press(g.button('다시 고르기'))
     }
     expect(marks.filter(m => m === 'O'), marks.join('')).toHaveLength(1)
+  })
+
+  test('T40: 실패 표시는 실패한 맵에만 — U2-4 처음 코드는 1번 맵 실패·2번 맵 성공, 2번 맵을 볼 때 실패 칸이 없다', async ({ page }) => {
+    const g = new Game(page)
+    await g.fresh()
+    await page.evaluate(v => {
+      const s = JSON.parse(v); for (const id of ['u2-1', 'u2-2', 'u2-3']) s.stages[id] = { completed: true, bestStars: 3, lastProgram: [] }
+      localStorage.setItem('lealnspire.progress', JSON.stringify(s))
+    }, unit1Done)
+    await page.reload()
+    await g.press(g.button('스테이지 목록'))
+    await g.press(page.locator('.stage-card', { hasText: 'if는 계속 지켜보지 않아요' }))
+    await g.speed('빠르게')
+    expect(await g.runToEnd()).toMatch(/1번 맵에서/)
+    await g.press(g.dialog.getByRole('button', { name: '고치기' }))
+    const cards = page.getByRole('group', { name: '2단원: 조건 (if)' }).getByRole('button')
+    await expect(cards.nth(0), '고치기는 실패한 1번 맵').toHaveAttribute('aria-pressed', 'true')
+    await expect(g.board.getByRole('img', { name: '실패 지점' })).toHaveCount(1)
+    await g.press(cards.nth(1))
+    await expect(g.board.getByRole('img', { name: '실패 지점' }), '성공한 2번 맵에는 실패 칸 없음').toHaveCount(0)
+    await g.press(cards.nth(0))
+    await expect(g.board.getByRole('img', { name: '실패 지점' }), '1번 맵으로 돌아오면 다시 보임').toHaveCount(1)
   })
 })

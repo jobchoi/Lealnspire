@@ -26,7 +26,7 @@ E2E는 Chromium과 로컬 포트 실행 권한이 필요합니다. 실행 못 �
 |---|---|
 | `controller/AppController.ts` | 화면 전환·잠금·이어하기·다음·게임 수명 관리 |
 | `controller/BoardPresenter.ts` | 맵·로봇 위치를 표시용 셀 데이터로 변환 |
-| `controller/EditorController.ts` | 선택·반복 추가 대상·블록 편집·상한·잠금 |
+| `controller/EditorController.ts` | 선택·repeat/if 추가 대상·블록 편집·상한·잠금 |
 | `controller/GameController.ts` | 편집 저장·실행·프레임 재생·속도·타이머·결과·성공 저장 |
 | `controller/Observable.ts` | subscribe/getSnapshot, 상태 변경 알림과 안정된 snapshot |
 | `controller/controllers.test.ts` | 구독·편집·잠금·상한·가짜 타이머·저장·결과·화면 이동 |
@@ -36,8 +36,8 @@ E2E는 Chromium과 로컬 포트 실행 권한이 필요합니다. 실행 못 �
 | `controller/playback.ts` | 속도 간격, 다음 프레임과 마지막 프레임 계산 |
 | `i18n/I18n.test.ts` | 치환·fallback·locale 키 부분집합·View 한글·MVC 플랫폼 경계 |
 | `i18n/glossary.json`, `glossary.test.tsx` | 개념 키워드·한영 정의, 공식/부분 locale 키·인자와 표시 키워드 검사 |
-| `i18n/I18n.ts` | 공식 지원 locale 목록(현재 ko), JSON 자동 발견, 키 조회·치환, locale → ko → key fallback |
-| `i18n/locales/en.json` | 일부 키만 있는 영어 예시, ko fallback 확인용 |
+| `i18n/I18n.ts` | 공식 지원 locale 목록(ko/en), JSON 자동 발견, 키 조회·치환, locale → ko → key fallback |
+| `i18n/locales/en.json` | 공식 지원 영어 전체 문구 |
 | `i18n/locales/ko.json` | 기준 한국어 리소스, 스테이지 문구 포함 |
 | `index.css` | 기본 화면 배치·색·반응형 스타일 |
 | `main.tsx` | 브라우저 storage 주입, ?lang 선택, React mount |
@@ -89,12 +89,12 @@ View는 포커스, 모달 키보드, 타일 스크롤과 CSS를 담당합니다.
 
 | 타입/객체 | 의미 |
 |---|---|
-| Block | 고유 id + forward/turnLeft/turnRight 또는 repeat(count 2~10, body) |
+| Block | 고유 id + forward/turnLeft/turnRight 또는 repeat(count 2~10, body), if(condition: blockedAhead, body) |
 | Program (types.ts) | 직렬화 가능한 Block[]; 저장 형식 유지 |
 | Program (program.ts 클래스) | 트리를 복사하여 소유하고 새 객체로 편집; toBlocks로 복사 반환 |
-| Stage | id, world, title/goal/hint 문구 키, grid, startDir, maxBlocks?, starBlocks, initialProgram?, solution |
-| Frame | pos, dir, activeBlockId, event(move/turn/bump/goal)? |
-| RunResult | frames + success/collision/unfinished/stepLimit |
+| Stage | id, world, title/goal 문구 키, hints(2단계 키·강조), grid, variants?, startDir, maxBlocks?, starBlocks, initialProgram?, solution |
+| Frame | pos, dir, activeBlockId, event(move/turn/bump/goal/check)?, check?, loops? |
+| RunResult | frames + success/collision/unfinished/stepLimit; RunAllResult는 results/result/failedVariant |
 | Progress | version:1, stages: { [id]: { completed, bestStars, lastProgram } } |
 | Observable | 변경 때 snapshot을 교체하고 listener 통지, 구독 해제 함수 제공 |
 
@@ -115,7 +115,7 @@ Stage.world는 1~3 sketchbook, 4~6 train, 7~8 handheld입니다. View는 world�
 | GameController | edit(program), play, step, reset, dismiss, setSpeed, toggleHint, dispose; frame/result/locked/finished/stars/canNext |
 | EditorController | configure, select, clear, toggleTarget, add, move, remove, setCount; selectedPath/targetPath/total/limit/atLimit |
 
-GameController는 실행 전체를 Interpreter로 계산한 뒤 프레임만 재생합니다.
+GameController는 실행 전체를 Interpreter로 계산한 뒤 프레임만 재생합니다. 변형 맵은 순서대로 재생하고 실패 표시는 현재 맵과 failure.variant가 일치할 때만 표시합니다. 결과의 실패 맵 카드에는 !를 유지하며 고치기는 첫 실패 맵으로 돌아갑니다.
 실행을 시작하면 편집이 잠기고 reset으로 해제됩니다. 성공의 마지막 프레임에서만 완료·별을 저장합니다.
 속도는 800/400/150ms. 화면을 떠날 때 dispose로 타이머를 취소합니다. Scheduler는 테스트에서 주입 가능합니다.
 EditorController는 선택 타일과 반복 추가 대상을 별도로 관리합니다. View는 구독 후 동작을 전달합니다.
@@ -136,8 +136,8 @@ EditorController는 선택 타일과 반복 추가 대상을 별도로 관리합
 | 파일 추가·이동 | 이 문서의 소스 표와 ARCHITECTURE.md를 같은 작업에서 갱신 |
 
 I18n.t(key, params)는 {name} 치환을 하고, 선택 언어 → 한국어 → key 순으로 표시합니다.
-Vite import.meta.glob이 JSON 파일을 자동 등록합니다. 기본 언어는 ko이며 선택 UI는 없습니다.
-ko.json이 기준이며 모든 locale의 leaf key가 ko에 있는지 테스트합니다.
+Vite import.meta.glob이 JSON 파일을 자동 등록합니다. 기본 언어는 ko이며 홈·목록에서 ko/en 언어 선택기를 제공합니다. 선택은 lealnspire.settings에 저장하고 main.tsx에서 URL → 저장 설정 → ko 순으로 적용합니다.
+ko.json이 기준이며 공식 ko/en은 모든 leaf key·치환 인자가 일치해야 합니다. 개발용 부분 locale은 ko 키의 부분집합을 허용합니다.
 Theme은 블록 기호·이름·CSS 클래스·반복 표현·버튼 라벨·방향 기호를 모읍니다.
 T13은 테마 선택·맵 그림체 등 View 표현을 확장하고 저장된 블록 타입·실행 의미는 보존합니다.
 
@@ -166,6 +166,8 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 
 | 파일 | 시나리오 |
 |---|---|
+| `english.e2e.ts` | 영어 선택·유지·풀이·영어 안내 페이지 |
+| `conditions.e2e.ts` | 2단원 if 편집·검사·변형 재생·실패 고치기·조건 예측 |
 | `journeys.e2e.ts` | 처음 온 아이 1~8 완주, 기호 구분, 4번 고치기, 연타·상한·실행 중 조작·새로고침·중첩·키보드 |
 | `layout.e2e.ts` | 세 월드 + 본래 스테이지 4·8 × 3개 화면 크기 배치, 44px, 글자 잘림·쪼개짐 |
 | `fix.e2e.ts` | T15 실패 지점 고치기, T22 닫은 뒤 바로 편집 |
@@ -187,6 +189,7 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 | `playwright.config.ts` | 개발 서버 E2E(`npm run e2e`): desktop·phone·small-phone(@layout만) |
 | `playwright.prod.config.ts` | 배포 빌드 E2E(`npm run e2e:prod`): dist-e2e/root·subpath를 4173·4174에서 미리보기 |
 | `public/favicon.svg` | 자체 제작 아이콘 |
+| `public/guide-en.html` | 영어 교사·보호자 안내 정적 페이지 |
 | `public/guide.html` | 교사·보호자 안내 정적 페이지(docs/GUIDE.md와 핵심 문장 일치 테스트) |
 | `public/licenses/fonts.txt` | 글꼴 5종 OFL 원문(재배포 조건) |
 | `scripts/codex-run.sh` | Codex 실행·진행 기록, `scripts/progress-summary.sh` 진행판 요약 |
@@ -201,7 +204,7 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - `model/types.ts`: if/blockedAhead, check 프레임, Stage.variants, RunAllResult.
 - `model/interpreter.ts`: 센서 검사·명시적 분기, runAll의 전체 변형 판정, failurePoint의 첫 실패 variant(0부터).
 - `model/editor.ts`, `program.ts`: hasBody로 repeat/if 중첩 편집·개수·ID 탐색, cloneBlock으로 복제 및 ID 재발급.
-- `model/ProgressRepository.ts`: v2 if 조건·몸체 검증(기존 깊이·노드 제한 유지).
+- `model/ProgressRepository.ts`: v2 if 조건·몸체 검증(깊이 10·노드 60 제한).
 - `model/conditions.test.ts`, `model/unit1-run.fixture.json`: 조건·변형·저장·지름길 전수 탐색 및 T37 이전 1단원 전체 프레임 회귀 기준. 화면·컨트롤러 연결은 T38.
 
 ### T38 조건 화면 [제안·잠정]

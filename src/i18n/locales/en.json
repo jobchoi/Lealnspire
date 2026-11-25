@@ -90,6 +90,7 @@
   "bestStars": "Best: {count} stars",
   "stars": "{count} stars",
   "target": "Adding to: end of repeat block {order}",
+  "targetIf": "Adding to: end of the if block {order}",
   "total": "Blocks {count} / {max}",
   "totalUnlimited": "Blocks {count}",
   "action": "Block {order} {name}: {action}",

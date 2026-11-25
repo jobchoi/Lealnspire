@@ -88,4 +88,21 @@ test.describe('영어 화면', () => {
       expect(await page.evaluate(() => window.scrollY), '페이지 스크롤 없음').toBe(0)
     })
   }
+
+  test('영어 2단원: if 블록·센서 문구·맵 카드·결과까지 한국어 없이', async ({ page }) => {
+    await page.goto('/?lang=en')
+    await page.evaluate(() => localStorage.setItem('lealnspire.progress', JSON.stringify({ version: 1, stages: Object.fromEntries(['1', '2', '3', '4', '5', '6', '7', '8'].map(id => [id, { completed: true, bestStars: 3, lastProgram: [] }])) })))
+    await page.reload()
+    await press(page, 'Stages')
+    await fontsReady(page); await page.locator('.stage-card', { hasText: 'Turn When Blocked' }).click()
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Unit 2-1: Turn When Blocked')
+    await expect(page.locator('.palette').getByRole('button', { name: 'if the path ahead is blocked', exact: true })).toBeVisible()
+    await page.locator('.palette').getByRole('button', { name: 'if the path ahead is blocked', exact: true }).click()
+    await press(page, 'Step')
+    await expect(page.locator('[role=status]').filter({ hasText: /The path ahead is (blocked|clear)/ })).toBeVisible()
+    expect(await hangul(page), '2단원 화면에 한국어 없음').toEqual([])
+    await press(page, 'Fast'); await press(page, 'Reset'); await press(page, 'Run')
+    await expect(page.getByRole('dialog')).toContainText(/Map \d/, { timeout: 20_000 })
+    expect(await hangul(page), '결과 창에 한국어 없음').toEqual([])
+  })
 })

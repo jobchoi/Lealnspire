@@ -43,7 +43,7 @@ src/
   i18n/
     I18n.ts                # t(key, params), 자동 locale 탐색, ko fallback
     locales/ko.json        # 기준 문구와 스테이지 문구
-    locales/en.json        # 일부 키만 있는 영어 예시
+    locales/en.json        # 공식 지원 영어 전체 문구
   index.css
 ```
 
@@ -57,7 +57,7 @@ src/
 - `ProgressRepository(storage?)`는 storage를 주입받습니다. `main.tsx`에서 localStorage 접근 실패 시 메모리 저장소로 생성합니다. 외부 API는 기존 Progress(version:1, lastProgram: Block[])를 유지하고 내부에서 v2 문서로 변환합니다.
 - `AppController`: 화면 전환·잠금·이어하기·다음 이동, 게임 생성·해제. `GameController`: 코드 저장, 실행·프레임·속도·결과·성공 저장. `EditorController`: 블록 선택·추가 대상·상한·편집. 타이머는 GameController에만 있고 Scheduler 주입으로 테스트합니다.
 - `Observable`은 상태가 변경될 때만 snapshot 객체를 교체합니다. React View는 `useController`로 구독합니다. 포커스, 모달 키보드 처리, 작업 공간 스크롤은 View 책임입니다.
-- 언어 추가: `src/i18n/locales/<언어>.json` 파일 하나 추가. Vite glob으로 자동 등록하며 `?lang=<언어>`로 개발 확인합니다. UI 선택기는 없습니다. 점 구분 키와 `{count}` 등의 치환을 사용하며 해당 언어 → ko → 키 자체 순으로 대체합니다. `I18n.ts`의 `supportedLocales`가 공식 지원 목록(현재 ko)입니다. 공식 locale은 ko와 모든 leaf key·치환 인자가 같아야 하며, 개발용 부분 locale(en)은 ko 키의 부분집합과 같은 치환 인자를 지킵니다.
+- 언어 추가: `src/i18n/locales/<언어>.json` 파일 하나 추가. Vite glob으로 자동 등록하며 `?lang=<언어>`로 개발 확인합니다. 홈·목록에서 ko/en 선택기를 제공하며 lealnspire.settings에 저장합니다. main.tsx는 URL → 저장 설정 → ko 순으로 언어를 적용합니다. 점 구분 키와 `{count}` 등의 치환을 사용하며 해당 언어 → ko → 키 자체 순으로 대체합니다. `I18n.ts`의 `supportedLocales`가 공식 지원 목록(ko/en)입니다. 공식 locale은 ko와 모든 leaf key·치환 인자가 같아야 하며, 개발용 부분 locale은 ko 키의 부분집합과 같은 치환 인자를 지킵니다.
 - `Stage.world`는 1~3 sketchbook, 4~6 train, 7~8 handheld입니다. View의 `themes.ts`에서 월드별 Theme를 선택합니다. 완료한 스테이지에서만 View의 임시 선택 상태로 다른 월드를 적용하며 테마 선택은 저장하지 않습니다. T13은 Model/Controller의 블록 타입과 실행 규칙을 바꾸지 않습니다.
 - 기본 테마는 블록 종류·기호·이름·색 클래스·반복 표현·버튼 라벨·방향 기호를 정의합니다. CSS 클래스와 접근성 이름은 E2E 계약입니다.
 
@@ -73,7 +73,8 @@ type Program = Block[]
 
 type Stage = {
   id: string; world: 'sketchbook' | 'train' | 'handheld'
-  title: string; goal: string; hint: string // i18n 키
+  title: string; goal: string // i18n 키
+  hints: { keys: [string, string]; highlight: 'path' | 'walls' | 'start' | 'goal' }
   grid: string[]            // 예: ["#####", "#S.G#"]  S: 출발, G: 도착, #: 벽
   variants?: string[][]    // 없으면 [grid], 같은 코드로 모두 성공해야 통과
   startDir: 'N' | 'E' | 'S' | 'W'
@@ -83,7 +84,12 @@ type Stage = {
   solution: Program         // 자동 테스트용
 }
 
-type Frame = { pos: { x: number; y: number }; dir: Dir; activeBlockId: string | null; event?: 'move' | 'turn' | 'bump' | 'goal' }
+type Frame = {
+  pos: { x: number; y: number }; dir: Dir; activeBlockId: string | null
+  event?: 'move' | 'turn' | 'bump' | 'goal' | 'check'
+  check?: { blockId: string; condition: 'blockedAhead'; result: boolean }
+  loops?: { blockId: string; iteration: number; count: number }[]
+}
 ```
 
 구현된 엔진은 위 구조와 함께 `Dir`, `Position`, `RunResult`를 내보냅니다. `run`은 초기 상태 프레임과 명령별 프레임, 결과(`success`, `collision`, `unfinished`, `stepLimit`)를 반환합니다. 반복 블록 자체는 실행 단계가 아니며, 1000번째 명령 후 추가 명령이 있을 때 단계 초과입니다. 맵은 `.` 또는 공백을 빈 칸으로 허용하고 출발과 도착은 각각 정확히 하나여야 합니다. 편집 함수의 경로는 각 중첩 단계의 배열 인덱스이며 빈 부모 경로는 최상위입니다.
@@ -114,7 +120,7 @@ type Frame = { pos: { x: number; y: number }; dir: Dir; activeBlockId: string | 
 - 쓰기 키는 `lealnspire.progress.v2`, 문서는 `{ version: 2, stages: { [stageId]: { completed, bestStars, lastProgram: { main: Block[], functions: [] } } } }`입니다. `functions`는 빈 배열만 허용합니다. Controller·View와 `getProgress`는 기존 version:1·Block[] API를 유지합니다.
 - 유효한 v2 최상위 구조를 우선합니다. 없거나 무효면 v1 키 `lealnspire.progress`를 읽고 순수 함수 `migrateV1toV2(raw)`로 스테이지별 이행 후 v2에 저장합니다. migrations 배열은 향후 단계별 변환을 추가할 자리입니다. v1 키는 이행·편집·완료 때 변경하지 않아 v1.0.0 롤백 시 과거 기록을 복원할 수 있습니다.
 - 알 수 없는 버전은 v1 이행 없이 빈 상태로 시작하며 읽을 때 키를 삭제하거나 덮어쓰지 않습니다. 이후 일반 저장은 v2 키에만 씁니다. 최상위 구조가 유효하면 알려진 스테이지의 필드를 개별 보정하고, 알 수 없는 스테이지 ID의 항목만 제외합니다. v1 이행과 v2 읽기에 같은 규칙을 적용하고 다른 스테이지는 보존합니다.
-- 완료 여부 boolean, 별 정수 0~3, forward/turnLeft/turnRight/repeat만 허용합니다. 반복 횟수 정수 2~10, 비어 있지 않은 고유 ID, 최상위 블록 깊이 1 기준 최대 깊이 8, 전체 노드 60개까지 허용합니다. 코드가 무효면 완료 여부·최고 별을 보존하고 lastProgram만 `{ main: [], functions: [] }`로 비웁니다(v2 래퍼·functions가 무효인 경우 포함). 완료 여부가 boolean이 아니면 false, 별이 0~3 정수가 아니면 0으로 해당 필드만 보정합니다.
+- 완료 여부 boolean, 별 정수 0~3, forward/turnLeft/turnRight/repeat/if만 허용합니다. 반복 횟수 정수 2~10, 비어 있지 않은 고유 ID, 최상위 블록 깊이 1 기준 최대 깊이 10, 전체 노드 60개까지 허용합니다. 코드가 무효면 완료 여부·최고 별을 보존하고 lastProgram만 `{ main: [], functions: [] }`로 비웁니다(v2 래퍼·functions가 무효인 경우 포함). 완료 여부가 boolean이 아니면 false, 별이 0~3 정수가 아니면 0으로 해당 필드만 보정합니다.
 - 읽기·쓰기 실패 시 메모리 상태로 계속 동작합니다. 이행 쓰기가 실패해도 복원한 메모리 기록과 v1 키는 유지됩니다. 입력·출력은 복사하여 외부 변경을 막습니다.
 - 기록 삭제는 v1·v2 두 키를 모두 삭제 시도하고 메모리도 초기화합니다. `lealnspire.settings`의 언어 설정과 다른 앱 키는 유지합니다. 기존 기록 안내 문구는 저장 위치·내용·삭제 범위가 동일하여 유지합니다.
 - `saveProgram`은 완료 여부와 최고 별을 유지하고 `completeStage`는 최고 별을 최댓값으로 유지합니다. GameController는 저장 코드 → 초기 코드 → 빈 코드 순으로 시작합니다. 빈 저장 코드도 유지합니다.
@@ -123,8 +129,8 @@ type Frame = { pos: { x: number; y: number }; dir: Dir; activeBlockId: string | 
 ## 7. 타일 작업 공간 (T10)
 
 - 작업 공간 레이아웃은 교체 가능한 컴포넌트 `src/view/components/BlockTiles.tsx`와 `BlockTiles.css`로 분리합니다. `--tile-size`, `--tile-gap`으로 타일 크기와 간격을 조절합니다.
-- EditorController는 선택 블록 ID와 반복 추가 대상 ID를 따로 관리합니다. 타일 선택 후 고정 작업 막대에서 앞/뒤 이동·삭제·횟수 변경을 하고, 반복의 안에 넣기를 켜면 해당 몸체 끝에 추가합니다.
-- `program.ts`의 `MAX_PROGRAM_BLOCKS = 10`과 `addBlock`이 반복 몸체를 포함한 전체 추가 상한을 지킵니다. 실행기는 기존 저장 프로그램의 실행 의미를 유지합니다.
+- EditorController는 선택 블록 ID와 repeat/if 추가 대상 ID를 따로 관리합니다. 타일 선택 후 고정 작업 막대에서 앞/뒤 이동·삭제·횟수 변경을 하고, 반복의 안에 넣기를 켜면 해당 몸체 끝에 추가합니다.
+- `program.ts`의 `MAX_PROGRAM_BLOCKS = 10`과 `addBlock`이 repeat/if 몸체를 포함한 전체 추가 상한을 지킵니다. 실행기는 기존 저장 프로그램의 실행 의미를 유지합니다.
 
 
 ## E2E 테스트 의존성 (2026-11-21)
@@ -157,10 +163,12 @@ type Frame = { pos: { x: number; y: number }; dir: Dir; activeBlockId: string | 
 
 `run`은 기존처럼 `grid` 하나를 실행합니다. `runAll(stage, program)`은 `variants ?? [grid]` 전체를 실행하여 `{ results, result, failedVariant }`를 반환합니다. `failedVariant`는 첫 실패의 0부터 시작하는 인덱스이며 모두 성공하면 null입니다. `failurePoint`는 이 결과도 받아 실패 변형의 원인에 `variant`를 추가합니다(기존 단일 실행 반환 형태 유지).
 
-`editor.hasBody`가 repeat/if 공통 자식 탐색을 맡으며 Program의 개수·삽입·삭제·이동에 사용합니다. `cloneBlock`은 중첩 몸체를 복제하면서 목적지 트리와 중복되지 않는 ID를 모두 재발급합니다. 저장 v2의 main 목록에서 if 조건·몸체를 검증하며 기존 깊이 8·노드 60·ID 중복 제한을 유지합니다. 저장 버전은 그대로 2입니다.
+`editor.hasBody`가 repeat/if 공통 자식 탐색을 맡으며 Program의 개수·삽입·삭제·이동에 사용합니다. `cloneBlock`은 중첩 몸체를 복제하면서 목적지 트리와 중복되지 않는 ID를 모두 재발급합니다. 저장 v2의 main 목록에서 if 조건·몸체를 검증하며 깊이 10·노드 60·ID 중복 제한을 유지합니다. 저장 버전은 그대로 2입니다.
 
 `src/model/conditions.test.ts`는 조건·변형·편집·저장과 지름길 전수 탐색을 검사합니다. `unit1-run.fixture.json`은 T37 이전 엔진에서 추출한 정규 8개·보너스 2개 정답·빈 코드·직진 충돌·초기 코드의 전체 프레임 회귀 기준입니다.
 
 ### T38 조건 화면·변형 재생 [제안·잠정]
 
 GameController는 Stage.variants에만 runAll을 사용합니다. 현재 변형과 프레임 인덱스, 전체 실행 결과는 메모리 상태이며 저장하지 않습니다. 맵의 마지막 프레임을 속도 간격 동안 유지한 뒤 다음 맵의 초기 프레임으로 전환합니다. 모든 맵 재생 후 전체 결과를 표시하고 전체 성공 때 별 3개를 저장합니다. 고치기는 첫 실패 변형과 원인 블록으로 복귀합니다. 저장 v2 형식과 1단원 실행·별 기준은 유지합니다. 새 의존성·파일 추가는 없습니다.
+
+T40: 저장 검증 최대 깊이는 편집기의 블록 상한 MAX_PROGRAM_BLOCKS(10)와 일치합니다. 실패 칸·실패 블록은 현재 맵과 failure.variant가 일치할 때만 표시합니다. 결과의 실패 맵 카드 !는 유지하고 고치기는 첫 실패 맵으로 복귀합니다. 정적 영어 안내는 public/guide-en.html, 영어·조건 사용자 시나리오는 e2e/english.e2e.ts·conditions.e2e.ts입니다.

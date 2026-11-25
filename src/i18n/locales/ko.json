@@ -90,6 +90,7 @@
   "bestStars": "최고 별 {count}개",
   "stars": "별 {count}개",
   "target": "추가 위치: {order}번 반복 몸체 끝",
+  "targetIf": "추가 위치: {order}번 if 안쪽 끝",
   "total": "블록 {count} / {max}개",
   "totalUnlimited": "블록 {count}개",
   "action": "{order}번 {name} {action}",

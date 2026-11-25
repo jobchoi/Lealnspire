@@ -121,7 +121,7 @@ it('round-trips nested if in v2 and rejects invalid conditions, bodies, IDs, dep
   expect(new ProgressRepository(storage).getProgram(stages[0])).toEqual(code)
   const invalid: unknown[] = [{ id: 'bad', type: 'unknown' }, { ...iff(), condition: 'unknown' }, { ...iff(), body: null }, iff([iff()]), iff(Array.from({ length: 60 }, (_, i) => ({ ...f, id: String(i) })))]
   let deep: Block = f
-  for (let i = 0; i < 8; i++) deep = iff([deep], `depth-${i}`)
+  for (let i = 0; i < 10; i++) deep = iff([deep], `depth-${i}`)
   invalid.push(deep)
   for (const block of invalid) {
     raw = JSON.stringify({ version: 2, stages: { [stages[0].id]: { completed: true, bestStars: 3, lastProgram: { main: [block], functions: [] } } } })

@@ -20,6 +20,10 @@ export class GameController extends Observable<State> {
     this.stage = stage; this.repository = repository; this.clock = clock
   }
   get failure() { return this.state.failure ?? (this.finished && this.state.execution ? failurePoint(this.state.all ?? this.state.execution) : null) }
+  get visibleFailure() {
+    const failure = this.failure
+    return failure && (failure.variant ?? 0) === this.variant ? failure : null
+  }
   get frame() { return this.state.execution?.frames[this.state.index] }
   get result() { return this.state.all?.result ?? this.state.execution?.result }
   get variant() { return this.state.variant }

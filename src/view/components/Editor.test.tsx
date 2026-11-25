@@ -5,7 +5,8 @@ import { GameController } from '../../controller/GameController'
 import { ProgressRepository } from '../../model/ProgressRepository'
 import { stages } from '../../model/stages'
 import type { Program } from '../../model/types'
-import { t } from '../../i18n/I18n'
+import { EditorController } from '../../controller/EditorController'
+import { i18n, t } from '../../i18n/I18n'
 
 const program: Program = [{ id: 'a', type: 'repeat', count: 3, body: [{ id: 'b', type: 'repeat', count: 2, body: [{ id: 'c', type: 'forward' }] }] }]
 const onChange = () => {}
@@ -77,4 +78,21 @@ it('enables undo only with history and disables it during playback or after cons
   expect(undoTag()).toContain('disabled=""')
   game.reset(); game.undo()
   expect(undoTag()).toContain('disabled=""')
+})
+
+it('describes the insertion target using its block type in both languages', () => {
+  const previous = i18n.locale
+  try {
+    for (const locale of ['ko', 'en']) {
+      i18n.locale = locale
+      for (const type of ['repeat', 'if'] as const) {
+        const controller = new EditorController()
+        const code: Program = [type === 'if' ? { id: 'target', type, condition: 'blockedAhead', body: [] } : { id: 'target', type, count: 2, body: [] }]
+        controller.configure(code, onChange, false)
+        controller.select('target'); controller.toggleTarget()
+        const html = renderToString(<Editor program={code} onChange={onChange} controller={controller} />)
+        expect(html).toContain(t(type === 'if' ? 'targetIf' : 'target', { order: 1 }))
+      }
+    }
+  } finally { i18n.locale = previous }
 })
