@@ -148,3 +148,28 @@
 
 .play-page .workspace .if-frame.has-else { display: flex; }
 .play-page .workspace .if-skipped > .if-branch .block-tile { opacity: .45; }
+
+/* T42: a solid rounded enclosure distinguishes condition loops. */
+.while-frame { border: 3px double #15665b; border-radius: 18px; background: #e6f4ee; }
+.block-while { background: #d4eee5; color: #123f37; border-color: #15665b; }
+.recheck-label { font-size: 10px; line-height: 1; white-space: nowrap; }
+.while-frame .repeat-ribbon { border-radius: 8px; }
+.play-page .palette button.block-while small { display: block; font: bold 10px/12px monospace; white-space: nowrap; }
+.play-page .workspace .block-tile.block-while { padding: 0; }
+.play-page .workspace .block-while > .block-symbol { position: absolute; top: 9px; left: 4px; width: 18px; height: 18px; }
+.play-page .workspace .block-while > .sensor-icon { position: absolute; top: 9px; right: 4px; width: 18px; height: 18px; }
+.play-page .workspace .block-while > strong { position: absolute; top: 27px; font: bold 10px/11px monospace; padding: 0; }
+.play-page .workspace .block-while .recheck-label { position: absolute; top: 39px; font: 9px/10px sans-serif; }
+.play-page .workspace .block-while.has-loop-progress .recheck-label { top: 27px; right: 1px; font-size: 0; }
+.play-page .workspace .block-while.has-loop-progress .recheck-label::after { content: '↻'; font-size: 12px; }
+.play-page .workspace .block-while .loop-progress { bottom: 0; font: bold 10px/11px sans-serif; }
+.play-page .workspace .block-while .empty-repeat-label { display: none; }
+.play-page .workspace .while-frame { border: 3px double #15665b; border-radius: 18px; background: #e6f4ee; }
+
+/* The SVG must fit its slot; shared mobile icons otherwise remain 30px.
+   Keep the keyword compact even when the live iteration style is applied. */
+.play-page .workspace .block-while > :is(.block-symbol, .sensor-icon) .theme-symbol { width: 100%; height: 100%; }
+.play-page .workspace .block-tile.block-while.has-loop-progress > strong { font: bold 10px/11px monospace; padding: 0; }
+@media (max-width: 700px) {
+  .play-page .workspace .block-while > :is(.block-symbol, .sensor-icon) { top: 10px; width: 15px; height: 15px; }
+}

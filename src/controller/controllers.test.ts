@@ -1,4 +1,4 @@
-import { bonusStages } from '../model/stages'
+import { unit3Stages, bonusStages } from '../model/stages'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AppController } from './AppController'
 import { GameController } from './GameController'
@@ -385,4 +385,78 @@ it('T40 only displays failure markers on the failed map before and after fixing'
   expect(game.visibleFailure).toBeNull()
   game.selectVariant(0)
   expect(game.visibleFailure).toEqual(game.failure)
+})
+
+for (const [speed, delay] of [['slow', 800], ['normal', 400], ['fast', 150]] as const) {
+  it(`caps stepLimit playback at 12 ticks at ${speed} speed and skips remaining maps`, () => {
+    vi.useFakeTimers()
+    const stage = unit3Stages[2]
+    const repository = new ProgressRepository()
+    const game = new GameController(stage, repository)
+    const seen: number[] = []
+    game.subscribe(() => seen.push(game.getSnapshot().index))
+    game.setSpeed(speed); game.play()
+    const execution = game.getSnapshot().execution!
+    vi.advanceTimersByTime(delay * 11)
+    expect(game.getSnapshot().index).toBe(11)
+    expect(game.showResult).toBe(false)
+    vi.advanceTimersByTime(delay)
+    expect(game.showResult).toBe(true)
+    expect(game.getSnapshot().playing).toBe(false)
+    expect(game.variant).toBe(0)
+    expect(game.variantResults).toEqual(['stepLimit', undefined])
+    expect(game.frame).toEqual(execution.frames.at(-1))
+    expect(game.frame?.loops?.[0].iteration).toBeGreaterThan(300)
+    expect(seen.filter(index => index > 0)).toHaveLength(12)
+    expect(game.whileLimited).toBe(true)
+    expect(vi.getTimerCount()).toBe(0)
+    expect(repository.getProgress().stages[stage.id]?.completed).not.toBe(true)
+    game.fix()
+    expect(game.editor.getSnapshot().selectedId).toBe(stage.initialProgram![0].id)
+    expect(game.variant).toBe(0)
+  })
+}
+
+it('keeps manual stepLimit playback one frame at a time through the actual limit', () => {
+  const game = new GameController(unit3Stages[2], new ProgressRepository())
+  game.step()
+  const execution = game.getSnapshot().execution!
+  for (let index = 2; index < execution.frames.length; index++) {
+    expect(game.showResult).toBe(false)
+    game.step()
+    expect(game.getSnapshot().index).toBe(index)
+  }
+  expect(game.showResult).toBe(true)
+  expect(game.variant).toBe(0)
+  expect(game.whileLimited).toBe(true)
+})
+
+it('also caps excessive repeat playback in units 1 and 2 without the while explanation', () => {
+  vi.useFakeTimers()
+  const program = [{ id: 'a', type: 'repeat' as const, count: 10, body: [{ id: 'b', type: 'repeat' as const, count: 10, body: [{ id: 'c', type: 'repeat' as const, count: 10, body: [{ id: 'd', type: 'repeat' as const, count: 10, body: [{ id: 'r', type: 'turnRight' as const }] }] }] }] }]
+  for (const stage of [stages[0], { ...stages[0], variants: [stages[0].grid, stages[0].grid] }]) {
+    const game = new GameController(stage, new ProgressRepository())
+    game.edit(program); game.setSpeed('fast'); game.play()
+    vi.advanceTimersByTime(150 * 12)
+    expect(game.showResult).toBe(true)
+    expect(game.result).toBe('stepLimit')
+    expect(game.whileLimited).toBe(false)
+    expect(game.variant).toBe(0)
+    expect(vi.getTimerCount()).toBe(0)
+  }
+})
+
+it('stops at a later stepLimit map and leaves subsequent maps unreplayed', () => {
+  vi.useFakeTimers()
+  const stage = { ...stages[0], grid: ['S#', 'G#'], variants: [['S#', 'G#'], ['SG', '..'], ['SG', '..']] }
+  const game = new GameController(stage, new ProgressRepository())
+  game.edit([{ id: 'w', type: 'while', condition: 'clearAhead', body: [] }, { id: 'r', type: 'turnRight' }, { id: 'f', type: 'forward' }])
+  game.play(); vi.runAllTimers()
+  expect(game.variant).toBe(1)
+  expect(game.showResult).toBe(true)
+  expect(game.variantResults).toEqual(['success', 'stepLimit', undefined])
+  expect(game.failure).toMatchObject({ blockId: 'w', variant: 1 })
+  game.fix()
+  expect(game.variant).toBe(1)
+  expect(game.editor.getSnapshot().selectedId).toBe('w')
 })

@@ -176,3 +176,7 @@ T40: 저장 검증 최대 깊이는 편집기의 블록 상한 MAX_PROGRAM_BLOCK
 ### T41 if/else [제안·잠정]
 
 if에 선택적 `else?: Block[]`를 추가한다. 저장 버전은 v2 유지, 양쪽 가지에 같은 깊이·노드·ID 검증을 적용한다. 편집 경로의 if 인덱스 뒤 `-1`은 else 목록을 가리킨다(예: `[0,-1,0]`). `listAt`/`blockAt`이 경로 조회를 담당하고 Program.setElse는 불변 추가·제거를 제공한다. 검사 한 번으로 한 가지만 실행한다. GameController.branchCheck는 가지 표시용 마지막 검사 결과이며 센서의 현재 프레임 문구와 구분한다.
+
+### T42 조건 반복 [제안·잠정]
+
+Block에 while/clearAhead/body를 추가하며 기존 blockedAhead 판정을 반전해 재사용한다. 검사마다 실행 단계와 check 프레임을 생성하여 빈 몸체도 유한 시간에 stepLimit으로 끝난다. RunResult.whileLimitBlockId는 원인 while을 고치기 화면에 전달한다. Frame.loops.count는 while에서는 생략한다. Stage.palette는 표시할 블록 종류를 지정하며 미지정 스테이지의 팔레트는 기존과 같다. 저장 문서는 v2를 유지하고 while의 조건 허용 목록은 clearAhead 하나다. 새로운 파일 model/while.test.ts와 docs/design/unit3-while.md가 실행·편집·저장 검증과 설계를 담는다.

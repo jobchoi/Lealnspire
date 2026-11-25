@@ -3,7 +3,7 @@ import { t } from '../../i18n/I18n'
 import { describe, expect, it } from 'vitest'
 import { run, runAll } from '../interpreter'
 import { countBlocks, MAX_PROGRAM_BLOCKS } from '../program'
-import { stages, bonusStages, unit2Stages } from './index'
+import { stages, bonusStages, unit2Stages, unit3Stages } from './index'
 import type { Program, Dir } from '../types'
 
 describe('스테이지 정답', () => {
@@ -84,7 +84,7 @@ for (const stage of bonusStages) {
   })
 }
 
-for (const stage of unit2Stages.slice(1)) {
+for (const stage of [...unit2Stages.slice(1), ...unit3Stages]) {
   it(stage.id + ': solution passes every variant within the limit', () => {
     expect(runAll(stage, stage.solution).results.map(result => result.result)).toEqual(stage.variants!.map(() => 'success'))
     expect(countBlocks(stage.solution)).toBeLessThanOrEqual(stage.maxBlocks!)
@@ -141,7 +141,7 @@ for (const stage of unit2Stages.slice(1)) {
         seen.add(key); current.push(transform)
       }
       for (const command of commands) for (const tail of bySize[size - 1]) add(compose(command, tail))
-      for (let bodySize = 1; bodySize < size; bodySize++) for (const body of bySize[bodySize]) {
+      for (let bodySize = 1; (!stage.palette || stage.palette.includes('repeat')) && bodySize < size; bodySize++) for (const body of bySize[bodySize]) {
         let repeated = body
         for (let count = 2; count <= 10; count++) {
           repeated = compose(repeated, body)
@@ -158,7 +158,8 @@ for (const stage of unit2Stages.slice(1)) {
       }
       bySize.push(current)
     }
-    expect(seen.size).toBeGreaterThan(100)
+    // u3-3 has only three primitive commands and a three-block budget.
+    expect(seen.size).toBeGreaterThan(stage.palette?.includes('repeat') === false ? 20 : 100)
   })
 }
 it('u2-4 initial code collides on the fourth forward in A and succeeds in B', () => {

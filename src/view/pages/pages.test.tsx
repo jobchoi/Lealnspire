@@ -8,7 +8,7 @@ import { HomePage, RecordDialog } from './HomePage'
 import { StageSelectPage } from './StageSelectPage'
 import { PlayPage } from './PlayPage'
 import { createProgressStore } from '../../model/ProgressRepository'
-import { stages, bonusStages, allStages, unit2Stages, isLastStage } from '../../model/stages'
+import { stages, bonusStages, allStages, unit2Stages, unit3Stages, isLastStage } from '../../model/stages'
 import { t, i18n } from '../../i18n/I18n'
 
 const noop = () => {}
@@ -22,7 +22,7 @@ describe('화면 렌더링', () => {
     expect(home()).toContain(t('continue'))
     for (const stage of stages) store.completeStage(stage.id, 3, [])
     expect(home()).toContain(t('continue'))
-    for (const stage of unit2Stages) store.completeStage(stage.id, 3, [])
+    for (const stage of [...unit2Stages, ...unit3Stages]) store.completeStage(stage.id, 3, [])
     expect(home()).not.toContain(t('continue'))
   })
   it('정규 8개와 보너스 2개 카드, 잠김, 최고 별을 표시하고 이전 완료 시 다음 카드가 열린다', () => {
@@ -286,6 +286,30 @@ it('uses the localized Unit 2 title in play, list and results without exposing i
       const list = renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)
       expect(list).toContain(title)
       expect(list).not.toContain('u2-1')
+    }
+  } finally { i18n.locale = previous }
+})
+
+it('renders stepLimit notices, the failed map and the correct while or repeat explanation', () => {
+  const previous = i18n.locale
+  try {
+    for (const locale of ['ko', 'en']) {
+      i18n.locale = locale
+      for (const whileLoop of [true, false]) {
+        const stage = whileLoop ? unit3Stages[2] : stages[0]
+        const store = createProgressStore()
+        const controller = new GameController(stage, store)
+        if (!whileLoop) controller.edit([{ id: 'a', type: 'repeat', count: 10, body: [{ id: 'b', type: 'repeat', count: 10, body: [{ id: 'c', type: 'repeat', count: 10, body: [{ id: 'd', type: 'repeat', count: 10, body: [{ id: 'r', type: 'turnRight' }] }] }] }] }])
+        for (let i = 0; i < 1100 && !controller.finished; i++) controller.step()
+        expect(controller.showResult).toBe(true)
+        const html = renderToString(<PlayPage stage={stage} progressStore={store} controller={controller} onList={noop} onNext={noop} lastStage={false} />)
+        const modal = html.split('role="dialog"')[1]
+        expect(modal).toContain(t('stepLimitNotice'))
+        const reason = t(whileLoop ? 'whileStepLimit' : 'failures.stepLimit')
+        expect(modal).toContain(whileLoop ? t('variantFailure', { number: 1, reason }) : reason)
+        if (!whileLoop) expect(modal).not.toContain(t('whileStepLimit'))
+        controller.dispose()
+      }
     }
   } finally { i18n.locale = previous }
 })

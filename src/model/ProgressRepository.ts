@@ -23,7 +23,10 @@ function validProgram(value: unknown): value is Program {
     if (depth > MAX_PROGRAM_BLOCKS || ids.size >= 60) return false
     if (!record(block) || typeof block.id !== 'string' || !block.id || ids.has(block.id)) return false
     ids.add(block.id)
-    if (block.type === 'if') {
+    if (block.type === 'while') {
+      if (block.condition !== 'clearAhead' || !Array.isArray(block.body) || 'else' in block) return false
+      for (const child of block.body) pending.push({ block: child, depth: depth + 1 })
+    } else if (block.type === 'if') {
       if (block.condition !== 'blockedAhead' || !Array.isArray(block.body) || ('else' in block && !Array.isArray(block.else))) return false
       if (Array.isArray(block.else)) for (const child of block.else) pending.push({ block: child, depth: depth + 1 })
       for (const child of block.body) pending.push({ block: child, depth: depth + 1 })

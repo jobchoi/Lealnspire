@@ -10,6 +10,7 @@ export class Interpreter {
     let pos = { ...grid.start }
     let dir = stage.startDir
     const frames: RunResult['frames'] = [{ pos: { ...pos }, dir, activeBlockId: null }]
+    let whileLimitBlockId: string | undefined
     let steps = 0
     let repeatEntries = 0
     let result: RunResult['result'] = 'unfinished'
@@ -28,6 +29,24 @@ export class Interpreter {
             if (repeatEntries === 1000) { result = 'stepLimit'; return true }
             repeatEntries++
             if (execute(block.body, [...loops, { blockId: block.id, iteration: i + 1, count: block.count }])) return true
+          }
+          break
+        }
+        case 'while': {
+          if (block.condition !== 'clearAhead') throw new Error('Unknown condition')
+          let iteration = 1
+          for (;;) {
+            if (steps === 1000) { result = 'stepLimit'; whileLimitBlockId = block.id; return true }
+            steps++
+            const checked = !blockedAhead()
+            const currentLoops = [...loops, { blockId: block.id, iteration }]
+            frames.push({ pos: { ...pos }, dir, activeBlockId: block.id, loops: currentLoops, event: 'check', check: { blockId: block.id, condition: block.condition, result: checked } })
+            if (!checked) break
+            if (execute(block.body, currentLoops)) {
+              if (result === 'stepLimit' && !whileLimitBlockId) whileLimitBlockId = block.id
+              return true
+            }
+            iteration++
           }
           break
         }
@@ -71,7 +90,7 @@ export class Interpreter {
       return false
     }
     execute(program)
-    return { frames, result }
+    return { frames, result, ...(whileLimitBlockId ? { whileLimitBlockId } : {}) }
   }
 }
 export const run = Interpreter.run
@@ -88,6 +107,10 @@ export function failurePoint(execution: RunResult | RunAllResult): { blockId: st
     if (execution.failedVariant === null) return null
     const point = failurePoint(execution.results[execution.failedVariant])
     return point ? { ...point, variant: execution.failedVariant } : null
+  }
+  if (execution.result === 'stepLimit' && execution.whileLimitBlockId) {
+    const frame = execution.frames[execution.frames.length - 1]
+    return { blockId: execution.whileLimitBlockId, position: { ...frame.pos }, direction: frame.dir }
   }
   if (execution.result === 'success' || execution.result === 'stepLimit') return null
   const frame = execution.result === 'collision'

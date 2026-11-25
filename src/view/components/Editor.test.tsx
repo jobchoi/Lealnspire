@@ -135,3 +135,26 @@ it('numbers else tiles after the if branch and names branches in both languages'
     }
   } finally { i18n.locale = previous }
 })
+
+it('renders the stage palette and while check cycle in all themes and both languages', async () => {
+  const { unit3Stages } = await import('../../model/stages')
+  const { themes } = await import('../theme/themes')
+  const { BlockTiles } = await import('./BlockTiles')
+  const previous = i18n.locale
+  try {
+    for (const locale of ['ko', 'en']) {
+      i18n.locale = locale
+      for (const stage of unit3Stages) {
+        const html = renderToString(<Editor theme={themes[stage.world]} program={stage.solution} onChange={onChange} palette={stage.palette} />)
+        expect(html).toContain(`aria-label="${t('blocks.while')}"`)
+        expect(html).not.toContain(`aria-label="${t('blocks.if')}"`)
+        if (stage.id === 'u3-3') expect(html).not.toContain(`aria-label="${t('blocks.repeat')}"`)
+        expect(html).toContain('while-frame')
+        expect(html).toContain(t('recheck'))
+      }
+      const html = renderToString(<BlockTiles program={[{ id: 'w', type: 'while', condition: 'clearAhead', body: [] }]} selectedId={null} targetId={null} loops={[{ blockId: 'w', iteration: 3 }]} locked={false} onSelect={onChange} />)
+      expect(html).toContain(`aria-label="${t('whileIteration', { iteration: 3 })}"`)
+      expect(html).not.toContain('3/undefined')
+    }
+  } finally { i18n.locale = previous }
+})

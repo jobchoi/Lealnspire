@@ -1,4 +1,5 @@
 {
+  "stepLimitNotice": "… It does not end",
   "undo": "Undo",
   "fix": "Fix",
   "failureBlock": "Block where it went wrong",
@@ -68,7 +69,8 @@
     "turnLeft": "Turn left",
     "turnRight": "Turn right",
     "repeat": "Repeat N times",
-    "if": "if the path ahead is blocked"
+    "if": "if the path ahead is blocked",
+    "while": "while the path ahead is clear"
   },
   "tools": "Block tools",
   "chooseTile": "Tap a block to select it.",
@@ -243,5 +245,25 @@
   "u26Title": "Unit 2-6: Three Maps",
   "u26Goal": "Get through all three maps with the same code.",
   "u26Hint1": "Compare where and how many times the robot must turn on each map.",
-  "u26Hint2": "In one round of the repeat, should the robot turn and move, or only one of them?"
+  "u26Hint2": "In one round of the repeat, should the robot turn and move, or only one of them?",
+  "unit3": "Unit 3: Loops with Conditions (while)",
+  "unit3Congratulations": "Unit 3 complete!",
+  "whileName": "while the path ahead is clear",
+  "whileIteration": "Iteration {iteration}",
+  "recheck": "Check again",
+  "whileContinue": "The path ahead is clear → continue",
+  "whileStop": "The path ahead is blocked → stop",
+  "whileStepLimit": "The loop never ends. Check whether anything inside while changes the condition.",
+  "u31Title": "Unit 3-1: Go Until the Wall",
+  "u31Goal": "Get through two paths of different lengths with the same code.",
+  "u31Hint1": "Compare how many cells there are before the first wall on each map.",
+  "u31Hint2": "To keep going 'until there’s a wall' without counting, which block do you need?",
+  "u32Title": "Unit 3-2: To the Wall and Turn",
+  "u32Goal": "Get through two maps where the corners are at different distances.",
+  "u32Hint1": "Look at how many times 'go to the wall, then turn' repeats.",
+  "u32Hint2": "If you put while inside repeat, what gets repeated?",
+  "u33Title": "Unit 3-3: The Loop That Never Ends",
+  "u33Goal": "Fix the code that never stops and reach the star.",
+  "u33Hint1": "When you run the starting code, how far does the robot get?",
+  "u33Hint2": "Can the blocks inside while ever change whether the path ahead is clear?"
 }

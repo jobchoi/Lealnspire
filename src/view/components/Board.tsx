@@ -14,7 +14,7 @@ export function Board({ theme = defaultTheme, check, stage, position, direction 
   const goalIndex = grid.cells.findIndex(cell => cell.goal)
   const delta = { N: [0, -1], E: [1, 0], S: [0, 1], W: [-1, 0] }[direction]
   const sensor = check ? { x: robotIndex % grid.width + delta[0], y: Math.floor(robotIndex / grid.width) + delta[1] } : undefined
-  const sensorLabel = check ? t(check.result ? 'sensorBlocked' : 'sensorClear') : ''
+  const sensorLabel = check ? t((check.condition === 'clearAhead' ? !check.result : check.result) ? 'sensorBlocked' : 'sensorClear') : ''
   const label = sensorLabel + ' ' + t('board', { title: t(stage.title), row: Math.floor(robotIndex / grid.width) + 1, column: robotIndex % grid.width + 1, goalRow: Math.floor(goalIndex / grid.width) + 1, goalColumn: goalIndex % grid.width + 1, direction: t(`directions.${direction}`) })
   if (theme.world === 'train') return <TrainMap sensor={sensor} sensorLabel={sensorLabel} hintHighlight={hintHighlight} stage={stage} position={position} direction={direction} bump={bump} failurePosition={failurePosition} />
   if (theme.world) {

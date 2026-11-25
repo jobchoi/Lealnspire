@@ -7,6 +7,8 @@ import type { Program, RunResult, RunAllResult, Stage } from '../model/types'
 import type { ProgressRepository } from '../model/ProgressRepository'
 import { isLastFrame, nextFrameIndex, playbackSpeeds } from './playback'
 export type Scheduler = { set(callback: () => void, delay: number): unknown; clear(handle: unknown): void }
+// Include the initial frame; show a few loop cycles before skipping to the computed end.
+const stepLimitPreviewFrames = 12
 const scheduler: Scheduler = { set: (callback, delay) => setTimeout(callback, delay), clear: handle => clearTimeout(handle as ReturnType<typeof setTimeout>) }
 type State = { variant: number; all: RunAllResult | null; undoProgram: Program | null; program: Program; execution: RunResult | null; index: number; playing: boolean; dismissed: boolean; speed: keyof typeof playbackSpeeds; hintStep: 0 | 1 | 2; failure: ReturnType<typeof failurePoint> }
 export class GameController extends Observable<State> {
@@ -27,6 +29,7 @@ export class GameController extends Observable<State> {
   get frame() { return this.state.execution?.frames[this.state.index] }
   get branchCheck() { return this.state.execution?.frames.slice(0, this.state.index + 1).reverse().find(frame => frame.check)?.check }
   get result() { return this.state.all?.result ?? this.state.execution?.result }
+  get whileLimited() { const execution = this.state.all && this.state.all.failedVariant !== null ? this.state.all.results[this.state.all.failedVariant] : this.state.execution; return !!execution?.whileLimitBlockId }
   get variant() { return this.state.variant }
   get displayStage() { return { ...this.stage, grid: this.stage.variants?.[this.variant] ?? this.stage.grid } }
   get variantResults() { return this.state.all?.results.map((run, variant) => variant < this.variant || variant === this.variant && isLastFrame(this.state.index, this.state.execution?.frames.length ?? 0) ? run.result : undefined) }
@@ -39,12 +42,15 @@ export class GameController extends Observable<State> {
     return { all, variant: 0, execution: all?.results[0] ?? Interpreter.run(this.stage, this.state.program) }
   }
   get locked() { return this.state.execution !== null && !this.finished }
-  get finished() { return isLastFrame(this.state.index, this.state.execution?.frames.length ?? 0) && (!this.state.all || this.variant === this.state.all.results.length - 1) }
+  get finished() { return isLastFrame(this.state.index, this.state.execution?.frames.length ?? 0) && (!this.state.all || this.state.execution?.result === 'stepLimit' || this.variant === this.state.all.results.length - 1) }
   get showResult() { return this.finished && !this.state.dismissed }
   get stars() { return this.stage.variants && this.result === 'success' ? 3 : this.result ? Score.score(this.result, ProgramModel.countBlocks(this.state.program), this.stage.starBlocks) : 0 }
   get canNext() { return this.repository.getProgress().stages[this.stage.id]?.completed === true }
   private stop() { if (this.timer !== undefined) this.clock.clear(this.timer); this.timer = undefined }
   private publish(next: State) {
+    if (next.execution?.result === 'stepLimit' && isLastFrame(next.index, next.execution.frames.length)) {
+      next = { ...next, playing: false, all: next.all ? { ...next.all, result: 'stepLimit', failedVariant: next.variant } : null }
+    }
     this.stop()
     if (isLastFrame(next.index, next.execution?.frames.length ?? 0) && (!next.all || next.variant === next.all.results.length - 1) && (next.all?.result ?? next.execution?.result) === 'success' && (!this.finished || next.execution !== this.state.execution)) {
       this.repository.completeStage(this.stage.id, this.stage.variants ? 3 : Score.score('success', ProgramModel.countBlocks(next.program), this.stage.starBlocks), next.program)
@@ -55,6 +61,11 @@ export class GameController extends Observable<State> {
     }, playbackSpeeds[next.speed])
   }
   private advance(playing: boolean) {
+    if (this.finished) return
+    if (playing && this.state.execution?.result === 'stepLimit' && this.state.index >= stepLimitPreviewFrames - 1) {
+      this.publish({ ...this.state, index: this.state.execution.frames.length - 1, playing: false })
+      return
+    }
     if (this.state.all && isLastFrame(this.state.index, this.state.execution!.frames.length) && this.variant < this.state.all.results.length - 1) {
       const variant = this.variant + 1
       this.publish({ ...this.state, variant, execution: this.state.all.results[variant], index: 0, playing })

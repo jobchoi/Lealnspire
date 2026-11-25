@@ -6,15 +6,15 @@ import { useEffect, useRef, useState } from 'react'
 import { MAX_PROGRAM_BLOCKS } from '../../model/program'
 import { EditorController } from '../../controller/EditorController'
 import { useController } from '../hooks/useController'
-import type { Frame, Program } from '../../model/types'
+import type { BlockType, Frame, Program } from '../../model/types'
 import { BlockTiles } from './BlockTiles'
 import { Engine, Symbol } from '../theme/Symbols'
 import { t } from '../../i18n/I18n'
 
-type EditorProps = { theme?: Theme; program: Program; onChange: (program: Program) => void; maxBlocks?: number; locked?: boolean; activeBlockId?: string | null; conditions?: boolean; check?: Frame['check']; loops?: Frame['loops']; failedBlockId?: string | null; controller?: EditorController }
+type EditorProps = { theme?: Theme; program: Program; onChange: (program: Program) => void; maxBlocks?: number; locked?: boolean; activeBlockId?: string | null; conditions?: boolean; palette?: BlockType[]; check?: Frame['check']; loops?: Frame['loops']; failedBlockId?: string | null; controller?: EditorController }
 const types = defaultTheme.blockTypes
 
-export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, locked = false, activeBlockId, conditions = false, check, loops, failedBlockId, controller: supplied }: EditorProps) {
+export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, locked = false, activeBlockId, conditions = false, palette, check, loops, failedBlockId, controller: supplied }: EditorProps) {
   const workspace = useRef<HTMLDivElement>(null)
   const [controller] = useState(() => supplied ?? new EditorController())
   controller.configure(program, onChange, locked, maxBlocks)
@@ -40,7 +40,7 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
     <div className="block-budget"><p aria-live="polite">{t('total', { count: total, max: limit })}</p>
     <span className="slot-dots" aria-hidden="true">{Array.from({ length: MAX_PROGRAM_BLOCKS }, (_, i) => <span key={i} className={i < total ? 'filled' : i >= limit ? 'unavailable' : ''}>{i < total ? '●' : '○'}</span>)}</span></div>
     <p className="insertion-status" aria-live="polite">{targetPath ? t(controller.targetElse ? 'targetElse' : targetBlock?.type === 'if' ? 'targetIf' : 'target', { order: blockOrder(program, targetPath) }) : t('root')}</p>
-    <div className="palette-row"><div className="palette" role="group" aria-label={t('palette')}>{(conditions ? [...types, 'if' as const] : types).map(type => <button type="button" key={type} className={theme.blockClass(type)} aria-label={theme.blockName(type)} title={theme.blockName(type)} disabled={locked || atLimit} onClick={() => controller.add(type)}><span className="block-symbol" aria-hidden="true">{theme.blockSymbol(type)}</span>{conditions && theme.world === 'handheld' && type === 'repeat' && <span className="handheld-button-letter" aria-hidden="true">B</span>}{type === 'if' && <span className="sensor-icon" aria-hidden="true"><Symbol name="blockedAhead" /></span>}<small>{type === 'if' ? glossary.if.keyword : theme.paletteName?.(type) ?? theme.blockName(type)}</small></button>)}</div><button type="button" className="undo-button" aria-label={t('undo')} title={t('undo')} disabled={locked || !controller.canUndo} onClick={controller.undo}><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M9 4 3 10l6 6M3 10h11a6 6 0 0 1 0 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg></button></div>
+    <div className="palette-row"><div className="palette" role="group" aria-label={t('palette')}>{(palette ?? (conditions ? [...types, 'if' as const] : types)).map(type => <button type="button" key={type} className={theme.blockClass(type)} aria-label={theme.blockName(type)} title={theme.blockName(type)} disabled={locked || atLimit} onClick={() => controller.add(type)}><span className="block-symbol" aria-hidden="true">{theme.blockSymbol(type)}</span>{conditions && theme.world === 'handheld' && type === 'repeat' && <span className="handheld-button-letter" aria-hidden="true">B</span>}{type === 'while' && <span className="sensor-icon" aria-hidden="true"><Symbol name="clearAhead" /></span>}{type === 'if' && <span className="sensor-icon" aria-hidden="true"><Symbol name="blockedAhead" /></span>}<small>{type === 'while' ? glossary.while.keyword : type === 'if' ? glossary.if.keyword : theme.paletteName?.(type) ?? theme.blockName(type)}</small></button>)}</div><button type="button" className="undo-button" aria-label={t('undo')} title={t('undo')} disabled={locked || !controller.canUndo} onClick={controller.undo}><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M9 4 3 10l6 6M3 10h11a6 6 0 0 1 0 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg></button></div>
     {atLimit && <p role="status">{t('limit')}</p>}
     <h3>{t('workspace')}</h3>
     <div className={`workspace-shell${selectedBlock ? ' has-selection' : ''}`}>

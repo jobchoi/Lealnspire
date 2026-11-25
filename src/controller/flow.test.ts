@@ -2,7 +2,7 @@ import { AppController } from './AppController'
 import { isUnlocked, ProgressRepository, progressKey } from '../model/ProgressRepository'
 import { describe, expect, it } from 'vitest'
 import { createProgressStore } from '../model/ProgressRepository'
-import { stages, allStages, unit2Stages } from '../model/stages'
+import { stages, allStages, unit2Stages, unit3Stages } from '../model/stages'
 import { continueStageIndex, showNextStage } from './flow'
 
 describe('이어하기 대상', () => {
@@ -25,7 +25,7 @@ describe('이어하기 대상', () => {
     const store = createProgressStore()
     for (const stage of stages) store.completeStage(stage.id, 3, stage.solution)
     expect(continueStageIndex(store.getProgress())).toBe(allStages.indexOf(unit2Stages[0]))
-    for (const stage of unit2Stages) store.completeStage(stage.id, 3, stage.solution)
+    for (const stage of [...unit2Stages, ...unit3Stages]) store.completeStage(stage.id, 3, stage.solution)
     expect(continueStageIndex(store.getProgress())).toBeUndefined()
   })
 })
@@ -85,6 +85,22 @@ it('unlocks unit 2 sequentially, continues without bonus completion and returns 
     app.next()
     expect(app.getSnapshot()).toEqual(offset === unit2Stages.length - 1 ? { page: 'list' } : { page: 'play', index: index + 1 })
   }
-  expect(continueStageIndex(app.progress)).toBeUndefined()
+  expect(continueStageIndex(app.progress)).toBe(allStages.indexOf(unit3Stages[0]))
   expect(app.progress.stages.b1).toBeUndefined()
+})
+
+it('continues through unit 3 and returns to the list after its final stage', () => {
+  const repository = new ProgressRepository()
+  for (const stage of [...stages, ...unit2Stages]) repository.completeStage(stage.id, 3, stage.solution)
+  const app = new AppController(repository)
+  for (const [offset, stage] of unit3Stages.entries()) {
+    const index = allStages.indexOf(stage)
+    expect(continueStageIndex(app.progress)).toBe(index)
+    app.continue()
+    expect(app.getSnapshot()).toEqual({ page: 'play', index })
+    repository.completeStage(stage.id, 3, stage.solution)
+    app.next()
+    expect(app.getSnapshot()).toEqual(offset === 2 ? { page: 'list' } : { page: 'play', index: index + 1 })
+  }
+  expect(continueStageIndex(app.progress)).toBeUndefined()
 })

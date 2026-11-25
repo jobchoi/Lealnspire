@@ -60,5 +60,11 @@ for (const [id, world, variants, startDir, turn, count, highlight] of [
     maxBlocks: 4, starBlocks: 4, solution: [{ id: id + '-repeat', type: 'repeat', count, body: [{ id: id + '-if', type: 'if', condition: 'blockedAhead', body: [{ id: id + '-turn', type: turn }], else: [{ id: id + '-forward', type: 'forward' }] }] }],
   })
 }
-export const allStages = [...stages, ...bonusStages, ...unit2Stages]
-export const isLastStage = (index: number) => index === stages.length - 1 || index === stages.length + bonusStages.length - 1 || index === allStages.length - 1
+const whileForward = (id: string): Block => ({ id, type: 'while', condition: 'clearAhead', body: [{ id: id + '-f', type: 'forward' }] })
+export const unit3Stages: Stage[] = [
+  { id: 'u3-1', world: 'sketchbook', title: 'u31Title', goal: 'u31Goal', hints: { keys: ['u31Hint1', 'u31Hint2'], highlight: 'walls' }, grid: ['S..#', '##G#'], variants: [['S..#', '##G#'], ['S....#', '####G#']], startDir: 'E', maxBlocks: 5, starBlocks: 4, palette: ['forward', 'turnLeft', 'turnRight', 'repeat', 'while'], solution: [whileForward('u31-w'), { id: 'u31-r', type: 'turnRight' }, { id: 'u31-f', type: 'forward' }] },
+  { id: 'u3-2', world: 'train', title: 'u32Title', goal: 'u32Goal', hints: { keys: ['u32Hint1', 'u32Hint2'], highlight: 'path' }, grid: ['S..#', '##.#', 'G..#'], variants: [['S..#', '##.#', 'G..#'], ['S.#', '#.#', '#.#', '#.#', 'G.#']], startDir: 'E', maxBlocks: 5, starBlocks: 4, palette: ['forward', 'turnLeft', 'turnRight', 'repeat', 'while'], solution: [{ id: 'u32-repeat', type: 'repeat', count: 3, body: [whileForward('u32-w'), { id: 'u32-r', type: 'turnRight' }] }] },
+  { id: 'u3-3', world: 'handheld', title: 'u33Title', goal: 'u33Goal', hints: { keys: ['u33Hint1', 'u33Hint2'], highlight: 'start' }, grid: ['S...G'], variants: [['S...G'], ['S......G']], startDir: 'E', maxBlocks: 3, starBlocks: 2, palette: ['forward', 'turnLeft', 'turnRight', 'while'], initialProgram: [{ id: 'u33-initial', type: 'while', condition: 'clearAhead', body: [{ id: 'u33-l', type: 'turnLeft' }, { id: 'u33-r', type: 'turnRight' }] }], solution: [whileForward('u33-w')] },
+]
+export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages]
+export const isLastStage = (index: number) => index === stages.length - 1 || index === stages.length + bonusStages.length - 1 || index === stages.length + bonusStages.length + unit2Stages.length - 1 || index === allStages.length - 1

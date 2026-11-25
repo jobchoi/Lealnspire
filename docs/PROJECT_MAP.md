@@ -221,3 +221,10 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 ### T41 if/else [제안·잠정]
 
 기존 model/types·editor·program·interpreter·ProgressRepository에 선택적 else 가지와 경로 표식 -1을 확장했다. EditorController·Editor·BlockTiles는 가지 편집과 건너뜀을 표시한다. u2-5(train)·u2-6(handheld)을 unit2Stages에 이어 붙이며 stages.test.ts는 else 없는 프로그램(if 포함)의 상태 변환을 전수 탐색한다. conditions.test.ts에서 else 실행·편집·복제·저장 회귀를 검사한다. 새 소스 파일은 없다.
+
+### T42 while [제안·잠정]
+
+- `model/while.test.ts`: while 0회·재검사·중첩·단계 상한 원인·회차·편집·저장·개방 회귀.
+- `model/types.ts`, `interpreter.ts`, `editor.ts`, `ProgressRepository.ts`: clearAhead 조건 반복, 선택적 loops.count, whileLimitBlockId와 실패 원인 추적, v2 검증.
+- `model/stages/index.ts`: unit3Stages u3-1~u3-3, Stage.palette와 순차 개방. `controller/flow.ts`는 3단원까지 이어하기를 찾는다.
+- 기존 Editor/BlockTiles/Board/PlayPage/StageSelectPage/ResultModal에 while 팔레트·검사·회차·완주 표시. 상세 설계는 `docs/design/unit3-while.md`.
