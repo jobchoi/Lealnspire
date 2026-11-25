@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test'
-import { expect, Game, test } from './helpers'
+import { expect, fontsReady, Game, test } from './helpers'
 
 /** 화면 배치 점검: 스크린샷은 e2e-results/screens/에 저장해 사람이(또는 Claude가) 직접 봅니다. */
 const worldSwitch = { sketchbook: '크레용 스케치북 월드로 바꾸기', train: '기차 마을 월드로 바꾸기', handheld: '나의 게임기 월드로 바꾸기' } as const
@@ -40,6 +40,7 @@ for (const c of layoutCases) test.describe(`@layout ${c.name}`, () => {
     await expect(page.locator(`.theme-${c.world}`)).toBeVisible()
     for (const program of c.programs) await g.build(program)
     expect(await g.blockCount()).toBe(c.blocks)
+    await fontsReady(page)
     await page.screenshot({ path: `e2e-results/screens/${info.project.name}-${c.world}-s${c.stage}-full.png` })
 
     expect(await page.evaluate(() => window.scrollY), '페이지 스크롤 없음').toBe(0)
@@ -80,6 +81,7 @@ for (const world of Object.keys(worldSwitch) as World[]) test.describe(`@layout 
     const g = await startIn(page, 1, world)
     await g.build('F 2[L]')
     await g.select('2')
+    await fontsReady(page)
     const bad = await page.locator('button:visible').evaluateAll(es => es.flatMap(e => {
       const r = e.getBoundingClientRect(); const label = e.getAttribute('aria-label') ?? e.textContent?.trim() ?? ''
       const issues: string[] = []

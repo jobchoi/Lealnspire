@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createProgressStore, isUnlocked, parseProgress, progressKey } from './ProgressRepository'
+import { createProgressStore, isUnlocked, parseProgress, progressKey, settingsKey } from './ProgressRepository'
 import { stages } from './stages'
 import type { Program } from './types'
 
@@ -126,4 +126,42 @@ it('clears memory without throwing when storage is absent or read, write or remo
     expect(store.getProgress().stages).toEqual({})
     if (failure === 'write') expect(storage.getItem(progressKey)).toBeNull()
   }
+})
+
+
+describe('language settings', () => {
+  it('keeps settings separate from progress and preserves them when progress is deleted', () => {
+    const storage = fakeStorage()
+    const store = createProgressStore(storage)
+    store.saveLanguage('en')
+    store.completeStage(stages[0].id, 3, program)
+    expect(JSON.parse(storage.getItem(settingsKey)!)).toEqual({ version: 1, lang: 'en' })
+    expect(createProgressStore(storage).getLanguage()).toBe('en')
+    expect(store.clear()).toBe(true)
+    const restored = createProgressStore(storage)
+    expect(restored.getLanguage()).toBe('en')
+    expect(restored.getProgress().stages).toEqual({})
+    restored.saveLanguage('ko')
+    expect(createProgressStore(storage).getLanguage()).toBe('ko')
+  })
+  it('ignores invalid settings without losing valid progress', () => {
+    for (const raw of ['{', 'null', '[]', '{"version":2,"lang":"en"}', '{"version":1,"lang":"fr"}']) {
+      const storage = fakeStorage(serialize())
+      storage.setItem(settingsKey, raw)
+      const store = createProgressStore(storage)
+      expect(store.getLanguage()).toBeUndefined()
+      expect(store.getProgress().stages[stages[0].id].completed).toBe(true)
+    }
+  })
+  it('keeps language changes in memory if storage is blocked', () => {
+    const store = createProgressStore({ getItem() { throw Error('blocked') }, setItem() { throw Error('blocked') } })
+    expect(store.getLanguage()).toBeUndefined()
+    store.saveLanguage('en')
+    expect(store.getLanguage()).toBe('en')
+    expect(store.persistent).toBe(false)
+    const storage = fakeStorage()
+    const blocked = createProgressStore({ ...storage, setItem() { throw Error('blocked') } })
+    blocked.saveLanguage('en')
+    expect(blocked.getLanguage()).toBe('en')
+  })
 })

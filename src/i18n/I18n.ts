@@ -1,6 +1,16 @@
 import korean from './locales/ko.json'
-// en remains a partial development locale until T35.
-export const supportedLocales = ['ko'] as const
+// Official locales require all Korean keys and matching interpolation arguments.
+// Other discovered locale files may remain partial and fall back to Korean.
+export const supportedLocales = ['ko', 'en'] as const
+export type Locale = typeof supportedLocales[number]
+export function isSupportedLocale(value: unknown): value is Locale {
+  return supportedLocales.some(locale => locale === value)
+}
+export function resolveLocale(requested: unknown, saved: unknown): Locale {
+  return isSupportedLocale(requested) ? requested : isSupportedLocale(saved) ? saved : 'ko'
+}
+// Native language names and the bilingual selector label stay readable in either UI.
+export const languageControl = { label: '언어 바꾸기 / Change language', names: { ko: '한국어', en: 'English' } }
 export type Messages = { [key: string]: string | Messages }
 export const locales = import.meta.glob<Messages>('./locales/*.json', { eager: true, import: 'default' })
 function lookup(messages: Messages, key: string): string | undefined {

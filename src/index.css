@@ -366,3 +366,21 @@ button small { display: block; font-size: .75rem; }
 .privacy-modal button { min-width: 44px; min-height: 44px; }
 
 .teacher-guide-link { display: inline-flex; align-items: center; min-width: 44px; min-height: 44px; color: #1e40af; text-decoration: underline; }
+
+
+/* Native language names remain visible and usable at touch sizes. */
+.home-tools { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px; }
+.language-button { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-width:44px; min-height:44px; white-space:nowrap; }
+.language-button svg { flex-shrink:0; }
+
+/* English wraps at word boundaries without reducing the existing type sizes. */
+:lang(en) :is(.editor, .result-modal, .stage-card, .app h1, .privacy-modal p, .play-page .stage-hint p) { overflow-wrap:normal; word-break:normal; hyphens:manual; }
+:lang(en) .play-page .stage-goal { max-height:none; overflow:visible; }
+:lang(en) .play-page .stage-hint { flex-wrap:wrap; }
+:lang(en) .play-page .stage-hint p { flex-basis:200px; }
+:lang(en) .play-page .hint-actions { margin-left:auto; }
+:lang(en) .play-page.theme-train .execution-controls .run-button small { white-space:normal; line-height:1.15; }
+@media(max-width:700px) {
+  :lang(en) .theme-train .palette-row .palette button { height:76px; grid-template-rows:28px auto; }
+  :lang(en) .play-page.theme-train .palette small { white-space:normal; overflow-wrap:normal; word-break:normal; line-height:16px; }
+}

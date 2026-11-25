@@ -5,6 +5,7 @@ export type StageProgress = { completed: boolean; bestStars: number; lastProgram
 export type Progress = { version: 1; stages: Record<string, StageProgress> }
 export type ProgressStorage = { getItem(key: string): string | null; setItem(key: string, value: string): void; removeItem?(key: string): void }
 export const progressKey = 'lealnspire.progress'
+export const settingsKey = 'lealnspire.settings'
 const empty = (): Progress => ({ version: 1, stages: {} })
 const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T
 const record = (value: unknown): value is Record<string, unknown> =>
@@ -48,6 +49,11 @@ export function isUnlocked(progress: Progress, stageIndex: number): boolean {
 
 function makeStore(storage?: ProgressStorage) {
   const deletionStorage = storage
+  let language: 'ko' | 'en' | undefined
+  try {
+    const settings: unknown = JSON.parse(storage?.getItem(settingsKey) ?? 'null')
+    if (record(settings) && settings.version === 1 && (settings.lang === 'ko' || settings.lang === 'en')) language = settings.lang
+  } catch { /* Invalid or unavailable settings use the default language. */ }
   let progress = empty()
   try {
     progress = parseProgress(storage?.getItem(progressKey) ?? null)
@@ -62,6 +68,12 @@ function makeStore(storage?: ProgressStorage) {
     }
   }
   return {
+    getLanguage: () => language,
+    saveLanguage(lang: 'ko' | 'en') {
+      language = lang
+      try { storage?.setItem(settingsKey, JSON.stringify({ version: 1, lang })) }
+      catch { /* Keep the selection in memory when settings cannot be saved. */ }
+    },
     get persistent() { return storage !== undefined },
     clear() {
       progress = empty()
@@ -98,6 +110,8 @@ export class ProgressRepository {
   private store: ReturnType<typeof makeStore>
   constructor(storage?: ProgressStorage) { this.store = makeStore(storage) }
   get persistent() { return this.store.persistent }
+  getLanguage = () => this.store.getLanguage()
+  saveLanguage = (lang: 'ko' | 'en') => this.store.saveLanguage(lang)
   clear = () => this.store.clear()
   getProgress = () => this.store.getProgress()
   getProgram = (stage: Stage) => this.store.getProgram(stage)

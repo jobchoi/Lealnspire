@@ -1,5 +1,13 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-25 — T35 1단원 영어 완성 (번역·E2E·QC Claude, 구현 Codex) [잠정], E2E 간헐 실패 원인 보강
+
+- Claude 번역(AI 번역, 유료 API 없음): en.json 전체 182키(용어집 기준, 아이 눈높이, `repeat` 개념어 유지), public/guide-en.html
+- Codex: en 공식 locale(키·치환 인자 완전 일치 검사), 홈 언어 버튼(한국어/English, SVG 지구 아이콘), 우선순위 `?lang=` → 저장된 선택(ProgressRepository 경유 `lealnspire.settings`) → ko, `<html lang>`·문서 제목, 언어별 안내 링크. QC 수정 1회: 스케치북 선택 반복 타일의 큰 ×N이 타일 밖으로(폰)
+- Claude E2E: e2e/english.e2e.ts(한국어가 섞이지 않음, 영어로 실패→고치기→힌트→성공, 언어 유지·영어 안내 왕복, 세 월드 영어 배치)
+- 간헐 실패 원인 보강: 작은 폰 영어 배치 검사가 실행마다 'Normal 글자 잘림' 통과/실패 → 웹 글꼴 로딩 전후 폭 차이로 판단. helpers에 `fontsReady`(document.fonts.ready)를 두고 배치·대비 측정 전과 모든 press 전에 대기. 이후 small-phone 3회 반복 39개, 전체 2회 연속 113개 통과. 이전부터 있던 tap 시간 초과 간헐 실패도 같은 원인(글꼴 교체 중 배치 이동)일 가능성 — 계속 관찰
+- 검증: verify 145개, e2e 113개 통과·4개 건너뜀(2회 연속), e2e:prod 4개 통과, 영어 홈·목록·스테이지(375×667, 1280×720) 육안 확인
+
 ## 2026-11-25 — T34 개념어 방침·용어집 (구현 Codex, 방침·QC Claude) [잠정]
 
 - Codex: src/i18n/glossary.json(현재 개념 + 앞으로 쓸 if/else/while/function/variable 등 29개, ko·en 이름·짧은 설명·피할 표현), 반복 타일·팔레트에 영어 개념어 `repeat`(glossary에서 가져옴), locale 키·치환 인자 일치 검사·개념어 하드코딩 금지 검사(glossary.test.tsx), ARCHITECTURE·PROJECT_MAP 갱신

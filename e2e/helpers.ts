@@ -17,6 +17,9 @@ export const test = base.extend<{ errors: string[] }>({
 })
 export { expect }
 
+/** 웹 글꼴(@fontsource)이 다 로드된 뒤에 글자 폭·배치를 잰다. 로드 전후로 폭이 달라 배치 검사가 간헐적으로 실패했음(2026-11-25) */
+export async function fontsReady(page: Page) { await page.evaluate(async () => { await document.fonts.ready }) }
+
 export class Game {
   readonly page: Page
   constructor(page: Page) { this.page = page }
@@ -24,6 +27,8 @@ export class Game {
   /** 터치 기기면 tap, 아니면 click (실제 사용자 입력 방식) */
   async press(l: Locator) {
     this.touch ??= await this.page.evaluate(() => matchMedia('(pointer: coarse)').matches)
+    // 글꼴이 바뀌며 배치가 움직이는 도중에 누르면 tap이 '안정될 때까지' 기다리다 시간 초과되는 경우가 있었음
+    await fontsReady(this.page)
     if (this.touch) await l.tap(); else await l.click()
   }
   button(name: string) { return this.page.getByRole('button', { name, exact: true }) }

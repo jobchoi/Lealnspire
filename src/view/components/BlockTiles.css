@@ -80,8 +80,11 @@
 .theme-sketchbook :is(.workspace, .prediction-code) .block-repeat .repeat-count { font-family: 'Gamja Flower', cursive; font-size: 32px; color: #a83b1b; }
 .theme-handheld :is(.workspace, .prediction-code) .block-repeat .repeat-count { font-family: 'Do Hyeon', sans-serif; }
 :is(.workspace, .prediction-code) .block-tile.block-repeat .block-symbol { display: none; }
-:is(.play-page, .prediction-page) :is(.workspace, .prediction-code) .block-tile.block-repeat { padding-top: 12px; padding-bottom: 2px; }
-:is(.play-page, .prediction-page) :is(.workspace, .prediction-code) .block-tile.block-repeat.has-loop-progress { padding-top: 9px; padding-bottom: 15px; }
+/* Handwritten count glyphs extend below their compact line box. Move the
+   content upward with balanced padding, keeping font sizes and tile sizes.
+   The extra bottom space also separates counts from the iteration row. */
+:is(.play-page, .prediction-page) :is(.workspace, .prediction-code) .block-tile.block-repeat { padding-top: 6px; padding-bottom: 8px; }
+:is(.play-page, .prediction-page) :is(.workspace, .prediction-code) .block-tile.block-repeat.has-loop-progress { padding-top: 7px; padding-bottom: 17px; }
 :is(.play-page, .prediction-page) :is(.workspace, .prediction-code) .block-tile.block-repeat:has(.empty-repeat-label) strong { transform: translateY(-3px); }
 .play-page .palette button.block-repeat small { display: block; font: bold 10px/12px monospace; white-space: nowrap; }
 @media (max-width: 700px) {
@@ -102,7 +105,7 @@
 
 /* Empty-body guidance uses the same reserved bottom line as iteration. */
 @media (max-width: 700px) {
-  .play-page .workspace .block-tile.block-repeat:has(.empty-repeat-label) { padding-top: 9px; padding-bottom: 15px; }
+  .play-page .workspace .block-tile.block-repeat:has(.empty-repeat-label) { padding-top: 7px; padding-bottom: 17px; }
   .play-page .workspace .block-tile.block-repeat:has(.empty-repeat-label) strong { transform: none; }
   .play-page .workspace .block-repeat:has(.empty-repeat-label) .concept-keyword { font-size: 9px; line-height: 9px; }
   .play-page .workspace .block-repeat:has(.empty-repeat-label) .repeat-count { font-size: 18px; line-height: 17px; }

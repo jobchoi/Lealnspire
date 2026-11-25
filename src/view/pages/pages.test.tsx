@@ -1,3 +1,4 @@
+import englishGuide from '../../../public/guide-en.html?raw'
 import sourceGuide from '../../../docs/GUIDE.md?raw'
 import publishedGuide from '../../../public/guide.html?raw'
 import { GameController } from '../../controller/GameController'
@@ -8,7 +9,7 @@ import { StageSelectPage } from './StageSelectPage'
 import { PlayPage } from './PlayPage'
 import { createProgressStore } from '../../model/ProgressRepository'
 import { stages, bonusStages, allStages, isLastStage } from '../../model/stages'
-import { t } from '../../i18n/I18n'
+import { t, i18n } from '../../i18n/I18n'
 
 const noop = () => {}
 describe('화면 렌더링', () => {
@@ -236,4 +237,30 @@ it('distinguishes regular completion, bonus continuation and bonus completion in
     if (index !== 8) expect(modal).toContain('완주')
     controller.dispose()
   }
+})
+
+
+it('renders English controls, stage text and the matching teacher guide', () => {
+  const previous = i18n.locale
+  try {
+    i18n.locale = 'en'
+    const store = createProgressStore()
+    const home = renderToString(<HomePage locale="en" progress={store.getProgress()} onStart={noop} onContinue={noop} onList={noop} />)
+    expect(home).toContain('lang="ko"')
+    expect(home).toContain('Change language')
+    expect(home).toContain('Crayon Sketchbook')
+    const dialog = renderToString(<RecordDialog confirm={false} onClose={noop} onConfirm={noop} onCancel={noop} onClear={noop} />)
+    expect(dialog).toContain(`href="${import.meta.env.BASE_URL}guide-en.html"`)
+    expect(dialog).toContain('Guide for teachers and parents')
+    for (const stage of allStages) {
+      const html = renderToString(<PlayPage stage={stage} progressStore={store} onList={noop} onNext={noop} lastStage={false} />)
+      expect(html).not.toMatch(/[가-힣]/)
+    }
+  } finally { i18n.locale = previous }
+})
+
+it('publishes English guide statements matching the Unit 1 and privacy contracts', () => {
+  for (const sentence of ['Finishing all 8 completes Unit 1.', 'only in this browser on this device', 'The next stage opens even with fewer stars.', 'Not yet tested: real phones and tablets, Safari, Firefox.', 'use the language button in the app']) expect(englishGuide).toContain(sentence)
+  expect(englishGuide).toContain('lang="en"')
+  expect(englishGuide).toContain('href="./?lang=en"')
 })

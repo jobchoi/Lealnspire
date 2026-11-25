@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test'
-import { expect, Game, test } from './helpers'
+import { expect, fontsReady, Game, test } from './helpers'
 
 /** T24 접근성 점검. 인증이 아니라 진행을 막는 결함을 찾는 자동 검사(항목별 결과는 WORK_HISTORY에 기록) */
 
@@ -18,6 +18,7 @@ async function openWorld(page: Page, world: keyof typeof worldSwitch) {
 
 /** 보이는 글자의 대비. 배경 이미지·그라데이션 위 글자는 계산할 수 없어 건너뛰고 개수만 보고 */
 async function lowContrast(page: Page) {
+  await fontsReady(page)
   return page.evaluate(() => {
     const parse = (c: string) => { const m = c.match(/[\d.]+/g)?.map(Number) ?? [0, 0, 0, 0]; return { r: m[0], g: m[1], b: m[2], a: m[3] ?? 1 } }
     const lum = ({ r, g, b }: { r: number, g: number, b: number }) => { const f = (v: number) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b) }

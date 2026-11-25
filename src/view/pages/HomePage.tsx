@@ -2,17 +2,23 @@ import { useEffect, useRef, useState } from 'react'
 import { worlds } from '../theme/themes'
 import { ConceptDefs, WorldScene } from '../theme/Symbols'
 import type { Progress } from '../../model/ProgressRepository'
-import { t } from '../../i18n/I18n'
+import { t, i18n, languageControl, type Locale } from '../../i18n/I18n'
 import { continueStageIndex } from '../../controller/flow'
 
-type Props = { progress: Progress; onStart: () => void; onContinue: (index: number) => void; onList: () => void; persistent?: boolean; onClear?: () => boolean }
-export function HomePage({ progress, onStart, onContinue, onList, persistent = false, onClear }: Props) {
+type Props = { locale?: Locale; onLanguageChange?: () => void; progress: Progress; onStart: () => void; onContinue: (index: number) => void; onList: () => void; persistent?: boolean; onClear?: () => boolean }
+export function HomePage({ progress, onStart, onContinue, onList, persistent = false, onClear, locale = 'ko', onLanguageChange }: Props) {
   const [info, setInfo] = useState(false)
   const [confirm, setConfirm] = useState(false)
   const [notice, setNotice] = useState<string>()
   const next = continueStageIndex(progress)
   return <section className="home-page"><ConceptDefs />
+    <div className="home-tools">
     <button className="privacy-info-button" type="button" aria-label={t('privacy.title')} onClick={() => { setConfirm(false); setNotice(undefined); setInfo(true) }}><span aria-hidden="true">ⓘ</span></button>
+    <button className="language-button" lang="ko" type="button" aria-label={languageControl.label} onClick={onLanguageChange}>
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9" /><ellipse cx="12" cy="12" rx="4" ry="9" /><path d="M3 12h18M5 7h14M5 17h14" /></svg>
+      <span lang={locale === 'ko' ? 'en' : 'ko'}>{languageControl.names[locale === 'ko' ? 'en' : 'ko']}</span>
+    </button>
+    </div>
     {info && <RecordDialog confirm={confirm} notice={notice ?? (!persistent ? t('privacy.unavailable') : undefined)} onClose={() => setInfo(false)} onConfirm={() => setConfirm(true)} onCancel={() => setConfirm(false)} onClear={() => {
       const cleared = onClear?.() ?? false
       setConfirm(false)
@@ -71,7 +77,7 @@ export function RecordDialog({ confirm, notice, onClose, onConfirm, onCancel, on
       <p>{t('privacy.location')}</p>
       <p>{t('privacy.records')}</p>
       <p>{t('privacy.browser')}</p>
-      <a className="teacher-guide-link" href={`${import.meta.env.BASE_URL}guide.html`}>{t('privacy.guide')}</a>
+      <a className="teacher-guide-link" href={`${import.meta.env.BASE_URL}${i18n.locale === 'en' ? 'guide-en.html' : 'guide.html'}`}>{t('privacy.guide')}</a>
       {notice && <p role="status">{notice}</p>}
       <div className="playback-controls">
         <button ref={erase} type="button" onClick={onConfirm}>{t('privacy.clear')}</button>
