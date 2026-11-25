@@ -158,3 +158,16 @@ it('renders the stage palette and while check cycle in all themes and both langu
     }
   } finally { i18n.locale = previous }
 })
+
+it('labels while insertion targets in both official languages', () => {
+  const program: Program = [{ id: 'w', type: 'while', condition: 'clearAhead', body: [] }]
+  const controller = new EditorController()
+  controller.configure(program, onChange, false)
+  controller.select('w'); controller.toggleTarget()
+  try {
+    for (const lang of ['ko', 'en']) {
+      i18n.locale = lang
+      expect(renderToString(<Editor program={program} onChange={onChange} controller={controller} />)).toContain(t('targetWhile', { order: 1 }))
+    }
+  } finally { i18n.locale = 'ko' }
+})

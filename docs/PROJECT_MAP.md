@@ -89,10 +89,10 @@ View는 포커스, 모달 키보드, 타일 스크롤과 CSS를 담당합니다.
 
 | 타입/객체 | 의미 |
 |---|---|
-| Block | 고유 id + forward/turnLeft/turnRight 또는 repeat(count 2~10, body), if(condition: blockedAhead, body) |
+| Block | 고유 id + forward/turnLeft/turnRight 또는 repeat(count 2~10, body), if(condition: blockedAhead, body, else?: Block[]), while(condition: clearAhead, body) |
 | Program (types.ts) | 직렬화 가능한 Block[]; 저장 형식 유지 |
 | Program (program.ts 클래스) | 트리를 복사하여 소유하고 새 객체로 편집; toBlocks로 복사 반환 |
-| Stage | id, world, title/goal 문구 키, hints(2단계 키·강조), grid, variants?, startDir, maxBlocks?, starBlocks, initialProgram?, solution |
+| Stage | id, world, title/goal 문구 키, hints(2단계 키·강조), grid, variants?, startDir, maxBlocks?, starBlocks, initialProgram?, solution, palette?: BlockType[] |
 | Frame | pos, dir, activeBlockId, event(move/turn/bump/goal/check)?, check?, loops? |
 | RunResult | frames + success/collision/unfinished/stepLimit; RunAllResult는 results/result/failedVariant |
 | Progress | version:1, stages: { [id]: { completed, bestStars, lastProgram } } |
@@ -115,7 +115,7 @@ Stage.world는 1~3 sketchbook, 4~6 train, 7~8 handheld입니다. View는 world�
 | GameController | edit(program), play, step, reset, dismiss, setSpeed, toggleHint, dispose; frame/result/locked/finished/stars/canNext |
 | EditorController | configure, select, clear, toggleTarget, add, move, remove, setCount; selectedPath/targetPath/total/limit/atLimit |
 
-GameController는 실행 전체를 Interpreter로 계산한 뒤 프레임만 재생합니다. 변형 맵은 순서대로 재생하고 실패 표시는 현재 맵과 failure.variant가 일치할 때만 표시합니다. 결과의 실패 맵 카드에는 !를 유지하며 고치기는 첫 실패 맵으로 돌아갑니다.
+GameController는 실행 전체를 Interpreter로 계산한 뒤 프레임만 재생합니다. 변형 맵은 순서대로 재생하되 stepLimit 맵의 자동 재생은 12틱 후 마지막 프레임으로 단축하고 뒤 맵 재생을 생략합니다. 전체 첫 실패 판정은 보존하고 실패 표시는 현재 맵과 failure.variant가 일치할 때만 표시합니다. 결과의 실패 맵 카드에는 !를 유지하며 고치기는 첫 실패 맵으로 돌아갑니다.
 실행을 시작하면 편집이 잠기고 reset으로 해제됩니다. 성공의 마지막 프레임에서만 완료·별을 저장합니다.
 속도는 800/400/150ms. 화면을 떠날 때 dispose로 타이머를 취소합니다. Scheduler는 테스트에서 주입 가능합니다.
 EditorController는 선택 타일과 반복 추가 대상을 별도로 관리합니다. View는 구독 후 동작을 전달합니다.

@@ -321,3 +321,49 @@ for (const mixed of [false, true]) {
     })
   }
 }
+
+it('isolates saved palette violations while preserving completion, stars and other stages', () => {
+  const storage = fakeStorage()
+  storage.setItem(progressV2Key, JSON.stringify({ version: 2, stages: {
+    'u3-3': { completed: true, bestStars: 3, lastProgram: { main: program, functions: [] } },
+    'u3-1': { completed: true, bestStars: 2, lastProgram: { main: program, functions: [] } },
+  } }))
+  const repository = createProgressStore(storage)
+  expect(repository.getProgress().stages['u3-3']).toEqual({ completed: true, bestStars: 3, lastProgram: [] })
+  expect(repository.getProgress().stages['u3-1'].lastProgram).toEqual(program)
+  expect(repository.getProgram(allStages.find(stage => stage.id === 'u3-3')!)).toEqual([])
+  const legacy = fakeStorage(JSON.stringify({ version: 1, stages: { 'u3-3': { completed: true, bestStars: 3, lastProgram: program } } }))
+  expect(createProgressStore(legacy).getProgress().stages['u3-3']).toEqual({ completed: true, bestStars: 3, lastProgram: [] })
+})
+
+it('validates mixed else/while depth, node, ID and branch shape boundaries', () => {
+  const read = (main: unknown) => {
+    const storage = fakeStorage()
+    storage.setItem(progressV2Key, JSON.stringify({ version: 2, stages: { 'u2-6': { completed: true, bestStars: 3, lastProgram: { main, functions: [] } } } }))
+    return createProgressStore(storage).getProgress().stages['u2-6']
+  }
+  const nested = (depth: number): Program => depth === 1 ? [{ id: 'leaf', type: 'forward' }] : depth % 2
+    ? [{ id: `i${depth}`, type: 'if', condition: 'blockedAhead', body: [], else: nested(depth - 1) }]
+    : [{ id: `w${depth}`, type: 'while', condition: 'clearAhead', body: nested(depth - 1) }]
+  const nodes = (count: number): Program => [{ id: 'if', type: 'if', condition: 'blockedAhead', body: [{ id: 'while', type: 'while', condition: 'clearAhead', body: Array.from({ length: count - 3 }, (_, i) => ({ id: `f${i}`, type: 'forward' })) }], else: [{ id: 'else-f', type: 'forward' }] }]
+  for (const main of [nested(10), nodes(60)]) expect(read(main).lastProgram).toEqual(main)
+  for (const main of [nested(11), nodes(61),
+    [{ id: 'i', type: 'if', condition: 'blockedAhead', body: [{ id: 'same', type: 'forward' }], else: [{ id: 'same', type: 'forward' }] }],
+    [{ id: 'i', type: 'if', condition: 'blockedAhead', body: [], else: {} }],
+    [{ id: 'w', type: 'while', condition: 'clearAhead', body: [], else: [] }],
+  ]) expect(read(main)).toEqual({ completed: true, bestStars: 3, lastProgram: [] })
+})
+
+it('uses only stage palette blocks in every initial program', () => {
+  for (const stage of allStages) {
+    const visit = (blocks: Program) => {
+      for (const block of blocks) {
+        const palette = stage.palette ?? ['forward', 'turnLeft', 'turnRight', 'repeat', ...(stage.variants ? ['if'] : [])]
+        expect(palette).toContain(block.type)
+        if ('body' in block) visit(block.body)
+        if (block.type === 'if' && block.else) visit(block.else)
+      }
+    }
+    visit(stage.initialProgram ?? [])
+  }
+})

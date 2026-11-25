@@ -1,5 +1,6 @@
 {
-  "stepLimitNotice": "… 끝나지 않아요",
+  "stepLimitNotice": "실행 단계가 너무 많아요(1000단계). 반복 횟수나 블록을 줄여 보세요.",
+  "targetWhile": "추가 위치: {order}번 while 안쪽 끝",
   "undo": "되돌리기",
   "fix": "고치기",
   "failureBlock": "실패 지점 블록",

@@ -67,7 +67,8 @@ src/
 type Block =
   | { id: string; type: 'forward' | 'turnLeft' | 'turnRight' }
   | { id: string; type: 'repeat'; count: number; body: Block[] }
-  | { id: string; type: 'if'; condition: 'blockedAhead'; body: Block[] }
+  | { id: string; type: 'if'; condition: 'blockedAhead'; body: Block[]; else?: Block[] }
+  | { id: string; type: 'while'; condition: 'clearAhead'; body: Block[] }
 
 type Program = Block[]
 
@@ -78,6 +79,7 @@ type Stage = {
   grid: string[]            // 예: ["#####", "#S.G#"]  S: 출발, G: 도착, #: 벽
   variants?: string[][]    // 없으면 [grid], 같은 코드로 모두 성공해야 통과
   startDir: 'N' | 'E' | 'S' | 'W'
+  palette?: Block['type'][] // 없으면 기존 단원 팔레트
   maxBlocks?: number
   starBlocks: number
   initialProgram?: Program  // 디버깅 스테이지용
@@ -87,8 +89,8 @@ type Stage = {
 type Frame = {
   pos: { x: number; y: number }; dir: Dir; activeBlockId: string | null
   event?: 'move' | 'turn' | 'bump' | 'goal' | 'check'
-  check?: { blockId: string; condition: 'blockedAhead'; result: boolean }
-  loops?: { blockId: string; iteration: number; count: number }[]
+  check?: { blockId: string; condition: 'blockedAhead' | 'clearAhead'; result: boolean }
+  loops?: { blockId: string; iteration: number; count?: number }[]
 }
 ```
 
@@ -120,7 +122,8 @@ type Frame = {
 - 쓰기 키는 `lealnspire.progress.v2`, 문서는 `{ version: 2, stages: { [stageId]: { completed, bestStars, lastProgram: { main: Block[], functions: [] } } } }`입니다. `functions`는 빈 배열만 허용합니다. Controller·View와 `getProgress`는 기존 version:1·Block[] API를 유지합니다.
 - 유효한 v2 최상위 구조를 우선합니다. 없거나 무효면 v1 키 `lealnspire.progress`를 읽고 순수 함수 `migrateV1toV2(raw)`로 스테이지별 이행 후 v2에 저장합니다. migrations 배열은 향후 단계별 변환을 추가할 자리입니다. v1 키는 이행·편집·완료 때 변경하지 않아 v1.0.0 롤백 시 과거 기록을 복원할 수 있습니다.
 - 알 수 없는 버전은 v1 이행 없이 빈 상태로 시작하며 읽을 때 키를 삭제하거나 덮어쓰지 않습니다. 이후 일반 저장은 v2 키에만 씁니다. 최상위 구조가 유효하면 알려진 스테이지의 필드를 개별 보정하고, 알 수 없는 스테이지 ID의 항목만 제외합니다. v1 이행과 v2 읽기에 같은 규칙을 적용하고 다른 스테이지는 보존합니다.
-- 완료 여부 boolean, 별 정수 0~3, forward/turnLeft/turnRight/repeat/if만 허용합니다. 반복 횟수 정수 2~10, 비어 있지 않은 고유 ID, 최상위 블록 깊이 1 기준 최대 깊이 10, 전체 노드 60개까지 허용합니다. 코드가 무효면 완료 여부·최고 별을 보존하고 lastProgram만 `{ main: [], functions: [] }`로 비웁니다(v2 래퍼·functions가 무효인 경우 포함). 완료 여부가 boolean이 아니면 false, 별이 0~3 정수가 아니면 0으로 해당 필드만 보정합니다.
+- 완료 여부 boolean, 별 정수 0~3, forward/turnLeft/turnRight/repeat/if/while만 허용합니다. 반복 횟수 정수 2~10, 비어 있지 않은 고유 ID, 최상위 블록 깊이 1 기준 최대 깊이 10, 전체 노드 60개까지 허용합니다. 코드가 무효면 완료 여부·최고 별을 보존하고 lastProgram만 `{ main: [], functions: [] }`로 비웁니다(v2 래퍼·functions가 무효인 경우 포함). 완료 여부가 boolean이 아니면 false, 별이 0~3 정수가 아니면 0으로 해당 필드만 보정합니다.
+- 불러올 때 명시된 Stage.palette 밖 블록이 중첩 가지에라도 있으면 해당 스테이지 코드만 비우고 완료·최고 별·다른 스테이지는 보존합니다.
 - 읽기·쓰기 실패 시 메모리 상태로 계속 동작합니다. 이행 쓰기가 실패해도 복원한 메모리 기록과 v1 키는 유지됩니다. 입력·출력은 복사하여 외부 변경을 막습니다.
 - 기록 삭제는 v1·v2 두 키를 모두 삭제 시도하고 메모리도 초기화합니다. `lealnspire.settings`의 언어 설정과 다른 앱 키는 유지합니다. 기존 기록 안내 문구는 저장 위치·내용·삭제 범위가 동일하여 유지합니다.
 - `saveProgram`은 완료 여부와 최고 별을 유지하고 `completeStage`는 최고 별을 최댓값으로 유지합니다. GameController는 저장 코드 → 초기 코드 → 빈 코드 순으로 시작합니다. 빈 저장 코드도 유지합니다.
@@ -169,13 +172,13 @@ type Frame = {
 
 ### T38 조건 화면·변형 재생 [제안·잠정]
 
-GameController는 Stage.variants에만 runAll을 사용합니다. 현재 변형과 프레임 인덱스, 전체 실행 결과는 메모리 상태이며 저장하지 않습니다. 맵의 마지막 프레임을 속도 간격 동안 유지한 뒤 다음 맵의 초기 프레임으로 전환합니다. 모든 맵 재생 후 전체 결과를 표시하고 전체 성공 때 별 3개를 저장합니다. 고치기는 첫 실패 변형과 원인 블록으로 복귀합니다. 저장 v2 형식과 1단원 실행·별 기준은 유지합니다. 새 의존성·파일 추가는 없습니다.
+GameController는 Stage.variants에만 runAll을 사용합니다. 현재 변형과 프레임 인덱스, 전체 실행 결과는 메모리 상태이며 저장하지 않습니다. 맵의 마지막 프레임을 속도 간격 동안 유지한 뒤 다음 맵의 초기 프레임으로 전환합니다. stepLimit 맵은 자동 재생 12틱 후 마지막 프레임으로 단축하고 이후 맵은 재생하지 않습니다(수동 단계 진행은 단축하지 않음). 재생 종료 위치와 전체 첫 실패 판정을 분리하며 결과·고치기는 항상 첫 실패 맵을 가리킵니다. 그 외에는 모든 맵 재생 후 전체 결과를 표시하고 전체 성공 때 별 3개를 저장합니다. 고치기는 첫 실패 변형과 원인 블록으로 복귀합니다. 저장 v2 형식과 1단원 실행·별 기준은 유지합니다. 새 의존성·파일 추가는 없습니다.
 
 T40: 저장 검증 최대 깊이는 편집기의 블록 상한 MAX_PROGRAM_BLOCKS(10)와 일치합니다. 실패 칸·실패 블록은 현재 맵과 failure.variant가 일치할 때만 표시합니다. 결과의 실패 맵 카드 !는 유지하고 고치기는 첫 실패 맵으로 복귀합니다. 정적 영어 안내는 public/guide-en.html, 영어·조건 사용자 시나리오는 e2e/english.e2e.ts·conditions.e2e.ts입니다.
 
 ### T41 if/else [제안·잠정]
 
-if에 선택적 `else?: Block[]`를 추가한다. 저장 버전은 v2 유지, 양쪽 가지에 같은 깊이·노드·ID 검증을 적용한다. 편집 경로의 if 인덱스 뒤 `-1`은 else 목록을 가리킨다(예: `[0,-1,0]`). `listAt`/`blockAt`이 경로 조회를 담당하고 Program.setElse는 불변 추가·제거를 제공한다. 검사 한 번으로 한 가지만 실행한다. GameController.branchCheck는 가지 표시용 마지막 검사 결과이며 센서의 현재 프레임 문구와 구분한다.
+if에 선택적 `else?: Block[]`를 추가한다. 저장 버전은 v2 유지, 양쪽 가지에 같은 깊이·노드·ID 검증을 적용한다. 편집 경로의 if 인덱스 뒤 `-1`은 else 목록을 가리킨다(예: `[0,-1,0]`). `listAt`/`blockAt`이 경로 조회를 담당하고 Program.setElse는 불변 추가·제거를 제공한다. 검사 한 번으로 한 가지만 실행한다. GameController.branchChecks는 현재 실행 블록과 그 조상 블록별 최신 검사 결과를 유지하며 센서의 현재 프레임 문구와 구분한다.
 
 ### T42 조건 반복 [제안·잠정]
 

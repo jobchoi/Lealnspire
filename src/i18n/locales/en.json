@@ -1,5 +1,6 @@
 {
-  "stepLimitNotice": "… It does not end",
+  "stepLimitNotice": "Too many execution steps (1000 steps). Try fewer repetitions or blocks.",
+  "targetWhile": "Adding to: end of the while block {order}",
   "undo": "Undo",
   "fix": "Fix",
   "failureBlock": "Block where it went wrong",

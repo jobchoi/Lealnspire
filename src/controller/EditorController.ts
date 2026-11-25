@@ -27,10 +27,14 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   undo = () => { if (this.canUndo) this.undoControls?.undo() }
   reconcile(program: Program) {
     const model = new ProgramModel(program)
+    const targetPath = this.state.targetId ? model.find(this.state.targetId) : undefined
+    const target = targetPath ? blockAt(program, targetPath) : undefined
+    const validTarget = target && hasBody(target) && (!this.targetElse || target.type === 'if' && target.else !== undefined)
+    if (!validTarget) this.targetElse = false
     this.program = program
     this.update({
       selectedId: this.state.selectedId && model.find(this.state.selectedId) ? this.state.selectedId : null,
-      targetId: this.state.targetId && model.find(this.state.targetId) ? this.state.targetId : null,
+      targetId: validTarget ? this.state.targetId : null,
       addedId: null,
     })
   }

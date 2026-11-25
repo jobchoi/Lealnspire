@@ -1,5 +1,12 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-25 — T43 else·while 안정화, v1.3.1 (검토 GPT, 구현 Codex, E2E·문서·QC Claude)
+
+- GPT 읽기 전용 교차 검토(`git diff 8f215bb HEAD`): 필수 2 — (1) 재생 단축 후 뒤쪽 맵의 stepLimit이 앞 맵의 첫 실패를 덮어써 고치기도 엉뚱한 맵으로(GPT 메모리 재현) (2) 되돌리기로 else가 사라져도 추가 대상이 남아 다음 추가가 else를 다시 만듦. 권장 5 — 중첩 검사 시 바깥 가지 건너뜀 표시 사라짐, while 추가 위치를 repeat로 안내, 모든 stepLimit을 '끝나지 않음'으로 단정, 팔레트 밖 블록이 든 저장 코드로 퍼즐 우회 가능, else·while 저장 경계 테스트 부족, 문서 불일치. 지름길 증명은 팔레트·상한과 일치함을 GPT가 확인
+- Codex: 위 항목 수정(첫 실패 보존, 대상 가지 존재 확인, 블록별 검사 문맥, targetWhile 문구, 단계 상한 문구 분리, 불러올 때 팔레트 밖 블록 코드만 비움 — Claude 결정, 손상 격리와 같은 규칙), 저장 경계 테스트, PROJECT_MAP·ARCHITECTURE·GAME_DESIGN 4절
+- Claude: GUIDE·guide.html·guide-en.html(2단원 if/else, 3단원 while, 개념어 목록), CURRICULUM, 회귀 E2E 2개(앞 맵 실패 우선, else 되돌리기 후 재생성 없음)
+- 검증: verify 221개, e2e 152개 통과·4개 건너뜀(2회 연속), e2e:prod 4개 통과
+
 ## 2026-11-25 — T42 while 3단원, v1.3.0 (구현 Codex, 설계·맵·문구·E2E·QC Claude) [잠정]
 
 - Claude 설계: `while [앞 열림]`(매번 재검사, 0회 가능, 검사마다 한 단계), 스테이지별 팔레트로 3단원에서 if를 빼 while이 필요하게, 맵 6개(길이가 다른 길, 모퉁이 거리가 다른 길, 끝나지 않는 반복 고치기)와 정답 경로 직접 추적, 제목·목표·힌트 ko/en

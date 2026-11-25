@@ -69,4 +69,15 @@ test.describe('if/else', () => {
     await g.press(g.button('되돌리기'))
     expect(await g.blockCount()).toBe(4)
   })
+
+  test('T43: else 추가 → else 안에 넣기 → 되돌리기 → 블록을 더해도 else가 저절로 다시 생기지 않는다', async ({ page }) => {
+    const g = await open(page, '막혔을 때와 열렸을 때')
+    await g.press(ifBlock(page))
+    await g.select('1'); await g.press(g.action(/else 추가$/))
+    await g.press(g.action(/else 안에 넣기$/))
+    await g.press(g.button('되돌리기'))
+    await g.add('F')
+    await expect(page.locator('.workspace').getByText('else', { exact: true }), 'else 가지 없음').toHaveCount(0)
+    expect(await g.blockCount(), 'if와 앞으로 2개').toBe(2)
+  })
 })

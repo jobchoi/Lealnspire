@@ -1,3 +1,4 @@
+import { findBlockPath } from '../model/editor'
 import { Observable } from './Observable'
 import { EditorController } from './EditorController'
 import { failurePoint, Interpreter, runAll } from '../model/interpreter'
@@ -27,7 +28,19 @@ export class GameController extends Observable<State> {
     return failure && (failure.variant ?? 0) === this.variant ? failure : null
   }
   get frame() { return this.state.execution?.frames[this.state.index] }
-  get branchCheck() { return this.state.execution?.frames.slice(0, this.state.index + 1).reverse().find(frame => frame.check)?.check }
+  get branchChecks() {
+    const active = this.frame?.activeBlockId
+    const path = active ? findBlockPath(this.state.program, active) : undefined
+    const checks = new Map<string, NonNullable<import('../model/types').Frame['check']>>()
+    for (const frame of this.state.execution?.frames.slice(0, this.state.index + 1) ?? []) {
+      if (frame.check) checks.set(frame.check.blockId, frame.check)
+    }
+    return [...checks.values()].filter(check => {
+      const parent = findBlockPath(this.state.program, check.blockId)
+      return path && parent && parent.every((part, index) => path[index] === part)
+    })
+  }
+  get branchCheck() { return this.branchChecks.at(-1) }
   get result() { return this.state.all?.result ?? this.state.execution?.result }
   get whileLimited() { const execution = this.state.all && this.state.all.failedVariant !== null ? this.state.all.results[this.state.all.failedVariant] : this.state.execution; return !!execution?.whileLimitBlockId }
   get variant() { return this.state.variant }
@@ -49,7 +62,7 @@ export class GameController extends Observable<State> {
   private stop() { if (this.timer !== undefined) this.clock.clear(this.timer); this.timer = undefined }
   private publish(next: State) {
     if (next.execution?.result === 'stepLimit' && isLastFrame(next.index, next.execution.frames.length)) {
-      next = { ...next, playing: false, all: next.all ? { ...next.all, result: 'stepLimit', failedVariant: next.variant } : null }
+      next = { ...next, playing: false }
     }
     this.stop()
     if (isLastFrame(next.index, next.execution?.frames.length ?? 0) && (!next.all || next.variant === next.all.results.length - 1) && (next.all?.result ?? next.execution?.result) === 'success' && (!this.finished || next.execution !== this.state.execution)) {

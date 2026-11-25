@@ -14,7 +14,7 @@ const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T
 const record = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
 
-function validProgram(value: unknown): value is Program {
+function validProgram(value: unknown, palette?: Stage['palette']): value is Program {
   if (!Array.isArray(value)) return false
   const pending = value.map(block => ({ block: block as unknown, depth: 1 }))
   const ids = new Set<string>()
@@ -22,6 +22,7 @@ function validProgram(value: unknown): value is Program {
     const { block, depth } = pending.pop()!
     if (depth > MAX_PROGRAM_BLOCKS || ids.size >= 60) return false
     if (!record(block) || typeof block.id !== 'string' || !block.id || ids.has(block.id)) return false
+    if (palette && !palette.includes(block.type as Program[number]['type'])) return false
     ids.add(block.id)
     if (block.type === 'while') {
       if (block.condition !== 'clearAhead' || !Array.isArray(block.body) || 'else' in block) return false
@@ -47,7 +48,7 @@ function normalizeStages(entries: Record<string, unknown>): Record<string, Stage
       completed: typeof entry.completed === 'boolean' ? entry.completed : false,
       bestStars: Number.isInteger(entry.bestStars) && (entry.bestStars as number) >= 0 && (entry.bestStars as number) <= 3
         ? entry.bestStars as number : 0,
-      lastProgram: validProgram(entry.lastProgram) ? entry.lastProgram : [],
+      lastProgram: validProgram(entry.lastProgram, stages.find(stage => stage.id === id)?.palette) ? entry.lastProgram : [],
     }]]
   }))
 }

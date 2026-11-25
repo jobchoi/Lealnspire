@@ -64,4 +64,15 @@ test.describe('3단원 while', () => {
     }
     expect(seen.join(''), '열림 검사 반복 후 막힘 검사로 끝남').toMatch(/^O+X/)
   })
+
+  test('T43: 앞 맵에서 먼저 실패하면, 뒤 맵이 끝나지 않는 반복이어도 결과·고치기는 1번 맵', async ({ page }) => {
+    const g = await open(page, '벽까지 가요')
+    // repeat 2 [앞으로], while [](빈 몸체), 앞으로 → 1번 맵: 벽에 부딪힘 / 2번 맵: 빈 while이 끝나지 않음
+    await g.build('2[F]')
+    await g.press(whileBlock(page))
+    await g.add('F')
+    expect(await g.runToEnd(), '첫 실패는 1번 맵').toMatch(/1번 맵에서/)
+    await g.press(g.dialog.getByRole('button', { name: '고치기' }))
+    await expect(page.getByRole('group', { name: '3단원: 조건 반복 (while)' }).getByRole('button').nth(0)).toHaveAttribute('aria-pressed', 'true')
+  })
 })
