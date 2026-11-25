@@ -1,3 +1,4 @@
+import { hasBody } from '../model/editor'
 import { Observable } from './Observable'
 import { MAX_PROGRAM_BLOCKS, Program as ProgramModel } from '../model/program'
 import type { Block, Program } from '../model/types'
@@ -34,11 +35,11 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   }
   get selectedPath() { return this.state.selectedId ? new ProgramModel(this.program).find(this.state.selectedId) : undefined }
   get targetPath() { return this.state.targetId ? new ProgramModel(this.program).find(this.state.targetId) : undefined }
-  get selectedBlock() { return this.selectedPath?.reduce<Block | undefined>((block, index, depth) => (depth === 0 ? this.program : block?.type === 'repeat' ? block.body : [])[index], undefined) }
+  get selectedBlock() { return this.selectedPath?.reduce<Block | undefined>((block, index, depth) => (depth === 0 ? this.program : block && hasBody(block) ? block.body : [])[index], undefined) }
   get total() { return new ProgramModel(this.program).count() }
   get limit() { return Math.min(this.maxBlocks ?? MAX_PROGRAM_BLOCKS, MAX_PROGRAM_BLOCKS) }
   get atLimit() { return this.total >= this.limit }
-  get siblings() { return this.selectedPath?.slice(0, -1).reduce<Program>((list, index) => list[index].type === 'repeat' ? list[index].body : [], this.program) }
+  get siblings() { return this.selectedPath?.slice(0, -1).reduce<Program>((list, index) => hasBody(list[index]) ? list[index].body : [], this.program) }
   private change(next: Program) {
     if (this.locked) return
     const selectedId = this.state.selectedId && new ProgramModel(next).find(this.state.selectedId) ? this.state.selectedId : null
@@ -59,7 +60,7 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   }
   acknowledgeAdded = () => { if (this.state.addedId) this.update({ ...this.state, addedId: null }) }
   clear = () => { if (this.prepareEdit()) this.update({ ...this.state, selectedId: null, targetId: null }) }
-  toggleTarget = () => { if (this.selectedBlock?.type === 'repeat' && this.prepareEdit()) this.update({ ...this.state, targetId: this.state.targetId === this.state.selectedId ? null : this.state.selectedId }) }
+  toggleTarget = () => { if (this.selectedBlock && hasBody(this.selectedBlock) && this.prepareEdit()) this.update({ ...this.state, targetId: this.state.targetId === this.state.selectedId ? null : this.state.selectedId }) }
   add = (type: Block['type']) => {
     if (this.locked || this.atLimit || !this.prepareEdit()) return
     const block = new ProgramModel(this.program).create(type)

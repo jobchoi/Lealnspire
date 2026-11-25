@@ -22,5 +22,13 @@ export const bonusStages: Stage[] = [
   { id: 'b1', world: 'train', title: 'bonus1Title', goal: 'bonus1Goal', hints: { keys: ['bonus1Hint1', 'bonus1Hint2'], highlight: 'path' }, grid: ['####G', '##...', 'S..##'], startDir: 'E', maxBlocks: 7, starBlocks: 6, solution: [repeat(2, 'forward', 'forward', 'turnLeft', 'forward', 'turnRight')] },
   { id: 'b2', world: 'handheld', title: 'bonus2Title', goal: 'bonus2Goal', hints: { keys: ['bonus2Hint1', 'bonus2Hint2'], highlight: 'path' }, grid: ['###G', '###.', '##..', '##.#', 'S..#'], startDir: 'E', maxBlocks: 8, starBlocks: 7, solution: [{ id: 'first-forward', type: 'forward' }, repeat(2, 'forward', 'turnLeft', 'forward', 'forward', 'turnRight')] },
 ]
-export const allStages = [...stages, ...bonusStages]
-export const isLastStage = (index: number) => index === stages.length - 1 || index === allStages.length - 1
+// T38 [제안·잠정]: 조건 단원 첫 퍼즐.
+export const unit2Stages: Stage[] = [{
+  id: 'u2-1', world: 'sketchbook', title: 'u21Title', goal: 'u21Goal',
+  hints: { keys: ['u21Hint1', 'u21Hint2'], highlight: 'walls' },
+  grid: ['S..#', '##.#', '##G#'], variants: [['S..#', '##.#', '##G#'], ['S.##', '#.##', '#.##', '#G##']],
+  startDir: 'E', maxBlocks: 6, starBlocks: 4,
+  solution: [{ id: 'u2-repeat', type: 'repeat', count: 4, body: [{ id: 'u2-if', type: 'if', condition: 'blockedAhead', body: [{ id: 'u2-right', type: 'turnRight' }] }, { id: 'u2-forward', type: 'forward' }] }],
+}]
+export const allStages = [...stages, ...bonusStages, ...unit2Stages]
+export const isLastStage = (index: number) => index === stages.length - 1 || index === stages.length + bonusStages.length - 1 || index === allStages.length - 1

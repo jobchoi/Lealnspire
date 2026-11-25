@@ -67,7 +67,8 @@
     "forward": "앞으로",
     "turnLeft": "왼쪽으로 돌기",
     "turnRight": "오른쪽으로 돌기",
-    "repeat": "N번 반복"
+    "repeat": "N번 반복",
+    "if": "앞이 막혔으면"
   },
   "tools": "블록 작업 막대",
   "chooseTile": "블록을 눌러 선택하세요.",
@@ -204,5 +205,15 @@
   "bonus2Title": "보너스 2: 앞뒤가 있는 길",
   "bonus2Goal": "되풀이되는 길과 그 밖의 길을 나누어 보세요.",
   "bonus2Hint1": "처음 길과 그 뒤에 되풀이되는 길의 모양을 비교해 보세요.",
-  "bonus2Hint2": "같은 묶음에 들어가지 않는 움직임은 반복의 어디에 놓으면 좋을까요?"
+  "bonus2Hint2": "같은 묶음에 들어가지 않는 움직임은 반복의 어디에 놓으면 좋을까요?",
+  "u21Title": "2단원 1: 막히면 돌아요",
+  "u21Goal": "두 맵을 같은 코드로 지나가요.",
+  "u21Hint1": "두 맵에서 모퉁이가 어디에 있는지 비교해 보세요.",
+  "u21Hint2": "모퉁이 위치가 다른데, 로봇은 언제 돌아야 하는지 어떻게 알 수 있을까요?",
+  "unit2": "2단원: 조건 (if)",
+  "sensorBlocked": "앞이 막혔어요",
+  "sensorClear": "앞이 열려 있어요",
+  "skipped": "건너뜀",
+  "variantLabel": "{number}/{total}번 맵",
+  "variantFailure": "{number}번 맵에서 {reason}"
 }

@@ -2,7 +2,7 @@ import { AppController } from './AppController'
 import { isUnlocked, ProgressRepository, progressKey } from '../model/ProgressRepository'
 import { describe, expect, it } from 'vitest'
 import { createProgressStore } from '../model/ProgressRepository'
-import { stages } from '../model/stages'
+import { stages, allStages, unit2Stages } from '../model/stages'
 import { continueStageIndex, showNextStage } from './flow'
 
 describe('이어하기 대상', () => {
@@ -21,9 +21,11 @@ describe('이어하기 대상', () => {
     store.completeStage(stages[2].id, 3, [])
     expect(continueStageIndex(store.getProgress())).toBe(1)
   })
-  it('완주 후에는 이어하기를 숨긴다', () => {
+  it('1단원 완주 뒤 2단원으로 이어가고 전체 완주 후 숨긴다', () => {
     const store = createProgressStore()
     for (const stage of stages) store.completeStage(stage.id, 3, stage.solution)
+    expect(continueStageIndex(store.getProgress())).toBe(allStages.indexOf(unit2Stages[0]))
+    store.completeStage('u2-1', 3, unit2Stages[0].solution)
     expect(continueStageIndex(store.getProgress())).toBeUndefined()
   })
 })
@@ -45,7 +47,7 @@ it('preserves version 1 regular completion and isolates the bonus next flow', ()
   const storage = { getItem: () => raw, setItem: (_key: string, value: string) => { raw = value } }
   const repository = new ProgressRepository(storage)
   expect(repository.getProgress()).toEqual(old)
-  expect(continueStageIndex(repository.getProgress())).toBeUndefined()
+  expect(continueStageIndex(repository.getProgress())).toBe(allStages.indexOf(unit2Stages[0]))
   expect(isUnlocked(repository.getProgress(), 8)).toBe(true)
   expect(isUnlocked(repository.getProgress(), 9)).toBe(false)
   const app = new AppController(repository)
@@ -64,6 +66,6 @@ it('preserves version 1 regular completion and isolates the bonus next flow', ()
   const restored = new ProgressRepository(storage)
   expect(restored.getProgress().version).toBe(1)
   expect(restored.getProgress().stages.b2.completed).toBe(true)
-  expect(continueStageIndex(restored.getProgress())).toBeUndefined()
+  expect(continueStageIndex(restored.getProgress())).toBe(allStages.indexOf(unit2Stages[0]))
   expect(progressKey).toBe('lealnspire.progress')
 })

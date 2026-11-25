@@ -169,7 +169,7 @@ describe('language settings', () => {
 
 describe('T36 v2 migration', () => {
   it('migrates all regular and bonus stages without changing v1 through later writes', () => {
-    const raw = JSON.stringify({ version: 1, stages: Object.fromEntries(allStages.map(stage =>
+    const raw = JSON.stringify({ version: 1, stages: Object.fromEntries(allStages.filter(stage => !stage.variants).map(stage =>
       [stage.id, { completed: true, bestStars: 3, lastProgram: stage.solution }])) })
     const storage = fakeStorage(raw)
     const migrated = migrateV1toV2(raw)
@@ -177,7 +177,7 @@ describe('T36 v2 migration', () => {
     expect(migrated.stages.b1.lastProgram.functions).toEqual([])
     const store = createProgressStore(storage)
     expect(JSON.parse(storage.getItem(progressV2Key)!)).toEqual(migrated)
-    for (const stage of allStages) expect(store.getProgram(stage)).toEqual(stage.solution)
+    for (const stage of allStages.filter(stage => !stage.variants)) expect(store.getProgram(stage)).toEqual(stage.solution)
     store.saveProgram('1', [])
     store.completeStage('2', 2, program)
     expect(storage.getItem(progressKey)).toBe(raw)

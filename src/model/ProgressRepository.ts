@@ -1,5 +1,5 @@
 import type { Program, Stage } from './types'
-import { allStages as stages } from './stages'
+import { allStages as stages, stages as unit1Stages } from './stages'
 
 export type StageProgress = { completed: boolean; bestStars: number; lastProgram: Program }
 export type Progress = { version: 1; stages: Record<string, StageProgress> }
@@ -87,6 +87,7 @@ function unknownVersion(value: unknown): boolean {
 // stageIndex는 0부터 시작하며, 순서는 스테이지 데이터 배열을 따른다.
 export function isUnlocked(progress: Progress, stageIndex: number): boolean {
   if (!Number.isInteger(stageIndex) || stageIndex < 0 || stageIndex >= stages.length) return false
+  if (stages[stageIndex].variants) return unit1Stages.every(stage => progress.stages[stage.id]?.completed === true)
   return stageIndex === 0 || progress.stages[stages[stageIndex - 1].id]?.completed === true
 }
 

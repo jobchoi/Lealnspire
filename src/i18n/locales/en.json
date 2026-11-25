@@ -67,7 +67,8 @@
     "forward": "Move forward",
     "turnLeft": "Turn left",
     "turnRight": "Turn right",
-    "repeat": "Repeat N times"
+    "repeat": "Repeat N times",
+    "if": "if the path ahead is blocked"
   },
   "tools": "Block tools",
   "chooseTile": "Tap a block to select it.",
@@ -204,5 +205,15 @@
   "bonus2Title": "Bonus 2: A Path with a Start",
   "bonus2Goal": "Split the path into the part that repeats and the part that doesn't.",
   "bonus2Hint1": "Compare the first part of the path with the part that repeats after it.",
-  "bonus2Hint2": "Where should you put the move that doesn't fit in the repeating group?"
+  "bonus2Hint2": "Where should you put the move that doesn't fit in the repeating group?",
+  "u21Title": "Unit 2-1: Turn When Blocked",
+  "u21Goal": "Get through both maps with the same code.",
+  "u21Hint1": "Compare where the corner is on each map.",
+  "u21Hint2": "The corners are in different places. How can the robot know when to turn?",
+  "unit2": "Unit 2: Conditions (if)",
+  "sensorBlocked": "The path ahead is blocked",
+  "sensorClear": "The path ahead is clear",
+  "skipped": "Skipped",
+  "variantLabel": "Map {number}/{total}",
+  "variantFailure": "Map {number}: {reason}"
 }

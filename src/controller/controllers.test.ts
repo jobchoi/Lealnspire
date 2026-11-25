@@ -88,7 +88,7 @@ describe('Controller without React', () => {
     expect(app.cards.filter(card => card.unlocked)).toHaveLength(2)
     for (const stage of stages) repository.completeStage(stage.id, 3, stage.solution)
     app.openStage(7); app.next(); expect(app.getSnapshot().page).toBe('list')
-    app.home(); expect(app.getSnapshot().page).toBe('home'); expect(app.continueIndex).toBeUndefined()
+    app.home(); expect(app.getSnapshot().page).toBe('home'); expect(app.game?.stage.id).toBe('8'); expect(app.continueIndex).toBe(10)
   })
 })
 
@@ -315,3 +315,56 @@ for (const stage of bonusStages) {
     } finally { vi.useRealTimers() }
   })
 }
+
+it('T38 replays all maps before saving success and fixes the first failed variant', async () => {
+  const { unit2Stages } = await import('../model/stages')
+  const stage = unit2Stages[0]
+  const repository = new ProgressRepository()
+  const game = new GameController(stage, repository)
+  game.edit(stage.solution)
+  game.selectVariant(1)
+  expect(game.displayStage.grid).toEqual(stage.variants![1])
+  game.step()
+  expect(game.variant).toBe(0)
+  expect(game.frame?.check?.result).toBe(false)
+  while (game.variant === 0) game.step()
+  expect(repository.getProgress().stages[stage.id].completed).toBe(false)
+  while (!game.finished) game.step()
+  expect(game.result).toBe('success')
+  expect(game.stars).toBe(3)
+  expect(repository.getProgress().stages[stage.id].completed).toBe(true)
+  game.reset()
+  game.edit(['forward', 'forward', 'turnRight', 'forward', 'forward'].map((type, i) => ({ id: `failure-${i}`, type } as const)) as typeof stage.solution)
+  while (!game.finished) game.step()
+  expect(game.result).toBe('collision')
+  expect(game.variantResults).toEqual(['success', 'collision'])
+  game.fix()
+  expect(game.variant).toBe(1)
+  expect(game.editor.getSnapshot().selectedId).toBe('failure-1')
+  game.edit(stage.solution)
+  game.undo()
+  expect(game.getSnapshot().program[0].id).toBe('failure-0')
+})
+
+it('T38 edits repeat inside if and if inside repeat, including nested movement and removal', () => {
+  const editor = new EditorController()
+  editor.configure([], () => {}, false)
+  editor.add('if')
+  const outer = editor.program[0].id
+  editor.select(outer); editor.toggleTarget(); editor.add('repeat')
+  const repeat = editor.program[0]
+  expect(repeat.type).toBe('if')
+  if (repeat.type !== 'if') throw new Error('Expected if')
+  editor.select(repeat.body[0].id); editor.toggleTarget(); editor.add('if')
+  const inner = editor.program[0]
+  if (inner.type !== 'if' || inner.body[0].type !== 'repeat') throw new Error('Expected nested repeat')
+  editor.select(inner.body[0].body[0].id); editor.toggleTarget(); editor.add('forward'); editor.add('turnRight')
+  const body = editor.program[0]
+  if (body.type !== 'if' || body.body[0].type !== 'repeat' || body.body[0].body[0].type !== 'if') throw new Error('Expected nested if')
+  editor.select(body.body[0].body[0].body[1].id)
+  expect(editor.selectedPath).toEqual([0, 0, 0, 1])
+  editor.move('up')
+  expect(editor.selectedPath).toEqual([0, 0, 0, 0])
+  editor.remove()
+  expect(editor.total).toBe(4)
+})

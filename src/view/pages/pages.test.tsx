@@ -21,19 +21,21 @@ describe('화면 렌더링', () => {
     store.saveProgram('1', [])
     expect(home()).toContain(t('continue'))
     for (const stage of stages) store.completeStage(stage.id, 3, [])
+    expect(home()).toContain(t('continue'))
+    store.completeStage('u2-1', 3, [])
     expect(home()).not.toContain(t('continue'))
   })
   it('정규 8개와 보너스 2개 카드, 잠김, 최고 별을 표시하고 이전 완료 시 다음 카드가 열린다', () => {
     const store = createProgressStore()
     const list = () => renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)
-    expect(list().match(/class="stage-card"/g)).toHaveLength(10)
-    expect(list().match(/disabled=""/g)).toHaveLength(9)
+    expect(list().match(/class="stage-card"/g)).toHaveLength(11)
+    expect(list().match(/disabled=""/g)).toHaveLength(10)
     expect(list()).toContain(t('locked'))
     store.completeStage('1', 2, [])
-    expect(list().match(/disabled=""/g)).toHaveLength(8)
+    expect(list().match(/disabled=""/g)).toHaveLength(9)
     expect(list()).toContain(t('bestStars', { count: 2 }))
     expect(list().match(/style="opacity:1"/g)).toHaveLength(2)
-    expect(list().match(/style="opacity:0.25"/g)).toHaveLength(28)
+    expect(list().match(/style="opacity:0.25"/g)).toHaveLength(31)
   })
   it('저장 코드로 게임을 열고 힌트와 결과는 닫힌 상태로 시작한다', () => {
     const store = createProgressStore()
@@ -263,4 +265,27 @@ it('publishes English guide statements matching the Unit 1 and privacy contracts
   for (const sentence of ['Finishing all 8 completes Unit 1.', 'only in this browser on this device', 'The next stage opens even with fewer stars.', 'Not yet tested: real phones and tablets, Safari, Firefox.', 'use the language button in the app']) expect(englishGuide).toContain(sentence)
   expect(englishGuide).toContain('lang="en"')
   expect(englishGuide).toContain('href="./?lang=en"')
+})
+
+it('uses the localized Unit 2 title in play, list and results without exposing its storage ID', () => {
+  const previous = i18n.locale
+  try {
+    const stage = allStages.find(stage => stage.id === 'u2-1')!
+    for (const locale of ['ko', 'en']) {
+      i18n.locale = locale
+      const title = locale === 'ko' ? '2단원 1: 막히면 돌아요' : 'Unit 2-1: Turn When Blocked'
+      const store = createProgressStore()
+      const controller = new GameController(stage, store)
+      controller.edit(stage.solution)
+      for (let i = 0; i < 1000 && !controller.finished; i++) controller.step()
+      expect(controller.result).toBe('success')
+      const html = renderToString(<PlayPage stage={stage} progressStore={store} controller={controller} onList={noop} onNext={noop} lastStage />).replaceAll('<!-- -->', '')
+      expect(html).toContain(`<h1 tabindex="-1" data-page-title="true">${title}</h1>`)
+      expect(html.split('role="dialog"')[1]).toContain(title)
+      expect(html).not.toContain('u2-1')
+      const list = renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)
+      expect(list).toContain(title)
+      expect(list).not.toContain('u2-1')
+    }
+  } finally { i18n.locale = previous }
 })

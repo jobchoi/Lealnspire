@@ -131,7 +131,7 @@ it('round-trips nested if in v2 and rejects invalid conditions, bodies, IDs, dep
 })
 
 it('preserves unit 1 solutions, failures and every frame against the pre-T37 engine', () => {
-  expect(allStages.map(stage => ({
+  expect(allStages.filter(stage => !stage.variants).map(stage => ({
     id: stage.id, solution: run(stage, stage.solution), empty: run(stage, []),
     collision: run(stage, Array.from({ length: 10 }, () => ({ id: 'baseline-f', type: 'forward' }))),
     initial: stage.initialProgram ? run(stage, stage.initialProgram) : null,

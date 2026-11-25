@@ -384,3 +384,143 @@ button small { display: block; font-size: .75rem; }
   :lang(en) .theme-train .palette-row .palette button { height:76px; grid-template-rows:28px auto; }
   :lang(en) .play-page.theme-train .palette small { white-space:normal; overflow-wrap:normal; word-break:normal; line-height:16px; }
 }
+
+/* T38: keep the extra map controls inside the existing map row. */
+.conditions-page .palette { grid-template-columns: repeat(5, minmax(44px, 1fr)); }
+.conditions-page .palette button { width: auto; }
+.conditions-page .palette .block-if small { display: block; font: 16px/18px 'Do Hyeon', sans-serif; }
+.conditions-page .workspace .block-if { position: relative; flex-direction: row; flex-wrap: wrap; gap: 1px; }
+.conditions-page .workspace .block-if .block-symbol { width: 20px; }
+.conditions-page .workspace .block-if .block-symbol svg { width: 20px; height: 20px; }
+.conditions-page .workspace .block-if strong { font-size: 16px; }
+.conditions-page .workspace .block-if .sensor-icon { width: 20px; height: 20px; }
+.conditions-page .workspace .block-if .skip-label { width: 100%; justify-content: center; font-size: 9px; line-height: 10px; }
+@media (max-width:700px) {
+ .conditions-page .game-layout { position: relative; }
+ .conditions-page .variant-cards { position: absolute; left: 0; top: 0; width: 80px; flex-direction: column; gap: 2px; }
+ .conditions-page .variant-cards button { height: 44px; min-height: 44px; }
+ .conditions-page .sensor-status { position: absolute; top: 0; right: 0; max-width: calc(100% - 84px); margin: 0; }
+ .conditions-page .map-panel .board { margin-left: 84px; width: calc(100% - 84px); height: 86px; max-height: 86px; align-self: end; }
+ .conditions-page .palette { width: 100%; height: 56px; grid-template-columns: repeat(5, minmax(44px,1fr)); grid-template-rows: 56px; gap: 3px; }
+ .conditions-page .palette button { min-width: 44px; width: 100%; height: 56px; min-height: 44px; padding: 2px; grid-column: auto; grid-row: auto; border-radius: 6px; }
+ .conditions-page .palette button.block-repeat { width: 100%; height: 56px; grid-column: auto; grid-row: auto; font-size: 12px; }
+ .conditions-page .palette::before,.conditions-page .palette::after { display: none; }
+ .conditions-page .palette .block-if { display: grid; grid-template-columns: 1fr 1fr; align-content: center; }
+ .conditions-page .palette .block-if small { grid-column: 1 / 3; }
+ .conditions-page .palette .block-if .theme-symbol { width: 22px; height: 22px; }
+}
+@media (max-width:700px) and (max-height:590px) {
+ .conditions-page .game-layout { grid-template-rows: 96px minmax(0,1fr) 64px; }
+ .conditions-page .map-panel .board { height: 74px; max-height: 74px; }
+}
+.conditions-page .if-skipped > .tile-list .block-tile { opacity: .45; }
+
+/* Unit 2 owns five commands; keep the world's four-command geometry in Unit 1. */
+.play-page.conditions-page .palette-row { gap: 6px; }
+.play-page.conditions-page .palette-row .palette {
+ display:grid; grid-template-columns:repeat(5,minmax(44px,1fr)); grid-template-rows:64px;
+ flex:1; width:auto; height:64px; gap:8px; padding:0; margin:0;
+}
+.play-page.conditions-page .palette-row .palette button {
+ display:grid; grid-column:auto; grid-row:auto; grid-template-rows:28px 16px;
+ align-content:center; justify-items:center; gap:0; width:100%; height:64px;
+ min-width:44px; min-height:44px; padding:0; transform:none; aspect-ratio:auto;
+}
+.play-page.conditions-page .palette::before,.play-page.conditions-page .palette::after { display:none; }
+.play-page.conditions-page .palette .block-if { grid-template-columns:1fr 1fr; }
+.play-page.conditions-page .palette .block-if small { display:block; grid-column:1 / 3; font:bold 12px/16px monospace; }
+.play-page.conditions-page .palette .block-if .theme-symbol { width:22px; height:22px; }
+.play-page.conditions-page .palette .block-if .sensor-icon { width:22px; height:22px; }
+.play-page.conditions-page .variant-cards { flex-direction:row; flex-wrap:nowrap; }
+@media(max-width:700px) {
+ .play-page.conditions-page .game-layout { grid-template-rows:176px minmax(0,1fr) 64px; }
+ .play-page.conditions-page .variant-cards { position:absolute; top:0; left:0; width:100%; gap:6px; }
+ .play-page.conditions-page .variant-cards button { width:90px; height:44px; flex:0 0 90px; }
+ .play-page.conditions-page .sensor-status { top:46px; left:0; right:0; max-width:100%; height:20px; }
+ .play-page.conditions-page .map-panel .board { margin:0; width:min(100%,240px); height:110px; max-height:110px; align-self:end; }
+ .play-page.conditions-page .palette-row .palette { height:52px; grid-template-rows:52px; gap:5px; }
+ .play-page.conditions-page .palette-row .palette button { height:52px; box-shadow:none; }
+ .play-page.conditions-page .palette-row .palette .theme-symbol { width:24px; height:24px; }
+ .play-page.conditions-page .palette-row .palette small { font-size:10px; line-height:16px; }
+}
+@media(max-width:700px) and (max-height:590px) {
+ .play-page.conditions-page .game-layout { grid-template-rows:141px minmax(0,1fr) 64px; }
+ .play-page.conditions-page .map-panel .board { height:75px; max-height:75px; }
+}
+/* Angular violet branches distinguish conditional scope from round repeat tracks. */
+.play-page .workspace .if-frame { border:3px double #69439b; border-radius:0 14px 0 14px; background:#eee5fa; padding:5px; }
+.play-page .workspace .if-frame::before { display:none; }
+.play-page .workspace .if-skipped { background:#eee9f3; }
+.play-page .workspace .if-skipped > .tile-list .block-tile { opacity:.45; }
+.play-page .workspace .if-ribbon {
+ display:block; position:absolute; inset:1px -3px auto; height:calc(100% - 2px);
+ border:0; border-block:2px dashed #69439b; border-inline:2px solid #69439b;
+ border-radius:0 8px 0 8px; background:#69439b12; box-shadow:none;
+ pointer-events:none; z-index:-1;
+}
+.play-page .workspace .block-tile:has(.if-ribbon) { isolation:isolate; }
+.play-page .workspace .ribbon-skipped { background:repeating-linear-gradient(135deg,#69439b22 0 3px,transparent 3px 7px); }
+@media(max-width:700px) {
+ .play-page .workspace .if-frame { display:contents; }
+}
+.play-page.conditions-page .block-if { --c:#69439b; color:#38205b; background:#eee5fa; }
+.play-page .workspace .if-skipped > .tile-list { opacity:1; }
+@media(max-width:700px) {
+ .play-page.conditions-page .editor { padding-inline:4px; }
+}
+
+/* Preserve each world's controls while adding the fifth command. */
+.play-page.conditions-page.theme-sketchbook .palette-row .palette {
+ grid-template-columns:repeat(5,minmax(44px,64px)); justify-content:start;
+}
+.play-page.conditions-page.theme-sketchbook .palette-row .palette button {
+ width:100%; height:auto; aspect-ratio:1; border-radius:50%;
+}
+.play-page.conditions-page .workspace .block-tile.block-if {
+ display:grid; grid-template-columns:20px 20px; grid-template-rows:20px 18px;
+ align-content:center; justify-content:center; justify-items:center;
+ padding:10px 2px 2px; gap:0; line-height:1;
+}
+.play-page.conditions-page .workspace .block-if .block-symbol { grid-column:1; grid-row:1; line-height:0; }
+.play-page.conditions-page .workspace .block-if strong { grid-column:2; grid-row:1; font:bold 14px/20px monospace; padding:0; }
+.play-page.conditions-page .workspace .block-if .sensor-icon { grid-column:1 / 3; grid-row:2; width:18px; height:18px; }
+.play-page.conditions-page .workspace .block-if .sensor-icon svg { width:100%; height:100%; }
+.play-page.conditions-page .workspace .block-if .skip-label,
+.play-page.conditions-page .workspace .block-if .empty-repeat-label {
+ position:absolute; bottom:0; left:0; width:100%; height:10px; font-size:8px; line-height:10px;
+}
+.play-page.conditions-page .workspace .block-if:has(.skip-label, .empty-repeat-label) { padding-top:2px; padding-bottom:10px; }
+.play-page.conditions-page.theme-handheld .palette-row .palette {
+ flex:0 0 auto; width:300px; height:144px;
+ grid-template-columns:repeat(3,48px) 12px 64px 12px 64px; grid-template-rows:repeat(3,48px); gap:0;
+}
+.play-page.conditions-page.theme-handheld .palette-row .palette button {
+ width:48px; height:48px; background:#2b2d42; color:#fff; border-radius:0;
+ box-shadow:inset 0 -5px #0007;
+}
+.play-page.conditions-page.theme-handheld .palette .block-forward { grid-column:2; grid-row:1; border-radius:8px 8px 0 0; }
+.play-page.conditions-page.theme-handheld .palette .block-turnLeft { grid-column:1; grid-row:2; border-radius:8px 0 0 8px; }
+.play-page.conditions-page.theme-handheld .palette .block-turnRight { grid-column:3; grid-row:2; border-radius:0 8px 8px 0; }
+.play-page.conditions-page.theme-handheld .palette::before { display:block; grid-column:2; grid-row:2; }
+.play-page.conditions-page.theme-handheld .palette::after { display:block; grid-column:2; grid-row:3; }
+.play-page.conditions-page.theme-handheld .palette-row .palette :is(.block-repeat,.block-if) {
+ grid-column:5; grid-row:1 / 4; align-self:center; width:64px; height:64px;
+ border-radius:50%; background:#ffb703; color:#3a2a00; box-shadow:inset 0 -6px #0005,0 6px #0002;
+}
+.play-page.conditions-page.theme-handheld .palette-row .palette .block-if { grid-column:7; background:#69439b; color:#fff; }
+.play-page.conditions-page.theme-handheld .palette .block-repeat { grid-template-rows:24px 12px; }
+.play-page.conditions-page.theme-handheld .palette .handheld-button-letter { font:18px/24px 'Press Start 2P'; }
+.play-page.conditions-page.theme-handheld .palette .block-repeat small { font:bold 9px/12px monospace; }
+.play-page.conditions-page.theme-handheld .palette .block-if { grid-template-rows:24px 16px; }
+.play-page.conditions-page.theme-handheld .workspace .block-if { color:#fff; background:#69439b; }
+.board-sensor { pointer-events:none; }
+.theme-handheld .board-sensor { color:#0f380f; }
+@media(max-width:700px) {
+ .play-page.conditions-page.theme-sketchbook .palette-row .palette { grid-template-columns:repeat(5,minmax(44px,52px)); }
+ .play-page.conditions-page.theme-handheld .palette-row .palette {
+  width:264px; height:88px; grid-template-columns:repeat(3,44px) 8px 58px 8px 58px; grid-template-rows:repeat(2,44px);
+ }
+ .play-page.conditions-page.theme-handheld .palette-row .palette button { width:44px; height:44px; }
+ .play-page.conditions-page.theme-handheld .palette-row .palette :is(.block-repeat,.block-if) { width:58px; height:58px; grid-row:1 / 3; }
+ .play-page.conditions-page.theme-handheld .palette::after { display:none; }
+}

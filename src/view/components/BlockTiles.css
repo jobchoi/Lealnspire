@@ -110,3 +110,25 @@
   .play-page .workspace .block-repeat:has(.empty-repeat-label) .concept-keyword { font-size: 9px; line-height: 9px; }
   .play-page .workspace .block-repeat:has(.empty-repeat-label) .repeat-count { font-size: 18px; line-height: 17px; }
 }
+
+/* T38 conditional containers share the existing nested editing layout. */
+.block-if { background: #e5dcfa; color: #38205b; border-color: #69439b; }
+.sensor-icon { display: inline-flex; width: 24px; height: 24px; flex-shrink: 0; }
+.if-skipped > .tile-list { opacity: .45; }
+.skip-label { display: flex; align-items: center; font-size: 10px; }
+.skip-label svg { width: 16px; height: 16px; }
+.board-sensor { color: #542078; background: repeating-linear-gradient(135deg, transparent 0 5px, #54207844 5px 7px); outline: 2px solid #542078; outline-offset: -3px; }
+.variant-cards { display: flex; justify-content: center; gap: 8px; }
+.variant-cards button { display: flex; align-items: center; gap: 6px; min-width: 74px; min-height: 44px; padding: 3px 8px; }
+.variant-cards button[aria-pressed="true"] { outline: 3px solid #542078; outline-offset: -3px; }
+.variant-cards button:disabled { opacity: 1; }
+.variant-cards svg { width: 32px; height: 34px; }
+.sensor-status { display: flex; justify-content: center; align-items: center; gap: 5px; min-height: 20px; margin: 2px 0; font-size: 12px; }
+.sensor-status svg { width: 20px; height: 20px; }
+.conditions-page .palette button { min-width: 44px; }
+@media (max-width: 600px) {
+  .conditions-page .map-panel .board { max-height: 18dvh; }
+  .conditions-page .palette { gap: 4px; }
+  .conditions-page .palette button { padding: 3px; }
+  .conditions-page .palette .sensor-icon { width: 16px; height: 16px; }
+}
