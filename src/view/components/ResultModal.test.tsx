@@ -43,3 +43,14 @@ it('offers fix for every failure and never for success', () => {
     expect(html.includes('aria-label="' + t('fix') + '"')).toBe(result !== 'success')
   }
 })
+
+
+it('shows bonus completion only on a successful final bonus stage', () => {
+  for (const result of ['success', 'collision'] as const) {
+    for (const lastStage of [false, true]) {
+      const html = renderToString(<ResultModal result={result} stars={3} onRetry={noop} onClose={noop} onNext={noop} lastStage={lastStage} bonusStage />)
+      expect(html).not.toContain(t('congratulations'))
+      expect(html.includes(t('bonusCongratulations'))).toBe(result === 'success' && lastStage)
+    }
+  }
+})

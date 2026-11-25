@@ -46,3 +46,13 @@ HTML(`index.html`, `guide.html`)은 `Cache-Control: no-cache`로 재검증하도
 4. 정적 파일 복원은 브라우저 기록을 복원하지 않습니다. 장애 대응 중 사용자 기록을 삭제하지 않습니다. 향후 저장 형식이 바뀌면 이전 버전과의 호환성을 별도로 검증합니다.
 
 근거: [Vite production build·Public Base Path·캐시 안내](https://vite.dev/guide/build.html). 로컬 설치 버전은 package-lock.json을 기준으로 합니다(T27 검증 시 Vite 8.3.8).
+
+## 라즈베리파이 메모 (준비만, 실제 배포는 사용자 결정 후)
+
+사용자 계획(2026-11-25): 배포 서버는 사용자의 라즈베리파이. 아직 배포하지 않습니다.
+
+- 앱은 정적 파일뿐이라 nginx·Caddy 같은 웹 서버가 `dist` 폴더를 내주기만 하면 됩니다(Node 실행 불필요).
+- 버전별 보관과 즉시 롤백 예시: `/srv/lealnspire/releases/v1.0.0/`(각 버전의 dist), `/srv/lealnspire/current` → 사용할 버전 폴더를 가리키는 심볼릭 링크, 웹 서버는 `current`를 루트로. 되돌릴 때는 링크만 이전 버전으로 바꿉니다.
+- 하위 경로(예: `http://<파이>/lealnspire/`)로 내면 빌드 때 `--base=/lealnspire/`를 꼭 맞춥니다.
+- 기록은 출처(주소·포트)마다 따로 저장되므로, 파이의 주소나 포트를 바꾸면 아이들 기록이 안 보입니다. 처음 정한 주소를 유지하세요.
+- 같은 집·교실 네트워크 안에서만 쓰면 오프라인(PWA)은 필요 없습니다(T32 보류).

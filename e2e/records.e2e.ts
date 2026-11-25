@@ -32,9 +32,8 @@ test.describe('기록 신뢰성', () => {
     await page.goto('/')
     await g.press(g.button('내 기록 안내'))
     await g.press(page.getByRole('dialog').getByRole('button', { name: '기록 지우기' }))
-    const confirm = page.getByRole('dialog').getByRole('button', { name: '지우기', exact: true })
-    if (await confirm.count()) await g.press(confirm)
-    await expect(page.getByRole('dialog')).toContainText(/저장하지 않고 있어요|지웠|기록/)
+    await g.press(page.getByRole('dialog').getByRole('button', { name: '지우기', exact: true }))
+    await expect(page.getByRole('dialog').getByRole('status'), '저장 불가 안내').toContainText('이 브라우저에서는 저장하지 않고 있어요')
   })
 
   test('진행 중 기록: 이어하기, 마지막 코드 복원, 최고 별은 더 낮은 결과로 덮이지 않는다', async ({ page }) => {
@@ -42,14 +41,20 @@ test.describe('기록 신뢰성', () => {
     await g.fresh()
     await page.evaluate(() => localStorage.setItem('lealnspire.progress', JSON.stringify({ version: 1, stages: {
       1: { completed: true, bestStars: 3, lastProgram: [{ id: 'a', type: 'forward' }, { id: 'b', type: 'forward' }] },
-      2: { completed: false, bestStars: 0, lastProgram: [{ id: 'c', type: 'forward' }, { id: 'd', type: 'turnRight' }] },
+      2: { completed: false, bestStars: 0, lastProgram: [{ id: 'c', type: 'forward' }, { id: 'r', type: 'repeat', count: 2, body: [{ id: 'd', type: 'turnRight' }] }] },
     } })))
     await page.reload()
     await g.press(g.button('이어하기'))
     await expect(page.getByRole('heading', { level: 1 })).toContainText('스테이지 2')
-    expect(await g.blockCount(), '2번 마지막 코드 복원').toBe(2)
+    // 종류·순서·반복 횟수·몸체까지 그대로
+    await expect(g.tile('1')).toHaveAccessibleName(/^1번 앞으로/)
+    await expect(g.tile('2')).toHaveAccessibleName(/^2번 반복 2번/)
+    await expect(g.tile('2.1')).toHaveAccessibleName(/^2\.1번 오른쪽으로 돌기/)
+    expect(await g.blockCount(), '2번 마지막 코드 복원').toBe(3)
     await g.press(g.button('스테이지 목록'))
     await g.press(page.locator('.stage-card').first())
+    await expect(g.tile('1')).toHaveAccessibleName(/^1번 앞으로/)
+    await expect(g.tile('2')).toHaveAccessibleName(/^2번 앞으로/)
     expect(await g.blockCount(), '1번 마지막 코드 복원').toBe(2)
     // 더 긴 코드로 다시 성공(별 3 → 낮아질 수 있음)
     await g.add('L'); await g.add('R')

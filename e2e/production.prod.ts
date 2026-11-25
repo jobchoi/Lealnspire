@@ -28,6 +28,10 @@ test('배포 빌드: 시작 → 성공 → 새로고침 후 기록 복원 → �
   await g.press(guide)
   await expect(page).toHaveURL(new RegExp(`${base.pathname}guide\\.html$`))
   await expect(page.locator('body')).toContainText('8개를 성공하면 1단원 완료')
+  // 안내에서 앱으로 돌아오기(하위 경로에서도 같은 앱, 기록 유지)
+  await page.getByRole('link', { name: /앱으로|돌아가기|Lealnspire/ }).first().click()
+  await expect(page).toHaveURL(new RegExp(`${base.pathname}$`))
+  await expect(g.button('이어하기'), '돌아온 뒤에도 기록 유지').toBeVisible()
 
   const license = await page.request.get('licenses/fonts.txt')
   expect(license.status(), '글꼴 라이선스 원문이 배포물에 있음').toBe(200)

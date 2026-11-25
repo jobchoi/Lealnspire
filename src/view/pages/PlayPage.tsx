@@ -1,6 +1,6 @@
 import { selectTheme, worlds } from '../theme/themes'
 import { ConceptDefs, Symbol } from '../theme/Symbols'
-import { useEffect, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { countBlocks } from '../../model/program'
 import type { Stage } from '../../model/types'
 import { bonusStages } from '../../model/stages'
@@ -16,6 +16,7 @@ import { createProgressStore } from '../../model/ProgressRepository'
 type Props = { stage: Stage; progressStore: ReturnType<typeof createProgressStore>; onList: () => void; onNext: () => void; lastStage: boolean; controller?: GameController }
 
 export function PlayPage({ stage, progressStore, onList, onNext, lastStage, controller: supplied }: Props) {
+  const page = useRef<HTMLElement>(null)
   const [controller] = useState(() => supplied ?? new GameController(stage, progressStore))
   const { program, hintStep, playing, speed } = useController(controller)
   useEffect(() => () => controller.dispose(), [controller])
@@ -23,8 +24,17 @@ export function PlayPage({ stage, progressStore, onList, onNext, lastStage, cont
   const completed = !!progressStore.getProgress().stages[stage.id]?.completed
   const theme = selectTheme(stage.world, completed, requestedWorld)
   const playback = { frame: controller.frame, result: controller.result, locked: controller.locked, finished: controller.finished, showResult: controller.showResult, playing, speed, play: controller.play, step: controller.step, reset: controller.reset, dismiss: controller.dismiss, setSpeed: controller.setSpeed }
+  const restoreFocus = useCallback((previous: Element | null, fixed: boolean) => {
+    const root = page.current
+    if (!root?.isConnected) return
+    const available = (element: Element | null): element is HTMLElement => element instanceof HTMLElement && element.isConnected && (element.tabIndex >= 0 || element.hasAttribute('tabindex')) && !element.matches(':disabled, [aria-disabled="true"]') && element.getClientRects().length > 0
+    const tile = fixed ? Array.from(root.querySelectorAll<HTMLButtonElement>('[data-block-id]')).find(node => node.dataset.blockId === controller.failure?.blockId) ?? null : null
+    const target = fixed ? tile : previous
+    if (available(target)) target.focus()
+    if (!available(target) || document.activeElement !== target) root.querySelector<HTMLButtonElement>('.run-button')?.focus()
+  }, [controller])
   return (
-    <section className={`play-page theme-${theme.world}`}>
+    <section ref={page} className={`play-page theme-${theme.world}`}>
       <ConceptDefs /><h1 tabIndex={-1} data-page-title>{bonusStages.some(bonus => bonus.id === stage.id) ? '' : `${t('stage')} ${stage.id}: `}{t(stage.title)}</h1>
       <div className="playback-controls stage-controls">
         <button type="button" onClick={onList} aria-label={theme.buttonLabel('stageList')} title={theme.buttonLabel('stageList')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="stageList" /></span><small>{theme.buttonLabel('stageList')}</small></button>
@@ -55,7 +65,7 @@ export function PlayPage({ stage, progressStore, onList, onNext, lastStage, cont
         </div>
         <Editor controller={controller.editor} failedBlockId={controller.failure?.blockId} theme={theme} program={program} onChange={controller.edit} maxBlocks={stage.maxBlocks} locked={playback.locked} activeBlockId={playback.frame?.activeBlockId} loops={playback.frame?.loops} />
       </div>
-      {playback.showResult && playback.result && <ResultModal onFix={controller.fix} result={playback.result} stars={controller.stars} onRetry={playback.reset} onClose={playback.dismiss} onNext={onNext} lastStage={lastStage} />}
+      {playback.showResult && playback.result && <ResultModal restoreFocus={restoreFocus} onFix={controller.fix} result={playback.result} stars={controller.stars} onRetry={playback.reset} onClose={playback.dismiss} onNext={onNext} lastStage={lastStage} bonusStage={bonusStages.some(bonus => bonus.id === stage.id)} />}
     </section>
   )
 }

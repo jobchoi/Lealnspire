@@ -7,7 +7,7 @@ import { HomePage, RecordDialog } from './HomePage'
 import { StageSelectPage } from './StageSelectPage'
 import { PlayPage } from './PlayPage'
 import { createProgressStore } from '../../model/ProgressRepository'
-import { stages, bonusStages } from '../../model/stages'
+import { stages, bonusStages, allStages, isLastStage } from '../../model/stages'
 import { t } from '../../i18n/I18n'
 
 const noop = () => {}
@@ -216,4 +216,24 @@ it('keeps the published teacher guide consistent with the source guide', () => {
   }
   expect(published).toContain('href="./"')
   expect(published).toContain('lang="ko"')
+})
+
+
+it('distinguishes regular completion, bonus continuation and bonus completion in results', () => {
+  for (const index of [7, 8, 9]) {
+    const stage = allStages[index]
+    const store = createProgressStore()
+    const controller = new GameController(stage, store)
+    controller.edit(stage.solution)
+    for (let i = 0; i < 1000 && !controller.finished; i++) controller.step()
+    expect(controller.result).toBe('success')
+    expect(isLastStage(index)).toBe(index !== 8)
+    const html = renderToString(<PlayPage stage={stage} progressStore={store} controller={controller} onList={noop} onNext={noop} lastStage={isLastStage(index)} />)
+    const modal = html.split('role="dialog"')[1]
+    expect(modal).toContain(`aria-label="${t(index === 8 ? 'nextStage' : 'toList')}"`)
+    expect(modal.includes(t('congratulations'))).toBe(index === 7)
+    expect(modal.includes(t('bonusCongratulations'))).toBe(index === 9)
+    if (index !== 8) expect(modal).toContain('완주')
+    controller.dispose()
+  }
 })

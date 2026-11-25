@@ -14,6 +14,7 @@ Claude Code는 세션마다 이 파일을 자동으로 읽습니다.
 | [AGENTS.md](AGENTS.md) | Codex(GPT) 등 다른 AI용 안내. 규칙은 이 파일을 따르게 함 |
 | [docs/handoff/](docs/handoff/) | 다른 AI에게 주는 작업 지시서 |
 | [docs/TASKS.md](docs/TASKS.md) | 작업 목록(우선순위, 완료 조건, 상태)의 단일 출처 |
+| [docs/RELEASE.md](docs/RELEASE.md) | 버전·태그·롤백 절차 (변경 내용은 CHANGELOG.md) |
 | [docs/DEPLOY.md](docs/DEPLOY.md) | 정적 배포 절차·체크리스트(실제 배포는 사용자 승인) |
 | [docs/GUIDE.md](docs/GUIDE.md) | 교사·보호자 안내(실제 동작 기준) |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | 2단계 로드맵(Claude+GPT 교차 기획, 동향 근거, 채택·보류 이유) |

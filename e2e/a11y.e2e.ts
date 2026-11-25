@@ -91,30 +91,47 @@ test.describe('@a11y 접근성', () => {
     expect(running).toEqual([])
   })
 
-  test('키보드만으로: 반복 편집 → 실패 → 힌트 → 고치기 → 성공, 포커스가 항상 보인다', async ({ page }, info) => {
-    test.skip(info.project.name !== 'desktop', '데스크톱 전용(물리 키보드)')
-    const g = new Game(page)
-    await g.fresh()
-    const enter = async (l: ReturnType<Game['button']>) => { await l.focus(); await expect(l).toBeFocused(); await page.keyboard.press('Enter') }
-    const focusVisible = () => page.evaluate(() => { const e = document.activeElement as HTMLElement; const s = getComputedStyle(e); return s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0 || s.boxShadow !== 'none' })
-    await enter(g.button('시작하기'))
-    await enter(g.palette('N'))
-    await enter(g.tile('1'))
-    await enter(g.action(/줄이기$/))
-    await enter(g.action(/추가 대상으로 선택$|안에 넣기$/))
-    await enter(g.palette('L'))
-    await enter(g.action(/선택 해제$|넣기 해제$/))
-    await enter(g.button('빠르게'))
-    await enter(g.runButton)
-    await expect(g.dialog).toBeVisible({ timeout: 10_000 })
-    await enter(g.dialog.getByRole('button', { name: '고치기' }))
-    await enter(g.button('힌트'))
-    await expect(page.locator('#stage-hint')).toBeVisible()
-    // 반복을 지우고 앞으로 두 번
-    await enter(g.tile('1')); await enter(g.action(/삭제$/))
-    await enter(g.palette('F')); await page.keyboard.press('Enter')
-    expect(await focusVisible(), '키보드 포커스 표시').toBe(true)
-    await enter(g.runButton)
-    await expect(g.dialog).toContainText(/성공|별/, { timeout: 10_000 })
-  })
+  for (const world of Object.keys(worldSwitch) as (keyof typeof worldSwitch)[]) {
+    test(`키보드(Tab·Shift+Tab·Enter)만으로 ${world}: 반복 편집 → 실패 → 고치기 → 힌트 → 성공, 도착할 때마다 포커스가 보인다`, async ({ page }, info) => {
+      test.skip(info.project.name !== 'desktop', '데스크톱 전용(물리 키보드)')
+      const g = await openWorld(page, world)
+      await page.locator('body').click({ position: { x: 1, y: 1 } })
+      const focusVisible = () => page.evaluate(() => { const e = document.activeElement as HTMLElement | null; if (!e || e === document.body) return false; const s = getComputedStyle(e); return (s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0) || s.boxShadow !== 'none' })
+      /** .focus() 없이 Tab(필요하면 Shift+Tab)만 눌러 대상에 도착한 뒤 Enter. 도달할 수 없으면 실패 */
+      const reach = async (target: ReturnType<Game['button']>, name: string) => {
+        for (const key of ['Tab', 'Shift+Tab']) {
+          for (let i = 0; i < 60; i++) {
+            if (await target.evaluate(e => e === document.activeElement).catch(() => false)) {
+              expect(await focusVisible(), `${name}: 포커스 표시`).toBe(true)
+              await page.keyboard.press('Enter'); return
+            }
+            await page.keyboard.press(key)
+          }
+        }
+        throw new Error(`${name}: Tab으로 도달할 수 없음`)
+      }
+      await reach(g.palette('N'), 'N번 반복')
+      await reach(g.tile('1'), '1번 반복 타일')
+      await reach(g.action(/줄이기$/), '줄이기')
+      await reach(g.action(/추가 대상으로 선택$|안에 넣기$/), '안에 넣기')
+      await reach(g.palette('L'), '왼쪽')
+      await reach(g.action(/선택 해제$|넣기 해제$/), '넣기 해제')
+      await reach(g.button('빠르게'), '빠르게')
+      await reach(g.runButton, '실행')
+      await expect(g.dialog).toBeVisible({ timeout: 10_000 })
+      expect(await page.evaluate(() => !!document.activeElement?.closest('[role=dialog]')), '결과 창으로 포커스 이동').toBe(true)
+      // 결과 창 안에서 Tab이 밖으로 새지 않음(포커스 가두기)
+      for (let i = 0; i < 6; i++) { await page.keyboard.press('Tab'); expect(await page.evaluate(() => !!document.activeElement?.closest('[role=dialog]')), '창 안에서 순환').toBe(true) }
+      await reach(g.dialog.getByRole('button', { name: '고치기' }), '고치기')
+      await expect(g.dialog).toHaveCount(0)
+      expect(await focusVisible(), '창을 닫은 뒤에도 포커스가 보이는 곳에 있음').toBe(true)
+      await reach(g.button('힌트'), '힌트')
+      await expect(page.locator('#stage-hint')).toBeVisible()
+      await reach(g.tile('1'), '1번 반복 타일(다시)')
+      await reach(g.action(/삭제$/), '삭제')
+      await reach(g.palette('F'), '앞으로'); await page.keyboard.press('Enter')
+      await reach(g.runButton, '실행(다시)')
+      await expect(g.dialog).toContainText(/성공|별/, { timeout: 10_000 })
+    })
+  }
 })

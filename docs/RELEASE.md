@@ -1,0 +1,26 @@
+# 릴리스와 롤백 (RELEASE)
+
+> 사용자 요청(2026-11-25): "버전별로 태그를 생성해서 추후에 롤백을 해야 하는 상황이든, 다른 사람들이 이용하게 될 때 용이하게."
+
+## 버전과 태그
+
+| 태그 | 커밋 | 내용 |
+|---|---|---|
+| `v0.1.0` | `5170fa2` | MVP(T0~T12) |
+| `v0.2.0` | `9e00dd6` | 테마 월드 3종(T13) |
+| `v1.0.0` | release/1.0.0 병합 커밋 | 첫 제품: 1단원 완성·배포 준비(T14~T28) |
+
+변경 내용은 [CHANGELOG.md](../CHANGELOG.md). 태그는 주석 태그(`git tag -a`)로 만들고 메시지에 요약을 적습니다.
+
+## 새 버전 내기 (git flow)
+
+1. `develop`에서 `release/<버전>` 브랜치를 만들고 CHANGELOG.md·package.json `version`을 올립니다.
+2. `npm run verify`, `npm run e2e`, `npm run e2e:prod` 통과를 확인합니다.
+3. `release/<버전>`을 `master`와 `develop`에 병합하고 `master`에 `v<버전>` 태그를 붙입니다.
+4. `git push origin master develop --follow-tags` (이 저장소의 `.claude/settings.json`은 AI의 develop·master push를 막아 두었으므로 사람이 실행합니다).
+
+## 롤백
+
+- **코드로 되돌아가기**: `git checkout v0.2.0` → `npm ci` → `npm run build -- --base=/경로/` → dist를 다시 올립니다.
+- **배포본 바꾸기(라즈베리파이 등)**: 버전별 dist를 따로 보관하고 링크만 바꾸면 빌드 없이 즉시 되돌릴 수 있습니다. 절차는 [DEPLOY.md](DEPLOY.md)의 "라즈베리파이 메모".
+- **기록 호환**: v0.1.0~v1.0.0은 모두 저장 형식 버전 1이라 되돌려도 아이들의 진행 기록이 유지됩니다. 저장 형식을 바꾸는 버전은 CHANGELOG에 "저장 형식 변경"으로 표시하고, 롤백하면 새 형식 기록을 읽지 못할 수 있음을 적습니다.

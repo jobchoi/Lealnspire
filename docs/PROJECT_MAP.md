@@ -160,3 +160,37 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - `src/model/predictions.ts`: 2·5·7번 도전과 변형 코드의 엔진 실행으로 계산한 후보. `predictions.test.ts`에서 후보 유일성·정답 1개 검증.
 - `src/controller/PredictionController.ts`: 후보 선택·판정·재도전. GameController의 재생과 독립 메모리 ProgressRepository를 사용하며 정규 진행 저장은 변경하지 않음. `PredictionController.test.ts`에서 잠금·재생·저장 분리·화면 이탈 검증.
 - `src/view/pages/PredictionPage.tsx`, `PredictionPage.css` (렌더링 검증 `PredictionPage.test.tsx`): 월드 맵·후보 오버레이·고정 BlockTiles·결과. 완료한 해당 스테이지의 목록 버튼에서 진입, 돌아가면 목록. AppController가 진입 조건과 타이머 정리를 담당.
+
+### E2E 파일 (e2e/, 화면 계약은 helpers.ts)
+
+| 파일 | 시나리오 |
+|---|---|
+| `journeys.e2e.ts` | 처음 온 아이 1~8 완주, 기호 구분, 4번 고치기, 연타·상한·실행 중 조작·새로고침·중첩·키보드 |
+| `layout.e2e.ts` | 세 월드 + 본래 스테이지 4·8 × 3개 화면 크기 배치, 44px, 글자 잘림·쪼개짐 |
+| `fix.e2e.ts` | T15 실패 지점 고치기, T22 닫은 뒤 바로 편집 |
+| `hint.e2e.ts` | T16 2단계 힌트, 모든 힌트가 정답 순서를 말하지 않음 |
+| `loop.e2e.ts` | T18 반복 회차(중첩 포함) |
+| `undo.e2e.ts` | T19 되돌리기 1회 |
+| `privacy.e2e.ts` | T20 기록 안내·삭제(다른 키 보존) |
+| `predict.e2e.ts` | T17 예측 도전 |
+| `bonus.e2e.ts` | T21 보너스 잠금·풀이·이전 기록 호환(T23 완주 계약) |
+| `a11y.e2e.ts` | T24 대비 자동 계산, 버튼 이름, 맵 대체 설명, 동작 줄이기, 키보드 전체 흐름 |
+| `records.e2e.ts` | T25 망가진 기록·저장 차단·복원·최고 별 |
+| `production.prod.ts` | T27 배포 빌드(루트·/lealnspire/): 외부 요청·4xx 0, 기록 복원, 안내 페이지, 라이선스 파일 |
+
+### 설정·정적 파일·스크립트
+
+| 파일 | 역할 |
+|---|---|
+| `vite.config.ts` | Vite 설정(base 기본 `/`, 배포 시 `--base`) |
+| `playwright.config.ts` | 개발 서버 E2E(`npm run e2e`): desktop·phone·small-phone(@layout만) |
+| `playwright.prod.config.ts` | 배포 빌드 E2E(`npm run e2e:prod`): dist-e2e/root·subpath를 4173·4174에서 미리보기 |
+| `public/favicon.svg` | 자체 제작 아이콘 |
+| `public/guide.html` | 교사·보호자 안내 정적 페이지(docs/GUIDE.md와 핵심 문장 일치 테스트) |
+| `public/licenses/fonts.txt` | 글꼴 5종 OFL 원문(재배포 조건) |
+| `scripts/codex-run.sh` | Codex 실행·진행 기록, `scripts/progress-summary.sh` 진행판 요약 |
+| `scripts/setup.sh`, `setup.ps1` | 새 PC 환경 구성(T0b) |
+
+### 문서 (docs/)
+
+`TASKS.md`(작업 단일 출처), `NEXT_SESSION.md`(현재 상태), `WORK_HISTORY.md`(기록), `ROADMAP.md`(Claude+GPT 교차 기획 1·2), `GAME_DESIGN.md`, `CURRICULUM.md`, `ARCHITECTURE.md`, `GUIDE.md`(교사·보호자), `DEPLOY.md`(배포 절차), `ASSETS.md`(자산·라이선스), `RESUME_ELSEWHERE.md`(다른 PC에서 이어 가기), `handoff/`(Codex 지시서), `design/`(시안·QC 캡처), `playbook/`(오케스트레이션 기록), `progress/`(진행판 사본).

@@ -64,3 +64,6 @@
   .theme-train .palette-row .palette { gap: 4px; }
   .theme-train .palette-row .palette button { width: 60px; }
 }
+
+/* Keep keyboard focus distinct from selection and the failure marker in every world. */
+.play-page .workspace .block-tile:focus-visible { outline: 3px solid #2563eb; outline-offset: -3px; box-shadow: inset 0 0 0 6px white; }
