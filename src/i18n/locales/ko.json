@@ -195,7 +195,9 @@
     "incorrect": "예상과 달라요. 로봇이 간 길을 다시 보세요",
     "actual": "실제 위치: {row}번째 줄 {column}번째 칸, {direction}을 봐요",
     "retry": "다시 고르기",
-    "running": "로봇이 간 길을 따라가 보세요"
+    "running": "로봇이 간 길을 따라가 보세요",
+    "firstCheckOpen": "처음 검사: 앞이 열려 있었어요 → 안쪽을 건너뛰었어요.",
+    "firstCheckBlocked": "처음 검사: 앞이 막혀 있었어요 → 안쪽을 실행했어요."
   },
   "bonus": "보너스",
   "bonus1Title": "보너스 1: 큰 계단",
@@ -215,5 +217,18 @@
   "sensorClear": "앞이 열려 있어요",
   "skipped": "건너뜀",
   "variantLabel": "{number}/{total}번 맵",
-  "variantFailure": "{number}번 맵에서 {reason}"
+  "variantFailure": "{number}번 맵에서 {reason}",
+  "u22Title": "왼쪽일 수도 있어요",
+  "u22Goal": "이번엔 막히면 왼쪽으로 돌아 두 맵을 지나가요.",
+  "u22Hint1": "두 맵에서 길이 어느 쪽으로 꺾이는지 보세요.",
+  "u22Hint2": "막혔을 때 하는 일만 바꾸면 될까요, 검사하는 것도 바꿔야 할까요?",
+  "u23Title": "두 번 꺾는 길",
+  "u23Goal": "모퉁이가 두 번 있어도 같은 코드로 지나가요.",
+  "u23Hint1": "길이 꺾이는 곳을 모두 찾아보세요.",
+  "u23Hint2": "모퉁이가 하나일 때 쓴 방법을 그대로 쓰면, 몇 번 반복해야 할까요?",
+  "u24Title": "if는 계속 지켜보지 않아요",
+  "u24Goal": "미리 놓인 코드를 고쳐 두 맵을 지나가요.",
+  "u24Hint1": "처음 코드를 실행하면 어느 맵에서 실패하는지 보세요.",
+  "u24Hint2": "if는 언제 검사할까요? 벽이 나타나는 순간에도 검사하려면 if가 어디에 있어야 할까요?",
+  "unit2Congratulations": "2단원 완주!"
 }

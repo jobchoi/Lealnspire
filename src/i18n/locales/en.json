@@ -195,7 +195,9 @@
     "incorrect": "Not quite. Watch the robot's path again.",
     "actual": "It stopped at row {row}, column {column}, facing {direction}",
     "retry": "Choose again",
-    "running": "Follow the robot's path"
+    "running": "Follow the robot's path",
+    "firstCheckOpen": "First check: the path ahead was open → skipped the inside blocks.",
+    "firstCheckBlocked": "First check: the path ahead was blocked → ran the inside blocks."
   },
   "bonus": "Bonus",
   "bonus1Title": "Bonus 1: Big Stairs",
@@ -215,5 +217,18 @@
   "sensorClear": "The path ahead is clear",
   "skipped": "Skipped",
   "variantLabel": "Map {number}/{total}",
-  "variantFailure": "Map {number}: {reason}"
+  "variantFailure": "Map {number}: {reason}",
+  "u22Title": "It Might Be Left",
+  "u22Goal": "This time, turn left when blocked to get through both maps.",
+  "u22Hint1": "Look at which way the path bends on each map.",
+  "u22Hint2": "Do you only need to change what happens when blocked, or what you check too?",
+  "u23Title": "Two Turns",
+  "u23Goal": "Use the same code even when there are two corners.",
+  "u23Hint1": "Find every place where the path bends.",
+  "u23Hint2": "If you reuse your one-corner idea, how many times should it repeat?",
+  "u24Title": "if Doesn't Keep Watching",
+  "u24Goal": "Fix the code that's already there to get through both maps.",
+  "u24Hint1": "Run the starting code and see which map fails.",
+  "u24Hint2": "When does if check? Where should if be so it also checks when the wall appears?",
+  "unit2Congratulations": "Unit 2 complete!"
 }

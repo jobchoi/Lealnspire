@@ -20,11 +20,13 @@ const ifBlock = (page: Page) => page.locator('.palette').getByRole('button', { n
 const into = (g: Game) => g.press(g.action(/추가 대상으로 선택$|안에 넣기$/))
 const out = (g: Game) => g.press(g.action(/선택 해제$|넣기 해제$/))
 
-/** repeat 4 [ if 앞 막힘 [ 오른쪽으로 돌기 ], 앞으로 ] 를 사용자처럼 조립 */
-async function buildSolution(g: Game, page: Page) {
-  await g.add('N'); await g.select('1'); await g.press(g.action(/늘리기$/)); await into(g)
+/** repeat N [ if 앞 막힘 [ 돌기 ], 앞으로 ] 를 사용자처럼 조립(기본: 4번, 오른쪽) */
+async function buildSolution(g: Game, page: Page, count = 4, turn: 'L' | 'R' = 'R') {
+  await g.add('N'); await g.select('1')
+  for (let c = 3; c < count; c++) await g.press(g.action(/늘리기$/))
+  await into(g)
   await g.press(ifBlock(page))
-  await g.select('1.1'); await into(g); await g.add('R'); await out(g)
+  await g.select('1.1'); await into(g); await g.add(turn); await out(g)
   await g.select('1'); await into(g); await g.add('F'); await out(g)
 }
 
@@ -93,5 +95,49 @@ test.describe('2단원 조건 if', () => {
     const g = new Game(page)
     await g.fresh(); await g.start()
     await expect(ifBlock(page)).toHaveCount(0)
+  })
+
+  test('T39: 2단원을 처음부터 끝까지 — u2-1~u2-4를 풀고(u2-4는 미리 놓인 코드가 1번 맵에서 실패) "2단원 완주"', async ({ page }) => {
+    test.setTimeout(120_000)
+    const g = await openU21(page)
+    await g.speed('빠르게')
+    const solve = async (title: string, count: number, turn: 'L' | 'R') => {
+      await expect(page.getByRole('heading', { level: 1 })).toContainText(title)
+      await g.clear(); await buildSolution(g, page, count, turn)
+      return g.runToEnd()
+    }
+    await solve('막히면 돌아요', 4, 'R'); await g.press(g.dialog.getByRole('button', { name: '다음 스테이지' }))
+    await solve('왼쪽일 수도 있어요', 4, 'L'); await g.press(g.dialog.getByRole('button', { name: '다음 스테이지' }))
+    await solve('두 번 꺾는 길', 5, 'R'); await g.press(g.dialog.getByRole('button', { name: '다음 스테이지' }))
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('if는 계속 지켜보지 않아요')
+    expect(await g.blockCount(), '미리 놓인 코드: if·오른쪽·repeat·앞으로').toBe(4)
+    expect(await g.runToEnd(), '처음 한 번만 검사해서 1번 맵에서 부딪힘').toMatch(/1번 맵에서 .*부딪/)
+    await g.press(g.dialog.getByRole('button', { name: '닫기' }))
+    expect(await solve('if는 계속 지켜보지 않아요', 4, 'R')).toContain('2단원 완주')
+  })
+
+  test('T39: 조건 예측 도전 — u2-1을 깬 뒤 "if는 한 번만 검사한다"를 예측, 정답은 하나', async ({ page }) => {
+    const g = new Game(page)
+    await g.fresh()
+    await page.evaluate(v => {
+      const s = JSON.parse(v); s.stages['u2-1'] = { completed: true, bestStars: 3, lastProgram: [] }
+      localStorage.setItem('lealnspire.progress', JSON.stringify(s))
+    }, unit1Done)
+    await page.reload()
+    await g.press(g.button('스테이지 목록'))
+    const entry = page.locator('.stage-card', { hasText: '막히면 돌아요' }).locator('xpath=..').getByRole('button', { name: '예측 도전' })
+    await g.press(entry.or(page.getByRole('button', { name: '예측 도전' }).last()).first())
+    const choices = page.getByRole('button', { name: /^후보 [ABC]: / })
+    await expect(choices).toHaveCount(3)
+    const marks: string[] = []
+    for (let i = 0; i < 3; i++) {
+      await g.press(choices.nth(i))
+      const feedback = page.locator('.prediction-feedback')
+      await expect(feedback).toContainText(/예상과 (같아요|달라요)/, { timeout: 20_000 })
+      await expect(feedback, '검사 결과도 설명').toContainText(/검사|열려|막혀/)
+      marks.push((await feedback.innerText()).includes('같아요') ? 'O' : 'X')
+      if (i < 2) await g.press(g.button('다시 고르기'))
+    }
+    expect(marks.filter(m => m === 'O'), marks.join('')).toHaveLength(1)
   })
 })

@@ -207,3 +207,10 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 ### T38 조건 화면 [제안·잠정]
 
 기존 GameController는 variants가 있으면 runAll 결과를 맵 순서대로 재생하고 전체 성공 때만 별 3개를 저장합니다. EditorController/BlockTiles는 hasBody로 if·repeat 중첩을 표시·편집합니다. Board/TrainMap은 검사 칸의 테두리·무늬와 센서 대체 설명을 표시합니다. PlayPage에는 변형 미리 보기·검사 상태가 있으며 StageSelectPage는 2단원을 별도로 묶습니다. model/stages/index.ts의 unit2Stages에 U2-1이 있고, 정규 8개 완료 후 보너스와 독립적으로 열립니다.
+
+
+### T39 2단원 확장 [제안·잠정]
+
+- model/stages/index.ts: U2-2~U2-4, 지정된 두 변형 맵·초기 코드·정답. stages.test.ts에서 정답·U2-4 초기 실패·if 없는 상한 이하 코드의 상태 변환 전수 탐색 검증.
+- ProgressRepository.isUnlocked: 정규 8개 완료 뒤 2단원을 순차 개방. flow.test.ts에서 이어하기·다음·마지막 목록 복귀 검증.
+- model/predictions.ts: p-u2-1의 별도 단일 Stage와 엔진 기반 세 후보. PredictionController는 해당 Stage로 독립 재생하며 끝난 후 첫 검사 결과를 제공. PredictionPage와 ResultModal은 검사 설명·2단원 완주 문구를 locale에서 표시.

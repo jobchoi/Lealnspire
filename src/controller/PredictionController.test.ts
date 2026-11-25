@@ -38,3 +38,29 @@ it('rejects invalid candidates', () => {
   controller.choose(.5)
   expect(controller.getSnapshot().selected).toBeNull()
 })
+
+it('runs the conditional challenge on its single map, reveals the first check after playback and preserves progress', () => {
+  vi.useFakeTimers()
+  try {
+    const app = new AppController()
+    app.openPrediction('p-u2-1')
+    expect(app.getSnapshot().page).toBe('home')
+    app.repository.completeStage('u2-1', 3, [])
+    const before = app.progress
+    app.openPrediction('p-u2-1')
+    const controller = app.prediction!
+    expect(controller.game.stage.grid).toEqual(['S.#', '#.G'])
+    expect(controller.game.stage.variants).toBeUndefined()
+    expect(controller.firstCheck).toBeUndefined()
+    controller.choose(0)
+    expect(controller.firstCheck).toBeUndefined()
+    vi.runAllTimers()
+    expect(controller.correct).toBe(true)
+    expect(controller.game.frame).toMatchObject({ pos: { x: 1, y: 0 }, dir: 'E', event: 'bump' })
+    expect(controller.firstCheck).toBe(false)
+    expect(app.progress).toEqual(before)
+    controller.retry()
+    expect(controller.firstCheck).toBeUndefined()
+    controller.dispose()
+  } finally { vi.useRealTimers() }
+})

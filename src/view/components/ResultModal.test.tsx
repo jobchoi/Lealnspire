@@ -54,3 +54,12 @@ it('shows bonus completion only on a successful final bonus stage', () => {
     }
   }
 })
+
+it('shows unit 2 completion and the list action only at its successful final stage', () => {
+  for (const result of ['success', 'collision'] as const) for (const lastStage of [false, true]) {
+    const html = renderToString(<ResultModal unit2 result={result} stars={3} onRetry={noop} onClose={noop} onNext={noop} lastStage={lastStage} />)
+    expect(html.includes(t('unit2Congratulations'))).toBe(result === 'success' && lastStage)
+    expect(html).not.toContain(t('congratulations'))
+    if (result === 'success') expect(html).toContain(t(lastStage ? 'toList' : 'nextStage'))
+  }
+})

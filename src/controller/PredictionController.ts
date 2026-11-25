@@ -10,9 +10,13 @@ export class PredictionController extends Observable<{ selected: number | null }
     super({ selected: null })
     this.challenge = challenge
     const repository = new ProgressRepository()
-    const stage = stages.find(stage => stage.id === challenge.stageId)!
+    const stage = challenge.stage ?? stages.find(stage => stage.id === challenge.stageId)!
     repository.saveProgram(stage.id, challenge.program)
     this.game = new GameController(stage, repository, clock)
+  }
+  get firstCheck() {
+    if (!this.game.finished) return undefined
+    return this.game.getSnapshot().execution?.frames.find(frame => frame.check)?.check?.result
   }
   get correct() {
     const selected = this.state.selected

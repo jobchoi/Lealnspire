@@ -20,7 +20,7 @@ export function PredictionPage({ controller, onBack }: { controller: PredictionC
     <button type="button" onClick={onBack}>{t('prediction.back')}</button>
     <p className="prediction-prompt">{t('prediction.prompt')}</p>
     <div className="prediction-map">
-      <Board theme={theme} stage={stage} position={game.frame?.pos} direction={game.frame?.dir} bump={game.frame?.event === 'bump'} />
+      <Board check={game.frame?.check} theme={theme} stage={stage} position={game.frame?.pos} direction={game.frame?.dir} bump={game.frame?.event === 'bump'} />
       <svg className="prediction-markers" viewBox={train ? `0 0 ${(w+h)*40+48} ${(w+h)*20+120}` : `-8 -8 ${w*size+16} ${h*size+16}`} aria-hidden="true">
         {challenge.choices.map((choice, index) => {
           const point = train ? isometric(choice.pos.x, choice.pos.y, h) : { x: (choice.pos.x + .5)*size, y: (choice.pos.y + .5)*size }
@@ -31,6 +31,6 @@ export function PredictionPage({ controller, onBack }: { controller: PredictionC
     </div>
     <div className="prediction-code" aria-label={t('prediction.code')}><BlockTiles theme={theme} program={challenge.program} locked selectedId={null} targetId={null} activeBlockId={game.frame?.activeBlockId} loops={game.frame?.loops} onSelect={() => {}} /></div>
     <div className="prediction-choices">{challenge.choices.map((choice, index) => <button key={index} type="button" aria-label={label(index)} aria-pressed={selected === index} disabled={selected !== null} onClick={() => controller.choose(index)}>{'ABC'[index]} {theme.arrow(choice.dir)}</button>)}</div>
-    <div className="prediction-feedback" role="status">{game.finished ? <><p>{t(controller.correct ? 'prediction.correct' : 'prediction.incorrect')}</p><p>{t('prediction.actual', { row: game.frame!.pos.y + 1, column: game.frame!.pos.x + 1, direction: t(`directions.${game.frame!.dir}`) })}</p><button type="button" onClick={controller.retry}>{t('prediction.retry')}</button></> : <p>{selected !== null && playback.playing ? t('prediction.running') : '\u00a0'}</p>}</div>
+    <div className="prediction-feedback" role="status">{game.finished ? <><p>{t(controller.correct ? 'prediction.correct' : 'prediction.incorrect')}</p><p>{t('prediction.actual', { row: game.frame!.pos.y + 1, column: game.frame!.pos.x + 1, direction: t(`directions.${game.frame!.dir}`) })}</p>{controller.firstCheck !== undefined && <p>{t(controller.firstCheck ? 'prediction.firstCheckBlocked' : 'prediction.firstCheckOpen')}</p>}<button type="button" onClick={controller.retry}>{t('prediction.retry')}</button></> : <p>{selected !== null && playback.playing ? t('prediction.running') : '\u00a0'}</p>}</div>
   </section>
 }

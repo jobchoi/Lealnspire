@@ -34,7 +34,7 @@ export function ResultModal({ stageLabel, result, failureMessage, unit2, stars, 
       {stageLabel && <p>{stageLabel}</p>}
       <h2 id="result-title">{result === 'success' ? t('success') : (failureMessage ?? t(`failures.${result}`))}</h2>
       {result === 'success' && <p aria-label={t('stars', { count: stars })}>{t('stars', { count: stars })}</p>}
-      {result === 'success' && lastStage && !unit2 && <p>{t(bonusStage ? 'bonusCongratulations' : 'congratulations')}</p>}
+      {result === 'success' && lastStage && <p>{t(unit2 ? 'unit2Congratulations' : bonusStage ? 'bonusCongratulations' : 'congratulations')}</p>}
       <div className="playback-controls">
         {result !== 'success' && onFix && <button className="fix-button" type="button" onClick={() => { fixed.current = true; onFix() }} aria-label={t('fix')}><span className="control-symbol" aria-hidden="true"><Symbol name="fix" /></span><small>{t('fix')}</small></button>}
         {result === 'success' && onNext && <button type="button" onClick={onNext} aria-label={lastStage ? theme.buttonLabel('toList') : theme.buttonLabel('nextStage')} title={lastStage ? theme.buttonLabel('toList') : theme.buttonLabel('nextStage')}><span className="control-symbol" aria-hidden="true"><Symbol name={lastStage ? "stageList" : "nextStage"} /></span><small>{lastStage ? theme.buttonLabel('toList') : theme.buttonLabel('nextStage')}</small></button>}

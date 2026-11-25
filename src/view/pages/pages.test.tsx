@@ -8,7 +8,7 @@ import { HomePage, RecordDialog } from './HomePage'
 import { StageSelectPage } from './StageSelectPage'
 import { PlayPage } from './PlayPage'
 import { createProgressStore } from '../../model/ProgressRepository'
-import { stages, bonusStages, allStages, isLastStage } from '../../model/stages'
+import { stages, bonusStages, allStages, unit2Stages, isLastStage } from '../../model/stages'
 import { t, i18n } from '../../i18n/I18n'
 
 const noop = () => {}
@@ -22,20 +22,20 @@ describe('화면 렌더링', () => {
     expect(home()).toContain(t('continue'))
     for (const stage of stages) store.completeStage(stage.id, 3, [])
     expect(home()).toContain(t('continue'))
-    store.completeStage('u2-1', 3, [])
+    for (const stage of unit2Stages) store.completeStage(stage.id, 3, [])
     expect(home()).not.toContain(t('continue'))
   })
   it('정규 8개와 보너스 2개 카드, 잠김, 최고 별을 표시하고 이전 완료 시 다음 카드가 열린다', () => {
     const store = createProgressStore()
     const list = () => renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)
-    expect(list().match(/class="stage-card"/g)).toHaveLength(11)
-    expect(list().match(/disabled=""/g)).toHaveLength(10)
+    expect(list().match(/class="stage-card"/g)).toHaveLength(allStages.length)
+    expect(list().match(/disabled=""/g)).toHaveLength(allStages.length - 1)
     expect(list()).toContain(t('locked'))
     store.completeStage('1', 2, [])
-    expect(list().match(/disabled=""/g)).toHaveLength(9)
+    expect(list().match(/disabled=""/g)).toHaveLength(allStages.length - 2)
     expect(list()).toContain(t('bestStars', { count: 2 }))
     expect(list().match(/style="opacity:1"/g)).toHaveLength(2)
-    expect(list().match(/style="opacity:0.25"/g)).toHaveLength(31)
+    expect(list().match(/style="opacity:0.25"/g)).toHaveLength(allStages.length * 3 - 2)
   })
   it('저장 코드로 게임을 열고 힌트와 결과는 닫힌 상태로 시작한다', () => {
     const store = createProgressStore()

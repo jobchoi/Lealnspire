@@ -88,6 +88,7 @@ function unknownVersion(value: unknown): boolean {
 export function isUnlocked(progress: Progress, stageIndex: number): boolean {
   if (!Number.isInteger(stageIndex) || stageIndex < 0 || stageIndex >= stages.length) return false
   if (stages[stageIndex].variants) return unit1Stages.every(stage => progress.stages[stage.id]?.completed === true)
+    && (stages[stageIndex - 1]?.variants ? progress.stages[stages[stageIndex - 1].id]?.completed === true : true)
   return stageIndex === 0 || progress.stages[stages[stageIndex - 1].id]?.completed === true
 }
 

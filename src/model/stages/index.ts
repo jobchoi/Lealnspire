@@ -30,5 +30,25 @@ export const unit2Stages: Stage[] = [{
   startDir: 'E', maxBlocks: 6, starBlocks: 4,
   solution: [{ id: 'u2-repeat', type: 'repeat', count: 4, body: [{ id: 'u2-if', type: 'if', condition: 'blockedAhead', body: [{ id: 'u2-right', type: 'turnRight' }] }, { id: 'u2-forward', type: 'forward' }] }],
 }]
+// T39 [제안·잠정]: 센서는 유지하고 행동·반복 위치를 바꿔 보는 퍼즐.
+const conditionalLoop = (id: string, count: number, turn: 'turnLeft' | 'turnRight'): Block => ({
+  id: id + '-repeat', type: 'repeat', count, body: [
+    { id: id + '-if', type: 'if', condition: 'blockedAhead', body: [{ id: id + '-turn', type: turn }] },
+    { id: id + '-forward', type: 'forward' },
+  ],
+})
+unit2Stages.push(
+  { id: 'u2-2', world: 'sketchbook', title: 'u22Title', goal: 'u22Goal', hints: { keys: ['u22Hint1', 'u22Hint2'], highlight: 'walls' },
+    grid: ['##G#', '##.#', 'S..#'], variants: [['##G#', '##.#', 'S..#'], ['#G##', '#.##', '#.##', 'S.##']],
+    startDir: 'E', maxBlocks: 6, starBlocks: 4, solution: [conditionalLoop('u22', 4, 'turnLeft')] },
+  { id: 'u2-3', world: 'train', title: 'u23Title', goal: 'u23Goal', hints: { keys: ['u23Hint1', 'u23Hint2'], highlight: 'walls' },
+    grid: ['S..#', '##.#', '#G.#'], variants: [['S..#', '##.#', '#G.#'], ['S.#', '#.#', '#.#', 'G.#']],
+    startDir: 'E', maxBlocks: 6, starBlocks: 4, solution: [conditionalLoop('u23', 5, 'turnRight')] },
+  { id: 'u2-4', world: 'handheld', title: 'u24Title', goal: 'u24Goal', hints: { keys: ['u24Hint1', 'u24Hint2'], highlight: 'start' },
+    grid: ['S...#', '###G#'], variants: [['S...#', '###G#'], ['S###', '.###', '.###', 'G###']],
+    startDir: 'E', maxBlocks: 6, starBlocks: 4,
+    initialProgram: [{ id: 'u24-initial-if', type: 'if', condition: 'blockedAhead', body: [{ id: 'u24-initial-turn', type: 'turnRight' }] }, { id: 'u24-initial-repeat', type: 'repeat', count: 4, body: [{ id: 'u24-initial-forward', type: 'forward' }] }],
+    solution: [conditionalLoop('u24', 4, 'turnRight')] },
+)
 export const allStages = [...stages, ...bonusStages, ...unit2Stages]
 export const isLastStage = (index: number) => index === stages.length - 1 || index === stages.length + bonusStages.length - 1 || index === allStages.length - 1
