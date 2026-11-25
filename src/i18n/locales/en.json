@@ -268,6 +268,7 @@
   "u33Hint1": "When you run the starting code, how far does the robot get?",
   "u33Hint2": "Can the blocks inside while ever change whether the path ahead is clear?",
   "functions": {
+    "addMain": "Add: main end",
     "views": "Workspace views",
     "showMain": "Show main",
     "show": { "star": "Show star function", "moon": "Show moon function" },

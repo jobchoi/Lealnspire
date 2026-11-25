@@ -26,6 +26,10 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
   if (panelChoice.context !== viewContext) setPanelChoice({ context: viewContext, tab: preferredPanel })
   const chosenPanel = panelChoice.context === viewContext ? panelChoice.tab : preferredPanel
   const visiblePanel = controller.functions.some(fn => fn.id === chosenPanel) ? chosenPanel : undefined
+  const addBlock = (type: BlockType, fn?: string) => {
+    controller.add(type, fn)
+    if (controller.getSnapshot().addedId) setPanelChoice({ context: '', tab: controller.functionId })
+  }
   const showPanel = (tab?: string) => setPanelChoice({ context: viewContext, tab })
   const { selectedPath, selectedBlock, targetPath, total, limit, atLimit, siblings } = controller
   useEffect(() => {
@@ -46,23 +50,7 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
   const targetBlock = targetPath ? blockAt(editing, targetPath) : undefined
   const selectedFunction = selectedBlock?.type === 'call' ? controller.functions.find(fn => selectedBlock.type === 'call' && fn.id === selectedBlock.fn) : undefined
   const label = (action: string) => t('action', { order: blockOrder(editing, selectedPath!), name: selectedFunction ? t(`functions.call.${selectedFunction.icon}`) : theme.blockName(selectedBlock!.type), action })
-  return <section ref={editor} className="editor" aria-label={t('editor')}>
-    <h2>{t('editor')}</h2>
-    <div className="block-budget"><p aria-live="polite">{t('total', { count: total, max: limit })}</p>
-    <span className="slot-dots" aria-hidden="true">{Array.from({ length: MAX_PROGRAM_BLOCKS }, (_, i) => <span key={i} className={i < total ? 'filled' : i >= limit ? 'unavailable' : ''}>{i < total ? '●' : '○'}</span>)}</span></div>
-    <p className="insertion-status" aria-live="polite">{targetPath ? t(controller.targetElse ? 'targetElse' : targetBlock?.type === 'if' ? 'targetIf' : targetBlock?.type === 'while' ? 'targetWhile' : 'target', { order: blockOrder(editing, targetPath) }) : controller.functionTarget && targetFunction ? t(`functions.adding.${targetFunction.icon}`) : t('root')}</p>
-    <div className="palette-row"><div className="palette" role="group" aria-label={t('palette')}>{(palette ?? (conditions ? [...types, 'if' as const] : types)).filter(type => type !== 'call').map(type => <button type="button" key={type} className={theme.blockClass(type)} aria-label={theme.blockName(type)} title={theme.blockName(type)} disabled={locked || atLimit} onClick={() => controller.add(type)}><span className="block-symbol" aria-hidden="true">{theme.blockSymbol(type)}</span>{conditions && theme.world === 'handheld' && type === 'repeat' && <span className="handheld-button-letter" aria-hidden="true">B</span>}{type === 'while' && <span className="sensor-icon" aria-hidden="true"><Symbol name="clearAhead" /></span>}{type === 'if' && <span className="sensor-icon" aria-hidden="true"><Symbol name="blockedAhead" /></span>}<small>{type === 'while' ? glossary.while.keyword : type === 'if' ? glossary.if.keyword : theme.paletteName?.(type) ?? theme.blockName(type)}</small></button>)}{functionsEnabled && controller.functions.map(fn => <button type="button" key={fn.id} className="block-call" aria-label={t(`functions.call.${fn.icon}`)} disabled={locked || atLimit || controller.addingToFunction} title={controller.addingToFunction ? t('functions.noNestedCalls') : t(`functions.call.${fn.icon}`)} onClick={() => controller.add('call', fn.id)}><span aria-hidden="true">{fn.icon === 'star' ? '★' : '☾'}()</span></button>)}</div><button type="button" className="undo-button" aria-label={t('undo')} title={t('undo')} disabled={locked || !controller.canUndo} onClick={controller.undo}><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M9 4 3 10l6 6M3 10h11a6 6 0 0 1 0 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg></button></div>
-    {atLimit && <p role="status">{t('limit')}</p>}
-    {functionsEnabled && <div className="function-actions"><button disabled={locked || controller.functions.length >= 2} onClick={controller.createFunction}>{t('functions.create')}</button><button disabled={locked} aria-pressed={!controller.addingToFunction && !targetId} onClick={() => { controller.chooseFunction(); showPanel() }}>{t('root')}</button></div>}
-    {functionsEnabled && controller.addingToFunction && <p className="function-notice" role="status">{t('functions.noNestedCalls')}</p>}
-    {functionsEnabled && <div className="function-tabs" role="group" aria-label={t('functions.views')}>
-      <button type="button" aria-pressed={!visiblePanel} onClick={() => showPanel()}>{t('functions.showMain')}</button>
-      {controller.functions.map(fn => <button type="button" key={fn.id} aria-pressed={visiblePanel === fn.id} onClick={() => showPanel(fn.id)}>{t(`functions.show.${fn.icon}`)}</button>)}
-    </div>}
-    <div className="program-panels" data-panel={visiblePanel ? 'body' : 'main'}><div className="main-panel">
-    <h3>{t('workspace')}</h3>
-    <div className={`workspace-shell${selectedBlock ? ' has-selection' : ''}`}>
-    {selectedBlock && <div className="tile-toolbar" role="group" aria-label={t('tools')}>
+  const toolbar = selectedBlock ? <div className="tile-toolbar" role="group" aria-label={t('tools')}>
       {selectedBlock && selectedPath ? <>
         <button disabled={locked || selectedPath.at(-1) === 0} aria-label={label(t('before'))} onClick={() => controller.move('up')}>◀</button>
         <button disabled={locked || selectedPath.at(-1) === siblings!.length - 1} aria-label={label(t('after'))} onClick={() => controller.move('down')}>▶</button>
@@ -79,7 +67,25 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
           <button disabled={locked} aria-pressed={targetId === selectedId && !controller.targetElse} aria-label={label(targetId === selectedId ? t('deselect') : t('select'))} onClick={() => controller.toggleTarget()}><span aria-hidden="true"><Symbol name="repeat" /></span></button>
         </>}
       </> : <small>{t('chooseTile')}</small>}
-    </div>}
+    </div> : null
+  return <section ref={editor} className="editor" aria-label={t('editor')}>
+    <h2>{t('editor')}</h2>
+    <div className="block-budget"><p aria-live="polite">{t('total', { count: total, max: limit })}</p>
+    <span className="slot-dots" aria-hidden="true">{Array.from({ length: MAX_PROGRAM_BLOCKS }, (_, i) => <span key={i} className={i < total ? 'filled' : i >= limit ? 'unavailable' : ''}>{i < total ? '●' : '○'}</span>)}</span>{functionsEnabled && atLimit && <span className="function-limit" role="status">{t('limit')}</span>}</div>
+    <p className="insertion-status" aria-live="polite">{targetPath ? t(controller.targetElse ? 'targetElse' : targetBlock?.type === 'if' ? 'targetIf' : targetBlock?.type === 'while' ? 'targetWhile' : 'target', { order: blockOrder(editing, targetPath) }) : controller.functionTarget && targetFunction ? t(`functions.adding.${targetFunction.icon}`) : t('root')}</p>
+    <div className="palette-row"><div className="palette" role="group" aria-label={t('palette')}>{(palette ?? (conditions ? [...types, 'if' as const] : types)).filter(type => type !== 'call').map(type => <button type="button" key={type} className={theme.blockClass(type)} aria-label={theme.blockName(type)} title={theme.blockName(type)} disabled={locked || atLimit} onClick={() => addBlock(type)}><span className="block-symbol" aria-hidden="true">{theme.blockSymbol(type)}</span>{conditions && theme.world === 'handheld' && type === 'repeat' && <span className="handheld-button-letter" aria-hidden="true">B</span>}{type === 'while' && <span className="sensor-icon" aria-hidden="true"><Symbol name="clearAhead" /></span>}{type === 'if' && <span className="sensor-icon" aria-hidden="true"><Symbol name="blockedAhead" /></span>}<small>{type === 'while' ? glossary.while.keyword : type === 'if' ? glossary.if.keyword : theme.paletteName?.(type) ?? theme.blockName(type)}</small></button>)}{functionsEnabled && controller.functions.map(fn => <button type="button" key={fn.id} className="block-call" aria-label={t(`functions.call.${fn.icon}`)} disabled={locked || atLimit || controller.addingToFunction} title={controller.addingToFunction ? t('functions.noNestedCalls') : t(`functions.call.${fn.icon}`)} onClick={() => addBlock('call', fn.id)}><span aria-hidden="true"><Symbol name={fn.icon} />()</span></button>)}</div><button type="button" className="undo-button" aria-label={t('undo')} title={t('undo')} disabled={locked || !controller.canUndo} onClick={controller.undo}><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M9 4 3 10l6 6M3 10h11a6 6 0 0 1 0 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg></button></div>
+    {atLimit && !functionsEnabled && <p role="status">{t('limit')}</p>}
+    {functionsEnabled && <div className="function-navigation"><div className="function-actions"><button disabled={locked || controller.functions.length >= 2} onClick={controller.createFunction}>{t('functions.create')}</button><button disabled={locked} aria-pressed={!controller.addingToFunction && !targetId} onClick={() => { controller.chooseFunction(); showPanel() }}>{t('functions.addMain')}</button></div>
+    {controller.addingToFunction && <p className="function-notice" role="status">{t('functions.noNestedCalls')}</p>}
+    <div className="function-tabs" role="group" aria-label={t('functions.views')}>
+      <button type="button" aria-pressed={!visiblePanel} onClick={() => showPanel()}>{t('functions.showMain')}</button>
+      {controller.functions.map(fn => <button type="button" key={fn.id} aria-pressed={visiblePanel === fn.id} onClick={() => showPanel(fn.id)}>{t(`functions.show.${fn.icon}`)}</button>)}
+    </div></div>}
+    {functionsEnabled && <div className="function-tools">{toolbar}</div>}
+    <div className="program-panels" data-panel={visiblePanel ? 'body' : 'main'}><div className="main-panel">
+    <h3>{t('workspace')}</h3>
+    <div className={`workspace-shell${!functionsEnabled && selectedBlock ? ' has-selection' : ''}`}>
+    {!functionsEnabled && toolbar}
     <div className="workspace" ref={workspace} role="region" aria-label={t('workspace')} tabIndex={0} onClick={event => {
       if (!locked && !(event.target as HTMLElement).closest('button')) controller.clear()
     }}>
@@ -89,7 +95,7 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
     </div></div>
     {functionsEnabled && <section className="function-panel" aria-label={t('functions.panel')}>
       {controller.functions.map(fn => <article key={fn.id} className={`function-card${call?.fn === fn.id ? ' function-active' : ''}${controller.functionTarget && controller.functionId === fn.id ? ' function-target' : ''}`} data-function-id={fn.id} data-visible={visiblePanel === fn.id}>
-        <header><strong><span className="concept-keyword">{glossary.function.keyword}</span> <span aria-hidden="true">{fn.icon === 'star' ? '★' : '☾'}</span></strong>{call?.fn === fn.id && <span role="status">{t('functions.running')}</span>}</header>
+        <header><strong><span className="concept-keyword">{glossary.function.keyword}</span> <span aria-hidden="true"><Symbol name={fn.icon} /></span></strong>{call?.fn === fn.id && <span role="status">{t('functions.running')}</span>}</header>
         <div className="function-card-actions"><button disabled={locked} aria-pressed={controller.functionTarget && controller.functionId === fn.id} aria-label={t(`functions.target.${fn.icon}`)} onClick={() => { controller.chooseFunction(fn.id); setPanelChoice({ context: '', tab: fn.id }) }}>{t(`functions.target.${fn.icon}`)}</button>{controller.functionTarget && controller.functionId === fn.id && <button disabled={locked} aria-label={t(`functions.stop.${fn.icon}`)} onClick={() => { controller.chooseFunction(); showPanel() }}>{t(`functions.stop.${fn.icon}`)}</button>}<button disabled={locked} aria-label={t(`functions.remove.${fn.icon}`)} title={t('functions.deleteNotice')} onClick={() => controller.removeFunction(fn.id)}>✕</button></div>
         <p className="function-delete-notice">{t('functions.deleteNotice')}</p>
         <div className="function-body workspace" role="group" aria-label={t(`functions.body.${fn.icon}`)} tabIndex={0}>

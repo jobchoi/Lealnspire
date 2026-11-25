@@ -2,7 +2,7 @@
 
 > 이 파일은 작업이 끝날 때마다 덮어씁니다. 작업 목록은 [TASKS.md](TASKS.md), 과거 기록은 [WORK_HISTORY.md](WORK_HISTORY.md)에 있습니다.
 
-마지막 갱신: 2026-11-25 · 작업 브랜치 `feature/T44-functions` · 버전 **v1.4.0**
+마지막 갱신: 2026-11-25 · 작업 브랜치 `feature/T46-functions-stabilize` · 버전 **v1.4.1**
 
 ## 시작하는 법
 
@@ -25,19 +25,19 @@
 
 | 항목 | 결과 |
 |---|---|
-| `npm run verify` | 통과(테스트 250개) |
-| `npm run e2e` | 163개 통과, 4개 건너뜀 — 2회 연속 |
+| `npm run verify` | 통과(테스트 252개) |
+| `npm run e2e` | 191개 통과 |
 | `npm run e2e:prod` | 4개 통과 |
 | GitHub Actions | 확인 못 함(`gh` 없음) |
 | 알려진 제한 | 실제 모바일 기기·사파리·파이어폭스 미검증, 1단원 결과 창 별이 빈 테두리, 예측 후보 라벨이 로봇을 가림, if 몸체 사이 끌어 옮기기 없음(삭제 후 다시 놓기) |
 
 ## 병합·태그
 
-- 태그 `v0.1.0`·`v0.2.0`·`v1.0.0`·`v1.1.0`·`v1.2.0`·`v1.3.0`·`v1.3.1`·`v1.4.0` 원격에 있음. 로컬 develop·master·release/1.1.0은 v1.1.0과 그 뒤 문서 커밋까지 준비
-- **develop·master push는 사용자가 실행**(`.claude/settings.json`이 AI 금지). 2026-11-25 기준 원격 develop·master는 아직 옛 상태(Android 코드). 명령: `git push origin develop master release/1.0.0 release/1.1.0 release/1.2.0 release/1.3.0 release/1.3.1 release/1.4.0`
+- 태그 `v0.1.0`·`v0.2.0`·`v1.0.0`·`v1.1.0`·`v1.2.0`·`v1.3.0`·`v1.3.1`·`v1.4.0`·`v1.4.1` 원격에 있음. 로컬 develop·master·release/1.1.0은 v1.1.0과 그 뒤 문서 커밋까지 준비
+- **develop·master push는 사용자가 실행**(`.claude/settings.json`이 AI 금지). 2026-11-25 기준 원격 develop·master는 아직 옛 상태(Android 코드). 명령: `git push origin develop master release/1.0.0 release/1.1.0 release/1.2.0 release/1.3.0 release/1.3.1 release/1.4.0 release/1.4.1`
 
 ## 다음 작업
 
-1. 함수 단원 교차 검토·안정화 → 변수(T46·T47) → 논리 → 매개변수 …(ROADMAP 라운드 3, TASKS T41~T57)
+1. 변수(T47·T48) → 논리 → 매개변수 → 반환값 → 이벤트 → 리스트(ROADMAP 라운드 3)(ROADMAP 라운드 3, TASKS T41~T57)
 2. 사소한 다듬기: 1단원 결과 창 별 채우기, 예측 후보 라벨 위치
 3. 사용자와 함께 논의: 연령 구분 필요 여부, 별 기준 확정, 실제 배포 시점(라즈베리파이)

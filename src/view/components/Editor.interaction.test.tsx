@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react'
 import { beforeEach, expect, it, vi } from 'vitest'
-import type { Program } from '../../model/types'
+import { EditorController } from '../../controller/EditorController'
+import type { ProgramDocument, Program } from '../../model/types'
 
 // Node 환경에서 훅 상태를 유지하며 편집 이벤트와 재렌더링을 검사한다.
 const hooks = vi.hoisted(() => ({ values: [] as unknown[], cursor: 0 }))
@@ -72,4 +73,44 @@ it('실행 중에는 타일 선택과 편집을 차단한다', () => {
   expect((hooks.values[0] as import('../../controller/EditorController').EditorController).getSnapshot().selectedId).toBeNull()
   ui.click('앞으로')
   expect(ui.program()).toHaveLength(1)
+})
+
+it('함수 일반 타일 다음 추가는 main 탭에, 반복 몸체 추가는 함수 탭에 표시한다', () => {
+  let doc: ProgramDocument = { main: [], functions: [{ id: 'moon', icon: 'moon', body: [{ id: 'plain', type: 'forward' }, { id: 'repeat', type: 'repeat', count: 2, body: [] }] }] }
+  const controller = new EditorController()
+  let tree: Node[] = []
+  const render = () => {
+    controller.configureDocument(doc, next => { doc = next }, false)
+    hooks.cursor = 0
+    tree = nodes(Editor({ program: doc.main, onChange: main => { doc = { ...doc, main } }, controller, functionsEnabled: true }))
+    // React schedules a second render when the preferred panel context changes.
+    hooks.cursor = 0
+    tree = nodes(Editor({ program: doc.main, onChange: main => { doc = { ...doc, main } }, controller, functionsEnabled: true }))
+  }
+  const click = (name: string) => {
+    const button = tree.find(n => n.type === 'button' && n.props['aria-label'] === name)!
+    expect(button).toBeDefined()
+    ;(button.props.onClick as () => void)()
+    render()
+  }
+  const panel = () => tree.find(n => n.props.className === 'program-panels')!.props['data-panel']
+  render()
+  controller.selectFunctionBlock('moon', 'plain'); render()
+  expect(panel()).toBe('body')
+  click('앞으로')
+  expect(doc.main).toHaveLength(1)
+  expect(doc.functions[0].body).toHaveLength(2)
+  expect(panel()).toBe('main')
+  controller.selectFunctionBlock('moon', 'repeat'); render()
+  click('2번 N번 반복 반복 횟수 늘리기')
+  expect(doc.functions[0].body[1]).toMatchObject({ count: 3 })
+  click('2번 N번 반복 반복 횟수 줄이기')
+  click('2번 N번 반복 안에 넣기')
+  click('앞으로')
+  expect(doc.functions[0].body[1]).toMatchObject({ count: 2, body: [{ type: 'forward' }] })
+  expect(panel()).toBe('body')
+  click('2번 N번 반복 선택 해제')
+  click('왼쪽으로 돌기')
+  expect(doc.main).toHaveLength(2)
+  expect(panel()).toBe('main')
 })

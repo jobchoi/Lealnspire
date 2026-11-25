@@ -621,3 +621,64 @@ button small { display: block; font-size: .75rem; }
  .functions-page .function-card header { min-height:16px; line-height:16px; }
  .functions-page .function-notice { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
 }
+
+/* Selection tools stay outside the compact main/function tabs. */
+.functions-page .function-tools { position:relative; min-height:54px; flex-shrink:0; }
+.functions-page .function-tools > .tile-toolbar { position:static; width:100%; }
+.functions-page .block-call > span { display:flex; align-items:center; justify-content:center; }
+.functions-page .function-card header .theme-symbol { width:20px; height:20px; vertical-align:middle; }
+
+.functions-page .block-call .block-symbol { display:flex; align-items:center; justify-content:center; }
+.functions-page .block-call .theme-symbol { flex-shrink:0; width:24px; height:24px; }
+
+/* Budget compact function navigation and map artwork within the viewport.
+   Only the tile workspaces scroll; card controls stay above their bodies. */
+@media(max-width:700px) {
+ .play-page.functions-page .map-panel .board {
+  min-width:0; min-height:0; width:min(100%,var(--mobile-board-width));
+ }
+ .functions-page .function-navigation { display:flex; gap:4px; align-items:stretch; }
+ .functions-page .function-actions,.functions-page .function-tabs { flex:1; min-width:0; }
+ .functions-page .function-actions button,.functions-page .function-tabs button {
+  flex:1; min-width:44px; min-height:44px; padding:2px; font-size:11px; line-height:14px;
+ }
+ .functions-page .function-tools { min-height:0; }
+ .functions-page .function-tools:empty { display:none; }
+ .functions-page .function-tools .tile-toolbar { min-height:44px; padding:0; }
+ .functions-page .function-tools .tile-toolbar button { min-height:44px; height:44px; flex-basis:44px; min-width:44px; }
+ .functions-page .function-card > header {
+  position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%);
+ }
+ .functions-page .function-card-actions { flex-shrink:0; }
+ .functions-page .function-delete-notice { margin:0; }
+ .functions-page .function-body.workspace { padding:5px; }
+}
+@media(max-width:700px) and (max-height:590px) {
+ .play-page.functions-page .game-layout { grid-template-rows:48px minmax(0,1fr) 64px; }
+ .play-page.functions-page .map-panel .board { height:48px; max-height:48px; }
+ .play-page.functions-page .palette-row .palette { height:44px; grid-template-rows:44px; }
+ .play-page.functions-page .palette-row .palette button { height:44px; }
+}
+
+/* T46 QC: keep map cells legible and spend compact space on editable tiles. */
+.functions-page .block-call .block-symbol { white-space:nowrap; flex-wrap:nowrap; gap:0; }
+@media(max-width:700px) {
+ .play-page.functions-page .game-layout { grid-template-rows:120px minmax(0,1fr) 64px; }
+ .play-page.functions-page .map-panel .board { height:120px; min-height:120px; max-height:120px; }
+ .play-page.functions-page .workspace .block-call .block-symbol { font:20px/24px monospace; }
+ .play-page.functions-page .workspace .block-call .theme-symbol { width:22px; height:22px; }
+ .functions-page .function-actions { flex:1.4; }
+ .functions-page .function-actions button { white-space:nowrap; font-size:10px; }
+ .functions-page .function-actions button:last-child { flex:2; }
+ .functions-page .block-budget:has(.function-limit) .slot-dots { display:none; }
+ .functions-page .function-limit { flex:1; font-size:10px; line-height:14px; }
+ .functions-page .block-budget { gap:4px; }
+ .functions-page .slot-dots { gap:1px; font-size:10px; }
+}
+
+@media(max-width:700px) and (max-height:590px) {
+ .play-page.functions-page .stage-goal { font-size:14px; line-height:20px; }
+ .play-page.functions-page .palette-row .palette { height:44px; grid-template-rows:44px; }
+ .play-page.functions-page .palette-row .palette button { height:44px; }
+ .play-page.functions-page .editor { gap:2px; }
+}

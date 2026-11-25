@@ -121,10 +121,14 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
     if (type === 'call' && this.addingToFunction) return
     const block = new FunctionProgram(this.doc).create(type, fn)
     if (type === 'call' && !this.functions.length) return
-    this.update({ ...this.state, addedId: block.id })
     const functionId = this.addingToFunction ? this.functionId : undefined
     const program = functionId ? this.editProgram : this.program
-    this.change(new ProgramModel(program).add(block, this.targetPath ? [...this.targetPath, ...(this.targetElse ? [-1] : [])] : []).toBlocks(), functionId ?? null)
+    const targetPath = this.targetPath
+    const leavingFunction = !!this.functionId && !functionId
+    this.functionId = functionId
+    if (!functionId) this.functionTarget = false
+    this.update({ selectedId: leavingFunction ? null : this.state.selectedId, targetId: leavingFunction ? null : this.state.targetId, addedId: block.id })
+    this.change(new ProgramModel(program).add(block, targetPath ? [...targetPath, ...(this.targetElse ? [-1] : [])] : []).toBlocks(), functionId ?? null)
   }
   move = (direction: 'up' | 'down') => { if (this.selectedPath && this.prepareEdit()) this.change(new ProgramModel(this.editProgram).move(this.selectedPath, direction).toBlocks()) }
   remove = () => { if (this.selectedPath && this.prepareEdit()) this.change(new ProgramModel(this.editProgram).remove(this.selectedPath).toBlocks()) }

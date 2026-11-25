@@ -19,17 +19,23 @@ describe('스테이지 정답', () => {
     })
   }
   it('모든 스테이지에 별 기준보다 짧은 기본 명령 정답이 없다', () => {
-    const started = performance.now()
+    let tested = 0
+    let expected = 0
     const commands = ['forward', 'turnLeft', 'turnRight'] as const
     for (const stage of stages) {
+      // All three-command sequences of lengths 0 through starBlocks - 1.
+      expected += (3 ** stage.starBlocks - 1) / 2
       const visit = (program: Program): void => {
+        tested++
         expect(run(stage, program).result).not.toBe('success')
         if (program.length + 1 >= stage.starBlocks) return
         for (const type of commands) visit([...program, { id: `plain-${program.length}`, type }])
       }
       visit([])
     }
-    expect(performance.now() - started).toBeLessThan(1000)
+    // Exact coverage plus a fixed work budget, independent of machine/load.
+    expect(tested).toBe(expected)
+    expect(tested).toBeLessThanOrEqual(2408)
   })
   it('4번은 명령 하나를 고쳐 성공한다', () => {
     const stage = stages[3]
@@ -59,7 +65,6 @@ it('provides two translated hints for every stage and highlights original map ce
 
 for (const stage of bonusStages) {
   it(`${stage.id}: two solutions fit, all open cells are reachable, and no plain program fits`, () => {
-    const started = performance.now()
     expect(run(stage, stage.solution).result).toBe('success')
     expect(countBlocks(stage.solution)).toBeLessThanOrEqual(stage.starBlocks)
     const alternative: Program = structuredClone(stage.solution)
@@ -74,13 +79,18 @@ for (const stage of bonusStages) {
     expect(stage.grid.length).toBeLessThanOrEqual(6)
     expect(stage.grid[0].length).toBeLessThanOrEqual(6)
     for (const key of stage.hints.keys) expect(t(key)).not.toBe(key)
+    let tested = 0
     const visit = (program: Program): void => {
+      tested++
       if (run(stage, program).result === 'success') throw new Error(`plain shortcut: ${JSON.stringify(program)}`)
       if (program.length === stage.maxBlocks) return
       for (const type of ['forward', 'turnLeft', 'turnRight'] as const) visit([...program, { id: `plain-${program.length}`, type }])
     }
     visit([])
-    expect(performance.now() - started).toBeLessThan(1000)
+    // Include every length from zero through maxBlocks: sum(3 ** length).
+    // The fixed budget replaces a flaky wall-clock limit on slower/busy PCs.
+    expect(tested).toBe((3 ** (stage.maxBlocks! + 1) - 1) / 2)
+    expect(tested).toBeLessThanOrEqual(9841)
   })
 }
 

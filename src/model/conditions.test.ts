@@ -68,7 +68,6 @@ it('requires every variant and reports the first failed variant and cause', () =
 })
 
 it('has no if-free shortcut with at most four blocks and repeat nesting up to two', () => {
-  const started = performance.now()
   // Enumerate ordered trees by exact node count, including empty repeat bodies.
   function programs(size: number, depth: number): Block[][] {
     if (size === 0) return [[]]
@@ -82,14 +81,22 @@ it('has no if-free shortcut with at most four blocks and repeat nesting up to tw
     }
     return result
   }
+  // For exact size n: three primitive heads, or nine repeat counts times
+  // every body/tail split; at depth two only primitive heads are allowed.
+  // These independent counts include empty bodies and the empty program.
+  const expectedBySize = [1, 12, 252, 5859, 138105]
+  const testedBySize = [0, 0, 0, 0, 0]
   let tested = 0
   for (let size = 0; size <= 4; size++) for (const program of programs(size, 0)) {
     if (run(puzzle, program).result === 'success' && run({ ...puzzle, grid: puzzle.variants![1] }, program).result === 'success')
       throw new Error(`Shortcut: ${JSON.stringify(program)}`)
     tested++
+    testedBySize[size]++
   }
   expect(tested).toBeGreaterThan(1000)
-  expect(performance.now() - started).toBeLessThan(1000)
+  // Bound deterministic work rather than wall time under parallel test load.
+  expect(testedBySize).toEqual(expectedBySize)
+  expect(tested).toBeLessThanOrEqual(144229)
 })
 
 it('edits and clones mixed child lists with fresh IDs and independent ownership', () => {

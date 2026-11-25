@@ -71,6 +71,23 @@ test.describe('4단원 함수', () => {
     await page.screenshot({ path: `e2e-results/screens/${info.project.name}-unit4-u41.png` })
     await g.noHorizontalScroll()
     expect(await page.evaluate(() => window.scrollY)).toBe(0)
+    // 맵이 알아볼 수 있는 크기(작은 폰에서도 높이 120px 이상)
+    expect((await g.board.boundingBox())!.height, '맵 높이 120px 이상').toBeGreaterThanOrEqual(120)
+    // 호출 타일 글자 '()'가 별 그림과 한 줄(쪼개지지 않음)
+    // 순서 번호는 빼고 '(' ')' 글자만 잰다
+    const callSplit = await g.workspace.getByRole('button', { name: /별 함수/ }).filter({ visible: true }).first().evaluate(e => {
+      const rows = new Set<number>()
+      const walker = document.createTreeWalker(e, NodeFilter.SHOW_TEXT)
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        const text = n.textContent ?? ''
+        for (let i = 0; i < text.length; i++) if (text[i] === '(' || text[i] === ')') {
+          const r = document.createRange(); r.setStart(n, i); r.setEnd(n, i + 1)
+          const box = r.getBoundingClientRect(); if (box.width) rows.add(Math.round(box.top / 6))
+        }
+      }
+      return rows.size
+    })
+    expect(callSplit, "호출 타일의 '()'가 두 줄로 쪼개지지 않음").toBeLessThanOrEqual(1)
     for (const [name, l] of [['맵', g.board], ['팔레트', page.locator('.palette')], ['실행 버튼', g.runButton]] as const)
       expect(await g.inView(l), `${name} 화면 안`).toBe(true)
     const small = await page.locator('button:visible').evaluateAll(es => es.map(e => [e.getAttribute('aria-label') ?? e.textContent?.trim(), Math.round(e.getBoundingClientRect().width), Math.round(e.getBoundingClientRect().height)] as const).filter(([, w, h]) => w < 44 || h < 44))
@@ -85,5 +102,26 @@ test.describe('4단원 함수', () => {
     }
     const mainFirst = g.workspace.getByRole('button', { name: /^1번 / }).filter({ visible: true }).first()
     expect(await g.inView(mainFirst), 'main 블록도 다시 보임').toBe(true)
+  })
+
+  test('T46: u4-2 — 함수 안에 반복을 넣고 횟수를 바꿔(좁은 화면에서도 도구가 보임) 도착', async ({ page }) => {
+    const g = await open(page, '함수 안에 반복', ['u4-1'])
+    // 별 함수 = 앞으로, repeat 2 [앞으로, 왼쪽, 앞으로], 오른쪽 / main = 별, 앞으로, 별, 별
+    await g.press(btn(page, '함수 만들기'))
+    await g.press(btn(page, '별 함수 안에 넣기'))
+    await g.add('F'); await g.add('N')
+    const body = page.getByRole('group', { name: '별 함수 몸체' })
+    await g.press(body.getByRole('button', { name: /^2번 반복/ }).filter({ visible: true }).first())
+    const fewer = g.action(/줄이기$/)
+    await expect(fewer, '함수 몸체의 반복을 골라도 작업 도구가 보임').toBeVisible()
+    await g.press(fewer)
+    await g.press(g.action(/추가 대상으로 선택$|안에 넣기$/))
+    await g.add('F'); await g.add('L'); await g.add('F')
+    await g.press(btn(page, '별 함수 안에 넣기'))
+    await g.add('R')
+    await g.press(g.action(/별 함수 넣기 해제$|넣기 해제$/))
+    await g.press(btn(page, '별 함수 부르기')); await g.add('F'); await g.press(btn(page, '별 함수 부르기')); await g.press(btn(page, '별 함수 부르기'))
+    expect(await g.blockCount(), '몸체 6 + main 4').toBe(10)
+    expect(await g.runToEnd()).toMatch(/성공/)
   })
 })

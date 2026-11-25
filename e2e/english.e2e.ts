@@ -105,4 +105,15 @@ test.describe('영어 화면', () => {
     await expect(page.getByRole('dialog')).toContainText(/Map \d/, { timeout: 20_000 })
     expect(await hangul(page), '결과 창에 한국어 없음').toEqual([])
   })
+
+  test('영어 4단원: 함수 카드·호출 버튼·탭이 영어, 한국어 없음', async ({ page }) => {
+    await page.goto('/?lang=en')
+    await page.evaluate(() => localStorage.setItem('lealnspire.progress', JSON.stringify({ version: 1, stages: Object.fromEntries(['1', '2', '3', '4', '5', '6', '7', '8', 'u2-1', 'u2-2', 'u2-3', 'u2-4', 'u2-5', 'u2-6', 'u3-1', 'u3-2', 'u3-3'].map(id => [id, { completed: true, bestStars: 3, lastProgram: [] }])) })))
+    await page.reload()
+    await press(page, 'Stages')
+    await fontsReady(page); await page.locator('.stage-card', { hasText: 'Find the Same Shape' }).click()
+    await press(page, 'Make a function')
+    await expect(page.getByRole('button', { name: 'Call the star function', exact: true })).toBeVisible()
+    expect(await hangul(page), '4단원 화면에 한국어 없음').toEqual([])
+  })
 })

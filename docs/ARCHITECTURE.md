@@ -198,4 +198,4 @@ EditorController.functionId는 편집 중인 함수 몸체를 지정합니다(un
 
 Stage.initialFunctions/solutionFunctions는 기존 initialProgram/solution(main 배열)과 짝을 이루는 선택적 함수 정의입니다. ProgressRepository는 기록이 없을 때만 초기 함수를 사용하며 저장 이후의 빈 functions는 그대로 보존합니다. u4-1~3은 단일 variants 배열로 기존 통과 중심 별 3개 판정을 사용합니다. u3-3 뒤 순차 개방하고 각 단원 끝에서는 목록으로 돌아갑니다.
 
-Editor의 함수 패널은 4단원에서만 나타나고 공통 팔레트·합산 상한을 사용합니다. Frame.call.callId와 fn으로 호출 타일·카드를 함께 강조하며 몸체의 activeBlockId도 표시합니다. 좁은 화면은 main 아래 함수 패널을 배치하고 두 영역의 스크롤을 제한합니다. 실제 배치·44px·스크린샷 검증은 이 환경의 포트/Chromium 실행 제한으로 미검증입니다. 맵과 정답·전수 탐색은 [설계 기록](design/unit4-functions.md)에 있습니다.
+Editor의 함수 패널은 4단원에서만 나타나고 공통 팔레트·합산 상한을 사용합니다. Frame.call.callId와 fn으로 호출 타일·카드를 함께 강조하며 몸체의 activeBlockId도 표시합니다. 좁은 화면은 main/별 함수/달 함수 탭으로 작업 공간 하나를 공유하고 선택한 영역 안에서 스크롤합니다. 이동·삭제·반복 횟수·몸체 추가 대상 도구는 탭 밖 공통 작업 막대에 표시합니다. 블록 추가가 성공하면 실제 추가 위치의 탭을 표시합니다. 일반 타일 선택 후 추가는 기존 main 끝 추가 규칙을 유지하고, 함수 또는 중첩 몸체 추가 대상을 지정하면 해당 함수 탭을 유지합니다. 별·달 SVG는 Symbols에서 팔레트 호출 버튼·함수 카드·호출 타일에 재사용합니다. 실제 배치·44px·스크린샷 검증은 이 환경의 포트/Chromium 실행 제한으로 미검증입니다. 맵과 정답·전수 탐색은 [설계 기록](design/unit4-functions.md)에 있습니다.

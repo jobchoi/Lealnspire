@@ -61,6 +61,7 @@ E2E는 Chromium과 로컬 포트 실행 권한이 필요합니다. 실행 못 �
 | `view/components/BlockTiles.tsx` | 중첩 반복·선택·실행 강조 타일 표시 |
 | `view/components/Board.test.tsx` | 벽·도착·방향·충돌 렌더링 |
 | `view/components/Board.tsx` | 맵 셀·로봇·충돌 표시 |
+| `view/components/Editor.test.browser.ts` | 마운트된 앱의 함수 연속 편집·main 탭 전환·세 월드·ko/en·작은 화면·키보드 Playwright 회귀(별도 config에서 실행) |
 | `view/components/Editor.interaction.test.tsx` | 선택 해제·이동·삭제·횟수·반복 대상·잠금 이벤트 |
 | `view/components/Editor.test.tsx` | 중첩·aria·상한·잠금·타일·빈 반복 렌더링 |
 | `view/components/Editor.tsx` | 편집 컨트롤 표시, 이벤트 전달, 타일 스크롤 처리 |
@@ -89,11 +90,12 @@ View는 포커스, 모달 키보드, 타일 스크롤과 CSS를 담당합니다.
 
 | 타입/객체 | 의미 |
 |---|---|
-| Block | 고유 id + forward/turnLeft/turnRight 또는 repeat(count 2~10, body), if(condition: blockedAhead, body, else?: Block[]), while(condition: clearAhead, body) |
+| Block | 고유 id + forward/turnLeft/turnRight 또는 repeat(count 2~10, body), if(condition: blockedAhead, body, else?: Block[]), while(condition: clearAhead, body), call(fn: 함수 ID) |
+| FunctionDef / ProgramDocument | 함수 id·icon(star/moon)·body / main 배열 + functions 정의 목록 |
 | Program (types.ts) | 직렬화 가능한 Block[]; 저장 형식 유지 |
 | Program (program.ts 클래스) | 트리를 복사하여 소유하고 새 객체로 편집; toBlocks로 복사 반환 |
-| Stage | id, world, title/goal 문구 키, hints(2단계 키·강조), grid, variants?, startDir, maxBlocks?, starBlocks, initialProgram?, solution, palette?: BlockType[] |
-| Frame | pos, dir, activeBlockId, event(move/turn/bump/goal/check)?, check?, loops? |
+| Stage | id, world, title/goal 문구 키, hints(2단계 키·강조), grid, variants?, startDir, maxBlocks?, starBlocks, initialProgram?/initialFunctions?, solution/solutionFunctions?, palette?: BlockType[] |
+| Frame | pos, dir, activeBlockId, event(move/turn/bump/goal/check)?, check?, loops?, call?: { callId, fn }(함수 몸체 실행의 호출 문맥) |
 | RunResult | frames + success/collision/unfinished/stepLimit; RunAllResult는 results/result/failedVariant |
 | Progress | version:1, stages: { [id]: { completed, bestStars, lastProgram } } |
 | Observable | 변경 때 snapshot을 교체하고 listener 통지, 구독 해제 함수 제공 |
@@ -179,6 +181,7 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 | `bonus.e2e.ts` | T21 보너스 잠금·풀이·이전 기록 호환(T23 완주 계약) |
 | `a11y.e2e.ts` | T24 대비 자동 계산, 버튼 이름, 맵 대체 설명, 동작 줄이기, 키보드 전체 흐름 |
 | `records.e2e.ts` | T25 망가진 기록·저장 차단·복원·최고 별 |
+| `function-tabs.e2e.ts` | T46 함수 탭 편집(ko/en × 세 월드 × 375·360): 추가 위치를 따라 탭 전환, 함수 안 반복 도구 |
 | `production.prod.ts` | T27 배포 빌드(루트·/lealnspire/): 외부 요청·4xx 0, 기록 복원, 안내 페이지, 라이선스 파일 |
 
 ### 설정·정적 파일·스크립트

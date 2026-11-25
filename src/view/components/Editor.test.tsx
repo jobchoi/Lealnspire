@@ -321,3 +321,30 @@ it('opens and targets each newly created function, keeps repeated target selecti
   expect(draw()).toContain(`aria-pressed="true">${t('functions.showMain')}</button>`)
   game.dispose()
 })
+
+it('keeps function repeat tools outside both tab panels and reuses star/moon SVGs in all three locations', async () => {
+  const { themes, worlds } = await import('../theme/themes')
+  const doc: import('../../model/types').ProgramDocument = {
+    main: [{ id: 'call-star', type: 'call', fn: 'star' }, { id: 'call-moon', type: 'call', fn: 'moon' }],
+    functions: [
+      { id: 'star', icon: 'star', body: [{ id: 'repeat', type: 'repeat', count: 2, body: [] }] },
+      { id: 'moon', icon: 'moon', body: [{ id: 'forward', type: 'forward' }] },
+    ],
+  }
+  const previous = i18n.locale
+  try {
+    for (const locale of ['ko', 'en']) for (const world of worlds) {
+      i18n.locale = locale
+      const controller = new EditorController()
+      controller.configureDocument(doc, () => {}, false)
+      controller.selectFunctionBlock('star', 'repeat')
+      const html = renderToString(<Editor theme={themes[world]} program={doc.main} controller={controller} onChange={() => {}} functionsEnabled />)
+      expect(html.indexOf('class="tile-toolbar"')).toBeGreaterThan(0)
+      expect(html.indexOf('class="tile-toolbar"')).toBeLessThan(html.indexOf('class="program-panels"'))
+      for (const action of ['increase', 'decrease', 'select']) expect(html).toContain(t('action', { order: 1, name: t('blocks.repeat'), action: t(action) }))
+      expect(html).not.toMatch(/[★☾]/)
+      expect(html.match(/d="M16 2l4 9 10 1-8 7 3 11-9-6-9 6 3-11-8-7 10-1z"/g)).toHaveLength(3)
+      expect(html.match(/d="M24 4A13 13 0 1 0 28 24 13 13 0 0 1 24 4z"/g)).toHaveLength(3)
+    }
+  } finally { i18n.locale = previous }
+})
