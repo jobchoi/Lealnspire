@@ -261,3 +261,10 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - 기존 EditorController/Editor/BlockTiles에 set 값·change 부호·repeat 횟수 원천 편집과 변수 타일·고정 반복 횟수 표시를 연결한다.
 - PlayPage/index.css/Symbols에 상자 값·전후·시작 값 카드·반응형 표시, StageSelectPage/flow/ResultModal에 5단원 묶음·이어하기·완주를 연결한다. ko/en 문구와 pages.test.tsx의 세 월드 렌더링 회귀를 포함한다.
 - 설계·검증 한계는 `docs/design/unit5-variables.md`. E2E 작성·최종 브라우저 QC는 Claude 담당이다.
+
+### T51 논리 Model·후보 탐색 [제안·잠정]
+
+- `model/types.ts`, `interpreter.ts`: 앞/왼/오 센서, 최대 두 항 not/and/or, if/while의 선택 logic과 항별 check.logic. logic 없는 실행은 유지한다.
+- `model/program.ts`, `editor.ts`: 조건 항·연산자 불변 편집과 생성 옵션, 엄격한 logic 구조 검사. `ProgressRepository.ts`는 Stage.logic에서만 v2 logic 복원을 허용한다.
+- `model/logic.test.ts`, `model/unit5-run.fixture.json`: 진리표·방향·검사·반복 상한·불변 편집·되돌리기·저장 정책과 HEAD에서 추출한 5단원 전체 실행 회귀 기준. 기존 1~4단원 fixture도 유지한다.
+- `model/unit6.test.ts`: 미채택 후보·미방문 칸·앞 센서 및 단항 반례의 상태 변환 전수 탐색. 적합한 스테이지 후보는 미확보다. 결과와 범위는 `docs/design/unit6-logic.md` 5절을 참고한다. 화면·스테이지 등록 없음.

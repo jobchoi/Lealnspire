@@ -16,11 +16,11 @@ export function findBlockPath(program: Program, id: string): number[] | undefine
   }
 }
 
-export function createBlock(program: Program, type: Block['type']): Block {
+export function createBlock(program: Program, type: Block['type'], options: { logic?: boolean } = {}): Block {
   let serial = 1
   while (findBlockPath(program, `block-${serial}`)) serial++
   const id = `block-${serial}`
-  return type === 'set' ? { id, type, variable: 'A', value: 0 } : type === 'change' ? { id, type, variable: 'A', by: 1 } : type === 'call' ? { id, type, fn: '' } : type === 'while' ? { id, type, condition: 'clearAhead', body: [] } : type === 'if' ? { id, type, condition: 'blockedAhead', body: [] } : type === 'repeat' ? { id, type, count: 3, body: [] } : { id, type }
+  return type === 'set' ? { id, type, variable: 'A', value: 0 } : type === 'change' ? { id, type, variable: 'A', by: 1 } : type === 'call' ? { id, type, fn: '' } : type === 'while' ? { id, type, condition: 'clearAhead', ...(options.logic ? { logic: { terms: [{ sensor: 'blockedAhead', not: true }] } } : {}), body: [] } : type === 'if' ? { id, type, condition: 'blockedAhead', ...(options.logic ? { logic: { terms: [{ sensor: 'blockedAhead' }] } } : {}), body: [] } : type === 'repeat' ? { id, type, count: 3, body: [] } : { id, type }
 }
 
 /** Copy a subtree, allocating fresh IDs against the destination and earlier copies. */
@@ -29,7 +29,7 @@ export function cloneBlock(program: Program, block: Block): Block {
   function copy(source: Block): Block {
     const fresh = createBlock(allocated, source.type)
     allocated.push(fresh)
-    return hasBody(source) ? { ...source, id: fresh.id, body: source.body.map(copy), ...(source.type === 'if' && source.else ? { else: source.else.map(copy) } : {}) } : { ...source, id: fresh.id }
+    return hasBody(source) ? { ...structuredClone(source), id: fresh.id, body: source.body.map(copy), ...(source.type === 'if' && source.else ? { else: source.else.map(copy) } : {}) } : { ...source, id: fresh.id }
   }
   return copy(block)
 }

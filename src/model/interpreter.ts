@@ -1,7 +1,7 @@
 import { programDocument } from './types'
 import { validDocument } from './program'
 import { cellKey, parseGrid } from './grid'
-import type { Block, Dir, Frame, ProgramInput, RunResult, RunAllResult, Stage } from './types'
+import type { Block, Dir, Frame, ProgramInput, RunResult, RunAllResult, Stage, Sensor, Logic } from './types'
 
 const directions: Dir[] = ['N', 'E', 'S', 'W']
 const offsets = { N: [0, -1], E: [1, 0], S: [0, 1], W: [-1, 0] } as const
@@ -22,10 +22,20 @@ export class Interpreter {
     let steps = 0
     let repeatEntries = 0
     let result: RunResult['result'] = 'unfinished'
-    function blockedAhead(): boolean {
-      const [dx, dy] = offsets[dir]
+    function blockedAhead(sensor: Sensor = 'blockedAhead'): boolean {
+      const sensedDir = directions[(directions.indexOf(dir) + (sensor === 'blockedLeft' ? 3 : sensor === 'blockedRight' ? 1 : 0)) % 4]
+      const [dx, dy] = offsets[sensedDir]
       const next = { x: pos.x + dx, y: pos.y + dy }
       return next.x < 0 || next.y < 0 || next.x >= grid.width || next.y >= grid.height || grid.walls.has(cellKey(next))
+    }
+    function checkLogic(logic: Logic): { result: boolean; logic: NonNullable<Frame['check']>['logic'] } {
+      const terms = logic.terms.map(term => {
+        const sensed = blockedAhead(term.sensor)
+        return { sensor: term.sensor, not: term.not === true, sensed, value: term.not ? !sensed : sensed }
+      })
+      const op = 'op' in logic ? logic.op : undefined
+      return { result: op === 'and' ? terms.every(term => term.value) : op === 'or' ? terms.some(term => term.value) : terms[0].value,
+        logic: { terms, ...(op ? { op } : {}) } }
     }
     function execute(blocks: Block[], loops: NonNullable<Frame['loops']> = []): boolean {
       for (const block of blocks) {
@@ -69,9 +79,10 @@ export class Interpreter {
           for (;;) {
             if (steps === 1000) { result = 'stepLimit'; whileLimitBlockId = block.id; whileLimitCall = call ? { ...call } : undefined; return true }
             steps++
-            const checked = !blockedAhead()
+            const evaluation = block.logic ? checkLogic(block.logic) : undefined
+            const checked = evaluation ? evaluation.result : !blockedAhead()
             const currentLoops = [...loops, { blockId: block.id, iteration }]
-            frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, loops: currentLoops, event: 'check', check: { blockId: block.id, condition: block.condition, result: checked } })
+            frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, loops: currentLoops, event: 'check', check: { blockId: block.id, condition: block.condition, result: checked, ...(evaluation ? { logic: evaluation.logic } : {}) } })
             if (!checked) break
             if (execute(block.body, currentLoops)) {
               if (result === 'stepLimit' && !whileLimitBlockId) { whileLimitBlockId = block.id; whileLimitCall = call ? { ...call } : undefined }
@@ -85,8 +96,9 @@ export class Interpreter {
           if (steps === 1000) { result = 'stepLimit'; return true }
           steps++
           if (block.condition !== 'blockedAhead') throw new Error('Unknown condition')
-          const checked = blockedAhead()
-          frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'check', check: { blockId: block.id, condition: block.condition, result: checked } })
+          const evaluation = block.logic ? checkLogic(block.logic) : undefined
+          const checked = evaluation ? evaluation.result : blockedAhead()
+          frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'check', check: { blockId: block.id, condition: block.condition, result: checked, ...(evaluation ? { logic: evaluation.logic } : {}) } })
           if (execute(checked ? block.body : block.else ?? [], loops)) return true
           break
         }

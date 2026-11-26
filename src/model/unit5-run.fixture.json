@@ -1,0 +1,887 @@
+{
+  "u5-1": {
+    "results": [
+      {
+        "frames": [
+          {
+            "variables": {
+              "A": 2
+            },
+            "pos": {
+              "x": 0,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": null
+          },
+          {
+            "variables": {
+              "A": 2
+            },
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "repeat-f",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 2
+            },
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "repeat-f",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 2
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 2
+            },
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "left",
+            "event": "turn"
+          },
+          {
+            "variables": {
+              "A": 2
+            },
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "N",
+            "activeBlockId": "finish",
+            "event": "goal"
+          }
+        ],
+        "result": "success"
+      },
+      {
+        "frames": [
+          {
+            "variables": {
+              "A": 4
+            },
+            "pos": {
+              "x": 0,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": null
+          },
+          {
+            "variables": {
+              "A": 4
+            },
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "repeat-f",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 4
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 4
+            },
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "repeat-f",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 4
+            },
+            "pos": {
+              "x": 3,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "repeat-f",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 4
+            },
+            "pos": {
+              "x": 4,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "repeat-f",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 4,
+                "count": 4
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 4
+            },
+            "pos": {
+              "x": 4,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "left",
+            "event": "turn"
+          },
+          {
+            "variables": {
+              "A": 4
+            },
+            "pos": {
+              "x": 4,
+              "y": 0
+            },
+            "dir": "N",
+            "activeBlockId": "finish",
+            "event": "goal"
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "u5-2": {
+    "results": [
+      {
+        "frames": [
+          {
+            "variables": {
+              "A": 1
+            },
+            "pos": {
+              "x": 3,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": null
+          },
+          {
+            "variables": {
+              "A": 1
+            },
+            "pos": {
+              "x": 4,
+              "y": 2
+            },
+            "dir": "E",
+            "activeBlockId": "inner-f",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 1,
+                "count": 3
+              },
+              {
+                "blockId": "inner",
+                "iteration": 1,
+                "count": 1
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 1
+            },
+            "pos": {
+              "x": 4,
+              "y": 2
+            },
+            "dir": "N",
+            "activeBlockId": "left",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 1,
+                "count": 3
+              }
+            ],
+            "event": "turn"
+          },
+          {
+            "variables": {
+              "A": 2
+            },
+            "variableChange": {
+              "variable": "A",
+              "from": 1,
+              "to": 2
+            },
+            "pos": {
+              "x": 4,
+              "y": 2
+            },
+            "dir": "N",
+            "activeBlockId": "change",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 1,
+                "count": 3
+              }
+            ]
+          },
+          {
+            "variables": {
+              "A": 2
+            },
+            "pos": {
+              "x": 4,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "inner-f",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "inner",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 2
+            },
+            "pos": {
+              "x": 4,
+              "y": 0
+            },
+            "dir": "N",
+            "activeBlockId": "inner-f",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "inner",
+                "iteration": 2,
+                "count": 2
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 2
+            },
+            "pos": {
+              "x": 4,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "left",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 2,
+                "count": 3
+              }
+            ],
+            "event": "turn"
+          },
+          {
+            "variables": {
+              "A": 3
+            },
+            "variableChange": {
+              "variable": "A",
+              "from": 2,
+              "to": 3
+            },
+            "pos": {
+              "x": 4,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "change",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 2,
+                "count": 3
+              }
+            ]
+          },
+          {
+            "variables": {
+              "A": 3
+            },
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "inner-f",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 3,
+                "count": 3
+              },
+              {
+                "blockId": "inner",
+                "iteration": 1,
+                "count": 3
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 3
+            },
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "inner-f",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 3,
+                "count": 3
+              },
+              {
+                "blockId": "inner",
+                "iteration": 2,
+                "count": 3
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 3
+            },
+            "pos": {
+              "x": 1,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "inner-f",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 3,
+                "count": 3
+              },
+              {
+                "blockId": "inner",
+                "iteration": 3,
+                "count": 3
+              }
+            ],
+            "event": "goal"
+          }
+        ],
+        "result": "success"
+      },
+      {
+        "frames": [
+          {
+            "variables": {
+              "A": 2
+            },
+            "pos": {
+              "x": 4,
+              "y": 3
+            },
+            "dir": "E",
+            "activeBlockId": null
+          },
+          {
+            "variables": {
+              "A": 2
+            },
+            "pos": {
+              "x": 5,
+              "y": 3
+            },
+            "dir": "E",
+            "activeBlockId": "inner-f",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 1,
+                "count": 3
+              },
+              {
+                "blockId": "inner",
+                "iteration": 1,
+                "count": 2
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 2
+            },
+            "pos": {
+              "x": 6,
+              "y": 3
+            },
+            "dir": "E",
+            "activeBlockId": "inner-f",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 1,
+                "count": 3
+              },
+              {
+                "blockId": "inner",
+                "iteration": 2,
+                "count": 2
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 2
+            },
+            "pos": {
+              "x": 6,
+              "y": 3
+            },
+            "dir": "N",
+            "activeBlockId": "left",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 1,
+                "count": 3
+              }
+            ],
+            "event": "turn"
+          },
+          {
+            "variables": {
+              "A": 3
+            },
+            "variableChange": {
+              "variable": "A",
+              "from": 2,
+              "to": 3
+            },
+            "pos": {
+              "x": 6,
+              "y": 3
+            },
+            "dir": "N",
+            "activeBlockId": "change",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 1,
+                "count": 3
+              }
+            ]
+          },
+          {
+            "variables": {
+              "A": 3
+            },
+            "pos": {
+              "x": 6,
+              "y": 2
+            },
+            "dir": "N",
+            "activeBlockId": "inner-f",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "inner",
+                "iteration": 1,
+                "count": 3
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 3
+            },
+            "pos": {
+              "x": 6,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "inner-f",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "inner",
+                "iteration": 2,
+                "count": 3
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 3
+            },
+            "pos": {
+              "x": 6,
+              "y": 0
+            },
+            "dir": "N",
+            "activeBlockId": "inner-f",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 2,
+                "count": 3
+              },
+              {
+                "blockId": "inner",
+                "iteration": 3,
+                "count": 3
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 3
+            },
+            "pos": {
+              "x": 6,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "left",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 2,
+                "count": 3
+              }
+            ],
+            "event": "turn"
+          },
+          {
+            "variables": {
+              "A": 4
+            },
+            "variableChange": {
+              "variable": "A",
+              "from": 3,
+              "to": 4
+            },
+            "pos": {
+              "x": 6,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "change",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 2,
+                "count": 3
+              }
+            ]
+          },
+          {
+            "variables": {
+              "A": 4
+            },
+            "pos": {
+              "x": 5,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "inner-f",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 3,
+                "count": 3
+              },
+              {
+                "blockId": "inner",
+                "iteration": 1,
+                "count": 4
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 4
+            },
+            "pos": {
+              "x": 4,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "inner-f",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 3,
+                "count": 3
+              },
+              {
+                "blockId": "inner",
+                "iteration": 2,
+                "count": 4
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 4
+            },
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "inner-f",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 3,
+                "count": 3
+              },
+              {
+                "blockId": "inner",
+                "iteration": 3,
+                "count": 4
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 4
+            },
+            "pos": {
+              "x": 2,
+              "y": 0
+            },
+            "dir": "W",
+            "activeBlockId": "inner-f",
+            "loops": [
+              {
+                "blockId": "outer",
+                "iteration": 3,
+                "count": 3
+              },
+              {
+                "blockId": "inner",
+                "iteration": 4,
+                "count": 4
+              }
+            ],
+            "event": "goal"
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  },
+  "u5-3": {
+    "results": [
+      {
+        "frames": [
+          {
+            "variables": {
+              "A": 0
+            },
+            "pos": {
+              "x": 0,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": null
+          },
+          {
+            "variables": {
+              "A": 3
+            },
+            "variableChange": {
+              "variable": "A",
+              "from": 0,
+              "to": 3
+            },
+            "pos": {
+              "x": 0,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "set"
+          },
+          {
+            "variables": {
+              "A": 3
+            },
+            "pos": {
+              "x": 1,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "repeat-f",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 1,
+                "count": 3
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 3
+            },
+            "pos": {
+              "x": 2,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "repeat-f",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 2,
+                "count": 3
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 3
+            },
+            "pos": {
+              "x": 3,
+              "y": 1
+            },
+            "dir": "E",
+            "activeBlockId": "repeat-f",
+            "loops": [
+              {
+                "blockId": "repeat",
+                "iteration": 3,
+                "count": 3
+              }
+            ],
+            "event": "move"
+          },
+          {
+            "variables": {
+              "A": 3
+            },
+            "pos": {
+              "x": 3,
+              "y": 1
+            },
+            "dir": "N",
+            "activeBlockId": "left",
+            "event": "turn"
+          },
+          {
+            "variables": {
+              "A": 3
+            },
+            "pos": {
+              "x": 3,
+              "y": 0
+            },
+            "dir": "N",
+            "activeBlockId": "finish",
+            "event": "goal"
+          }
+        ],
+        "result": "success"
+      }
+    ],
+    "result": "success",
+    "failedVariant": null
+  }
+}

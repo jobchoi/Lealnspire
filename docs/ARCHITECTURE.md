@@ -246,3 +246,11 @@ S......#  S......#
 ### T50 저장 복원 경계
 
 저장 코드는 스테이지의 실효 팔레트로 검사한다. palette 생략 시 1단원은 이동·회전·repeat, 2단원은 여기에 if를 더한 기본 목록을 사용한다. repeat의 countVariable A는 변수 편집과 상자 표시를 제공하는 5단원에서만 복원한다. 위반한 스테이지의 코드(main·functions)만 비우며 완료 여부·최고 별과 다른 스테이지 기록은 유지한다. 구조 자체의 검증은 validDocument에서 별도로 유지한다.
+
+### T51 논리 Model [제안·잠정]
+
+if/while에 선택 Logic(1~2개의 Sensor/not 항과 두 항일 때 and/or)을 추가한다. 세 센서는 로봇 기준 한 칸이 벽 또는 맵 밖인지 판정한다. 두 항은 부작용 없이 모두 평가하고 프레임 check.logic에 센서 값과 not 적용 값을 기록한다. 최종 값은 기존 result이며 검사 단계·프레임은 각각 1개다. logic이 없으면 기존 blockedAhead/clearAhead 의미를 유지한다.
+
+Program의 setLogicSensor/toggleLogicNot/addLogicTerm/removeLogicTerm/setLogicOperator는 기존 트리 경로와 FunctionProgram.edit를 사용한다. 새 논리 객체를 소유하여 문서 단위 되돌리기와 저장 경로를 그대로 사용한다. 생성 옵션 logic은 if 앞 막힘, while not 앞 막힘을 만든다. 복제 시 조건 항도 깊이 복사한다.
+
+저장 버전은 v2를 유지한다. validLogic은 항 1~2개, 두 항에만 필수 op, 세 센서, not:true 또는 생략, 알려진 키만 허용한다. ProgressRepository는 Stage.logic === true일 때만 logic을 복원하며 위반 시 해당 스테이지 코드만 비우고 완료·별은 유지한다. T52 전에는 등록된 논리 스테이지가 없다. 후보 맵 전수 탐색과 실제 엔진 반례·미확보 결과는 design/unit6-logic.md 5절에 기록했다.

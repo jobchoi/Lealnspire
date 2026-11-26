@@ -1,4 +1,4 @@
-import type { Block, Program as BlockTree } from './types'
+import type { Block, Logic, Sensor, Program as BlockTree } from './types'
 import { createBlock, findBlockPath, hasBody, blockAt, cloneBlock } from './editor'
 
 export const MAX_PROGRAM_BLOCKS = 10
@@ -27,7 +27,7 @@ export class Program {
   toBlocks(): BlockTree { return structuredClone(this.tree) }
   count(): number { return Program.countBlocks(this.tree) }
   find(id: string): number[] | undefined { return findBlockPath(this.tree, id) }
-  create(type: Block['type']): Block { return createBlock(this.tree, type) }
+  create(type: Block['type'], options: { logic?: boolean } = {}): Block { return createBlock(this.tree, type, options) }
   add(block: Block, parent: number[] = []): Program { return new Program(Program.addBlock(this.tree, block, parent)) }
   remove(path: number[]): Program { return new Program(Program.deleteBlock(this.tree, path)) }
   move(path: number[], direction: 'up' | 'down'): Program { return new Program(Program.moveBlock(this.tree, path, direction)) }
@@ -79,6 +79,46 @@ export class Program {
       return source === 'A' ? { ...block, countVariable: 'A' } : { ...numeric, count: block.count ?? 3 }
     })
   }
+  static setLogicSensor(program: BlockTree, path: number[], term: 0 | 1, sensor: Sensor): BlockTree {
+    if (!['blockedAhead', 'blockedLeft', 'blockedRight'].includes(sensor)) throw new Error('Unknown sensor')
+    return Program.editLogic(program, path, logic => {
+      if (!logic.terms[term]) throw new Error('Missing logic term')
+      logic.terms[term]!.sensor = sensor
+      return logic
+    })
+  }
+  static toggleLogicNot(program: BlockTree, path: number[], term: 0 | 1): BlockTree {
+    return Program.editLogic(program, path, logic => {
+      const target = logic.terms[term]
+      if (!target) throw new Error('Missing logic term')
+      if (target.not) delete target.not
+      else target.not = true
+      return logic
+    })
+  }
+  static addLogicTerm(program: BlockTree, path: number[], op: 'and' | 'or'): BlockTree {
+    return Program.editLogic(program, path, logic => {
+      if (logic.terms.length !== 1) throw new Error('Already two logic terms')
+      return { terms: [logic.terms[0], { sensor: 'blockedRight' }], op }
+    })
+  }
+  static removeLogicTerm(program: BlockTree, path: number[]): BlockTree {
+    return Program.editLogic(program, path, logic => ({ terms: [logic.terms[0]] }))
+  }
+  static setLogicOperator(program: BlockTree, path: number[], op: 'and' | 'or'): BlockTree {
+    return Program.editLogic(program, path, logic => {
+      if (logic.terms.length !== 2) throw new Error('Needs two logic terms')
+      return { terms: logic.terms, op }
+    })
+  }
+  private static editLogic(program: BlockTree, path: number[], edit: (logic: Logic) => Logic): BlockTree {
+    return Program.editVariableBlock(program, path, block => {
+      if (block.type !== 'if' && block.type !== 'while') throw new Error('Block has no condition')
+      const logic = edit(structuredClone(block.logic ?? { terms: [{ sensor: 'blockedAhead', ...(block.type === 'while' ? { not: true as const } : {}) }] }))
+      if (!validLogic(logic)) throw new Error('Invalid logic')
+      return { ...block, logic }
+    })
+  }
   private static editVariableBlock(program: BlockTree, path: number[], edit: (block: Block) => Block): BlockTree {
     const [parent, index] = splitPath(path)
     return updateList(program, parent, list => {
@@ -106,8 +146,19 @@ export const moveBlock = Program.moveBlock
 export const setRepeatCount = Program.setRepeatCount
 export const countBlocks = Program.countBlocks
 
+export function validLogic(value: unknown): value is Logic {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+  const logic = value as Record<string, unknown>
+  if (Object.keys(logic).some(key => key !== 'terms' && key !== 'op') || !Array.isArray(logic.terms)) return false
+  if (logic.terms.length === 1 ? 'op' in logic : logic.terms.length !== 2 || logic.op !== 'and' && logic.op !== 'or') return false
+  return Array.from(logic.terms).every(term => term && typeof term === 'object' && !Array.isArray(term)
+    && Object.keys(term).every(key => key === 'sensor' || key === 'not')
+    && ['blockedAhead', 'blockedLeft', 'blockedRight'].includes(term.sensor)
+    && (!('not' in term) || term.not === true))
+}
+
 /** Validate persisted documents with a shared node/ID budget across all bodies. */
-export function validDocument(value: unknown, palette?: Block['type'][], allowVariableCount = true): value is import('./types').ProgramDocument {
+export function validDocument(value: unknown, palette?: Block['type'][], allowVariableCount = true, allowLogic = true): value is import('./types').ProgramDocument {
   const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
   if (!record(value) || !Array.isArray(value.main) || !Array.isArray(value.functions) || value.functions.length > 2) return false
   const functions = new Set<string>()
@@ -122,6 +173,7 @@ export function validDocument(value: unknown, palette?: Block['type'][], allowVa
       if (++nodes > 60 || depth > MAX_PROGRAM_BLOCKS || !record(block) || typeof block.id !== 'string' || !block.id || ids.has(block.id)) return false
       ids.add(block.id)
       if (palette && !palette.includes(block.type as Block['type'])) return false
+      if ('logic' in block && (!allowLogic || block.type !== 'if' && block.type !== 'while' || !validLogic(block.logic))) return false
       switch (block.type) {
       case 'set': if (block.variable !== 'A' || !Number.isInteger(block.value) || Number(block.value) < 0 || Number(block.value) > 20) return false; break
       case 'change': if (block.variable !== 'A' || block.by !== 1 && block.by !== -1) return false; break
@@ -173,9 +225,9 @@ export class FunctionProgram {
     const next = new FunctionProgram(fn ? { ...this.doc, functions: this.doc.functions.map(def => def.id === fn ? { ...def, body: body(structuredClone(def.body)) } : def) } : { ...this.doc, main: body(structuredClone(this.doc.main)) })
     return next.count() > MAX_PROGRAM_BLOCKS ? this : next
   }
-  create(type: Block['type'], fn = ''): Block {
+  create(type: Block['type'], fn = '', options: { logic?: boolean } = {}): Block {
     const all = [...this.doc.main, ...this.doc.functions.flatMap(def => def.body)]
-    const block = createBlock(all, type)
+    const block = createBlock(all, type, options)
     return block.type === 'call' ? { ...block, fn } : block
   }
   add(block: Block, parent: number[] = [], fn?: string) { return this.edit(body => Program.addBlock(body, structuredClone(block), parent), fn) }
