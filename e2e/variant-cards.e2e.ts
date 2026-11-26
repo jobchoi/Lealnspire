@@ -15,7 +15,7 @@ for (const viewport of [{ width: 375, height: 667 }, { width: 360, height: 560 }
     await page.setViewportSize(viewport)
     const game = new Game(page)
     await game.fresh()
-    await page.evaluate(ids => localStorage.setItem('lealnspire.progress.v2', JSON.stringify({ version: 2, stages: Object.fromEntries(ids.map(id => [id, { completed: true, bestStars: 3, lastProgram: { main: [], functions: [] } }])) })), allStages.map(stage => stage.id))
+    await page.evaluate(ids => localStorage.setItem('lealnspire.progress.v2', JSON.stringify({ version: 2, stages: Object.fromEntries(ids.map(id => [id, { completed: true, bestStars: 3, } ])) })), allStages.map(stage => stage.id))
     await page.reload()
     for (const stage of variantStages) {
       await page.goto('/')
@@ -24,13 +24,14 @@ for (const viewport of [{ width: 375, height: 667 }, { width: 360, height: 560 }
       const cards = page.locator('.variant-cards button')
       await expect(cards).toHaveCount(stage.variants!.length)
       for (const phase of ['처음', '한 단계 뒤']) {
-        if (phase === '한 단계 뒤' && stage.initialProgram?.length) await game.press(game.button('한 단계'))
+        const stepping = phase === '한 단계 뒤' && await game.button('한 단계').isEnabled()
+        if (stepping) await game.press(game.button('한 단계'))
         for (let i = 0; i < stage.variants!.length; i++) {
           const card = cards.nth(i)
           const covered = await card.evaluate(e => { e.scrollIntoView({ block: 'nearest' }); const r = e.getBoundingClientRect(); const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return hit && !(e.contains(hit) || hit.contains(e)) ? `${hit.tagName}.${hit.className}` : '' })
           expect(covered, `${stage.id} ${phase} ${i + 1}번 맵 카드를 덮는 요소`).toBe('')
         }
-        if (phase === '한 단계 뒤' && stage.initialProgram?.length) await game.press(game.button('처음으로'))
+        if (stepping) await game.press(game.button('처음으로'))
       }
       // 실제로 눌러 바꿔 보고 되돌아온다
       if (await cards.nth(1).isEnabled()) {

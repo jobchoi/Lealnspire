@@ -205,3 +205,18 @@ for (const world of worlds) {
     })
   }
 }
+
+/** T59 QC: 6단원 팔레트(블록 6종)는 세 월드 모두 기호·글자가 바탕과 구분된다(대비 3:1 이상, 블록을 놓기 전 상태) */
+for (const world of worlds) {
+  test(`${world}: 6단원 팔레트 버튼 대비`, async ({ page }) => {
+    const game = await open(page, '양쪽이 다 열렸을 때')
+    await game.press(page.getByRole('button', { name: `${world} 월드로 바꾸기` }))
+    for (const button of await page.locator('.palette button').all()) {
+      await expect(button).toBeEnabled()
+      // 글자(small)가 화면에 보이지 않는 버튼(게임기 십자키)은 기호만 있어 스크린샷으로 확인
+      const labelShown = await button.evaluate(e => { const s = e.querySelector('small'); if (!s) return true; const r = s.getBoundingClientRect(), cs = getComputedStyle(s); return r.width > 2 && r.height > 2 && cs.visibility !== 'hidden' && cs.opacity !== '0' && cs.color !== cs.backgroundColor })
+      if (!labelShown) continue
+      expect(await contrastOf(button), `${world} ${await button.getAttribute('aria-label')} 대비`).toBeGreaterThanOrEqual(3)
+    }
+  })
+}
