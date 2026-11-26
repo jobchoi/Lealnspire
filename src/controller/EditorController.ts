@@ -3,6 +3,7 @@ import { Observable } from './Observable'
 import { MAX_PROGRAM_BLOCKS, normalizeLogicProgram, normalizeLogicCondition, FunctionProgram, Program as ProgramModel } from '../model/program'
 import type { Block, Program, ProgramDocument, FunctionDef, Condition } from '../model/types'
 export class EditorController extends Observable<{ selectedId: string | null; targetId: string | null; addedId: string | null }> {
+  eventsEnabled = false
   returnsEnabled = false
   paramsEnabled = false
   logicEnabled = false
@@ -58,7 +59,8 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
     this.beforeEdit()
     return true
   }
-  configure(program: Program, onChange: (program: Program) => void, locked: boolean, maxBlocks?: number, logicEnabled = this.logicEnabled, paramsEnabled = this.paramsEnabled, returnsEnabled = this.returnsEnabled) {
+  configure(program: Program, onChange: (program: Program) => void, locked: boolean, maxBlocks?: number, logicEnabled = this.logicEnabled, paramsEnabled = this.paramsEnabled, returnsEnabled = this.returnsEnabled, eventsEnabled = this.eventsEnabled) {
+    this.eventsEnabled = eventsEnabled
     this.returnsEnabled = returnsEnabled
     this.paramsEnabled = paramsEnabled
     this.logicEnabled = logicEnabled
@@ -148,9 +150,15 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   }
   add = (type: Block['type'], fn = this.functions[0]?.id) => {
     if (this.locked || this.atLimit || !this.prepareEdit()) return
+    if (type === 'on' && (!this.eventsEnabled || this.functionId || this.targetPath)) return
     if (type === 'return' && (!this.returnsEnabled || !this.addingToFunction)) return
     if (type === 'call' && this.addingToFunction) return
     const block = new FunctionProgram(this.doc).create(type, fn)
+    if (block.type === 'on') {
+      const signal = (['◇', '○', '△'] as const).find(signal => !this.program.some(item => item.type === 'on' && item.signal === signal))
+      if (!signal) return
+      block.signal = signal
+    }
     if (this.logicEnabled && (block.type === 'if' || block.type === 'while')) {
       const atom = { kind: 'atom' as const, atom: 'blockedAhead' as const }
       block.condition = block.type === 'if' ? atom : { kind: 'not', operand: atom }
@@ -165,6 +173,7 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
     this.update({ selectedId: leavingFunction ? null : this.state.selectedId, targetId: leavingFunction ? null : this.state.targetId, addedId: block.id })
     this.change(new ProgramModel(program).add(block, targetPath ? [...targetPath, ...(this.targetElse ? [-1] : [])] : []).toBlocks(), functionId ?? null)
   }
+  setSignal = (signal: import('../model/types').EventSignal) => { if (this.eventsEnabled && this.selectedPath && this.selectedBlock?.type === 'on' && this.prepareEdit()) this.change(ProgramModel.setSignal(this.program, this.selectedPath, signal), null) }
   move = (direction: 'up' | 'down') => { if (this.selectedPath && this.prepareEdit()) this.change(new ProgramModel(this.editProgram).move(this.selectedPath, direction).toBlocks()) }
   remove = () => { if (this.selectedPath && this.prepareEdit()) this.change(new ProgramModel(this.editProgram).remove(this.selectedPath).toBlocks()) }
   toggleElse = () => { if (this.selectedPath && this.selectedBlock?.type === 'if' && this.prepareEdit()) { this.targetElse = false; this.change(ProgramModel.setElse(this.editProgram, this.selectedPath, !this.selectedBlock.else)) } }

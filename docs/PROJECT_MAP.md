@@ -283,3 +283,11 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - `model/unit8.test.ts`: u8-1~3 정답·초기 코드·반환/센서·저장·편집·개방 및 모든 공통 이동열의 결합 상태 35/35/59 전수 탐색. return 없는 팔레트의 맵 독립성 근거와 표본도 검사한다.
 - `model/unit1234567-run.fixture.json`: T63 이전 HEAD 실행기로 캡처한 1~7단원 32개 스테이지·51개 맵의 전체 결과·프레임(추가 메타데이터 제외 없이 비교).
 - 기존 EditorController/Editor/BlockTiles·GameController/PlayPage 및 목록·결과·flow에 반환값/값 호출 인자 편집·되돌리기·입출력 홈·전달·미실행 표시·8단원 완주를 연결한다. 상세와 브라우저 미검증 항목은 `design/unit8-returns.md` 참고.
+
+### T67 9단원 이벤트 [제안·잠정]
+
+- `model/types.ts`, `grid.ts`, `interpreter.ts`: main 최상위 `on` 연결, 신호열/FIFO/처리기 하나씩, a/b 문, 신호 공급·시작·종료 프레임과 예산. `supplySignal`은 64개 대기열·128회 공급 경계를 검증한다. 외부 공급만 있는 현재 실행에서는 대기열 최대 1개다.
+- `model/program.ts`, `ProgressRepository.ts`, `editor.ts`: on 몸체·개수·경로·신호 편집, v2 유지·events 스테이지 한정 저장 검증. 중첩/중복/알 수 없는 연결은 해당 코드만 비운다.
+- `model/stages/index.ts`: unit9Stages u9-1~3, 각 두 신호 시나리오. `model/unit9.test.ts`: 정답·초기 충돌·카드 순서 독립·상한·저장·편집·개방과 on 없는 전체 문법의 변환 5개/성공 0개 전수 탐색.
+- `model/unit12345678-run.fixture.json`: 이어서 착수 시 WIP 실행기로 캡처한 기존 1~8단원 35개 스테이지·57개 맵의 정답 전체 프레임·결과(기존 1~7단원 fixture도 별도로 유지).
+- 기존 EditorController/GameController·Editor/BlockTiles·BoardPresenter/Board/TrainMap·Symbols·PlayPage/index.css·목록/결과/flow에 신호 기호 편집·맞바꾸기·실행 처리기 강조·문·신호열·대기열·9단원 완주를 연결한다. T64 데스크톱 규칙은 유지한다. 상세·검증 제한은 `design/unit9-events.md`.

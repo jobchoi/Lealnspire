@@ -2,7 +2,7 @@ import { AppController } from './AppController'
 import { isUnlocked, ProgressRepository, progressKey } from '../model/ProgressRepository'
 import { describe, expect, it } from 'vitest'
 import { createProgressStore } from '../model/ProgressRepository'
-import { stages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages } from '../model/stages'
+import { stages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages } from '../model/stages'
 import { continueStageIndex, showNextStage } from './flow'
 
 describe('이어하기 대상', () => {
@@ -25,7 +25,7 @@ describe('이어하기 대상', () => {
     const store = createProgressStore()
     for (const stage of stages) store.completeStage(stage.id, 3, stage.solution)
     expect(continueStageIndex(store.getProgress())).toBe(allStages.indexOf(unit2Stages[0]))
-    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages]) store.completeStage(stage.id, 3, stage.solution)
+    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages, ...unit9Stages]) store.completeStage(stage.id, 3, stage.solution)
     expect(continueStageIndex(store.getProgress())).toBeUndefined()
   })
 })

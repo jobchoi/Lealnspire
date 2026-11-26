@@ -6,6 +6,16 @@ import type { Block, Condition, ConditionAtom, Dir, Frame, ProgramInput, RunResu
 const directions: Dir[] = ['N', 'E', 'S', 'W']
 const offsets = { N: [0, -1], E: [1, 0], S: [0, 1], W: [-1, 0] } as const
 
+/** One external publication per completion boundary. Queue guard also bounds future producers. */
+export function supplySignal(state: EventState, signal: EventSignal): boolean {
+  if (state.cursor >= 128 || state.queue.length >= 64) return false
+  state.cursor++
+  if (signal === '◇') state.doors.a = true
+  if (signal === '○') state.doors.b = true
+  state.queue.push(signal)
+  return true
+}
+
 export class Interpreter {
   static run(stage: Stage, program: ProgramInput, initialVariables = stage.variantVariables?.[0] ?? { A: 0 }): RunResult {
     const doc = programDocument(program)
@@ -81,7 +91,9 @@ export class Interpreter {
     function execute(blocks: Block[], loops: NonNullable<Frame['loops']> = []): Signal {
       for (const block of blocks) {
         switch (block.type) {
-        case 'on': break
+        case 'on':
+          if (!stage.events) throw new Error('Events disabled')
+          break
         case 'set':
         case 'change': {
           if (steps === 1000) { result = 'stepLimit'; return stop }
@@ -207,11 +219,8 @@ export class Interpreter {
     if (stage.events && main.kind === 'continue') {
       while (eventState.cursor < signals.length || eventState.queue.length) {
         if (eventState.cursor < signals.length) {
-          if (eventState.cursor >= 128 || eventState.queue.length >= 64) { result = 'stepLimit'; break }
-          const signal = signals[eventState.cursor++] as EventSignal
-          if (signal === '◇') eventState.doors.a = true
-          if (signal === '○') eventState.doors.b = true
-          eventState.queue.push(signal)
+          const signal = signals[eventState.cursor] as EventSignal
+          if (!supplySignal(eventState, signal)) { result = 'stepLimit'; break }
           if (!eventFrame('arrival', null, signal)) break
         }
         const signal = eventState.queue.shift()!
@@ -222,6 +231,7 @@ export class Interpreter {
         }
         eventState.handler = { onId: handler.id, signal, serial: ++serial }
         if (!eventFrame('start', handler.id, signal)) break
+        eventState.phase = 'running'
         const first = frames.length
         const outcome = execute(handler.body)
         for (let i = first; i < frames.length; i++) frames[i].events = structuredClone(eventState)

@@ -272,3 +272,34 @@ it('edits return values and value-call inputs through the toolbar, restricts ret
   click('값 돌려주기 (return)')
   expect(document.functions[0].body).toHaveLength(2)
 })
+
+it('edits on connection symbols through buttons, swaps occupied signals and targets a handler body', () => {
+  let document: ProgramDocument = { main: [{ id: 'a', type: 'on', signal: '○', body: [] }, { id: 'b', type: 'on', signal: '◇', body: [] }], functions: [] }
+  const controller = new EditorController()
+  let tree: Node[] = []
+  const render = () => {
+    controller.configureDocument(document, next => { document = next }, false, 7)
+    hooks.cursor = 0
+    tree = nodes(Editor({ program: document.main, onChange: main => { document = { ...document, main } }, controller, eventsEnabled: true, palette: ['forward', 'repeat', 'on'] }))
+  }
+  const click = (label: string) => {
+    const button = tree.find(node => node.type === 'button' && node.props['aria-label'] === label)
+    expect(button).toBeDefined()
+    expect(button!.props.disabled).toBeFalsy()
+    ;(button!.props.onClick as () => void)(); render()
+  }
+  render()
+  controller.select('a'); render()
+  click('다이아몬드 신호')
+  expect(document.main).toMatchObject([{ signal: '◇' }, { signal: '○' }])
+  click('세모 신호')
+  expect(document.main[0]).toMatchObject({ signal: '△' })
+  controller.toggleTarget(); render()
+  expect(tree.find(node => node.type === 'button' && node.props['aria-label'] === 'on')?.props.disabled).toBe(true)
+  click('앞으로')
+  expect(document.main[0]).toMatchObject({ body: [{ type: 'forward' }] })
+  controller.clear(); render()
+  click('on')
+  expect(document.main[2]).toMatchObject({ signal: '◇', body: [] })
+  expect(tree.find(node => node.type === 'button' && node.props['aria-label'] === 'on')?.props.disabled).toBe(true)
+})

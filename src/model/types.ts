@@ -7,7 +7,7 @@ export type CallArgument = { kind: 'number'; value: number } | { kind: 'A' }
 export type ReturnValue = CallArgument | { kind: 'param' } | { kind: 'ahead' }
 export type ValueCall = { fn: string; arg?: CallArgument }
 export type EventSignal = '◇' | '○' | '△'
-export type EventState = { cursor: number; queue: EventSignal[]; handler?: { onId: string; signal: EventSignal; serial: number }; doors: { a: boolean; b: boolean }; phase: 'idle' | 'arrival' | 'start' | 'end' | 'unconnected'; signal?: EventSignal }
+export type EventState = { cursor: number; queue: EventSignal[]; handler?: { onId: string; signal: EventSignal; serial: number }; doors: { a: boolean; b: boolean }; phase: 'idle' | 'arrival' | 'start' | 'running' | 'end' | 'unconnected'; signal?: EventSignal }
 export type Block =
   | { id: string; type: 'forward' | 'turnLeft' | 'turnRight' }
   | { id: string; type: 'on'; signal: EventSignal; body: Block[] }

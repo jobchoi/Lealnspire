@@ -8,7 +8,7 @@ import { HomePage, RecordDialog } from './HomePage'
 import { StageSelectPage } from './StageSelectPage'
 import { PlayPage } from './PlayPage'
 import { createProgressStore } from '../../model/ProgressRepository'
-import { stages, bonusStages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, isLastStage } from '../../model/stages'
+import { stages, bonusStages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, isLastStage } from '../../model/stages'
 import { t, i18n } from '../../i18n/I18n'
 
 const noop = () => {}
@@ -22,7 +22,7 @@ describe('화면 렌더링', () => {
     expect(home()).toContain(t('continue'))
     for (const stage of stages) store.completeStage(stage.id, 3, [])
     expect(home()).toContain(t('continue'))
-    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages]) store.completeStage(stage.id, 3, [])
+    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages, ...unit9Stages]) store.completeStage(stage.id, 3, [])
     expect(home()).not.toContain(t('continue'))
   })
   it('정규 8개와 보너스 2개 카드, 잠김, 최고 별을 표시하고 이전 완료 시 다음 카드가 열린다', () => {
@@ -395,6 +395,40 @@ it('renders unit 8 return transfer, sensor observation, skipped blocks and compl
         expect(renderToString(<PlayPage stage={stage} progressStore={store} controller={game} onList={noop} onNext={noop} lastStage />)).toContain(t('unit8Congratulations'))
         game.dispose()
       }
+    }
+  } finally { i18n.locale = original }
+})
+
+it('renders signal scenarios, locks, dispatch, unconnected notices and unit9 completion in ko/en × three worlds', () => {
+  const original = i18n.locale
+  try {
+    for (const locale of ['ko', 'en']) for (const world of ['sketchbook', 'train', 'handheld'] as const) {
+      i18n.locale = locale
+      const store = createProgressStore()
+      const stage = { ...unit9Stages[1], world }
+      const game = new GameController(stage, store)
+      game.edit(stage.solution)
+      game.selectVariant(1)
+      const draw = () => renderToString(<PlayPage stage={stage} progressStore={store} controller={game} onList={noop} onNext={noop} lastStage />)
+      const before = draw()
+      expect(before).toContain(t('events.closed'))
+      expect(before).toContain(t('events.upcoming'))
+      expect(before).toContain(t('events.queue'))
+      expect(before).toContain(t('events.running'))
+      expect(before).toContain(t('events.notice').replaceAll("'", '&#x27;'))
+      expect(before).toContain('scenario-signals')
+      expect(before).toContain(t('events.tile', { order: 1, signal: t('events.diamond') }))
+      while (game.frame?.events?.phase !== 'unconnected') game.step()
+      const unconnected = draw()
+      expect(unconnected).toContain(t('events.unconnected'))
+      expect(unconnected).toContain('data-door="a" data-open="true"')
+      expect(unconnected).toContain('data-door="b" data-open="false"')
+      while (game.frame?.events?.handler?.signal !== '○') game.step()
+      expect(draw()).toContain('data-block-id="u92-circle" class="block-tile block-on block-active"')
+      while (!game.finished) game.step()
+      expect(draw()).toContain(t('unit9Congratulations'))
+      game.dispose()
+      expect(renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)).toContain(t('unit9'))
     }
   } finally { i18n.locale = original }
 })

@@ -5,7 +5,7 @@ export function boardCells(stage: Stage, position?: Position, highlight?: HintHi
   const highlighted = highlight ? hintCells(stage, highlight) : new Set<string>()
   const robot = position ?? grid.start
   return { width: grid.width, cells: stage.grid.flatMap((row, y) => [...row].map((_, x) => ({
-    hint: highlighted.has(GridModel.cellKey({ x, y })), key: GridModel.cellKey({ x, y }), wall: grid.walls.has(GridModel.cellKey({ x, y })),
+    door: grid.doors.get(GridModel.cellKey({ x, y })), hint: highlighted.has(GridModel.cellKey({ x, y })), key: GridModel.cellKey({ x, y }), wall: grid.walls.has(GridModel.cellKey({ x, y })),
     goal: x === grid.goal.x && y === grid.goal.y, occupied: x === robot.x && y === robot.y,
   }))) }
 }

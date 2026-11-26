@@ -76,7 +76,8 @@
     "while": "앞이 열려 있는 동안",
     "set": "상자 A에 값 넣기",
     "change": "상자 A 1 바꾸기",
-    "return": "값 돌려주기 (return)"
+    "return": "값 돌려주기 (return)",
+    "on": "on"
   },
   "tools": "블록 작업 막대",
   "chooseTile": "블록을 눌러 선택하세요.",
@@ -140,7 +141,8 @@
       "forward": "앞으로",
       "turnLeft": "왼쪽",
       "turnRight": "오른쪽",
-      "return": "return"
+      "return": "return",
+      "on": "on"
     },
     "train": {
       "name": "기차 마을",
@@ -151,7 +153,8 @@
       "forward": "앞으로 칸",
       "turnLeft": "왼쪽 칸",
       "turnRight": "오른쪽 칸",
-      "return": "return"
+      "return": "return",
+      "on": "on"
     },
     "handheld": {
       "name": "나의 게임기",
@@ -162,7 +165,8 @@
       "forward": "앞으로",
       "turnLeft": "왼쪽",
       "turnRight": "오른쪽",
-      "return": "return"
+      "return": "return",
+      "on": "on"
     }
   },
   "stage1Hint1": "로봇과 별 사이의 칸을 세어 보세요.",
@@ -447,9 +451,46 @@
     "received": "별 함수가 {value}를 돌려줬어요.",
     "skipped": "이번 호출에서 실행 안 함",
     "sourceShort": "↩ 값",
-    "repeat": {"star": "{order}번 반복: 별 함수가 돌려준 값만큼", "moon": "{order}번 반복: 달 함수가 돌려준 값만큼"},
+    "repeat": {
+      "star": "{order}번 반복: 별 함수가 돌려준 값만큼",
+      "moon": "{order}번 반복: 달 함수가 돌려준 값만큼"
+    },
     "source": "반환값 원천 바꾸기",
     "repeatSource": "반복 횟수 원천 바꾸기",
     "output": "돌려주는 값 (return)"
+  },
+  "unit9": "9단원: 이벤트 (event)",
+  "unit9Congratulations": "9단원 완주!",
+  "u91Title": "신호가 와야 출발",
+  "u91Goal": "문이 닫혀 있어요. 신호가 오면 움직이도록 연결해요.",
+  "u91Hint1": "main에 블록을 놓으면 언제 실행되나요? 그때 문은 열려 있나요?",
+  "u91Hint2": "on ◇ 안의 블록은 ◇ 신호가 올 때 실행돼요.",
+  "u92Title": "연결과 순서",
+  "u92Goal": "신호마다 처리기를 연결해요. 처리기는 신호가 온 순서대로 하나씩 실행돼요.",
+  "u92Hint1": "첫 신호 뒤에 로봇은 어디까지 갈 수 있나요?",
+  "u92Hint2": "카드를 놓은 순서와 실행 순서는 같을까요? 신호 순서를 보세요.",
+  "u93Title": "잘못 연결한 처리기",
+  "u93Goal": "미리 놓인 코드를 고쳐요. 몸체는 맞는데 연결이 바뀌었어요.",
+  "u93Hint1": "실행해 보세요. 첫 신호 ◇에 어떤 처리기가 실행되나요?",
+  "u93Hint2": "처리기 머리의 신호 기호를 바꿔 보세요.",
+  "events": {
+    "tile": "{order}번 신호 {signal}가 오면",
+    "diamond": "다이아몬드 신호",
+    "circle": "동그라미 신호",
+    "triangle": "세모 신호",
+    "arrival": "{signal}가 왔어요.",
+    "unconnected": "연결된 처리기가 없어요. 아무 일도 없어요.",
+    "open": "문이 열렸어요",
+    "closed": "문이 닫혀 있어요",
+    "queue": "기다리는 신호",
+    "upcoming": "앞으로 올 신호",
+    "notice": "on 카드는 놓인 순서대로 실행되지 않아요. 신호가 와야 실행돼요.",
+    "target": "{order}번 처리기 안에 넣는 중",
+    "running": "실행 중 처리기",
+    "end": "처리기가 끝났어요.",
+    "idle": "기다리는 중",
+    "connection": "연결할 신호",
+    "swap": "이미 연결된 신호를 고르면 두 처리기의 연결이 서로 바뀌어요.",
+    "empty": "없음"
   }
 }

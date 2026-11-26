@@ -151,5 +151,19 @@ export const unit8Stages: Stage[] = [
   returnPuzzle(2, 'train', [['.G', '.#', 'S#'], ['.G', '.#', '.#', '.#', 'S#']], 8),
   returnPuzzle(3, 'handheld', [['##G', '##.', 'S..'], ['####G', '####.', '####.', 'S....']], 7),
 ]
-export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages]
-export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)
+const eventPuzzle = (number: number, world: Stage['world'], grid: string[], signals: string[][], budget: number): Stage => {
+  const forward = (id: string): Block => ({ id, type: 'repeat', count: 2, body: [{ id: `${id}-f`, type: 'forward' }] })
+  const solution: Block[] = [{ id: `u9${number}-diamond`, type: 'on', signal: '◇', body: [forward(`u9${number}-a`)] }]
+  if (number > 1) solution.push({ id: `u9${number}-circle`, type: 'on', signal: '○', body: [...(number === 3 ? [{ id: 'u93-left', type: 'turnLeft' as const }] : []), forward(`u9${number}-b`)] })
+  return { id: `u9-${number}`, world, events: true, grid, variants: [grid, [...grid]], signals, startDir: 'E', maxBlocks: budget, starBlocks: budget,
+    title: `u9${number}Title`, goal: `u9${number}Goal`, hints: { keys: [`u9${number}Hint1`, `u9${number}Hint2`], highlight: number === 2 ? 'path' : 'start' },
+    palette: ['forward', 'turnLeft', 'turnRight', 'repeat', 'on'], solution,
+    ...(number === 3 ? { initialProgram: solution.map(block => block.type === 'on' ? { ...structuredClone(block), signal: block.signal === '◇' ? '○' as const : '◇' as const } : block) } : {}) }
+}
+export const unit9Stages: Stage[] = [
+  eventPuzzle(1, 'sketchbook', ['#####', '#SaG#', '#####'], [['◇'], ['△', '◇']], 3),
+  eventPuzzle(2, 'train', ['#######', '#Sa.bG#', '#######'], [['◇', '○'], ['◇', '△', '○']], 6),
+  eventPuzzle(3, 'handheld', ['###G#', '###.#', '#Sa.#', '#####'], [['◇', '○'], ['△', '◇', '○']], 7),
+]
+export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages, ...unit9Stages]
+export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)

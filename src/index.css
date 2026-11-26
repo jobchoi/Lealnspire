@@ -944,3 +944,46 @@ button small { display: block; font-size: .75rem; }
  .play-page.conditions-page .map-panel .art-board,.play-page.conditions-page .map-panel .train-island { max-height:calc(100dvh - 350px); }
  .play-page.conditions-page.theme-handheld .map-panel .board.art-board { max-height:calc(100dvh - 500px); }
 }
+
+/* T67: signal connections use shapes, locks and labels in every world.
+   The T64 desktop columns and existing compact board/editor rows remain intact. */
+.play-page.events-page .block-on { --c:#5b327b; background:#eee3f8; color:#412256; border:2px solid #5b327b; }
+.events-page .on-frame { border-color:#5b327b; border-style:double; }
+.events-page .on-frame:has(.block-active) { outline:3px solid #174c86; outline-offset:1px; }
+.events-page .event-notice { flex-shrink:0; margin:2px 0; max-height:32px; overflow:auto; font:12px/16px sans-serif; color:#412256; }
+.events-page .tile-toolbar { position:static; flex-shrink:0; flex-wrap:nowrap; overflow-x:auto; min-height:44px; padding:0; }
+.events-page .tile-toolbar button { flex:0 0 44px; min-width:44px; min-height:44px; height:44px; }
+.events-page .signal-picker { display:flex; gap:2px; flex-shrink:0; }
+.events-page .signal-picker button { padding:6px; background:#fff; color:#412256; border:2px solid #5b327b; }
+.events-page .signal-picker button[aria-pressed=true] { background:#412256; color:#fff; border:4px double #fff; outline:2px solid #412256; outline-offset:-2px; }
+.events-page .workspace-shell { display:flex; flex-direction:column; min-height:0; }
+.play-page.events-page .has-selection .workspace { padding-top:5px; }
+.play-page.events-page .palette-row .palette { display:grid; flex:1; width:auto; min-width:0; grid-template-columns:repeat(5,minmax(44px,1fr)); grid-template-rows:52px; height:52px; padding:0; gap:3px; }
+.play-page.events-page .palette-row .palette button { grid-row:auto; grid-column:auto; width:100%; height:52px; min-width:44px; min-height:44px; aspect-ratio:auto; transform:none; padding:0; border-radius:8px; box-shadow:none; }
+.play-page.events-page .palette::before,.play-page.events-page .palette::after { display:none; }
+.play-page.events-page .palette .block-on .theme-symbol { width:24px; height:24px; }
+.events-page .event-state { width:100%; flex-shrink:0; color:#30253b; background:#fffaf0; border:1px solid #5b327b; border-radius:4px; box-sizing:border-box; }
+.events-page .event-pipeline { display:flex; align-items:center; gap:3px; padding:2px; }
+.events-page .event-pipeline > div { flex:1; min-width:0; }
+.events-page .event-pipeline small { display:block; min-height:24px; font:10px/12px sans-serif; white-space:normal; word-break:keep-all; }
+.events-page .event-pipeline > div > span { display:flex; align-items:center; gap:2px; min-height:18px; max-height:20px; overflow:auto; font:10px/18px sans-serif; }
+.events-page .event-pipeline svg { width:16px; height:16px; }
+.events-page .event-pipeline span[role=img] { flex-shrink:0; display:inline-flex; }
+.events-page .event-state p { margin:0; max-height:20px; overflow:auto; font:11px/18px sans-serif; border-top:1px dashed #5b327b; }
+.events-page .scenario-signals { display:flex; align-items:center; gap:2px; }
+.play-page.events-page .variant-cards .scenario-signals svg { width:14px; height:14px; }
+.events-page .sensor-board-panel { display:flex; flex-direction:column; align-items:center; min-height:0; min-width:0; }
+.events-page .board-door { color:#49351a; }
+@media(max-width:700px) {
+ .play-page.events-page .palette-row .palette { height:44px; grid-template-rows:44px; }
+ .play-page.events-page .palette-row .palette button { height:44px; }
+ .events-page .workspace .block-on .block-symbol svg { width:20px; height:20px; }
+ .events-page .workspace .block-on strong { font:11px/12px monospace; }
+ .events-page .event-notice { max-height:16px; font-size:10px; }
+ .play-page.events-page .variant-cards button > svg { display:none; }
+ .play-page.events-page .variant-cards button { flex-wrap:wrap; align-content:center; }
+ .play-page.events-page .map-panel .board { flex:1 1 auto; min-height:0; }
+}
+@media(prefers-reduced-motion:reduce) {
+ .events-page .block-on,.events-page .board-door,.events-page .on-frame { animation:none; transition:none; }
+}

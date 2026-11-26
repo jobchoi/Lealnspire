@@ -526,5 +526,21 @@
       "ko": [],
       "en": []
     }
+  },
+  "on": {
+    "id": "on",
+    "keyword": "on",
+    "ko": {
+      "name": "신호 처리기",
+      "short": "신호가 오면 연결된 몸체를 실행해요."
+    },
+    "en": {
+      "name": "Signal handler",
+      "short": "Runs its connected body when a signal arrives."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
   }
 }

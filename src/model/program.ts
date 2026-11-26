@@ -34,6 +34,7 @@ export class Program {
   setCount(path: number[], count: number): Program { return new Program(Program.setRepeatCount(this.tree, path, count)) }
   static addBlock(program: BlockTree, block: Block, parentPath: number[] = []): BlockTree {
     if (countBlocks(program) + countBlocks([block]) > MAX_PROGRAM_BLOCKS) return program
+    if (block.type === 'on' && (parentPath.length || program.some(item => item.type === 'on' && item.signal === block.signal))) return program
     return updateList(program, parentPath, list => [...list, block])
   }
   static deleteBlock(program: BlockTree, path: number[]): BlockTree {
@@ -58,6 +59,15 @@ export class Program {
       if (block.type !== 'repeat') throw new Error('Block is not a repeat')
       return list.map((item, i) => i === index ? { ...block, count } : item)
     })
+  }
+  static setSignal(program: BlockTree, path: number[], signal: import('./types').EventSignal): BlockTree {
+    if (path.length !== 1 || blockAt(program, path)?.type !== 'on' || !['◇', '○', '△'].includes(signal)) return program
+    return Program.editVariableBlock(program, path, block => {
+      if (block.type !== 'on') return block
+      // Swapping occupied connections lets the repair puzzle keep both bodies intact.
+      return { ...block, signal }
+    }).map((block, index) => block.type === 'on' && index !== path[0] && block.signal === signal
+      ? { ...block, signal: (program[path[0]] as Extract<Block, { type: 'on' }>).signal } : block)
   }
   static setVariableValue(program: BlockTree, path: number[], value: number): BlockTree {
     if (!Number.isInteger(value) || value < 0 || value > 20) throw new Error('Invalid variable value')
@@ -186,7 +196,7 @@ export function validDocument(value: unknown, palette?: Block['type'][], allowVa
       if (palette && !palette.includes(block.type as Block['type'])) return false
       switch (block.type) {
       case 'on':
-        if (!allowEvents || inFunction || depth !== 1 || !['◇', '○', '△'].includes(String(block.signal)) || signals.has(String(block.signal)) || !Array.isArray(block.body)) return false
+        if (!allowEvents || inFunction || depth !== 1 || typeof block.signal !== 'string' || !['◇', '○', '△'].includes(block.signal) || signals.has(String(block.signal)) || !Array.isArray(block.body)) return false
         signals.add(String(block.signal))
         if (!list(block.body, depth + 1, false)) return false
         break

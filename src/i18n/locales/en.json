@@ -76,7 +76,8 @@
     "while": "while the path ahead is clear",
     "set": "Set box A",
     "change": "Change box A by 1",
-    "return": "Return a value (return)"
+    "return": "Return a value (return)",
+    "on": "on"
   },
   "tools": "Block tools",
   "chooseTile": "Tap a block to select it.",
@@ -140,7 +141,8 @@
       "forward": "Forward",
       "turnLeft": "Left",
       "turnRight": "Right",
-      "return": "return"
+      "return": "return",
+      "on": "on"
     },
     "train": {
       "name": "Train Town",
@@ -151,7 +153,8 @@
       "forward": "Forward car",
       "turnLeft": "Left car",
       "turnRight": "Right car",
-      "return": "return"
+      "return": "return",
+      "on": "on"
     },
     "handheld": {
       "name": "Pocket Console",
@@ -162,7 +165,8 @@
       "forward": "Forward",
       "turnLeft": "Left",
       "turnRight": "Right",
-      "return": "return"
+      "return": "return",
+      "on": "on"
     }
   },
   "stage1Hint1": "Count the cells between the robot and the star.",
@@ -447,9 +451,46 @@
     "received": "The star function returned {value}.",
     "skipped": "Not run this call",
     "sourceShort": "↩ Value",
-    "repeat": {"star": "Step {order}: repeat as many times as the star function returns", "moon": "Step {order}: repeat as many times as the moon function returns"},
+    "repeat": {
+      "star": "Step {order}: repeat as many times as the star function returns",
+      "moon": "Step {order}: repeat as many times as the moon function returns"
+    },
     "source": "Change return value source",
     "repeatSource": "Change repeat count source",
     "output": "Returned value (return)"
+  },
+  "unit9": "Unit 9: Events",
+  "unit9Congratulations": "Unit 9 complete!",
+  "u91Title": "Wait for the Signal",
+  "u91Goal": "The door is closed. Connect code that runs when the signal comes.",
+  "u91Hint1": "When do blocks in main run? Is the door open then?",
+  "u91Hint2": "Blocks inside on ◇ run when the ◇ signal comes.",
+  "u92Title": "Connections and Order",
+  "u92Goal": "Connect a handler for each signal. Handlers run one at a time, in the order the signals come.",
+  "u92Hint1": "How far can the robot go after the first signal?",
+  "u92Hint2": "Is the order of the cards the order they run? Look at the signal order.",
+  "u93Title": "Mixed-Up Handlers",
+  "u93Goal": "Fix the code that's already there. The bodies are right, but the connections are swapped.",
+  "u93Hint1": "Run it. Which handler runs for the first signal ◇?",
+  "u93Hint2": "Try changing the signal symbol on the handlers.",
+  "events": {
+    "tile": "Step {order}: when signal {signal} comes",
+    "diamond": "diamond signal",
+    "circle": "circle signal",
+    "triangle": "triangle signal",
+    "arrival": "{signal} arrived.",
+    "unconnected": "No handler is connected. Nothing happens.",
+    "open": "The door opened",
+    "closed": "The door is closed",
+    "queue": "Waiting signals",
+    "upcoming": "Signals to come",
+    "notice": "on cards don't run in the order you place them. They run when their signal comes.",
+    "target": "Adding inside handler {order}",
+    "running": "Running handler",
+    "end": "The handler finished.",
+    "idle": "Waiting",
+    "connection": "Connected signal",
+    "swap": "Choosing an occupied signal swaps the two handler connections.",
+    "empty": "None"
   }
 }
