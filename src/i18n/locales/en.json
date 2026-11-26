@@ -351,5 +351,33 @@
     "setTile": "Block {order}: Set box A to {value}",
     "changeAddTile": "Block {order}: Add 1 to box A",
     "changeSubtractTile": "Block {order}: Subtract 1 from box A"
-  }
+  },
+  "unit6": "Unit 6: Logic",
+  "unit6Congratulations": "You completed unit 6!",
+  "logic": {
+    "operator": "Condition operator",
+    "single": "Single",
+    "left": "First condition",
+    "right": "Second condition",
+    "clearAhead": "Path ahead is clear",
+    "blockedAhead": "Path ahead is blocked",
+    "aIsZero": "A is 0",
+    "true": "True",
+    "false": "False",
+    "result": "Result",
+    "predict": "Look at both conditions and predict the result.",
+    "check": "Check answers"
+  },
+  "u61Title": "Logic puzzle 1",
+  "u61Goal": "Reach the goal on every map.",
+  "u61Hint1": "Look at the path and box A.",
+  "u61Hint2": "Compare the two condition results.",
+  "u62Title": "Logic puzzle 2",
+  "u62Goal": "Reach the goal on every map.",
+  "u62Hint1": "Look at the path and box A.",
+  "u62Hint2": "Compare the two condition results.",
+  "u63Title": "Logic puzzle 3",
+  "u63Goal": "Reach the goal on every map.",
+  "u63Hint1": "Look at the path and box A.",
+  "u63Hint2": "Compare the two condition results."
 }

@@ -2,12 +2,24 @@ import { hasBody } from '../../model/editor'
 import { Symbol } from '../theme/Symbols'
 import type { CSSProperties } from 'react'
 import { defaultTheme, type Theme } from '../theme/defaultTheme'
-import type { Frame, Program, FunctionDef } from '../../model/types'
+import type { Frame, Program, FunctionDef, Condition } from '../../model/types'
 import glossary from '../../i18n/glossary.json'
 import { t } from '../../i18n/I18n'
 import './BlockTiles.css'
 
 type Props = { functions?: FunctionDef[]; call?: Frame['call']; theme?: Theme; program: Program; selectedId: string | null; targetId: string | null; targetElse?: boolean; activeBlockId?: string | null; check?: Frame['check']; checks?: NonNullable<Frame['check']>[]; loops?: Frame['loops']; failedBlockId?: string | null; locked: boolean; onSelect: (id: string) => void; parent?: number[]; offset?: number; branch?: string; ribbons?: { ink: string; selected: boolean; conditional: boolean; skipped: boolean }[] }
+
+function conditionText(condition: Condition): string {
+  if (condition.kind === 'atom') return t(`logic.${condition.atom}`)
+  if (condition.kind === 'not') return `${glossary.not.keyword} ${conditionText(condition.operand)}`
+  return `${conditionText(condition.left)} ${condition.kind === 'and' ? glossary.and.keyword : glossary.or.keyword} ${conditionText(condition.right)}`
+}
+
+function compactCondition(condition: Condition): string {
+  if (condition.kind === 'atom') return condition.atom === 'aIsZero' ? 'A=0' : condition.atom === 'clearAhead' ? '↑' : '⊣'
+  if (condition.kind === 'not') return `${glossary.not.keyword} ${compactCondition(condition.operand)}`
+  return `${compactCondition(condition.left)} ${condition.kind === 'and' ? glossary.and.keyword : glossary.or.keyword} ${compactCondition(condition.right)}`
+}
 
 export function BlockTiles({ functions, call, theme = defaultTheme, program, selectedId, targetId, targetElse = false, activeBlockId, check, checks, loops, failedBlockId, locked, onSelect, parent = [], offset = 0, branch, ribbons = [] }: Props) {
   return <ol className="tile-list">{program.map((block, index) => {
@@ -21,7 +33,8 @@ export function BlockTiles({ functions, call, theme = defaultTheme, program, sel
     const tone = path.reduce((sum, i) => sum + i, parent.length) % 3
     const lanes = hasBody(block) ? [...ribbons, { ink: block.type === 'while' ? '#15665b' : block.type === 'if' ? '#69439b' : ['#c56030', '#7b529c', '#237e81'][tone], conditional: block.type === 'if', skipped: branchCheck?.blockId === block.id && !branchCheck.result, selected: selected || targetId === block.id }] : ribbons
     const branchSuffix = branch ? ` (${branch})` : ''
-    const tile = <button type="button" data-block-id={block.id} className={`block-tile ${theme.blockClass(block.type)}${active ? ' block-active' : ''}${failedBlockId === block.id ? ' block-failed' : ''}${loop ? ' has-loop-progress' : ''}`} aria-label={(block.type === 'set' ? t('variables.setTile', { order, value: block.value }) : block.type === 'change' ? t(block.by === 1 ? 'variables.changeAddTile' : 'variables.changeSubtractTile', { order }) : block.type === 'repeat' ? t('repeatTile', { order, count: block.countVariable ?? block.count ?? 3 }) : t('tile', { order, name: fn ? t(`functions.call.${fn.icon}`) : theme.blockName(block.type) })) + branchSuffix} aria-pressed={selected} aria-current={active ? 'step' : undefined} aria-disabled={locked} disabled={locked} onClick={() => onSelect(block.id)}>
+    const tile = <button type="button" data-block-id={block.id} className={`block-tile ${theme.blockClass(block.type)}${active ? ' block-active' : ''}${failedBlockId === block.id ? ' block-failed' : ''}${loop ? ' has-loop-progress' : ''}`} aria-label={(block.type === 'set' ? t('variables.setTile', { order, value: block.value }) : block.type === 'change' ? t(block.by === 1 ? 'variables.changeAddTile' : 'variables.changeSubtractTile', { order }) : block.type === 'repeat' ? t('repeatTile', { order, count: block.countVariable ?? block.count ?? 3 }) : t('tile', { order, name: fn ? t(`functions.call.${fn.icon}`) : theme.blockName(block.type) })) + ((block.type === 'if' || block.type === 'while') && typeof block.condition !== 'string' ? `: ${conditionText(block.condition)}` : '') + branchSuffix} aria-pressed={selected} aria-current={active ? 'step' : undefined} aria-disabled={locked} disabled={locked} onClick={() => onSelect(block.id)}>
+      {(block.type === 'if' || block.type === 'while') && typeof block.condition !== 'string' && <span className="logic-condition" aria-hidden="true">{compactCondition(block.condition)}</span>}
       {loop && <span className="loop-progress" role="img" aria-label={loop.count === undefined ? t('whileIteration', { iteration: loop.iteration }) : t('loopIteration', { iteration: loop.iteration, count: loop.count })}>{loop.count === undefined ? loop.iteration : `${loop.iteration}/${block.type === 'repeat' && block.countVariable ? `A(=${loop.count})` : loop.count}`}</span>}
       {failedBlockId === block.id && <span className="failure-badge" role="img" aria-label={t('failureBlock')}>!</span>}
       {lanes.map((lane, depth) => <span key={depth} className={`repeat-ribbon${lane.conditional ? ' if-ribbon' : ''}${lane.skipped ? ' ribbon-skipped' : ''}`} aria-hidden="true" data-ribbon-depth={depth + 1} style={{ '--ribbon-depth': depth, '--ribbon-ink': lane.selected ? '#2563eb' : lane.ink } as CSSProperties} />)}

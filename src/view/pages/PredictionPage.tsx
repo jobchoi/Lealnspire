@@ -1,3 +1,5 @@
+import glossary from '../../i18n/glossary.json'
+import { useState } from 'react'
 import { useController } from '../hooks/useController'
 import { PredictionController } from '../../controller/PredictionController'
 import { Board } from '../components/Board'
@@ -8,6 +10,8 @@ import { isometric } from '../theme/isometric'
 import { t } from '../../i18n/I18n'
 import './PredictionPage.css'
 export function PredictionPage({ controller, onBack }: { controller: PredictionController; onBack: () => void }) {
+  const [answers, setAnswers] = useState<(boolean | null)[]>(Array(8).fill(null))
+  const [checked, setChecked] = useState(false)
   const { selected } = useController(controller)
   const playback = useController(controller.game)
   const { game, challenge } = controller
@@ -15,6 +19,11 @@ export function PredictionPage({ controller, onBack }: { controller: PredictionC
   const train = stage.world === 'train', size = stage.world === 'handheld' ? 16 : 80
   const w = stage.grid[0].length, h = stage.grid.length
   const label = (index: number) => t('prediction.candidate', { letter: 'ABC'[index], row: challenge.choices[index].pos.y + 1, column: challenge.choices[index].pos.x + 1, direction: t(`directions.${challenge.choices[index].dir}`) })
+  if (challenge.id === 'p-u6-1') return <section className="prediction-page">
+    <h1 tabIndex={-1} data-page-title>{t('prediction.title')}</h1><button type="button" onClick={onBack}>{t('prediction.back')}</button><p>{t('logic.predict')}</p><p>P: {t('logic.clearAhead')} · Q: {t('logic.aIsZero')}</p>
+    <div className="logic-prediction">{[[true, true], [true, false], [false, true], [false, false]].map(([p, q], row) => <div key={row}><span>P: {t(p ? 'logic.true' : 'logic.false')} · Q: {t(q ? 'logic.true' : 'logic.false')}</span>{(['and', 'or'] as const).map((op, col) => { const index = row * 2 + col, actual = col === 0 ? p && q : p || q; return <label key={op}>{op === glossary.and.keyword ? glossary.and.keyword : glossary.or.keyword} <select aria-label={`${row + 1} ${op === glossary.and.keyword ? glossary.and.keyword : glossary.or.keyword}`} disabled={checked} value={answers[index] === null ? '' : String(answers[index])} onChange={event => setAnswers(old => old.map((value, i) => i === index ? event.target.value === 'true' : value))}><option value="">—</option><option value="true">{t('logic.true')}</option><option value="false">{t('logic.false')}</option></select>{checked && <span>{answers[index] === actual ? '✓' : '✕'} {t(actual ? 'logic.true' : 'logic.false')}</span>}</label> })}</div>)}</div>
+    {checked ? <button type="button" onClick={() => { setChecked(false); setAnswers(Array(8).fill(null)) }}>{t('prediction.retry')}</button> : <button type="button" disabled={answers.some(value => value === null)} onClick={() => setChecked(true)}>{t('logic.check')}</button>}
+  </section>
   return <section className={`prediction-page theme-${stage.world}`}>
     <ConceptDefs /><h1 tabIndex={-1} data-page-title>{t('prediction.title')}</h1>
     <button type="button" onClick={onBack}>{t('prediction.back')}</button>

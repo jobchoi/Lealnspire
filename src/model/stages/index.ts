@@ -99,5 +99,14 @@ export const unit5Stages: Stage[] = [
   { id: 'u5-2', world: 'train', title: 'u52Title', goal: 'u52Goal', hints: { keys: ['u52Hint1', 'u52Hint2'], highlight: 'path' }, grid: ['#G...', '####.', '###S.'], variants: [['#G...', '####.', '###S.'], ['##G....', '######.', '######.', '####S..']], variantVariables: [{ A: 1 }, { A: 2 }], startDir: 'E', maxBlocks: 6, starBlocks: 6, palette: variablePalette, solution: [{ id: 'outer', type: 'repeat', count: 3, body: [variableRepeat('inner'), { id: 'left', type: 'turnLeft' }, { id: 'change', type: 'change', variable: 'A', by: 1 }] }] },
   { id: 'u5-3', world: 'handheld', title: 'u53Title', goal: 'u53Goal', hints: { keys: ['u53Hint1', 'u53Hint2'], highlight: 'start' }, grid: ['###G##', 'S.....'], variants: [['###G##', 'S.....']], variantVariables: [{ A: 0 }], startDir: 'E', maxBlocks: 5, starBlocks: 5, palette: variablePalette, initialProgram: [variableRepeat('repeat'), { id: 'set', type: 'set', variable: 'A', value: 3 }, ...variableFinish()], solution: [{ id: 'set', type: 'set', variable: 'A', value: 3 }, variableRepeat('repeat'), ...variableFinish()] },
 ]
-export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages]
-export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)
+const logicPuzzle = (number: number, world: Stage['world']): Stage => {
+  const north = [['#.#', '#SG', '###'], ['#G#', '#S.', '###'], ['#G#', '#S#', '###']]
+  const south = [['###', '#S#', '#G#'], ['###', '#S.', '#G#'], ['###', '#SG', '#.#']]
+  const variants = number === 2 ? south : north
+  const atom = (value: 'clearAhead' | 'blockedAhead' | 'aIsZero') => ({ kind: 'atom' as const, atom: value })
+  const make = (kind: 'and' | 'or'): Block[] => [{ id: 'if', type: 'if', condition: { kind, left: atom(number === 2 ? 'blockedAhead' : 'clearAhead'), right: atom('aIsZero') }, body: number === 2 ? [{ id: 'turn', type: 'turnRight' }, { id: 'f1', type: 'forward' }] : [{ id: 'f1', type: 'forward' }], else: number === 2 ? [{ id: 'f2', type: 'forward' }] : [{ id: 'turn', type: 'turnLeft' }, { id: 'f2', type: 'forward' }] }]
+  return { id: `u6-${number}`, world, title: `u6${number}Title`, goal: `u6${number}Goal`, hints: { keys: [`u6${number}Hint1`, `u6${number}Hint2`], highlight: 'walls' }, grid: variants[0], variants, variantVariables: (number === 2 ? [1, 0, 1] : [0, 1, 0]).map(A => ({ A })), startDir: 'E', maxBlocks: 4, starBlocks: 4, palette: ['forward', 'turnLeft', 'turnRight', 'if'], solution: make(number === 2 ? 'or' : 'and'), ...(number === 3 ? { initialProgram: make('or') } : {}) }
+}
+export const unit6Stages: Stage[] = [logicPuzzle(1, 'sketchbook'), logicPuzzle(2, 'train'), logicPuzzle(3, 'handheld')]
+export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages]
+export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)

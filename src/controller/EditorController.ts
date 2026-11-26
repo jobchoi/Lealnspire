@@ -1,7 +1,7 @@
 import { hasBody, blockAt, listAt } from '../model/editor'
 import { Observable } from './Observable'
 import { MAX_PROGRAM_BLOCKS, FunctionProgram, Program as ProgramModel } from '../model/program'
-import type { Block, Program, ProgramDocument, FunctionDef } from '../model/types'
+import type { Block, Program, ProgramDocument, FunctionDef, Condition } from '../model/types'
 export class EditorController extends Observable<{ selectedId: string | null; targetId: string | null; addedId: string | null }> {
   functionId: string | undefined
   functionTarget = false
@@ -136,5 +136,11 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   setVariableValue = (value: number) => { if (this.selectedPath && this.selectedBlock?.type === 'set' && this.prepareEdit()) this.change(ProgramModel.setVariableValue(this.editProgram, this.selectedPath, value)) }
   toggleChange = () => { if (this.selectedPath && this.selectedBlock?.type === 'change' && this.prepareEdit()) this.change(ProgramModel.toggleChange(this.editProgram, this.selectedPath)) }
   toggleRepeatSource = () => { if (this.selectedPath && this.selectedBlock?.type === 'repeat' && this.prepareEdit()) this.change(ProgramModel.setRepeatSource(this.editProgram, this.selectedPath, this.selectedBlock.countVariable ? 'number' : 'A')) }
+  setCondition = (condition: Condition) => {
+    if (!this.selectedPath || !this.prepareEdit()) return
+    const next = structuredClone(this.editProgram)
+    const block = blockAt(next, this.selectedPath)
+    if (block?.type === 'if' || block?.type === 'while') { block.condition = condition; this.change(next) }
+  }
   setCount = (count: number) => { if (this.selectedPath && this.prepareEdit()) this.change(new ProgramModel(this.editProgram).setCount(this.selectedPath, count).toBlocks()) }
 }

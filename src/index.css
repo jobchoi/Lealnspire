@@ -777,3 +777,13 @@ button small { display: block; font-size: .75rem; }
 
 /* Goals keep their intrinsic height above the map and its cards. */
 .play-page > .stage-goal { flex-shrink:0; max-height:none; overflow:visible; }
+
+.logic-results, .logic-prediction > div { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.logic-results > span, .logic-results > strong { padding: .35rem; border: 2px solid currentColor; border-radius: .4rem; background: #fff; color: #172554; }
+.logic-editor { display: flex; flex-wrap: wrap; gap: .4rem; background: white; color: #172554; }
+.logic-editor select, .logic-prediction select { min-height: 44px; max-width: 100%; }
+.block-tile:has(.logic-condition) .logic-condition { position:absolute; left:2px; right:2px; bottom:12px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font: bold 8px/10px sans-serif; text-align:center; }
+.block-tile:has(.logic-condition) :is(.block-symbol,.sensor-icon) { display:none; }
+.logic-operator { font: bold 14px/1 monospace; color: #172554; }
+.logic-results .logic-true { background: #dcfce7; color: #14532d; }
+.logic-results .logic-false { background: #fee2e2; color: #7f1d1d; }

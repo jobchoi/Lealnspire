@@ -478,5 +478,53 @@
       "ko": [],
       "en": []
     }
+  },
+  "not": {
+    "id": "not",
+    "keyword": "not",
+    "ko": {
+      "name": "not",
+      "short": "결과를 반대로 바꿔요."
+    },
+    "en": {
+      "name": "not",
+      "short": "Reverses the result."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "and": {
+    "id": "and",
+    "keyword": "and",
+    "ko": {
+      "name": "and",
+      "short": "두 조건이 모두 참일 때 참이에요."
+    },
+    "en": {
+      "name": "and",
+      "short": "True when both conditions are true."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
+  },
+  "or": {
+    "id": "or",
+    "keyword": "or",
+    "ko": {
+      "name": "or",
+      "short": "적어도 한 조건이 참이면 참이에요."
+    },
+    "en": {
+      "name": "or",
+      "short": "True when at least one condition is true."
+    },
+    "avoid": {
+      "ko": [],
+      "en": []
+    }
   }
 }

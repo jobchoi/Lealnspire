@@ -91,11 +91,11 @@ it('reproduces the four-block atomic shortcut on all proposed unit 6 maps', () =
 it('documents old v2 reader rollback and resave loss with an independent legacy condition validator', () => {
   const oldValid = (condition: unknown) => condition === 'blockedAhead'
   const saved = { version: 2, stages: { [unit2Stages[0].id]: { completed: true, bestStars: 3, lastProgram: { main: [branch(atom('aIsZero'))], functions: [] } }, 'u6-1': { completed: true, bestStars: 3, lastProgram: { main: [], functions: [] } } } }
-  const oldStages = Object.fromEntries(Object.entries(saved.stages).filter(([id]) => allStages.some(s => s.id === id)).map(([id, entry]) => [id, { ...entry, lastProgram: oldValid((entry.lastProgram.main[0] as Extract<Block, { type: 'if' }> | undefined)?.condition) ? entry.lastProgram : { main: [], functions: [] } }]))
+  const oldStages = Object.fromEntries(Object.entries(saved.stages).filter(([id]) => allStages.some(s => !s.id.startsWith('u6-') && s.id === id)).map(([id, entry]) => [id, { ...entry, lastProgram: oldValid((entry.lastProgram.main[0] as Extract<Block, { type: 'if' }> | undefined)?.condition) ? entry.lastProgram : { main: [], functions: [] } }]))
   const rewritten = JSON.parse(JSON.stringify({ version: 2, stages: oldStages }))
   expect(rewritten.stages[unit2Stages[0].id]).toMatchObject({ completed: true, bestStars: 3, lastProgram: { main: [], functions: [] } })
   expect(rewritten.stages['u6-1']).toBeUndefined()
 })
 it('preserves all pre-change unit 1–5 solution results and frames', () => {
-  expect(Object.fromEntries(allStages.map(s => [s.id, runAll(s, { main: s.solution, functions: s.solutionFunctions ?? [] })]))).toEqual(baseline)
+  expect(Object.fromEntries(allStages.filter(s => !s.id.startsWith('u6-')).map(s => [s.id, runAll(s, { main: s.solution, functions: s.solutionFunctions ?? [] })]))).toEqual(baseline)
 })

@@ -2,31 +2,16 @@ import { expect, it } from 'vitest'
 import { runAll } from './interpreter'
 import { Program } from './program'
 import { allStages } from './stages'
-import type { Block, ConditionAtom, Stage } from './types'
+import type { Stage } from './types'
 
-const atom = (a: ConditionAtom) => ({ kind: 'atom' as const, atom: a })
-const branch = (kind: 'and' | 'or', left: ConditionAtom, turn: 'turnLeft' | 'turnRight'): Block[] => [{
-  id: 'if', type: 'if', condition: { kind, left: atom(left), right: atom('aIsZero') },
-  body: kind === 'and' ? [{ id: 'f1', type: 'forward' }] : [{ id: 'turn', type: turn }, { id: 'f1', type: 'forward' }],
-  else: kind === 'and' ? [{ id: 'turn', type: turn }, { id: 'f2', type: 'forward' }] : [{ id: 'f2', type: 'forward' }],
-}]
-const north = [['#.#', '#SG', '###'], ['#G#', '#S.', '###'], ['#G#', '#S#', '###']]
-const south = [['###', '#S#', '#G#'], ['###', '#S.', '#G#'], ['###', '#SG', '#.#']]
-const puzzles: Stage[] = [
-  { ...allStages[0], id: 'u6-1', grid: north[0], variants: north, variantVariables: [0, 1, 0].map(A => ({ A })), startDir: 'E', maxBlocks: 4, solution: branch('and', 'clearAhead', 'turnLeft') },
-  { ...allStages[0], id: 'u6-2', grid: south[0], variants: south, variantVariables: [1, 0, 1].map(A => ({ A })), startDir: 'E', maxBlocks: 4, solution: branch('or', 'blockedAhead', 'turnRight') },
-  { ...allStages[0], id: 'u6-3', grid: north[0], variants: north, variantVariables: [0, 1, 0].map(A => ({ A })), startDir: 'E', maxBlocks: 4, solution: branch('and', 'clearAhead', 'turnLeft') },
-]
+const puzzles = allStages.filter(stage => stage.id.startsWith('u6-'))
 
 it('solutions reach every goal and the original u6-3 code fails as specified', () => {
   for (const stage of puzzles) {
     expect(Program.countBlocks(stage.solution)).toBe(4)
     expect(runAll(stage, stage.solution).results.map(r => r.result)).toEqual(['success', 'success', 'success'])
   }
-  const initial = branch('and', 'clearAhead', 'turnLeft')
-  if (initial[0].type !== 'if' || typeof initial[0].condition === 'string') throw new Error('expected logical if')
-  initial[0].condition = { kind: 'or', left: atom('clearAhead'), right: atom('aIsZero') }
-  expect(runAll(puzzles[2], initial).results.map(r => r.result)).toEqual(['success', 'unfinished', 'collision'])
+  expect(runAll(puzzles[2], puzzles[2].initialProgram!).results.map(r => r.result)).toEqual(['success', 'unfinished', 'collision'])
 })
 
 // Every traversable non-goal pose, direction and relevant A value is represented.
@@ -80,3 +65,25 @@ for (const stage of puzzles) it(`${stage.id}: exhaust atomic programs through si
   expect(result.found[6]).not.toBeNull()
   expect(result.found.slice(1, 5)).toEqual([null, null, null, null])
 }, 120000)
+
+it('unlocks sequentially and isolates logic code by stage when restoring', async () => {
+  const { ProgressRepository, progressV2Key, isUnlocked } = await import('./ProgressRepository')
+  const data = new Map<string, string>()
+  const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => { data.set(key, value) } }
+  const store = new ProgressRepository(storage)
+  const first = allStages.indexOf(puzzles[0])
+  expect(isUnlocked(store.getProgress(), first)).toBe(false)
+  for (const stage of allStages.filter(stage => stage.variants && !stage.id.startsWith('u6-'))) store.completeStage(stage.id, 3, stage.solution)
+  for (const stage of allStages.slice(0, 8)) store.completeStage(stage.id, 3, stage.solution)
+  expect(isUnlocked(store.getProgress(), first)).toBe(true)
+  expect(isUnlocked(store.getProgress(), first + 1)).toBe(false)
+  store.completeStage(puzzles[0].id, 3, puzzles[0].solution)
+  expect(isUnlocked(store.getProgress(), first + 1)).toBe(true)
+  const raw = JSON.parse(data.get(progressV2Key)!)
+  raw.stages['u2-1'].lastProgram = { main: puzzles[0].solution, functions: [] }
+  data.set(progressV2Key, JSON.stringify(raw))
+  const restored = new ProgressRepository(storage)
+  expect(restored.getDocument(puzzles[0]).main).toEqual(puzzles[0].solution)
+  expect(restored.getDocument(allStages.find(stage => stage.id === 'u2-1')!).main).toEqual([])
+  expect(restored.getProgress().stages['u2-1'].completed).toBe(true)
+})

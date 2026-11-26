@@ -6,15 +6,18 @@ import { useEffect, useRef, useState } from 'react'
 import { MAX_PROGRAM_BLOCKS } from '../../model/program'
 import { EditorController } from '../../controller/EditorController'
 import { useController } from '../hooks/useController'
-import type { BlockType, Frame, Program } from '../../model/types'
+import type { BlockType, Frame, Program, Condition, ConditionAtom } from '../../model/types'
 import { BlockTiles } from './BlockTiles'
 import { Engine, Symbol } from '../theme/Symbols'
 import { t } from '../../i18n/I18n'
 
-type EditorProps = { theme?: Theme; program: Program; onChange: (program: Program) => void; maxBlocks?: number; locked?: boolean; activeBlockId?: string | null; conditions?: boolean; functionsEnabled?: boolean; variablesEnabled?: boolean; call?: Frame['call']; palette?: BlockType[]; check?: Frame['check']; checks?: NonNullable<Frame['check']>[]; loops?: Frame['loops']; failedBlockId?: string | null; controller?: EditorController }
+type EditorProps = { theme?: Theme; program: Program; onChange: (program: Program) => void; maxBlocks?: number; locked?: boolean; activeBlockId?: string | null; conditions?: boolean; logicEnabled?: boolean; functionsEnabled?: boolean; variablesEnabled?: boolean; call?: Frame['call']; palette?: BlockType[]; check?: Frame['check']; checks?: NonNullable<Frame['check']>[]; loops?: Frame['loops']; failedBlockId?: string | null; controller?: EditorController }
+const NOT = glossary.not.keyword as 'not'
+const AND = glossary.and.keyword as 'and'
+const OR = glossary.or.keyword as 'or'
 const types = defaultTheme.blockTypes
 
-export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, locked = false, activeBlockId, conditions = false, functionsEnabled = false, variablesEnabled = false, call, palette, check, checks, loops, failedBlockId, controller: supplied }: EditorProps) {
+export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, locked = false, activeBlockId, conditions = false, logicEnabled = false, functionsEnabled = false, variablesEnabled = false, call, palette, check, checks, loops, failedBlockId, controller: supplied }: EditorProps) {
   const editor = useRef<HTMLElement>(null)
   const workspace = useRef<HTMLDivElement>(null)
   const [controller] = useState(() => supplied ?? new EditorController())
@@ -50,6 +53,17 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
   const targetBlock = targetPath ? blockAt(editing, targetPath) : undefined
   const selectedFunction = selectedBlock?.type === 'call' ? controller.functions.find(fn => selectedBlock.type === 'call' && fn.id === selectedBlock.fn) : undefined
   const label = (action: string) => t('action', { order: blockOrder(editing, selectedPath!), name: selectedFunction ? t(`functions.call.${selectedFunction.icon}`) : theme.blockName(selectedBlock!.type), action })
+  const condition = selectedBlock && (selectedBlock.type === 'if' || selectedBlock.type === 'while') ? selectedBlock.condition : undefined
+  const tree: Condition | undefined = typeof condition === 'string' ? { kind: 'atom', atom: condition } : condition
+  const atomOf = (node: Condition): ConditionAtom => node.kind === 'atom' ? node.atom : node.kind === NOT ? atomOf(node.operand) : 'clearAhead'
+  const leaf = (atom: ConditionAtom, negate: boolean): Condition => negate ? { kind: NOT, operand: { kind: 'atom', atom } } : { kind: 'atom', atom }
+  const left = tree && (tree.kind === AND || tree.kind === OR) ? tree.left : tree
+  const right = tree && (tree.kind === AND || tree.kind === OR) ? tree.right : leaf('aIsZero', false)
+  const setLeaf = (side: 'left' | 'right', node: Condition) => {
+    if (!tree) return
+    controller.setCondition(tree.kind === AND || tree.kind === OR ? { ...tree, [side]: node } : node)
+  }
+  const leafControls = (node: Condition, side: 'left' | 'right') => <span><label>{t(`logic.${side}`)} <select disabled={locked} aria-label={t(`logic.${side}`)} value={atomOf(node)} onChange={event => setLeaf(side, leaf(event.target.value as ConditionAtom, node.kind === NOT))}>{(['clearAhead', 'blockedAhead', 'aIsZero'] as const).map(atom => <option key={atom} value={atom}>{t(`logic.${atom}`)}</option>)}</select></label><label><input type="checkbox" disabled={locked} checked={node.kind === NOT} onChange={event => setLeaf(side, leaf(atomOf(node), event.target.checked))} /> {NOT}</label></span>
   const toolbar = selectedBlock ? <div className="tile-toolbar" role="group" aria-label={t('tools')}>
       {selectedBlock && selectedPath ? <>
         <button disabled={locked || selectedPath.at(-1) === 0} aria-label={label(t('before'))} onClick={() => controller.move('up')}>◀</button>
@@ -73,6 +87,7 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
           <button disabled={locked} aria-pressed={targetId === selectedId && !controller.targetElse} aria-label={label(targetId === selectedId ? t('deselect') : t('select'))} onClick={() => controller.toggleTarget()}><span aria-hidden="true"><Symbol name="repeat" /></span></button>
         </>}
       </> : <small>{t('chooseTile')}</small>}
+    {logicEnabled && tree && left && <div className="logic-editor"><label>{t('logic.operator')} <select disabled={locked} value={tree.kind === AND || tree.kind === OR ? tree.kind : 'atom'} onChange={event => controller.setCondition(event.target.value === 'atom' ? left : { kind: event.target.value as 'and' | 'or', left, right })}><option value="atom">{t('logic.single')}</option><option value="and">{AND}</option><option value="or">{OR}</option></select></label>{leafControls(left, 'left')}{(tree.kind === AND || tree.kind === OR) && leafControls(right, 'right')}</div>}
     </div> : null
   return <section ref={editor} className="editor" aria-label={t('editor')}>
     <h2>{t('editor')}</h2>

@@ -33,3 +33,6 @@ predictions.push({
   choices: [conditionProgram, code('forward', 'turnRight', 'forward'), code('turnRight', 'forward', 'forward')]
     .map(program => predictionEnd('u2-1', program, conditionStage)),
 })
+
+// Reuse the existing prediction route for the optional logic activity.
+predictions.push({ ...predictions[predictions.length - 1], id: 'p-u6-1', stageId: 'u6-1' })

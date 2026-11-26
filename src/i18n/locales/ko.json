@@ -351,5 +351,33 @@
     "setTile": "{order}번 상자 A에 {value} 넣기",
     "changeAddTile": "{order}번 상자 A에 1 더하기",
     "changeSubtractTile": "{order}번 상자 A에서 1 빼기"
-  }
+  },
+  "unit6": "6단원 논리",
+  "unit6Congratulations": "6단원을 모두 마쳤어요!",
+  "logic": {
+    "operator": "조건 조합",
+    "single": "하나",
+    "left": "첫 조건",
+    "right": "둘째 조건",
+    "clearAhead": "앞이 열림",
+    "blockedAhead": "앞이 막힘",
+    "aIsZero": "A가 0임",
+    "true": "참",
+    "false": "거짓",
+    "result": "결과",
+    "predict": "두 조건의 결과를 보고 최종 결과를 골라요.",
+    "check": "답 확인"
+  },
+  "u61Title": "논리 퍼즐 1",
+  "u61Goal": "모든 맵에서 도착해요.",
+  "u61Hint1": "앞과 상자 A를 살펴보세요.",
+  "u61Hint2": "두 조건의 결과를 비교해 보세요.",
+  "u62Title": "논리 퍼즐 2",
+  "u62Goal": "모든 맵에서 도착해요.",
+  "u62Hint1": "앞과 상자 A를 살펴보세요.",
+  "u62Hint2": "두 조건의 결과를 비교해 보세요.",
+  "u63Title": "논리 퍼즐 3",
+  "u63Goal": "모든 맵에서 도착해요.",
+  "u63Hint1": "앞과 상자 A를 살펴보세요.",
+  "u63Hint2": "두 조건의 결과를 비교해 보세요."
 }
