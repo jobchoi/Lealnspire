@@ -275,3 +275,11 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - `model/unit7.test.ts`: u7-1~3 정답·초기 실패·저장·입력 정리·되돌리기·순차 개방 및 매개변수 없는 ≤6 문법의 두 함수 몸체 조합 전수 탐색.
 - `model/unit123456-run.fixture.json`: T60 이전 HEAD 실행기로 캡처한 1~6단원 전체 정답 프레임. 새 serial 메타데이터만 제외해 비교한다.
 - 기존 EditorController/Editor/BlockTiles와 PlayPage/StageSelectPage/ResultModal/flow에 입력 홈·인자 편집·숫자/A/◆ 원천 순환·값 전달·7단원 목록/완주를 연결한다. 브라우저 QC 제한은 `design/unit7-parameters.md` 참고.
+
+### T63 8단원 반환값 [제안·잠정]
+
+- `model/types.ts`, `program.ts`, `interpreter.ts`: return.value(숫자/A/◆/앞 칸 수), repeat.countCall(함수·선택 인자), Stage.returns, Frame.returned/sensorAhead 및 missingReturn. 계속·반환·실행 중단 신호를 분리하고 기존 exhaustive switch를 유지한다.
+- `model/ProgressRepository.ts`: v2 외피 유지, returns 아닌 스테이지의 새 필드 거부와 스테이지 코드 손상 격리.
+- `model/unit8.test.ts`: u8-1~3 정답·초기 코드·반환/센서·저장·편집·개방 및 모든 공통 이동열의 결합 상태 35/35/59 전수 탐색. return 없는 팔레트의 맵 독립성 근거와 표본도 검사한다.
+- `model/unit1234567-run.fixture.json`: T63 이전 HEAD 실행기로 캡처한 1~7단원 32개 스테이지·51개 맵의 전체 결과·프레임(추가 메타데이터 제외 없이 비교).
+- 기존 EditorController/Editor/BlockTiles·GameController/PlayPage 및 목록·결과·flow에 반환값/값 호출 인자 편집·되돌리기·입출력 홈·전달·미실행 표시·8단원 완주를 연결한다. 상세와 브라우저 미검증 항목은 `design/unit8-returns.md` 참고.

@@ -60,7 +60,8 @@
     "collision": "벽에 부딪혔어요",
     "unfinished": "목적지에 도달하지 못했어요",
     "stepLimit": "실행 단계가 너무 많아요. 반복 횟수와 블록을 줄여 보세요.",
-    "variableRange": "상자 A의 값이 0보다 작거나 20보다 커졌어요"
+    "variableRange": "상자 A의 값이 0보다 작거나 20보다 커졌어요",
+    "missingReturn": "함수가 값을 돌려주지 않았어요. return이 실행됐나요?"
   },
   "title": "Lealnspire",
   "stage": "스테이지",
@@ -74,7 +75,8 @@
     "if": "앞이 막혔으면",
     "while": "앞이 열려 있는 동안",
     "set": "상자 A에 값 넣기",
-    "change": "상자 A 1 바꾸기"
+    "change": "상자 A 1 바꾸기",
+    "return": "값 돌려주기 (return)"
   },
   "tools": "블록 작업 막대",
   "chooseTile": "블록을 눌러 선택하세요.",
@@ -137,7 +139,8 @@
       "switch": "크레용 스케치북 월드로 바꾸기",
       "forward": "앞으로",
       "turnLeft": "왼쪽",
-      "turnRight": "오른쪽"
+      "turnRight": "오른쪽",
+      "return": "return"
     },
     "train": {
       "name": "기차 마을",
@@ -147,7 +150,8 @@
       "switch": "기차 마을 월드로 바꾸기",
       "forward": "앞으로 칸",
       "turnLeft": "왼쪽 칸",
-      "turnRight": "오른쪽 칸"
+      "turnRight": "오른쪽 칸",
+      "return": "return"
     },
     "handheld": {
       "name": "나의 게임기",
@@ -157,7 +161,8 @@
       "switch": "나의 게임기 월드로 바꾸기",
       "forward": "앞으로",
       "turnLeft": "왼쪽",
-      "turnRight": "오른쪽"
+      "turnRight": "오른쪽",
+      "return": "return"
     }
   },
   "stage1Hint1": "로봇과 별 사이의 칸을 세어 보세요.",
@@ -421,5 +426,30 @@
     "useParam": "건네받은 값으로 반복",
     "useA": "A로",
     "useNumber": "숫자로"
+  },
+  "unit8": "8단원: 반환값 (return)",
+  "unit8Congratulations": "8단원 완주!",
+  "u81Title": "돌려받아 움직이기",
+  "u81Goal": "별 함수가 앞에 몇 칸이 있는지 세어 돌려줘요. 돌려받은 수만큼 가요.",
+  "u81Hint1": "두 맵에서 꺾는 곳까지 몇 칸인가요?",
+  "u81Hint2": "repeat 횟수에 별 함수를 넣으면, 함수가 돌려준 수만큼 반복해요.",
+  "u82Title": "입력과 출력",
+  "u82Goal": "함수에 값을 건네고(◆), 함수가 돌려준 값(↩)으로 움직여요. 둘은 다른 값이에요.",
+  "u82Hint1": "함수가 끝났을 때 로봇은 어느 쪽을 보고 있나요?",
+  "u82Hint2": "건넨 값은 1인데, 돌려받은 값은 몇인가요?",
+  "u83Title": "return 뒤에는?",
+  "u83Goal": "미리 놓인 코드를 고쳐요. return은 함수를 바로 끝내요.",
+  "u83Hint1": "실행해 보세요. 함수가 수를 셀 때 로봇은 어느 쪽을 보고 있나요?",
+  "u83Hint2": "return 다음에 놓인 블록은 실행될까요?",
+  "returns": {
+    "tile": "{order}번 값 돌려주기: {value}",
+    "ahead": "앞 칸 수",
+    "received": "별 함수가 {value}를 돌려줬어요.",
+    "skipped": "이번 호출에서 실행 안 함",
+    "sourceShort": "↩ 값",
+    "repeat": {"star": "{order}번 반복: 별 함수가 돌려준 값만큼", "moon": "{order}번 반복: 달 함수가 돌려준 값만큼"},
+    "source": "반환값 원천 바꾸기",
+    "repeatSource": "반복 횟수 원천 바꾸기",
+    "output": "돌려주는 값 (return)"
   }
 }

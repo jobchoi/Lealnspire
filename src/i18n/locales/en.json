@@ -60,7 +60,8 @@
     "collision": "The robot hit a wall",
     "unfinished": "The robot didn't reach the star",
     "stepLimit": "Too many steps. Try fewer repeats or fewer blocks.",
-    "variableRange": "Box A went below 0 or above 20"
+    "variableRange": "Box A went below 0 or above 20",
+    "missingReturn": "The function didn't return a value. Did return run?"
   },
   "title": "Lealnspire",
   "stage": "Stage",
@@ -74,7 +75,8 @@
     "if": "if the path ahead is blocked",
     "while": "while the path ahead is clear",
     "set": "Set box A",
-    "change": "Change box A by 1"
+    "change": "Change box A by 1",
+    "return": "Return a value (return)"
   },
   "tools": "Block tools",
   "chooseTile": "Tap a block to select it.",
@@ -137,7 +139,8 @@
       "switch": "Switch to the Crayon Sketchbook world",
       "forward": "Forward",
       "turnLeft": "Left",
-      "turnRight": "Right"
+      "turnRight": "Right",
+      "return": "return"
     },
     "train": {
       "name": "Train Town",
@@ -147,7 +150,8 @@
       "switch": "Switch to the Train Town world",
       "forward": "Forward car",
       "turnLeft": "Left car",
-      "turnRight": "Right car"
+      "turnRight": "Right car",
+      "return": "return"
     },
     "handheld": {
       "name": "Pocket Console",
@@ -157,7 +161,8 @@
       "switch": "Switch to the Pocket Console world",
       "forward": "Forward",
       "turnLeft": "Left",
-      "turnRight": "Right"
+      "turnRight": "Right",
+      "return": "return"
     }
   },
   "stage1Hint1": "Count the cells between the robot and the star.",
@@ -421,5 +426,30 @@
     "useParam": "Repeat the value passed in",
     "useA": "Use A",
     "useNumber": "Use a number"
+  },
+  "unit8": "Unit 8: Return Values",
+  "unit8Congratulations": "Unit 8 complete!",
+  "u81Title": "Move by What Comes Back",
+  "u81Goal": "The star function counts the cells ahead and returns the number. Move that many times.",
+  "u81Hint1": "How many cells to the turn on each map?",
+  "u81Hint2": "If you put the star function in the repeat count, it repeats as many times as the function returns.",
+  "u82Title": "Input and Output",
+  "u82Goal": "Pass a value into the function (◆) and move by the value it returns (↩). They are different values.",
+  "u82Hint1": "Which way is the robot facing when the function ends?",
+  "u82Hint2": "You passed 1. What number comes back?",
+  "u83Title": "After return?",
+  "u83Goal": "Fix the code that’s already there. return ends the function right away.",
+  "u83Hint1": "Run it. Which way is the robot facing when the function counts?",
+  "u83Hint2": "Will the block after return run?",
+  "returns": {
+    "tile": "Step {order}: return {value}",
+    "ahead": "cells ahead",
+    "received": "The star function returned {value}.",
+    "skipped": "Not run this call",
+    "sourceShort": "↩ Value",
+    "repeat": {"star": "Step {order}: repeat as many times as the star function returns", "moon": "Step {order}: repeat as many times as the moon function returns"},
+    "source": "Change return value source",
+    "repeatSource": "Change repeat count source",
+    "output": "Returned value (return)"
   }
 }

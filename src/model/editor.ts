@@ -20,7 +20,7 @@ export function createBlock(program: Program, type: Block['type']): Block {
   let serial = 1
   while (findBlockPath(program, `block-${serial}`)) serial++
   const id = `block-${serial}`
-  return type === 'set' ? { id, type, variable: 'A', value: 0 } : type === 'change' ? { id, type, variable: 'A', by: 1 } : type === 'call' ? { id, type, fn: '' } : type === 'while' ? { id, type, condition: 'clearAhead', body: [] } : type === 'if' ? { id, type, condition: 'blockedAhead', body: [] } : type === 'repeat' ? { id, type, count: 3, body: [] } : { id, type }
+  return type === 'return' ? { id, type, value: { kind: 'ahead' } } : type === 'set' ? { id, type, variable: 'A', value: 0 } : type === 'change' ? { id, type, variable: 'A', by: 1 } : type === 'call' ? { id, type, fn: '' } : type === 'while' ? { id, type, condition: 'clearAhead', body: [] } : type === 'if' ? { id, type, condition: 'blockedAhead', body: [] } : type === 'repeat' ? { id, type, count: 3, body: [] } : { id, type }
 }
 
 /** Copy a subtree, allocating fresh IDs against the destination and earlier copies. */
