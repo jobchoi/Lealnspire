@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test'
-import { expect, Game, test } from './helpers'
+import { contrastOf, expect, Game, test } from './helpers'
 import { allStages, unit7Stages } from '../src/model/stages'
 
 /** T60: 7단원 매개변수 — 같은 함수에 부를 때마다 다른 값을 건넨다. 건넨 값(◆)은 바깥 상자 A를 바꾸지 않는다 */
@@ -114,4 +114,14 @@ for (const world of worlds) {
       await g.noHorizontalScroll()
     })
   }
+}
+
+/** T60 QC: 호출 블록(팔레트 버튼·작업 공간 타일)은 세 월드 모두 기호·글자가 바탕과 구분된다(대비 3:1 이상) */
+for (const world of worlds) {
+  test(`${world}: 호출 블록 대비`, async ({ page }) => {
+    const g = await open(page, '함수 안의 A', ['u7-1', 'u7-2', 'u7-3'])
+    await g.press(page.getByRole('button', { name: `${world} 월드로 바꾸기` }))
+    const items = [page.locator('.palette').getByRole('button', { name: '별 함수 부르기', exact: true }), ...await page.locator('.workspace').getByRole('button', { name: /별 함수 부르기/ }).all()]
+    for (const item of items) expect(await contrastOf(item), `${world} ${await item.getAttribute('aria-label')} 대비`).toBeGreaterThanOrEqual(3)
+  })
 }
