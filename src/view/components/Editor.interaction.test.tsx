@@ -303,3 +303,29 @@ it('edits on connection symbols through buttons, swaps occupied signals and targ
   expect(document.main[2]).toMatchObject({ signal: '◇', body: [] })
   expect(tree.find(node => node.type === 'button' && node.props['aria-label'] === 'on')?.props.disabled).toBe(true)
 })
+
+it('adds list bodies and cycles repeat list sources through actual toolbar events', () => {
+  const controller = new EditorController()
+  let program: Program = []
+  let tree: Node[] = []
+  const render = () => {
+    hooks.cursor = 0
+    tree = nodes(Editor({ program, onChange: next => { program = next }, controller, listsEnabled: true, variablesEnabled: true, palette: ['forEach', 'repeat', 'forward'] }))
+  }
+  const click = (label: string) => {
+    const button = tree.find(node => node.type === 'button' && node.props['aria-label'] === label)
+    expect(button).toBeDefined()
+    expect(button!.props.disabled).toBeFalsy()
+    ;(button!.props.onClick as () => void)(); render()
+  }
+  render(); click('리스트')
+  controller.select('block-1'); render()
+  click('1번 리스트 안에 넣기'); click('N번 반복')
+  controller.select('block-2'); render()
+  click('반복에 쓸 값 바꾸기'); click('반복에 쓸 값 바꾸기')
+  expect(controller.selectedBlock).toMatchObject({ countSource: 'current' })
+  expect(tree.find(node => node.type === 'button' && String(node.props['aria-label']).includes('반복 횟수 늘리기'))).toBeUndefined()
+  click('반복에 쓸 값 바꾸기'); expect(controller.selectedBlock).toMatchObject({ countSource: 'listAtA' })
+  click('반복에 쓸 값 바꾸기'); expect(controller.selectedBlock).toMatchObject({ countSource: 'listLength' })
+  click('반복에 쓸 값 바꾸기'); expect(controller.selectedBlock).toMatchObject({ count: 3 })
+})

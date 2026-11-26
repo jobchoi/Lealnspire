@@ -1,3 +1,4 @@
+import glossary from '../../i18n/glossary.json'
 import { createElement } from 'react'
 import { defaultTheme, type Theme } from './defaultTheme'
 import { Symbol } from './Symbols'
@@ -8,5 +9,5 @@ export const handheld: Theme = {
   blockSymbol: type => createElement(Symbol, { name: type, world: 'handheld' }),
   repeat: count => t('themes.handheld.repeat', { count }),
   runText: () => t('themes.handheld.run'),
-  paletteName: type => type === 'repeat' ? defaultTheme.paletteName!(type) : t(`themes.handheld.${type}`),
+  paletteName: type => type === 'forEach' ? glossary.list.keyword : type === 'repeat' ? defaultTheme.paletteName!(type) : t(`themes.handheld.${type}`),
 }

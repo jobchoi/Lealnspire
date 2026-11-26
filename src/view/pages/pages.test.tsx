@@ -8,7 +8,7 @@ import { HomePage, RecordDialog } from './HomePage'
 import { StageSelectPage } from './StageSelectPage'
 import { PlayPage } from './PlayPage'
 import { createProgressStore } from '../../model/ProgressRepository'
-import { stages, bonusStages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, isLastStage } from '../../model/stages'
+import { stages, bonusStages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, unit10Stages, isLastStage } from '../../model/stages'
 import { t, i18n } from '../../i18n/I18n'
 
 const noop = () => {}
@@ -22,7 +22,7 @@ describe('화면 렌더링', () => {
     expect(home()).toContain(t('continue'))
     for (const stage of stages) store.completeStage(stage.id, 3, [])
     expect(home()).toContain(t('continue'))
-    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages, ...unit9Stages]) store.completeStage(stage.id, 3, [])
+    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages, ...unit9Stages, ...unit10Stages]) store.completeStage(stage.id, 3, [])
     expect(home()).not.toContain(t('continue'))
   })
   it('정규 8개와 보너스 2개 카드, 잠김, 최고 별을 표시하고 이전 완료 시 다음 카드가 열린다', () => {
@@ -431,4 +431,40 @@ it('renders signal scenarios, locks, dispatch, unconnected notices and unit9 com
       expect(renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)).toContain(t('unit9'))
     }
   } finally { i18n.locale = original }
+})
+
+it('renders indices/values, distinct pointers, index errors and unit10 completion in ko/en × three worlds', () => {
+  try {
+    for (const locale of ['ko', 'en']) for (const world of ['sketchbook', 'train', 'handheld'] as const) {
+      i18n.locale = locale
+      const store = createProgressStore()
+      const stage = { ...unit10Stages[0], world }
+      const game = new GameController(stage, store)
+      game.edit(stage.solution)
+      const draw = () => renderToString(<PlayPage stage={stage} progressStore={store} controller={game} onList={noop} onNext={noop} lastStage />)
+      expect(draw()).toContain(t('lists.index', { index: 0 }))
+      expect(draw()).toContain(t('lists.value', { value: 2 }))
+      expect(draw()).toContain(t('lists.length', { length: 3 }))
+      game.step()
+      expect(draw()).toContain(t('lists.eachPointer', { index: 0, value: 2 }))
+      expect(draw()).toContain('list-current')
+      while (!game.finished) game.step()
+      expect(draw()).toContain(t('unit10Congratulations'))
+      game.dispose()
+      const access = { ...unit10Stages[1], world }
+      const reader = new GameController(access, store)
+      reader.edit(access.solution); reader.step(); reader.step()
+      const readDraw = () => renderToString(<PlayPage stage={access} progressStore={store} controller={reader} onList={noop} onNext={noop} lastStage />)
+      expect(readDraw()).toContain(t('lists.atPointer', { index: 0, value: 2 }))
+      expect(readDraw()).toContain('list-access')
+      reader.reset()
+      reader.edit([{ id: 'set', type: 'set', variable: 'A', value: 2 }, { id: 'r', type: 'repeat', countSource: 'listAtA', body: [] }])
+      while (!reader.finished) reader.step()
+      expect(readDraw()).toContain(t('lists.rangeShort', { index: 2, length: 2 }))
+      expect(readDraw()).toContain(t('lists.range', { index: 2, length: 2 }))
+      expect(readDraw()).not.toContain('class="list-access"')
+      reader.dispose()
+      expect(renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)).toContain(t('unit10'))
+    }
+  } finally { i18n.locale = 'ko' }
 })

@@ -987,3 +987,36 @@ button small { display: block; font-size: .75rem; }
 @media(prefers-reduced-motion:reduce) {
  .events-page .block-on,.events-page .board-door,.events-page .on-frame { animation:none; transition:none; }
 }
+
+/* T69: numbered read-only list cells and distinct traversal/access pointers. */
+.play-page.lists-page .variable-summary { flex-wrap:wrap; }
+.lists-page .list-state { display:flex; align-items:center; flex-wrap:wrap; gap:4px 8px; width:100%; min-width:0; padding:3px 6px; box-sizing:border-box; color:#183d4a; background:#f4fcff; border:2px solid #245f73; border-radius:6px; font:14px/18px sans-serif; }
+.lists-page .list-cells { display:flex; gap:4px; list-style:none; padding:0; margin:0; }
+.lists-page .list-cells li { display:flex; flex-direction:column; min-width:46px; border:1px solid #245f73; border-radius:3px; text-align:center; background:#fff; }
+.lists-page .list-cells small { border-bottom:1px solid #245f73; font:12px/16px sans-serif; }
+.lists-page .list-cells b { font:bold 14px/18px sans-serif; }
+.lists-page .list-cells li.list-current { outline:3px solid #245f73; outline-offset:1px; }
+.lists-page .list-cells li.list-access { border:3px double #183d4a; }
+.lists-page .list-pointers { flex-basis:100%; display:flex; flex-wrap:wrap; gap:4px 12px; min-height:18px; font:12px/18px sans-serif; }
+.play-page.lists-page :is(.palette,.workspace) .block-forEach { --c:#245f73; color:#183d4a; background:#dff4fa; border:2px solid #245f73; }
+.play-page.conditions-page.variables-page.lists-page .palette-row .palette { grid-template-columns:repeat(7,minmax(44px,1fr)); gap:3px; }
+.lists-page .workspace .block-forEach strong { font:12px/16px monospace; }
+.lists-page .workspace .block-forEach svg { width:24px; height:24px; }
+@media(max-width:700px) {
+ .play-page.lists-page .variable-summary { gap:2px 4px; }
+ .lists-page .list-state { gap:2px 5px; padding:2px 4px; font-size:12px; }
+ .lists-page .list-cells { gap:3px; }
+ .lists-page .list-cells li { min-width:43px; }
+ .lists-page .list-cells small { font:10px/12px sans-serif; }
+ .lists-page .list-cells b { font:bold 12px/16px sans-serif; }
+ .lists-page .list-pointers { font:10px/12px sans-serif; min-height:12px; }
+ .play-page.lists-page .palette-row { gap:2px; }
+ .play-page.conditions-page.variables-page.lists-page .palette-row .palette { grid-template-columns:repeat(4,minmax(44px,1fr)); grid-template-rows:repeat(2,44px); height:88px; min-width:0; gap:0; }
+ .play-page.conditions-page.variables-page.lists-page .palette-row .palette button { min-width:44px; padding:0; border-radius:4px; box-shadow:none; }
+ .play-page.lists-page .palette small { font:10px/12px sans-serif; }
+ .play-page.lists-page .palette .block-symbol svg { width:22px; height:22px; }
+ .lists-page .undo-button { width:44px; min-width:44px; padding:0; }
+}
+@media(prefers-reduced-motion:reduce) {
+ .lists-page .list-cells li { animation:none; transition:none; }
+}

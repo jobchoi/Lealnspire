@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { allStages, unit9Stages, isLastStage } from './stages'
+import { allStages, unit9Stages, unit10Stages, isLastStage } from './stages'
 import { run, runAll, supplySignal } from './interpreter'
 import { countBlocks, validDocument } from './program'
 import { ProgressRepository, progressV2Key, isUnlocked } from './ProgressRepository'
@@ -168,5 +168,5 @@ it('opens after unit8, edits connections/body with undo and saves only after bot
     game.dispose()
   }
   expect(isLastStage(allStages.indexOf(unit9Stages[2]))).toBe(true)
-  expect(continueStageIndex(repo.getProgress())).toBeUndefined()
+  expect(continueStageIndex(repo.getProgress())).toBe(allStages.indexOf(unit10Stages[0]))
 })

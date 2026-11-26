@@ -388,7 +388,7 @@ it('restores only effective unit palettes and permitted repeat sources while ret
     { id: 'r', type: 'repeat', countVariable: 'A', body: [] },
     { id: 'outer', type: 'repeat', count: 2, body: [{ id: 'inner', type: 'repeat', countVariable: 'A', body: [] }] },
   ]
-  for (const stage of allStages.filter(stage => !stage.params && !stage.id.startsWith('u5-'))) {
+  for (const stage of allStages.filter(stage => !stage.lists && !stage.params && !stage.id.startsWith('u5-'))) {
     for (const block of invalid) {
       const storage = fakeStorage()
       storage.setItem(progressV2Key, JSON.stringify({ version: 2, stages: {

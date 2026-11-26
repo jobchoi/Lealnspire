@@ -1,3 +1,4 @@
+import glossary from '../../i18n/glossary.json'
 import { createElement } from 'react'
 import { defaultTheme, type Theme } from './defaultTheme'
 import { Symbol } from './Symbols'
@@ -8,5 +9,5 @@ export const sketchbook: Theme = {
   blockSymbol: type => createElement(Symbol, { name: type, world: 'sketchbook' }),
   repeat: defaultTheme.repeat,
   runText: () => t('themes.sketchbook.run'),
-  paletteName: type => type === 'repeat' ? defaultTheme.paletteName!(type) : t(`themes.sketchbook.${type}`),
+  paletteName: type => type === 'forEach' ? glossary.list.keyword : type === 'repeat' ? defaultTheme.paletteName!(type) : t(`themes.sketchbook.${type}`),
 }
