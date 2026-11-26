@@ -926,3 +926,21 @@ button small { display: block; font-size: .75rem; }
 
 /* Keep non-directional palette symbols legible inside the 44px command row. */
 .play-page.returns-page .palette :is(.block-return,.block-set,.block-change) .theme-symbol { width:28px; height:28px; }
+
+/* T64 시안 대비 다듬기(데스크톱 전용, Claude 2026-11-26): 위쪽 버튼 줄을 제목 줄 오른쪽으로 올려
+   맵에 높이를 돌려준다. 시안처럼 맵이 화면의 주인공이 되게 왼쪽 열을 넓힌다. 휴대폰 배치는 그대로. */
+@media (min-width:1000px) and (min-height:600px) {
+ .play-page .stage-controls { position:absolute; top:6px; right:6px; display:flex; gap:6px; z-index:3; }
+ .play-page:has(.world-switch) .stage-controls { right:170px; }
+ .play-page .stage-controls button { min-height:44px; padding:4px 10px; }
+ .play-page h1 { padding-right:400px; min-height:48px; }
+ .play-page:has(.world-switch) h1 { padding-right:560px; }
+ .play-page .game-layout { grid-template-columns:minmax(320px,44%) minmax(0,1fr); }
+ .play-page .map-panel .art-board,.play-page .map-panel .train-island { max-height:calc(100dvh - 300px); }
+ .map-panel .board { width:min(100%, calc((100dvh - 300px) * var(--board-ratio))); }
+ /* 게임기: 본체 틀(24+23+32px)과 조작부(144px)를 뺀 높이를 LCD에 */
+ .play-page.theme-handheld .map-panel .board.art-board { max-height:calc(100dvh - 450px); }
+ /* 맵 카드(1/2, 2/2) 줄이 있는 단원은 그만큼 덜 키움 */
+ .play-page.conditions-page .map-panel .art-board,.play-page.conditions-page .map-panel .train-island { max-height:calc(100dvh - 350px); }
+ .play-page.conditions-page.theme-handheld .map-panel .board.art-board { max-height:calc(100dvh - 500px); }
+}
