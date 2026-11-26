@@ -1,5 +1,11 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-26 — T63 8단원 반환값 QC 완료, T64 시안 대비 다듬기 1차 (Claude 주도 — 사용자 지시)
+
+- 사용자 결정(2026-11-26 밤): Claude 주간 사용량 리셋(다음 날 오전 9시) 전까지 **Claude가 메인으로 구현**, GPT는 일일 한도 리셋(23:36) 뒤 보조. develop·master·release·태그 push를 Claude에 허용(`.claude/settings.json`, CLAUDE.md 5·7절)
+- T63: Codex B가 QC 1차 5건 중 3건을 고친 뒤 한도로 중단 → Claude가 남은 2건 직접 수정(BlockTiles의 'star' 리터럴 → 함수 아이콘에서, glossary 테스트 통과). 내 E2E의 타일 넘침 검사가 중첩 반복 장식 띠(repeat-ribbon)를 잡아 오탐 → 장식 띠 제외(주석). 검증: verify 324, e2e 373 통과(작업 폴더), e2e:prod 4. 기준 줄기(feature/T60-parameters)에 병합
+- T64 1차(Claude 구현, 데스크톱 1000×600 이상만): 위쪽 버튼 줄을 제목 줄 오른쪽으로 올리고 맵 열을 38% → 44%, 맵 최대 높이 100dvh−390 → −300px, 게임기 LCD 160px → 100dvh−450px. 맵 카드가 있는 단원은 덜 키움(2단원에서 8px 세로 스크롤 회귀 → 수정). 비교 `docs/design/qc/compare-*-T64.png`. 검증: 데스크톱 E2E 160개 통과, 휴대폰 배치는 변경 없음
+
 ## 2026-11-26 — T66 7단원 안정화, v1.7.0 (검토 GPT, 구현 Codex A, QC·문서 Claude) — 첫 GPT 두 개 병렬 실행
 
 - 사용자 제안(2026-11-26): GPT를 두 스레드로 → 같은 폴더 충돌을 피해 Codex A는 이 폴더에서 T66, Codex B는 git worktree `../Lealnspire-T63`(브랜치 `feature/T63-returns`)에서 8단원 구현을 동시에 실행. 읽기 전용 교차 검토도 수정 작업과 병렬로 실행
