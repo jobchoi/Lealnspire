@@ -8,7 +8,7 @@ import { HomePage, RecordDialog } from './HomePage'
 import { StageSelectPage } from './StageSelectPage'
 import { PlayPage } from './PlayPage'
 import { createProgressStore } from '../../model/ProgressRepository'
-import { stages, bonusStages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, unit10Stages, isLastStage } from '../../model/stages'
+import { stages, bonusStages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, unit10Stages, unit11Stages, isLastStage } from '../../model/stages'
 import { t, i18n } from '../../i18n/I18n'
 
 const noop = () => {}
@@ -22,7 +22,7 @@ describe('화면 렌더링', () => {
     expect(home()).toContain(t('continue'))
     for (const stage of stages) store.completeStage(stage.id, 3, [])
     expect(home()).toContain(t('continue'))
-    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages, ...unit9Stages, ...unit10Stages]) store.completeStage(stage.id, 3, [])
+    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages, ...unit9Stages, ...unit10Stages, ...unit11Stages]) store.completeStage(stage.id, 3, [])
     expect(home()).not.toContain(t('continue'))
   })
   it('정규 8개와 보너스 2개 카드, 잠김, 최고 별을 표시하고 이전 완료 시 다음 카드가 열린다', () => {
@@ -465,6 +465,57 @@ it('renders indices/values, distinct pointers, index errors and unit10 completio
       expect(readDraw()).not.toContain('class="list-access"')
       reader.dispose()
       expect(renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)).toContain(t('unit10'))
+    }
+  } finally { i18n.locale = 'ko' }
+})
+
+it('renders search comparison, found/unseen cells, repair cause and completion in ko/en × three worlds', () => {
+  try {
+    for (const locale of ['ko', 'en']) for (const world of ['sketchbook', 'train', 'handheld'] as const) {
+      i18n.locale = locale
+      const store = createProgressStore()
+      const stage = { ...unit11Stages[1], world }
+      const game = new GameController(stage, store)
+      game.edit(stage.solution)
+      const draw = () => renderToString(<PlayPage stage={stage} progressStore={store} controller={game} onList={noop} onNext={noop} lastStage />).replaceAll('<!-- -->', '')
+      const before = draw()
+      expect(before).toContain(t('search.count', { count: 0, limit: 2 }))
+      expect(before).toContain(t('search.target', { value: 7 }))
+      expect(before).toContain('search-page')
+      expect(before).not.toContain(t('variables.label'))
+      game.step(); game.step()
+      const matched = draw()
+      expect(matched).toContain('search-comparing')
+      expect(matched).toContain('search-mark')
+      expect(matched).toContain(t('search.found', { index: 0 }))
+      while (!game.finished) game.step()
+      const finished = draw()
+      expect(finished).toContain(t('search.unseen'))
+      expect(finished).toContain('search-unseen')
+      expect(finished).toContain(t('search.reflect'))
+      expect(finished).toContain(t('unit11Congratulations'))
+      expect(finished.replace(/<[^>]*>/g, '')).not.toContain('🎯') // Visible targets are SVG; accessible names retain the localized condition.
+      game.dispose()
+      const repairStage = { ...unit11Stages[2], world }
+      const repair = new GameController(repairStage, store)
+      // Use a fresh repository so this is the initial front-direction program.
+      repair.edit(repairStage.initialProgram!)
+      while (!repair.finished) repair.step()
+      const failed = renderToString(<PlayPage stage={repairStage} progressStore={store} controller={repair} onList={noop} onNext={noop} lastStage />)
+      expect(failed).toContain(t('search.limit', { limit: 2 }))
+      repair.fix(); expect(repair.editor.selectedBlock?.id).toBe('each')
+      expect(renderToString(<PlayPage stage={repairStage} progressStore={store} controller={repair} onList={noop} onNext={noop} lastStage />)).toContain(t('search.front'))
+      repair.editor.toggleDirection()
+      expect(repair.getSnapshot().program).toEqual(repairStage.solution)
+      repair.dispose()
+      const observe = { ...unit11Stages[0], world }
+      const observer = new GameController(observe, store); observer.edit(observe.solution)
+      const empty = renderToString(<PlayPage stage={observe} progressStore={store} controller={observer} onList={noop} onNext={noop} lastStage />)
+      expect(empty).toContain(t('search.empty'))
+      observer.step(); observer.step(); observer.step(); observer.step()
+      expect(renderToString(<PlayPage stage={observe} progressStore={store} controller={observer} onList={noop} onNext={noop} lastStage />)).toContain('search-mark')
+      observer.dispose()
+      expect(renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)).toContain(t('unit11'))
     }
   } finally { i18n.locale = 'ko' }
 })

@@ -3,6 +3,7 @@ import { Observable } from './Observable'
 import { MAX_PROGRAM_BLOCKS, normalizeLogicProgram, normalizeLogicCondition, FunctionProgram, Program as ProgramModel } from '../model/program'
 import type { Block, Program, ProgramDocument, FunctionDef, Condition } from '../model/types'
 export class EditorController extends Observable<{ selectedId: string | null; targetId: string | null; addedId: string | null }> {
+  searchEnabled = false
   listsEnabled = false
   eventsEnabled = false
   returnsEnabled = false
@@ -60,7 +61,8 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
     this.beforeEdit()
     return true
   }
-  configure(program: Program, onChange: (program: Program) => void, locked: boolean, maxBlocks?: number, logicEnabled = this.logicEnabled, paramsEnabled = this.paramsEnabled, returnsEnabled = this.returnsEnabled, eventsEnabled = this.eventsEnabled, listsEnabled = this.listsEnabled) {
+  configure(program: Program, onChange: (program: Program) => void, locked: boolean, maxBlocks?: number, logicEnabled = this.logicEnabled, paramsEnabled = this.paramsEnabled, returnsEnabled = this.returnsEnabled, eventsEnabled = this.eventsEnabled, listsEnabled = this.listsEnabled, searchEnabled = this.searchEnabled) {
+    this.searchEnabled = searchEnabled
     this.listsEnabled = listsEnabled
     this.eventsEnabled = eventsEnabled
     this.returnsEnabled = returnsEnabled
@@ -152,11 +154,15 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   }
   add = (type: Block['type'], fn = this.functions[0]?.id) => {
     if (this.locked || this.atLimit || !this.prepareEdit()) return
+    if (this.searchEnabled && (!['forward', 'forEach', 'if', 'breakForEach'].includes(type) || type === 'forward' && (!!this.targetPath || this.addingToFunction) || (type === 'if' || type === 'breakForEach') && !this.targetPath?.some((_, index) => blockAt(this.editProgram, this.targetPath!.slice(0, index + 1))?.type === 'forEach'))) return
+    if (type === 'breakForEach' && !this.searchEnabled) return
     if (type === 'forEach' && !this.listsEnabled) return
     if (type === 'on' && (!this.eventsEnabled || this.functionId || this.targetPath)) return
     if (type === 'return' && (!this.returnsEnabled || !this.addingToFunction)) return
     if (type === 'call' && this.addingToFunction) return
     const block = new FunctionProgram(this.doc).create(type, fn)
+    if (this.searchEnabled && block.type === 'forEach') block.direction = 'front'
+    if (this.searchEnabled && block.type === 'if') block.condition = { kind: 'atom', atom: 'matchesTarget' }
     if (block.type === 'on') {
       const signal = (['◇', '○', '△'] as const).find(signal => !this.program.some(item => item.type === 'on' && item.signal === signal))
       if (!signal) return
@@ -208,7 +214,14 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   setValueCallArgument = (arg: import('../model/types').CallArgument) => {
     if (this.returnsEnabled && this.selectedPath && this.selectedBlock?.type === 'repeat' && this.selectedBlock.countCall && this.prepareEdit()) this.change(ProgramModel.setRepeatSource(this.editProgram, this.selectedPath, { ...this.selectedBlock.countCall, arg }))
   }
+  toggleDirection = () => {
+    if (!this.searchEnabled || !this.selectedPath || this.selectedBlock?.type !== 'forEach' || !this.prepareEdit()) return
+    const next = structuredClone(this.editProgram)
+    const block = blockAt(next, this.selectedPath)
+    if (block?.type === 'forEach') { block.direction = block.direction === 'back' ? 'front' : 'back'; this.change(next) }
+  }
   setCondition = (condition: Condition) => {
+    if (this.searchEnabled) return
     if (!this.selectedPath || !this.prepareEdit()) return
     const next = structuredClone(this.editProgram)
     const block = blockAt(next, this.selectedPath)

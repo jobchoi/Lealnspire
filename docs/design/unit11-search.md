@@ -39,3 +39,36 @@
 
 - 맵이 `SG` 한 줄이라 로봇 이동은 단순해지고 개념은 리스트 칸 표시에 집중된다 — 앞 단원들과 화면 느낌이 달라지므로 리스트 칸 줄을 크게, 맵은 작게 두는 배치를 T(구현)에서 확인.
 - 성공 판정에 비교 상한이 새로 들어가므로 결과 창 문구·고치기(원인 블록 = 순회)를 함께 설계.
+
+## 6. T70 구현 기록 (Codex, 제안·잠정)
+
+정답 6/6 성공. u11-1은 3/3회, u11-2는 1/2회, u11-3은 2/1회 비교한다. u11-3 초기 앞 방향 코드는 4/5회 비교해 두 맵 모두 comparisonLimit이다. main 최상위 전진·순회 안 비교/종료·search 단원 허용을 편집기/저장/실행에서 검사한다. 비교·종료를 포함해 1000단계 경계와 중첩 순회 문맥 복원을 검증한다. 기존 1~10단원은 변경 전 캡처한 41스테이지·69맵 전체 프레임 fixture와 일치한다.
+
+### 전수 열거 증명
+
+설계 원문 `~/project/_progress/logs/unit11-gpt-plan.md` 3절은 문제별 방향을 고정하고 if/else·임의 중첩·빈 몸체를 포함한다. 초기 구현에서 else를 빠뜨려 후보 수가 달랐으나 원문을 확인하고 else를 복구했다. 최상위 전진·순회 안 비교/멈추기·A=0·시작 E·팔레트를 고정하고, ID와 생략 가능한 빈 else/기본 방향 표기 차이를 중복 집계하지 않는다.
+
+| 상한 | 전체 / 성공 | 새 기능 제외 / 성공 | 비교 조건 제외 / 성공 | 멈추기 제외 / 성공 |
+|---|---:|---:|---:|---:|
+| 3 (u11-1 앞) | 48 / 1 | 22 / 0 | 31 / 0 | 35 / 1 |
+| 4 (u11-2 앞) | 325 / 1 | 64 / 0 | 121 / 0 | 185 / 0 |
+| 4 (u11-3 뒤) | 325 / 1 | 64 / 0 | 121 / 0 | 185 / 0 |
+
+추가로 각 순회의 방향을 독립적으로 앞/뒤 모두 허용한 전체 코드 트리도 열거한다. 상한 3의 후보 수(전체/새 기능 제외/비교 조건 제외/멈추기 제외)는 160/22/112/124, 상한 4는 1577/64/757/1039다. 실제 실행기에서 모든 후보의 문법 유효성을 확인한 뒤 두 입력을 검사한다. 새 기능 제외·비교 조건 제외는 세 퍼즐 모두 성공 0, 멈추기 제외는 u11-2·3 성공 0이다. u11-1의 멈추기 없는 성공은 의도다. 전진 배치 제약이나 팔레트를 바꾸면 재증명이 필요하다.
+
+### 화면 검증 한계
+
+ko/en×세 월드 렌더링·비교/발견/미확인 표시·초과 안내/고치기/방향 편집과 편집 버튼 이벤트는 단위 테스트로 확인한다. 표시하는 목표·일치/불일치는 SVG를 사용한다. 추가 스타일은 search-page로 제한한다. 새 라이브러리 API·설정 사용은 없고 Context7·Playwright MCP는 제공되지 않았다.
+
+개발 서버는 `listen EPERM: operation not permitted 127.0.0.1:5173`으로 시작하지 못했다. E2E도 `Process from config.webServer was not able to start. Exit code: 1`로 실행하지 못했다. 실제 브라우저 조작·콘솔·세 월드×1280/375/360 배치·44px 실측·대비·스크린샷 육안 확인은 **미검증**이며 화면 완료를 선언하지 않는다. node_modules가 다른 작업 폴더를 가리켜 최초 Vitest 캐시 쓰기가 EROFS로 실패했으므로 이 작업 폴더 안에 의존성을 복사했다(gitignore 대상). 다른 작업 폴더의 파일은 수정하지 않았다.
+
+### 최종 검증·변경 파일
+
+`npm run verify` 최종 3회 연속 통과: 각 33파일·364테스트, lint·TypeScript·Vite build 포함. 테스트 실행 시간 20.95s / 20.92s / 20.79s. `git diff --check` 통과. 개발 중 순환 조건 객체 검사 오류·편집 이벤트 테스트의 접근성 이름을 수정했으며 최종 3회에 포함됐다. 새 CSS의 명시된 전경/배경 색 쌍 대비를 상대 휘도로 계산한 최소값은 4.32:1이다(미확인 윤곽 #617b84 / #f4fcff). 실제 브라우저에서의 배치·크기·대비·스크린샷은 위 환경 제한으로 미검증이다.
+
+- Model: `src/model/types.ts`, `program.ts`, `interpreter.ts`, `ProgressRepository.ts`, `stages/index.ts`, `unit10.test.ts`, 신규 `unit11.test.ts`, 신규 `unit12345678910-run.fixture.json`.
+- Controller: `src/controller/EditorController.ts`, `GameController.ts`, `flow.ts`, `flow.test.ts`.
+- View: `src/view/components/BlockTiles.tsx`, `Editor.tsx`, `Editor.interaction.test.tsx`, `ResultModal.tsx`, `src/view/pages/PlayPage.tsx`, `StageSelectPage.tsx`, `pages.test.tsx`, `src/view/theme/Symbols.tsx`, `src/index.css`.
+- 문구·문서: `src/i18n/locales/ko.json`, `en.json`, `docs/ARCHITECTURE.md`, `CURRICULUM.md`, `PROJECT_MAP.md`, 이 설계 문서.
+
+브랜치 `feature/T70-search`를 유지했고 커밋·push·브랜치 변경은 하지 않았다. TASKS/NEXT_SESSION/WORK_HISTORY·CHANGELOG·GUIDE·public·E2E·package 파일은 수정하지 않았다. 남은 작업은 Claude의 브라우저 E2E/QC다. 진행 기록은 지정 파일 끝에 단계별로 추가했다.

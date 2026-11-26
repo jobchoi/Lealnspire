@@ -298,3 +298,10 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - `model/stages/index.ts`: unit10Stages u10-1~3, 모든 변형 A=0. `model/unit10.test.ts`: 정답 6맵·초기 충돌·저장 격리·편집·개방·예산·결합 상태 59/35/35의 공통 이동열 전수 탐색.
 - `model/unit123456789-run.fixture.json`: T69 구현 직전 실행기로 캡처한 1~9단원 38스테이지·63맵의 전체 결과·프레임.
 - 기존 EditorController/GameController·Editor/BlockTiles·PlayPage·Symbols·테마·index.css·목록/결과/flow에 원천 선택·번호/값/길이·순회/접근 포인터·범위 오류·10단원 완주를 연결한다. 설계·검증 한계는 `design/unit10-lists.md`.
+
+### T70 11단원 탐색 [제안·잠정]
+
+- `model/types.ts`, `program.ts`, `interpreter.ts`: `Stage.search`, `matchesTarget` 비교 원자, `forEach.direction`(front/back), `breakForEach`, `Frame.search`, `comparisonLimit`. 비교는 찾은 번호·횟수·확인한 번호를 기록하고 멈추기는 가장 안쪽 순회만 종료한다. 11단원 전진은 main 최상위로 제한하며 실행·저장·편집에서 검사한다.
+- `model/stages/index.ts`: unit11Stages u11-1~3(각 두 리스트·SG 맵·A=0). 10단원 이후 순차 개방, u11-3 후 목록으로 이동한다.
+- `model/unit11.test.ts`, `model/unit12345678910-run.fixture.json`: 6맵 정답 비교 횟수·초기 상한 초과·전체 코드 트리 열거·저장 격리·중첩 종료·단계 예산·개방·편집·저장과 1~10단원 41스테이지/69맵 전체 프레임 회귀. 지정 방향·양방향 두 문법의 증명 수치는 `design/unit11-search.md` 구현 기록 참고.
+- PlayPage·Editor·BlockTiles·Symbols·index.css는 lists-page 안의 search-page에 목표 SVG·일치/불일치·비교 횟수·찾은 번호·미확인 칸·순회 방향을 표시한다. ko/en×세 월드의 렌더링과 실제 편집 이벤트 회귀를 기존 페이지·편집 테스트에 추가했다.

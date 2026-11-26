@@ -24,7 +24,7 @@ function stagePolicy(id: string) {
 }
 function validStageDocument(value: unknown, id: string): value is ProgramDocument {
   const { palette, allowVariableCount } = stagePolicy(id)
-  return validDocument(value, palette, allowVariableCount, id.startsWith('u6-'), stages.find(stage => stage.id === id)?.params === true, stages.find(stage => stage.id === id)?.returns === true, stages.find(stage => stage.id === id)?.events === true, !!stages.find(stage => stage.id === id)?.lists)
+  return validDocument(value, palette, allowVariableCount, id.startsWith('u6-'), stages.find(stage => stage.id === id)?.params === true, stages.find(stage => stage.id === id)?.returns === true, stages.find(stage => stage.id === id)?.events === true, !!stages.find(stage => stage.id === id)?.lists, !!stages.find(stage => stage.id === id)?.search)
 }
 
 const knownStageIds = new Set(stages.map(stage => stage.id))

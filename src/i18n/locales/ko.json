@@ -62,7 +62,8 @@
     "stepLimit": "실행 단계가 너무 많아요. 반복 횟수와 블록을 줄여 보세요.",
     "variableRange": "상자 A의 값이 0보다 작거나 20보다 커졌어요",
     "missingReturn": "함수가 값을 돌려주지 않았어요. return이 실행됐나요?",
-    "indexRange": "번호가 리스트 범위를 벗어났어요."
+    "indexRange": "번호가 리스트 범위를 벗어났어요.",
+    "comparisonLimit": "찾았어요! 비교를 {limit}회 이하로 줄여 보세요."
   },
   "title": "Lealnspire",
   "stage": "스테이지",
@@ -79,7 +80,8 @@
     "change": "상자 A 1 바꾸기",
     "return": "값 돌려주기 (return)",
     "on": "신호가 오면 실행 (on)",
-    "forEach": "리스트"
+    "forEach": "리스트",
+    "breakForEach": "순회 멈추기"
   },
   "tools": "블록 작업 막대",
   "chooseTile": "블록을 눌러 선택하세요.",
@@ -145,7 +147,8 @@
       "turnRight": "오른쪽",
       "return": "return",
       "on": "신호가 오면 실행 (on)",
-      "forEach": "리스트"
+      "forEach": "리스트",
+      "breakForEach": "순회 멈추기"
     },
     "train": {
       "name": "기차 마을",
@@ -158,7 +161,8 @@
       "turnRight": "오른쪽 칸",
       "return": "return",
       "on": "신호가 오면 실행 (on)",
-      "forEach": "리스트"
+      "forEach": "리스트",
+      "breakForEach": "순회 멈추기"
     },
     "handheld": {
       "name": "나의 게임기",
@@ -171,7 +175,8 @@
       "turnRight": "오른쪽",
       "return": "return",
       "on": "신호가 오면 실행 (on)",
-      "forEach": "리스트"
+      "forEach": "리스트",
+      "breakForEach": "순회 멈추기"
     }
   },
   "stage1Hint1": "로봇과 별 사이의 칸을 세어 보세요.",
@@ -382,7 +387,8 @@
     "predictionRow": "{row}번: 왼쪽이 막힘 {p}, 오른쪽이 막힘 {q}일 때 {operator} 결과",
     "check": "답 확인",
     "blockedLeft": "왼쪽이 막힘",
-    "blockedRight": "오른쪽이 막힘"
+    "blockedRight": "오른쪽이 막힘",
+    "matchesTarget": "▣가 🎯와 같으면"
   },
   "u61Title": "not: 반대로 바꾸기",
   "u61Goal": "미리 놓인 코드를 고쳐 두 맵 모두 도착해요.",
@@ -453,7 +459,10 @@
   "returns": {
     "tile": "{order}번 값 돌려주기: {value}",
     "ahead": "앞 칸 수",
-    "received": {"star": "별 함수가 {value}를 돌려줬어요.", "moon": "달 함수가 {value}를 돌려줬어요."},
+    "received": {
+      "star": "별 함수가 {value}를 돌려줬어요.",
+      "moon": "달 함수가 {value}를 돌려줬어요."
+    },
     "skipped": "이번 호출에서 실행 안 함",
     "sourceShort": "↩ 값",
     "repeat": {
@@ -523,7 +532,38 @@
     "eachPointer": "▼ 순회: 번호 {index}, 값 {value}",
     "atPointer": "◆ L[A]: 번호 {index}, 값 {value}",
     "range": "번호 {index}인 칸이 없어요. 이 리스트의 길이는 {length}예요.",
-    "repeat": {"current": "{order}번 반복: 지금 꺼낸 값만큼", "listAtA": "{order}번 반복: 리스트의 A번 칸 값만큼", "listLength": "{order}번 반복: 리스트 길이만큼"},
+    "repeat": {
+      "current": "{order}번 반복: 지금 꺼낸 값만큼",
+      "listAtA": "{order}번 반복: 리스트의 A번 칸 값만큼",
+      "listLength": "{order}번 반복: 리스트 길이만큼"
+    },
     "rangeShort": "번호 {index} 없음 / 길이 {length}"
-  }
+  },
+  "search": {
+    "condition": "▣가 🎯와 같으면",
+    "front": "앞에서부터",
+    "back": "뒤에서부터",
+    "direction": "순회 방향 바꾸기",
+    "count": "비교 {count}회 / 상한 {limit}회",
+    "found": "번호 {index}에서 찾았어요.",
+    "limit": "찾았어요! 비교를 {limit}회 이하로 줄여 보세요.",
+    "reflect": "같은 칸을 찾았어요. 비교 횟수도 같았나요?",
+    "unseen": "여기부터는 보지 않았어요",
+    "empty": "비교가 같으면 찾은 번호가 표시돼요. 몸체는 비워 두어도 돼요.",
+    "target": "목표 값 {value}"
+  },
+  "unit11": "11단원: 탐색 (search)",
+  "unit11Congratulations": "11단원 완주!",
+  "u111Title": "찾은 칸을 표시해요",
+  "u111Goal": "리스트에서 🎯와 같은 값을 찾아 표시하고 별로 가요.",
+  "u111Hint1": "▣가 🎯와 같을 때 무엇이 표시되나요?",
+  "u111Hint2": "비교는 칸마다 한 번씩 해요.",
+  "u112Title": "찾았으면 멈춰요",
+  "u112Goal": "같은 값을 찾았는데 비교를 너무 많이 했어요. 비교를 2회 이하로 줄여요.",
+  "u112Hint1": "찾은 뒤에도 비교를 계속하나요?",
+  "u112Hint2": "순회 멈추기를 어디에 두면 찾자마자 멈출까요?",
+  "u113Title": "뒤에서 찾으면?",
+  "u113Goal": "미리 놓인 코드를 고쳐요. 🎯가 뒤쪽에 있어요.",
+  "u113Hint1": "앞에서부터 찾으면 비교를 몇 번 하나요?",
+  "u113Hint2": "순회 방향을 바꾸면 비교 횟수는 어떻게 될까요?"
 }

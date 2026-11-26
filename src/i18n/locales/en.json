@@ -62,7 +62,8 @@
     "stepLimit": "Too many steps. Try fewer repeats or fewer blocks.",
     "variableRange": "Box A went below 0 or above 20",
     "missingReturn": "The function didn't return a value. Did return run?",
-    "indexRange": "The index is outside the list."
+    "indexRange": "The index is outside the list.",
+    "comparisonLimit": "Found it! Try using at most {limit} comparisons."
   },
   "title": "Lealnspire",
   "stage": "Stage",
@@ -79,7 +80,8 @@
     "change": "Change box A by 1",
     "return": "Return a value (return)",
     "on": "Run when a signal comes (on)",
-    "forEach": "list"
+    "forEach": "list",
+    "breakForEach": "stop this traversal"
   },
   "tools": "Block tools",
   "chooseTile": "Tap a block to select it.",
@@ -145,7 +147,8 @@
       "turnRight": "Right",
       "return": "return",
       "on": "Run when a signal comes (on)",
-      "forEach": "list"
+      "forEach": "list",
+      "breakForEach": "stop this traversal"
     },
     "train": {
       "name": "Train Town",
@@ -158,7 +161,8 @@
       "turnRight": "Right car",
       "return": "return",
       "on": "Run when a signal comes (on)",
-      "forEach": "list"
+      "forEach": "list",
+      "breakForEach": "stop this traversal"
     },
     "handheld": {
       "name": "Pocket Console",
@@ -171,7 +175,8 @@
       "turnRight": "Right",
       "return": "return",
       "on": "Run when a signal comes (on)",
-      "forEach": "list"
+      "forEach": "list",
+      "breakForEach": "stop this traversal"
     }
   },
   "stage1Hint1": "Count the cells between the robot and the star.",
@@ -382,7 +387,8 @@
     "predictionRow": "Row {row}: blocked on the left {p}, blocked on the right {q} — {operator} result",
     "check": "Check answers",
     "blockedLeft": "Blocked on the left",
-    "blockedRight": "Blocked on the right"
+    "blockedRight": "Blocked on the right",
+    "matchesTarget": "if ▣ equals 🎯"
   },
   "u61Title": "not: Flip It",
   "u61Goal": "Fix the code that's already there so the robot reaches the star on both maps.",
@@ -453,7 +459,10 @@
   "returns": {
     "tile": "Step {order}: return {value}",
     "ahead": "cells ahead",
-    "received": {"star": "The star function returned {value}.", "moon": "The moon function returned {value}."},
+    "received": {
+      "star": "The star function returned {value}.",
+      "moon": "The moon function returned {value}."
+    },
     "skipped": "Not run this call",
     "sourceShort": "↩ Value",
     "repeat": {
@@ -523,7 +532,38 @@
     "eachPointer": "▼ For each: index {index}, value {value}",
     "atPointer": "◆ L[A]: index {index}, value {value}",
     "range": "There is no element at index {index}. This list has length {length}.",
-    "repeat": {"current": "Step {order}: repeat as many times as the current value", "listAtA": "Step {order}: repeat as many times as the list value at index A", "listLength": "Step {order}: repeat as many times as the list length"},
+    "repeat": {
+      "current": "Step {order}: repeat as many times as the current value",
+      "listAtA": "Step {order}: repeat as many times as the list value at index A",
+      "listLength": "Step {order}: repeat as many times as the list length"
+    },
     "rangeShort": "No index {index} / length {length}"
-  }
+  },
+  "search": {
+    "condition": "if ▣ equals 🎯",
+    "front": "from the front",
+    "back": "from the back",
+    "direction": "Change traversal direction",
+    "count": "Comparisons: {count} / limit: {limit}",
+    "found": "Found it at index {index}.",
+    "limit": "Found it! Try using at most {limit} comparisons.",
+    "reflect": "You found the same element. Was the number of comparisons the same?",
+    "unseen": "We did not look from here on",
+    "empty": "A match marks the found index. You can leave the body empty.",
+    "target": "Target value {value}"
+  },
+  "unit11": "Unit 11: Search",
+  "unit11Congratulations": "Unit 11 complete!",
+  "u111Title": "Mark the Match",
+  "u111Goal": "Find the value equal to 🎯 in the list, mark it, and go to the star.",
+  "u111Hint1": "What is shown when ▣ equals 🎯?",
+  "u111Hint2": "Each cell is compared once.",
+  "u112Title": "Stop When You Find It",
+  "u112Goal": "You found it, but compared too many times. Use at most 2 comparisons.",
+  "u112Hint1": "Do you keep comparing after you find it?",
+  "u112Hint2": "Where should \"stop this traversal\" go so it stops right after finding?",
+  "u113Title": "From the Back?",
+  "u113Goal": "Fix the code that's already there. 🎯 is near the end.",
+  "u113Hint1": "How many comparisons from the front?",
+  "u113Hint2": "What happens to the count if you change the direction?"
 }

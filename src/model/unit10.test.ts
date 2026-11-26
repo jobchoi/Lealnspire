@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { allStages, unit10Stages } from './stages'
+import { allStages, unit10Stages, unit11Stages } from './stages'
 import { run, runAll, failurePoint } from './interpreter'
 import { countBlocks, validDocument } from './program'
 import baseline from './unit123456789-run.fixture.json'
@@ -151,7 +151,7 @@ it('opens after unit9, edits list sources in lexical scope with undo, and saves 
     game.selectVariant(1); expect(game.frame?.list).toBeUndefined()
     game.dispose()
   }
-  expect(continueStageIndex(repo.getProgress())).toBeUndefined()
+  expect(continueStageIndex(repo.getProgress())).toBe(allStages.indexOf(unit11Stages[0]))
 })
 it('charges exactly one step for each visit and source read, including zero-count bodies', () => {
   const stage = { ...unit10Stages[0], variants: undefined, lists: [[0]], grid: ['S#G'] }
