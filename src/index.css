@@ -1126,3 +1126,6 @@ button small { display: block; font-size: .75rem; }
  /* 11단원 맵은 S·G 한 줄이라 작아도 됨 — 리스트 칸·작업 공간에 높이를 돌려줌 */
  .play-page.search-page .map-panel .art-board,.play-page.search-page .map-panel .train-island,.play-page.search-page.theme-handheld .map-panel .art-board { height:72px; max-height:72px; }
 }
+
+/* T64 2차(Claude): 빈 작업 공간 안내가 격자 칸 하나에 갇혀 글자 단위로 줄바꿈되던 문제 — 모든 단원·월드에서 한 줄 전체 사용 */
+.play-page .workspace > p { grid-column:1 / -1; flex:1 0 100%; margin:4px 0; overflow-wrap:normal; word-break:keep-all; }

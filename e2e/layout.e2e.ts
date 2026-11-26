@@ -136,3 +136,24 @@ test.describe('@layout 공통', () => {
     expect(await g.inView(active)).toBe(true)
   })
 })
+
+/** T64 2차: 빈 작업 공간 안내문이 글자 단위로 쪼개지지 않는다(세 월드 × 좁은 화면) */
+for (const world of ['크레용 스케치북', '기차 마을']) {
+  for (const viewport of [{ width: 375, height: 667 }, { width: 360, height: 560 }, { width: 1280, height: 720 }]) {
+    test(`@layout ${world} ${viewport.width}: 빈 작업 공간 안내가 쪼개지지 않음`, async ({ page }) => {
+      await page.setViewportSize(viewport)
+      const g = new Game(page)
+      await g.fresh()
+      await page.evaluate(() => localStorage.setItem('lealnspire.progress.v2', JSON.stringify({ version: 2, stages: { '1': { completed: true, bestStars: 3 } } })))
+      await page.reload()
+      await g.press(g.button('스테이지 목록'))
+      await g.press(page.locator('.stage-card').first())
+      await g.press(page.getByRole('button', { name: `${world} 월드로 바꾸기` }))
+      const hint = page.locator('.workspace > p').first()
+      await expect(hint).toBeVisible()
+      // 글자 줄 상자의 서로 다른 위쪽 좌표 개수 = 실제 줄 수
+      const lines = await hint.evaluate(e => { const r = document.createRange(); r.selectNodeContents(e); return new Set([...r.getClientRects()].map(b => Math.round(b.top))).size })
+      expect(lines, '안내문 줄 수(2줄 이하)').toBeLessThanOrEqual(2)
+    })
+  }
+}
