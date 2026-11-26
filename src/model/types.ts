@@ -1,7 +1,7 @@
 export type HintHighlight = 'path' | 'walls' | 'start' | 'goal'
 export type Dir = 'N' | 'E' | 'S' | 'W'
 export type Variable = 'A' | 'B'
-export type ConditionAtom = 'clearAhead' | 'blockedAhead' | 'aIsZero'
+export type ConditionAtom = 'clearAhead' | 'blockedAhead' | 'blockedLeft' | 'blockedRight'
 export type Condition = { kind: 'atom'; atom: ConditionAtom } | { kind: 'not'; operand: Condition } | { kind: 'and' | 'or'; left: Condition; right: Condition }
 export type Block =
   | { id: string; type: 'forward' | 'turnLeft' | 'turnRight' }

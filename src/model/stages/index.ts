@@ -100,13 +100,25 @@ export const unit5Stages: Stage[] = [
   { id: 'u5-3', world: 'handheld', title: 'u53Title', goal: 'u53Goal', hints: { keys: ['u53Hint1', 'u53Hint2'], highlight: 'start' }, grid: ['###G##', 'S.....'], variants: [['###G##', 'S.....']], variantVariables: [{ A: 0 }], startDir: 'E', maxBlocks: 5, starBlocks: 5, palette: variablePalette, initialProgram: [variableRepeat('repeat'), { id: 'set', type: 'set', variable: 'A', value: 3 }, ...variableFinish()], solution: [{ id: 'set', type: 'set', variable: 'A', value: 3 }, variableRepeat('repeat'), ...variableFinish()] },
 ]
 const logicPuzzle = (number: number, world: Stage['world']): Stage => {
-  const north = [['#.#', '#SG', '###'], ['#G#', '#S.', '###'], ['#G#', '#S#', '###']]
-  const south = [['###', '#S#', '#G#'], ['###', '#S.', '#G#'], ['###', '#SG', '#.#']]
-  const variants = number === 2 ? south : north
-  const atom = (value: 'clearAhead' | 'blockedAhead' | 'aIsZero') => ({ kind: 'atom' as const, atom: value })
-  const make = (kind: 'and' | 'or'): Block[] => [{ id: 'if', type: 'if', condition: { kind, left: atom(number === 2 ? 'blockedAhead' : 'clearAhead'), right: atom('aIsZero') }, body: number === 2 ? [{ id: 'turn', type: 'turnRight' }, { id: 'f1', type: 'forward' }] : [{ id: 'f1', type: 'forward' }], else: number === 2 ? [{ id: 'f2', type: 'forward' }] : [{ id: 'turn', type: 'turnLeft' }, { id: 'f2', type: 'forward' }] }]
-  return { id: `u6-${number}`, world, title: `u6${number}Title`, goal: `u6${number}Goal`, hints: { keys: [`u6${number}Hint1`, `u6${number}Hint2`], highlight: 'walls' }, grid: variants[0], variants, variantVariables: (number === 2 ? [1, 0, 1] : [0, 1, 0]).map(A => ({ A })), startDir: 'E', maxBlocks: 4, starBlocks: 4, palette: ['forward', 'turnLeft', 'turnRight', 'if'], solution: make(number === 2 ? 'or' : 'and'), ...(number === 3 ? { initialProgram: make('or') } : {}) }
+  const maps = [
+    [['##G', 'S..'], ['####G', 'S....']],
+    [['##G###', '##.###', 'S.....'], ['####G#', '####.#', 'S.....']],
+    [['####G#', '#.##.#', 'S.....', '##.#.#'], ['###G##', '###.##', 'S.....', '#.#.##']],
+    [['#.##G#', 'S.....', '##.#.#'], ['###G##', 'S.....', '#.#.##']],
+  ]
+  const variants = maps[number - 1]
+  const atom = (value: 'blockedAhead' | 'blockedLeft' | 'blockedRight') => ({ kind: 'atom' as const, atom: value })
+  const not = (value: 'blockedAhead' | 'blockedLeft' | 'blockedRight') => ({ kind: 'not' as const, operand: atom(value) })
+  const forward: Block = { id: 'f', type: 'forward' }
+  const finish: Block[] = [{ id: 'left', type: 'turnLeft' }, { id: 'end', type: 'forward' }]
+  const sides = (kind: 'and' | 'or') => ({ kind, left: atom('blockedLeft'), right: atom('blockedRight') })
+  const solution: Block[] = number === 1 || number === 4
+    ? [{ id: 'while', type: 'while', condition: number === 1 ? not('blockedAhead') : sides('or'), body: [forward] }, ...finish]
+    : [{ id: 'repeat', type: 'repeat', count: 6, body: [{ id: 'if', type: 'if', condition: number === 2 ? not('blockedLeft') : { kind: 'and', left: not('blockedLeft'), right: not('blockedRight') }, body: [{ id: 'left', type: 'turnLeft' }] }, forward] }]
+  const initialProgram: Block[] | undefined = number === 1 || number === 4
+    ? [{ id: 'while', type: 'while', condition: number === 1 ? atom('blockedAhead') : sides('and'), body: [forward] }, ...finish] : undefined
+  return { id: `u6-${number}`, world, title: `u6${number}Title`, goal: `u6${number}Goal`, hints: { keys: [`u6${number}Hint1`, `u6${number}Hint2`], highlight: number === 1 ? 'start' : number === 3 ? 'path' : 'walls' }, grid: variants[0], variants, startDir: 'E', maxBlocks: 4, starBlocks: 4, palette: ['forward', 'turnLeft', 'turnRight', 'repeat', 'if', 'while'], solution, ...(initialProgram ? { initialProgram } : {}) }
 }
-export const unit6Stages: Stage[] = [logicPuzzle(1, 'sketchbook'), logicPuzzle(2, 'train'), logicPuzzle(3, 'handheld')]
+export const unit6Stages: Stage[] = [logicPuzzle(1, 'sketchbook'), logicPuzzle(2, 'train'), logicPuzzle(3, 'handheld'), logicPuzzle(4, 'sketchbook')]
 export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages]
 export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)

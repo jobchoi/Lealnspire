@@ -117,7 +117,7 @@ export const countBlocks = Program.countBlocks
 /** Only an atom, a negated atom, or one binary operator with atomic operands is accepted. */
 export function validCondition(value: unknown): value is Condition {
   const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
-  const atom = (v: unknown): boolean => record(v) && Object.keys(v).length === 2 && v.kind === 'atom' && (v.atom === 'clearAhead' || v.atom === 'blockedAhead' || v.atom === 'aIsZero')
+  const atom = (v: unknown): boolean => record(v) && Object.keys(v).length === 2 && v.kind === 'atom' && (v.atom === 'clearAhead' || v.atom === 'blockedAhead' || v.atom === 'blockedLeft' || v.atom === 'blockedRight')
   const operand = (v: unknown): boolean => atom(v) || record(v) && Object.keys(v).length === 2 && v.kind === 'not' && atom(v.operand)
   return operand(value) || record(value) && Object.keys(value).length === 3 && (value.kind === 'and' || value.kind === 'or') && operand(value.left) && operand(value.right)
 }

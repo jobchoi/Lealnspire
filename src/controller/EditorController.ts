@@ -3,6 +3,7 @@ import { Observable } from './Observable'
 import { MAX_PROGRAM_BLOCKS, FunctionProgram, Program as ProgramModel } from '../model/program'
 import type { Block, Program, ProgramDocument, FunctionDef, Condition } from '../model/types'
 export class EditorController extends Observable<{ selectedId: string | null; targetId: string | null; addedId: string | null }> {
+  logicEnabled = false
   functionId: string | undefined
   functionTarget = false
   get addingToFunction() { return !!this.functionId && (this.functionTarget || !!this.targetPath) }
@@ -120,6 +121,10 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
     if (this.locked || this.atLimit || !this.prepareEdit()) return
     if (type === 'call' && this.addingToFunction) return
     const block = new FunctionProgram(this.doc).create(type, fn)
+    if (this.logicEnabled && (block.type === 'if' || block.type === 'while')) {
+      const atom = { kind: 'atom' as const, atom: 'blockedAhead' as const }
+      block.condition = block.type === 'if' ? atom : { kind: 'not', operand: atom }
+    }
     if (type === 'call' && !this.functions.length) return
     const functionId = this.addingToFunction ? this.functionId : undefined
     const program = functionId ? this.editProgram : this.program

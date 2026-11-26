@@ -58,12 +58,12 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
   const atomOf = (node: Condition): ConditionAtom => node.kind === 'atom' ? node.atom : node.kind === NOT ? atomOf(node.operand) : 'clearAhead'
   const leaf = (atom: ConditionAtom, negate: boolean): Condition => negate ? { kind: NOT, operand: { kind: 'atom', atom } } : { kind: 'atom', atom }
   const left = tree && (tree.kind === AND || tree.kind === OR) ? tree.left : tree
-  const right = tree && (tree.kind === AND || tree.kind === OR) ? tree.right : leaf('aIsZero', false)
+  const right = tree && (tree.kind === AND || tree.kind === OR) ? tree.right : leaf('blockedRight', false)
   const setLeaf = (side: 'left' | 'right', node: Condition) => {
     if (!tree) return
     controller.setCondition(tree.kind === AND || tree.kind === OR ? { ...tree, [side]: node } : node)
   }
-  const leafControls = (node: Condition, side: 'left' | 'right') => <span><label>{t(`logic.${side}`)} <select disabled={locked} aria-label={t(`logic.${side}`)} value={atomOf(node)} onChange={event => setLeaf(side, leaf(event.target.value as ConditionAtom, node.kind === NOT))}>{(['clearAhead', 'blockedAhead', 'aIsZero'] as const).map(atom => <option key={atom} value={atom}>{t(`logic.${atom}`)}</option>)}</select></label><label><input type="checkbox" disabled={locked} checked={node.kind === NOT} onChange={event => setLeaf(side, leaf(atomOf(node), event.target.checked))} /> {NOT}</label></span>
+  const leafControls = (node: Condition, side: 'left' | 'right') => <span><label>{t(`logic.${side}`)} <select disabled={locked} aria-label={t(`logic.${side}`)} value={atomOf(node)} onChange={event => setLeaf(side, leaf(event.target.value as ConditionAtom, node.kind === NOT))}>{(['blockedAhead', 'blockedLeft', 'blockedRight'] as const).map(atom => <option key={atom} value={atom}>{{ blockedAhead: '↑', blockedLeft: '←', blockedRight: '→' }[atom]} {t(`logic.${atom}`)}</option>)}</select></label><button type="button" disabled={locked} aria-label={`${t(`logic.${side}`)} ${NOT}`} aria-pressed={node.kind === NOT} onClick={() => setLeaf(side, leaf(atomOf(node), node.kind !== NOT))}>{NOT}</button></span>
   const toolbar = selectedBlock ? <div className="tile-toolbar" role="group" aria-label={t('tools')}>
       {selectedBlock && selectedPath ? <>
         <button disabled={locked || selectedPath.at(-1) === 0} aria-label={label(t('before'))} onClick={() => controller.move('up')}>◀</button>

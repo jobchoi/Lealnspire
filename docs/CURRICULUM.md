@@ -11,7 +11,7 @@
 | 단원 | 주제 | 상태 |
 |---|---|---|
 | 1 | 블록 코딩: 순서와 반복 (MVP) | 구현 완료(첫 제품, 배포 준비 중) |
-| 2~ | [확정 방향, 사용자 2026-11-25] 프로그래밍 기본 개념 전체: 조건 if → if/else → while → 함수 → 변수 → 논리 → 매개변수 → 반환값 → 이벤트 → 리스트(ROADMAP 라운드 3) | 2단원(if/else) **구현 완료**(u2-1~u2-6, 조건 예측, T38·T39·T41), 3단원(while) **구현 완료**(u3-1~u3-3, T42): [design/unit2-conditions.md](design/unit2-conditions.md), 4단원(함수) **구현 완료**(u4-1~u4-3, T44·T45): [design/unit4-functions.md](design/unit4-functions.md), 5단원(변수) **구현 완료**(u5-1~u5-3, T47·T48): [design/unit5-variables.md](design/unit5-variables.md), 6단원(논리 not/and/or) **구현 완료·잠정**(u6-1~u6-3, T51·T52): [design/unit6-logic.md](design/unit6-logic.md). 다음: 매개변수 → 반환값 … |
+| 2~ | [확정 방향, 사용자 2026-11-25] 프로그래밍 기본 개념 전체: 조건 if → if/else → while → 함수 → 변수 → 논리 → 매개변수 → 반환값 → 이벤트 → 리스트(ROADMAP 라운드 3) | 2단원(if/else) **구현 완료**(u2-1~u2-6, 조건 예측, T38·T39·T41), 3단원(while) **구현 완료**(u3-1~u3-3, T42): [design/unit2-conditions.md](design/unit2-conditions.md), 4단원(함수) **구현 완료**(u4-1~u4-3, T44·T45): [design/unit4-functions.md](design/unit4-functions.md), 5단원(변수) **구현 완료**(u5-1~u5-3, T47·T48): [design/unit5-variables.md](design/unit5-variables.md), 6단원(논리 not/and/or) **구현 완료·잠정**(u6-1~u6-4, T59 옆 센서 전환·브라우저 검증 대기): [design/unit6-logic.md](design/unit6-logic.md). 다음: 매개변수 → 반환값 … |
 | 3~ | 자료구조, 알고리즘, 컴퓨터 구조, 운영체제, 네트워크 | 미정 |
 
 ## 2. 1단원 학습 목표 [확정]

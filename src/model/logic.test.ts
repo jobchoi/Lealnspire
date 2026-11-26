@@ -15,34 +15,34 @@ const branch = (condition: Condition): Block => ({ id: 'if', type: 'if', conditi
 
 it('evaluates both operands in order for every truth table row, recording negation and paths', () => {
   for (const open of [false, true]) for (const zero of [false, true]) for (const kind of ['and', 'or'] as const) {
-    const condition = binary(kind, not(atom('clearAhead')), atom('aIsZero'))
-    const grid = open ? ['S.G'] : ['S#G']
+    const condition = binary(kind, not(atom('clearAhead')), atom('blockedLeft'))
+    const grid = [zero ? '#..' : '...', open ? 'S.G' : 'S#G']
     const result = run({ ...stage, grid }, [branch(condition)], { A: zero ? 0 : 1 })
     expect(result.frames[1].check).toEqual({ blockId: 'if', condition, result: kind === 'and' ? !open && zero : !open || zero, atoms: [
       { atom: 'clearAhead', value: open, path: ['left', 'operand'], result: !open },
-      { atom: 'aIsZero', value: zero, path: ['right'], result: zero },
+      { atom: 'blockedLeft', value: zero, path: ['right'], result: zero },
     ] })
     expect(result.frames[2].activeBlockId).toBe(result.frames[1].check!.result ? 'yes' : 'no')
   }
-  const condition = binary('or', atom('aIsZero'), atom('aIsZero'))
+  const condition = binary('or', atom('blockedLeft'), atom('blockedLeft'))
   expect(run(stage, [branch(condition)]).frames[1].check?.atoms?.map(a => a.path)).toEqual([['left'], ['right']])
-  expect(run(stage, [branch(not(atom('aIsZero')))]).frames[1].check).toMatchObject({ result: false, atoms: [{ value: true, result: false, path: ['operand'] }] })
+  expect(run(stage, [branch(not(atom('blockedLeft')))]).frames[1].check).toMatchObject({ result: false, atoms: [{ value: true, result: false, path: ['operand'] }] })
 })
 it('rechecks while conditions, handles zero iterations and bounds infinite loops', () => {
-  const loop: Block = { id: 'w', type: 'while', condition: atom('aIsZero'), body: [{ id: 'c', type: 'change', variable: 'A', by: 1 }] }
-  expect(run(stage, [loop], { A: 1 }).frames).toHaveLength(2)
+  const loop: Block = { id: 'w', type: 'while', condition: atom('blockedLeft'), body: [{ id: 'c', type: 'turnRight' }] }
+  expect(run({ ...stage, grid: ['...', 'S.G'] }, [loop]).frames).toHaveLength(2)
   expect(run(stage, [loop]).frames.filter(f => f.event === 'check').map(f => f.check?.result)).toEqual([true, false])
   const infinite = run(stage, [{ ...loop, body: [] }])
   expect(infinite.result).toBe('stepLimit'); expect(infinite.frames).toHaveLength(1001)
 })
-it('evaluates in functions and resets A for each variant', () => {
-  const doc = { main: [{ id: 'call', type: 'call' as const, fn: 'fn' }], functions: [{ id: 'fn', icon: 'star' as const, body: [branch(atom('aIsZero'))] }] }
-  const results = runAll({ ...stage, variants: [stage.grid, stage.grid], variantVariables: [{ A: 0 }, { A: 1 }] }, doc).results
+it('evaluates in functions and checks the geometry of each variant', () => {
+  const doc = { main: [{ id: 'call', type: 'call' as const, fn: 'fn' }], functions: [{ id: 'fn', icon: 'star' as const, body: [branch(atom('blockedLeft'))] }] }
+  const results = runAll({ ...stage, variants: [stage.grid, ['...', 'S.G']] }, doc).results
   expect(results.map(r => r.frames[1].check?.result)).toEqual([true, false])
   expect(results[0].frames[1].call).toEqual({ callId: 'call', fn: 'fn' })
 })
 it('validates shape and copies conditions independently during edits and cloning', () => {
-  const condition = binary('and', atom('clearAhead'), not(atom('aIsZero')))
+  const condition = binary('and', atom('clearAhead'), not(atom('blockedLeft')))
   const original = [branch(condition)]
   const edited = Program.setCondition(original, [0], condition)
   ;(condition as Extract<Condition, { kind: 'and' | 'or' }>).left = atom('blockedAhead')
@@ -50,7 +50,7 @@ it('validates shape and copies conditions independently during edits and cloning
   const clone = cloneBlock(original, original[0]); expect(clone.id).not.toBe(original[0].id)
   expect(Program.countBlocks(original)).toBe(3)
   const cycle: Record<string, unknown> = { kind: 'not' }; cycle.operand = cycle
-  for (const invalid of [cycle, { kind: 'atom', atom: 'x' }, { kind: 'atom', atom: 'aIsZero', extra: true }, not(not(atom('aIsZero'))), binary('or', binary('and', atom('aIsZero'), atom('clearAhead')), atom('aIsZero')), { kind: 'or', left: atom('aIsZero') }]) {
+  for (const invalid of [cycle, { kind: 'atom', atom: 'x' }, { kind: 'atom', atom: 'aIsZero' }, { kind: 'atom', atom: 'blockedLeft', extra: true }, not(not(atom('blockedLeft'))), binary('or', binary('and', atom('blockedLeft'), atom('clearAhead')), atom('blockedLeft')), { kind: 'or', left: atom('blockedLeft') }]) {
     expect(validCondition(invalid)).toBe(false)
     expect(validDocument({ main: [{ id: 'x', type: 'if', condition: invalid, body: [] }], functions: [] })).toBe(false)
   }
@@ -59,7 +59,7 @@ it('rejects logic trees in older stages on v2 restore while preserving progress'
   const data = new Map<string, string>()
   const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => { data.set(key, value) } }
   const target = unit2Stages[0], other = unit2Stages[1]
-  const doc = { main: [branch(binary('and', atom('clearAhead'), not(atom('aIsZero'))))], functions: [] }
+  const doc = { main: [branch(binary('and', atom('clearAhead'), not(atom('blockedLeft'))))], functions: [] }
   const repo = new ProgressRepository(storage); repo.completeStage(target.id, 3, doc); repo.completeStage(other.id, 2, [])
   expect(validDocument(doc)).toBe(true)
   expect(new ProgressRepository(storage).getDocument(target)).toEqual({ main: [], functions: [] })
@@ -72,25 +72,9 @@ it('rejects logic trees in older stages on v2 restore while preserving progress'
   expect(restored.getProgress().stages[target.id]).toMatchObject({ completed: true, bestStars: 3 })
   expect(restored.getProgress().stages[other.id]).toMatchObject({ completed: true, bestStars: 2 })
 })
-it('reproduces the four-block atomic shortcut on all proposed unit 6 maps', () => {
-  const shortcut: Block[] = [
-    { id: 'left', type: 'turnLeft' },
-    { id: 'if', type: 'if', condition: atom('clearAhead'), body: [], else: [{ id: 'right', type: 'turnRight' }] },
-    { id: 'forward', type: 'forward' },
-  ]
-  expect(Program.countBlocks(shortcut)).toBe(4)
-  for (const [variants, values] of [
-    [[['##', 'SG'], ['G#', 'S.'], ['G#', 'S#']], [0, 1, 0]],
-    [[['G#', 'S#'], ['G#', 'S.'], ['##', 'SG']], [1, 0, 1]],
-    [[['##', 'SG'], ['G#', 'S.'], ['G#', 'S#']], [0, 1, 0]],
-  ] as const) {
-    const puzzle = { ...stage, grid: [...variants[0]], variants: variants.map(grid => [...grid]), variantVariables: values.map(A => ({ A })) }
-    expect(runAll(puzzle, shortcut).results.map(result => result.result)).toEqual(['success', 'success', 'success'])
-  }
-})
 it('documents old v2 reader rollback and resave loss with an independent legacy condition validator', () => {
   const oldValid = (condition: unknown) => condition === 'blockedAhead'
-  const saved = { version: 2, stages: { [unit2Stages[0].id]: { completed: true, bestStars: 3, lastProgram: { main: [branch(atom('aIsZero'))], functions: [] } }, 'u6-1': { completed: true, bestStars: 3, lastProgram: { main: [], functions: [] } } } }
+  const saved = { version: 2, stages: { [unit2Stages[0].id]: { completed: true, bestStars: 3, lastProgram: { main: [branch(atom('blockedLeft'))], functions: [] } }, 'u6-1': { completed: true, bestStars: 3, lastProgram: { main: [], functions: [] } } } }
   const oldStages = Object.fromEntries(Object.entries(saved.stages).filter(([id]) => allStages.some(s => !s.id.startsWith('u6-') && s.id === id)).map(([id, entry]) => [id, { ...entry, lastProgram: oldValid((entry.lastProgram.main[0] as Extract<Block, { type: 'if' }> | undefined)?.condition) ? entry.lastProgram : { main: [], functions: [] } }]))
   const rewritten = JSON.parse(JSON.stringify({ version: 2, stages: oldStages }))
   expect(rewritten.stages[unit2Stages[0].id]).toMatchObject({ completed: true, bestStars: 3, lastProgram: { main: [], functions: [] } })
@@ -98,4 +82,29 @@ it('documents old v2 reader rollback and resave loss with an independent legacy 
 })
 it('preserves all pre-change unit 1–5 solution results and frames', () => {
   expect(Object.fromEntries(allStages.filter(s => !s.id.startsWith('u6-')).map(s => [s.id, runAll(s, { main: s.solution, functions: s.solutionFunctions ?? [] })]))).toEqual(baseline)
+})
+
+it('checks robot-relative left and right in every direction, including walls, edges and goals', () => {
+  const grid = ['.#..', '.SG.', '....']
+  const directions = ['N', 'E', 'S', 'W'] as const
+  const left = [false, true, false, false], right = [false, false, false, true]
+  for (const [index, startDir] of directions.entries()) {
+    const condition = binary('or', atom('blockedLeft'), atom('blockedRight'))
+    expect(run({ ...stage, grid, startDir }, [branch(condition)]).frames[1].check?.atoms?.map(a => a.value)).toEqual([left[index], right[index]])
+  }
+  expect(run(stage, [branch(atom('blockedRight'))]).frames[1].check?.result).toBe(true)
+})
+it('rejects retired A=0 saves only for the affected stage and preserves completion', () => {
+  const data = new Map<string, string>()
+  const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => { data.set(key, value) } }
+  const repo = new ProgressRepository(storage)
+  const first = allStages.find(s => s.id === 'u6-1')!, second = allStages.find(s => s.id === 'u6-2')!
+  repo.completeStage(first.id, 3, first.solution); repo.completeStage(second.id, 3, second.solution)
+  const raw = JSON.parse(data.get(progressV2Key)!)
+  raw.stages[first.id].lastProgram.main[0].condition = { kind: 'atom', atom: 'aIsZero' }
+  data.set(progressV2Key, JSON.stringify(raw))
+  const restored = new ProgressRepository(storage)
+  expect(restored.getDocument(first).main).toEqual([])
+  expect(restored.getProgress().stages[first.id]).toMatchObject({ completed: true, bestStars: 3 })
+  expect(restored.getDocument(second).main).toEqual(second.solution)
 })

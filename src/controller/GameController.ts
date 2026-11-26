@@ -25,6 +25,7 @@ export class GameController extends Observable<State> {
     this.editor.program = this.state.program
     this.editor.functions = structuredClone(this.state.doc.functions)
     this.editor.onChange = this.edit
+    this.editor.logicEnabled = stage.id.startsWith('u6-')
     this.editor.maxBlocks = stage.maxBlocks
     this.editor.onDocumentChange = this.edit
   }

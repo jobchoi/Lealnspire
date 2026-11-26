@@ -46,3 +46,24 @@ it('describes initial and moving robot coordinates and the goal in every world',
     expect(moved).toContain('로봇은 1번째 줄 2번째 칸에서 서쪽을 봐요. 별은 1번째 줄 3번째 칸.')
   }
 })
+
+it('marks each checked side at the robot-relative cell in all worlds', () => {
+  const stage = { ...stages[0], grid: ['.#.', '.SG', '...'], startDir: 'E' as const }
+  const check: NonNullable<import('../../model/types').Frame['check']> = {
+    blockId: 'if', condition: { kind: 'and', left: { kind: 'atom', atom: 'blockedLeft' }, right: { kind: 'atom', atom: 'blockedRight' } }, result: false,
+    atoms: [{ atom: 'blockedLeft', value: true, result: true, path: ['left'] }, { atom: 'blockedRight', value: false, result: false, path: ['right'] }],
+  }
+  for (const world of ['sketchbook', 'train', 'handheld'] as const) {
+    const html = renderToString(<Board theme={selectTheme(world, false)} stage={stage} check={check} />)
+    expect(html.match(/class="board-sensor"/g)).toHaveLength(2)
+    expect(html).toContain('왼쪽이 막힘: 참, 오른쪽이 막힘: 거짓')
+    if (world === 'sketchbook') {
+      expect(html).toContain('class="board-sensor" transform="translate(80 0)"')
+      expect(html).toContain('class="board-sensor" transform="translate(80 160)"')
+    }
+    if (world === 'handheld') {
+      expect(html).toContain('class="board-sensor" transform="translate(16 0)"')
+      expect(html).toContain('class="board-sensor" transform="translate(16 32)"')
+    }
+  }
+})

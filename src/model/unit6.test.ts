@@ -6,65 +6,95 @@ import type { Stage } from './types'
 
 const puzzles = allStages.filter(stage => stage.id.startsWith('u6-'))
 
-it('solutions reach every goal and the original u6-3 code fails as specified', () => {
+it('four solutions pass both maps; initial code and the earlier side rule fail as designed', () => {
+  expect(puzzles).toHaveLength(4)
   for (const stage of puzzles) {
     expect(Program.countBlocks(stage.solution)).toBe(4)
-    expect(runAll(stage, stage.solution).results.map(r => r.result)).toEqual(['success', 'success', 'success'])
+    expect(runAll(stage, stage.solution).results.map(r => r.result)).toEqual(['success', 'success'])
+    expect(stage.variantVariables).toBeUndefined()
+    // Side branches are deliberately skipped: visiting every open cell is not a unit 6 rule.
   }
-  expect(runAll(puzzles[2], puzzles[2].initialProgram!).results.map(r => r.result)).toEqual(['success', 'unfinished', 'collision'])
+  expect(runAll(puzzles[0], puzzles[0].initialProgram!).results.map(r => r.result)).toEqual(['collision', 'collision'])
+  expect(runAll(puzzles[3], puzzles[3].initialProgram!).results.map(r => r.result)).toEqual(['unfinished', 'collision'])
+  expect(runAll(puzzles[2], puzzles[1].solution).results[0].result).toBe('collision')
 })
 
-// Every traversable non-goal pose, direction and relevant A value is represented.
-// Goal and collision are absorbing. Transform equivalence is therefore a
-// congruence for sequencing and for either branch of every atomic if.
-function search(stage: Stage, limit: number) {
+// Full non-goal pose transforms make equivalence a congruence under arbitrary
+// nesting and sequencing. Goal, collision and nontermination are absorbing.
+// Ignoring finite execution budgets over-approximates successful programs, so
+// absence here also proves absence under interpreter budgets.
+function search(stage: Stage, atoms: number[], limit: number) {
   const grids = stage.variants!
-  const poses = grids.flatMap((grid, map) => grid.flatMap((row, y) => [...row].flatMap((cell, x) => cell === '#' || cell === 'G' ? [] : [0, 1, 2, 3].flatMap(dir => [0, 1].map(A => ({ map, x, y, dir, A }))))))
+  const poses = grids.flatMap((grid, map) => grid.flatMap((row, y) => [...row].flatMap((cell, x) => cell === '#' || cell === 'G' ? [] : [0, 1, 2, 3].map(dir => ({ map, x, y, dir })))))
   const success = poses.length, failure = success + 1
   const identity = Array.from({ length: failure + 1 }, (_, i) => i)
   const compose = (a: number[], b: number[]) => a.map(i => b[i])
   const offsets = [[0, -1], [1, 0], [0, 1], [-1, 0]]
-  const open = (p: typeof poses[number]) => { const [dx, dy] = offsets[p.dir]; const c = grids[p.map][p.y + dy]?.[p.x + dx]; return !!c && c !== '#' }
-  const commands = ['F', 'L', 'R'].map((name, type) => ({ name, t: [...poses.map(p => {
+  const commands = [0, 1, 2].map(type => [...poses.map(p => {
     const [dx, dy] = offsets[p.dir]
     const x = p.x + (type === 0 ? dx : 0), y = p.y + (type === 0 ? dy : 0)
     const cell = grids[p.map][y]?.[x]
     if (!cell || cell === '#') return failure
     if (cell === 'G') return success
     const dir = type === 0 ? p.dir : (p.dir + (type === 1 ? 3 : 1)) % 4
-    return poses.findIndex(q => q.map === p.map && q.x === x && q.y === y && q.dir === dir && q.A === p.A)
-  }), success, failure] }))
-  const starts = grids.map((grid, map) => poses.findIndex(p => p.map === map && grid[p.y][p.x] === 'S' && p.dir === 1 && p.A === stage.variantVariables![map].A))
-  type Entry = { t: number[]; name: string }
-  const bySize: Entry[][] = [[{ t: identity, name: '' }]]
+    return poses.findIndex(q => q.map === p.map && q.x === x && q.y === y && q.dir === dir)
+  }), success, failure])
+  const conditions = atoms.flatMap(relative => [false, true].map(negated => poses.map(p => {
+    const [dx, dy] = offsets[(p.dir + relative) % 4]
+    const cell = grids[p.map][p.y + dy]?.[p.x + dx]
+    const blocked = !cell || cell === '#'
+    return negated ? !blocked : blocked
+  })))
+  const starts = grids.map((grid, map) => poses.findIndex(p => p.map === map && grid[p.y][p.x] === 'S' && p.dir === 1))
+  const bySize: number[][][] = [[identity]]
   const seen = new Set([String.fromCharCode(...identity)])
-  const found: (string | null)[] = Array(limit + 1).fill(null)
+  let work = 0
   for (let size = 1; size <= limit; size++) {
-    const current: Entry[] = []
-    const add = (t: number[], name: string) => {
-      if (!found[size] && starts.every(i => t[i] === success)) found[size] = name
+    const current: number[][] = []
+    const add = (t: number[]) => {
+      work++
+      if (work > 200000) throw new Error('proof work budget exceeded')
+      expect(starts.every(i => t[i] === success)).toBe(false)
       const key = String.fromCharCode(...t)
-      if (!seen.has(key)) { seen.add(key); current.push({ t, name }) }
+      if (!seen.has(key)) { seen.add(key); current.push(t) }
     }
-    for (const cmd of commands) for (const tail of bySize[size - 1]) add(compose(cmd.t, tail.t), `${cmd.name} ${tail.name}`)
+    for (const cmd of commands) for (const tail of bySize[size - 1]) add(compose(cmd, tail))
+    for (let bodySize = 0; bodySize < size; bodySize++) for (const body of bySize[bodySize]) {
+      let repeated = identity
+      for (let count = 1; count <= 10; count++) {
+        repeated = compose(repeated, body)
+        if (count >= 2) for (const tail of bySize[size - 1 - bodySize]) add(compose(repeated, tail))
+      }
+      for (const condition of conditions) {
+        const loop = identity.map(start => {
+          let i = start
+          const visited = new Set<number>()
+          while (i < success && condition[i]) {
+            if (visited.has(i)) return failure
+            visited.add(i); i = body[i]
+          }
+          return i
+        })
+        for (const tail of bySize[size - 1 - bodySize]) add(compose(loop, tail))
+      }
+    }
     for (let yesSize = 0; yesSize < size; yesSize++) for (let noSize = 0; noSize < size - yesSize; noSize++) {
       const tailSize = size - 1 - yesSize - noSize
-      for (const yes of bySize[yesSize]) for (const no of bySize[noSize]) for (const condition of ['clearAhead', 'blockedAhead', 'aIsZero'] as const) {
-        const choice = [...poses.map((p, i) => (condition === 'aIsZero' ? p.A === 0 : condition === 'clearAhead' ? open(p) : !open(p)) ? yes.t[i] : no.t[i]), success, failure]
-        for (const tail of bySize[tailSize]) add(compose(choice, tail.t), `if ${condition} [${yes.name}] else [${no.name}] ${tail.name}`)
+      for (const yes of bySize[yesSize]) for (const no of bySize[noSize]) for (const condition of conditions) {
+        const choice = [...poses.map((_, i) => condition[i] ? yes[i] : no[i]), success, failure]
+        for (const tail of bySize[tailSize]) add(compose(choice, tail))
       }
     }
     bySize.push(current)
   }
-  return { found, counts: bySize.map(entries => entries.length) }
+  return { transforms: seen.size, work }
 }
 
-for (const stage of puzzles) it(`${stage.id}: exhaust atomic programs through six blocks`, () => {
-  const result = search(stage, 6)
-  expect(result.found[5]).not.toBeNull()
-  expect(result.found[6]).not.toBeNull()
-  expect(result.found.slice(1, 5)).toEqual([null, null, null, null])
-}, 120000)
+for (const stage of puzzles.slice(1)) it(`${stage.id}: exhaust programs through four blocks with restricted atoms`, () => {
+  const result = search(stage, stage.id === 'u6-2' ? [0] : [0, 3, 1], 4)
+  console.log(stage.id, result)
+  expect(result.transforms).toBeGreaterThan(1000)
+})
 
 it('unlocks sequentially and isolates logic code by stage when restoring', async () => {
   const { ProgressRepository, progressV2Key, isUnlocked } = await import('./ProgressRepository')
@@ -86,4 +116,19 @@ it('unlocks sequentially and isolates logic code by stage when restoring', async
   expect(restored.getDocument(puzzles[0]).main).toEqual(puzzles[0].solution)
   expect(restored.getDocument(allStages.find(stage => stage.id === 'u2-1')!).main).toEqual([])
   expect(restored.getProgress().stages['u2-1'].completed).toBe(true)
+})
+
+it('creates unit 6 if and while with sensor trees and keeps earlier defaults', async () => {
+  const { GameController } = await import('../controller/GameController')
+  const { ProgressRepository } = await import('./ProgressRepository')
+  const game = new GameController(puzzles[1], new ProgressRepository())
+  game.editor.add('if'); game.editor.add('while')
+  expect(game.editor.program).toMatchObject([
+    { type: 'if', condition: { kind: 'atom', atom: 'blockedAhead' } },
+    { type: 'while', condition: { kind: 'not', operand: { kind: 'atom', atom: 'blockedAhead' } } },
+  ])
+  const earlier = new GameController(allStages.find(s => s.id === 'u3-1')!, new ProgressRepository())
+  earlier.editor.add('while')
+  expect(earlier.editor.program.at(-1)).toMatchObject({ condition: 'clearAhead' })
+  game.dispose(); earlier.dispose()
 })

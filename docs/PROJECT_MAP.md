@@ -261,3 +261,9 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - 기존 EditorController/Editor/BlockTiles에 set 값·change 부호·repeat 횟수 원천 편집과 변수 타일·고정 반복 횟수 표시를 연결한다.
 - PlayPage/index.css/Symbols에 상자 값·전후·시작 값 카드·반응형 표시, StageSelectPage/flow/ResultModal에 5단원 묶음·이어하기·완주를 연결한다. ko/en 문구와 pages.test.tsx의 세 월드 렌더링 회귀를 포함한다.
 - 설계·검증 한계는 `docs/design/unit5-variables.md`. E2E 작성·최종 브라우저 QC는 Claude 담당이다.
+
+### T59 6단원 옆 센서 전환 [제안·잠정]
+
+사용자 결정(2026-11-26)으로 A=0 원자를 삭제하고 `blockedLeft`·`blockedRight`를 추가한다. 로봇 방향 기준 옆 칸의 벽·맵 밖을 검사하며 목표도 열린 칸이다. 기존 문자열 조건과 1~5단원 프레임은 유지한다. 조건 슬롯은 앞·왼·오른 막힘 세 원자와 not/and/or를 제공한다. 새 if는 blockedAhead 트리, while은 not blockedAhead 트리로 생성한다. 저장 v2를 유지하며 삭제된 aIsZero 저장 코드는 해당 스테이지만 비운다.
+
+`model/stages/index.ts`의 u6-1~u6-4는 각 두 맵·상한 4이고 A 표시·초기값을 쓰지 않는다. `model/unit6.test.ts`는 F/L/R·순차·repeat 2~10·if/else·while의 임의 중첩과 빈 몸체를 포함해 제한 원자만 쓰는 4블록 이하 해의 부재를 증명한다. Board와 TrainMap은 검사한 원자마다 상대 방향의 칸을 표시한다. 상세 맵·정답·증명 범위는 [unit6-logic.md](design/unit6-logic.md)를 참조한다.

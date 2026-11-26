@@ -16,7 +16,7 @@ const serialize = (lastProgram: unknown = program, bestStars: unknown = 3, compl
 it('clears persisted logic trees in earlier units, including nested branches and function bodies', () => {
   const storage = fakeStorage()
   const store = createProgressStore(storage)
-  const condition = { kind: 'atom', atom: 'aIsZero' } as const
+  const condition = { kind: 'atom', atom: 'blockedLeft' } as const
   const cases: ({ id: string } & import('./types').ProgramDocument)[] = [
     { id: 'u2-1', main: [{ id: 'r', type: 'repeat', count: 2, body: [{ id: 'i', type: 'if', condition, body: [] }] }], functions: [] },
     { id: 'u3-1', main: [{ id: 'w', type: 'while', condition, body: [] }], functions: [] },

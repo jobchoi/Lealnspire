@@ -22,8 +22,8 @@ export class Interpreter {
     let steps = 0
     let repeatEntries = 0
     let result: RunResult['result'] = 'unfinished'
-    function blockedAhead(): boolean {
-      const [dx, dy] = offsets[dir]
+    function blockedAhead(relative = 0): boolean {
+      const [dx, dy] = offsets[directions[(directions.indexOf(dir) + relative) % 4]]
       const next = { x: pos.x + dx, y: pos.y + dy }
       return next.x < 0 || next.y < 0 || next.x >= grid.width || next.y >= grid.height || grid.walls.has(cellKey(next))
     }
@@ -34,7 +34,7 @@ export class Interpreter {
       function evaluate(node: Condition, path: string[], negated = false): boolean {
         if (node.kind === 'not') return evaluate(node.operand, [...path, 'operand'], true)
         if (node.kind === 'atom') {
-          const value = node.atom === 'aIsZero' ? a === 0 : node.atom === 'blockedAhead' ? blockedAhead() : !blockedAhead()
+          const value = node.atom === 'blockedLeft' ? blockedAhead(3) : node.atom === 'blockedRight' ? blockedAhead(1) : node.atom === 'blockedAhead' ? blockedAhead() : !blockedAhead()
           const result = negated ? !value : value
           atoms.push({ atom: node.atom as ConditionAtom, value, path, result })
           return result

@@ -16,7 +16,7 @@ function conditionText(condition: Condition): string {
 }
 
 function compactCondition(condition: Condition): string {
-  if (condition.kind === 'atom') return condition.atom === 'aIsZero' ? 'A=0' : condition.atom === 'clearAhead' ? '↑' : '⊣'
+  if (condition.kind === 'atom') return condition.atom === 'blockedLeft' ? '←▥' : condition.atom === 'blockedRight' ? '→▥' : condition.atom === 'clearAhead' ? '↑' : '↑▥'
   if (condition.kind === 'not') return `${glossary.not.keyword} ${compactCondition(condition.operand)}`
   return `${compactCondition(condition.left)} ${condition.kind === 'and' ? glossary.and.keyword : glossary.or.keyword} ${compactCondition(condition.right)}`
 }
