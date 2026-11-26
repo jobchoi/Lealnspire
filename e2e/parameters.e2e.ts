@@ -30,8 +30,6 @@ async function buildStar(g: Game, page: Page) {
   await g.press(btn(page, '횟수를 A로'))
   await g.press(btn(page, '건네받은 값으로 반복'))
   await g.press(g.action(/(?<!else )안에 넣기$|추가 대상으로 선택$/)); await g.add('F'); await g.press(g.action(/선택 해제$|넣기 해제$/))
-  // T60 QC 지적: 반복을 빠져나오면 추가 위치가 함수가 아니라 main으로 돌아감 — 고친 뒤에는 이 줄 없이도 함수에 들어가야 함
-  if (!(await page.getByText(/추가: 별 함수/).count())) await g.press(btn(page, '별 함수 안에 넣기'))
   await g.add('L')
   await g.press(g.action(/선택 해제$|넣기 해제$/))
 }
