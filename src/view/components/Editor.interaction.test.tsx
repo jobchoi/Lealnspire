@@ -295,13 +295,13 @@ it('edits on connection symbols through buttons, swaps occupied signals and targ
   click('세모 신호')
   expect(document.main[0]).toMatchObject({ signal: '△' })
   controller.toggleTarget(); render()
-  expect(tree.find(node => node.type === 'button' && node.props['aria-label'] === 'on')?.props.disabled).toBe(true)
+  expect(tree.find(node => node.type === 'button' && node.props['aria-label'] === '신호가 오면 실행 (on)')?.props.disabled).toBe(true)
   click('앞으로')
   expect(document.main[0]).toMatchObject({ body: [{ type: 'forward' }] })
   controller.clear(); render()
-  click('on')
+  click('신호가 오면 실행 (on)')
   expect(document.main[2]).toMatchObject({ signal: '◇', body: [] })
-  expect(tree.find(node => node.type === 'button' && node.props['aria-label'] === 'on')?.props.disabled).toBe(true)
+  expect(tree.find(node => node.type === 'button' && node.props['aria-label'] === '신호가 오면 실행 (on)')?.props.disabled).toBe(true)
 })
 
 it('adds list bodies and cycles repeat list sources through actual toolbar events', () => {

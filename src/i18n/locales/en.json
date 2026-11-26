@@ -78,8 +78,8 @@
     "set": "Set box A",
     "change": "Change box A by 1",
     "return": "Return a value (return)",
-    "on": "on",
-    "forEach": "list"
+    "on": "Run when a signal comes (on)",
+    "forEach": "For each value in the list (for each)"
   },
   "tools": "Block tools",
   "chooseTile": "Tap a block to select it.",
@@ -144,8 +144,8 @@
       "turnLeft": "Left",
       "turnRight": "Right",
       "return": "return",
-      "on": "on",
-      "forEach": "list"
+      "on": "Run when a signal comes (on)",
+      "forEach": "For each value in the list (for each)"
     },
     "train": {
       "name": "Train Town",
@@ -157,8 +157,8 @@
       "turnLeft": "Left car",
       "turnRight": "Right car",
       "return": "return",
-      "on": "on",
-      "forEach": "list"
+      "on": "Run when a signal comes (on)",
+      "forEach": "For each value in the list (for each)"
     },
     "handheld": {
       "name": "Pocket Console",
@@ -170,8 +170,8 @@
       "turnLeft": "Left",
       "turnRight": "Right",
       "return": "return",
-      "on": "on",
-      "forEach": "list"
+      "on": "Run when a signal comes (on)",
+      "forEach": "For each value in the list (for each)"
     }
   },
   "stage1Hint1": "Count the cells between the robot and the star.",
@@ -453,7 +453,7 @@
   "returns": {
     "tile": "Step {order}: return {value}",
     "ahead": "cells ahead",
-    "received": "The star function returned {value}.",
+    "received": {"star": "The star function returned {value}.", "moon": "The moon function returned {value}."},
     "skipped": "Not run this call",
     "sourceShort": "↩ Value",
     "repeat": {

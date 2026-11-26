@@ -1020,3 +1020,21 @@ button small { display: block; font-size: .75rem; }
 @media(prefers-reduced-motion:reduce) {
  .lists-page .list-cells li { animation:none; transition:none; }
 }
+/* T67 QC(Claude): 9단원 화면 다듬기 — 스케치북 등 월드 규칙보다 강하게 */
+.play-page.events-page .tile-toolbar .signal-picker button[aria-pressed=true] { background:#412256; color:#fff; }
+.play-page.events-page .signal-picker button[aria-pressed=true] svg { stroke:currentColor; color:#fff; }
+.play-page.events-page .variant-cards button .scenario-signals svg,
+.play-page.events-page.theme-sketchbook .variant-cards button .scenario-signals svg,
+.play-page.events-page.theme-train .variant-cards button .scenario-signals svg,
+.play-page.events-page.theme-handheld .variant-cards button .scenario-signals svg { width:12px; height:12px; flex:0 0 12px; }
+.play-page.events-page .variant-cards button .scenario-signals { flex-wrap:nowrap; line-height:1; }
+.play-page.events-page .event-notice { white-space:normal; overflow-wrap:anywhere; }
+@media (max-width:700px) { .play-page.events-page .event-notice { max-height:32px; font:10px/14px sans-serif; overflow:hidden; } }
+@media (min-width:1000px) and (min-height:600px) {
+ /* 맵 카드 + 신호 상태 칸이 맵 위에 있어 그만큼 덜 키움(세로 스크롤 방지) */
+ .play-page.events-page .map-panel .art-board,.play-page.events-page .map-panel .train-island { max-height:calc(100dvh - 430px); }
+ .play-page.events-page.theme-handheld .map-panel .board.art-board { max-height:calc(100dvh - 580px); }
+}
+/* 9단원은 시나리오마다 맵이 같아 카드 그림이 정보가 아님 — 좁은 화면에서는 신호열만(2단원 카드 규칙보다 강하게) */
+@media (max-width:700px) { .play-page.events-page.conditions-page:not(.functions-page) .map-panel > .variant-cards button > svg { display:none; } }
+.events-page .sr-only,.returns-page .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }

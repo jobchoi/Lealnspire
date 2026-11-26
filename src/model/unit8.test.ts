@@ -166,3 +166,26 @@ it('counts stationary sensor cells including goals and boundaries; distinguishes
     expect(run(unit8Stages[0], doc).frames.at(-1)).toMatchObject({ variables: { A: 3 }, call: { arg: 1 }, returned: { value } })
   }
 })
+
+// T63 GPT 검토 권장: 증명의 전제(팔레트에 센서 블록 없음, 맵마다 같은 A, 출발 방향)를 실제 스테이지에서 고정하고,
+// return·앞 칸 수 센서도 실행 예산을 쓰는지 경계에서 확인한다(Claude 추가).
+it('pins the proof premises on the real unit 8 stages', () => {
+  for (const stage of unit8Stages) {
+    expect(stage.palette).not.toContain('if')
+    expect(stage.palette).not.toContain('while')
+    expect(stage.startDir).toBe('E')
+    expect(new Set(stage.variantVariables!.map(v => v.A)).size).toBe(1)
+    expect(stage.variants!.length).toBe(2)
+  }
+})
+it('charges return and the cells-ahead sensor against the step budget', () => {
+  const stage = unit8Stages[0]
+  const nest = (body: Block[]): Block[] => [{ id: 'a', type: 'repeat', count: 10, body: [{ id: 'b', type: 'repeat', count: 10, body: [{ id: 'c', type: 'repeat', count: 10, body }] }] }]
+  for (const value of [{ kind: 'number' as const, value: 0 }, { kind: 'ahead' as const }]) {
+    const doc: ProgramDocument = { main: nest([{ id: 'call', type: 'call', fn: 'star' }]), functions: [{ id: 'star', icon: 'star', body: [{ id: 'r', type: 'return', value }] }] }
+    // 1000 calls × (call + return) > 1000 steps: stops at the budget instead of finishing the loops
+    const execution = run(stage, doc)
+    expect(execution.result).toBe('stepLimit')
+    expect(execution.frames.filter(frame => frame.returned).length).toBeLessThan(1000)
+  }
+})

@@ -71,7 +71,7 @@ it('bounds queue/publications without mutation on overflow; bounds empty handler
   if (turns.type === 'repeat') turns.body = [{ id: 'turn', type: 'repeat', count: 10, body: [{ id: 'deep', type: 'repeat', count: 10, body: [{ id: 'l', type: 'turnLeft' }] }] }]
   expect(run(stage, [turns]).result).toBe('stepLimit')
 })
-it('exhausts all on-free syntax transformations: 5 transformations, 0 success, independent of budget', () => {
+it('exhausts the unit 9 palette without on (F/L/R, sequence, repeat 2-10, empty bodies): 5 transformations, 0 success, independent of budget', () => {
   // Domain: N/E/S/W at S, absorbing collision (4), absorbing goal (5).
   // Primitive transitions come from the real closed-door maps. Identity includes
   // empty bodies. Composition/powers close arbitrary sequence/repeat nesting.
