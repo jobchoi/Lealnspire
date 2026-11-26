@@ -16,7 +16,7 @@ it('executes only calls, returns to main, and can call the same definition repea
   expect(run(stage, doc([])).frames).toHaveLength(1)
   const result = run(stage, doc([call, { ...call, id: 'c2' }, { id: 'end', type: 'forward' }]))
   expect(result.result).toBe('success')
-  expect(result.frames.slice(1).map(frame => frame.call)).toEqual([{ callId: 'c', fn: 'fn' }, { callId: 'c2', fn: 'fn' }, undefined])
+  expect(result.frames.slice(1).map(frame => frame.call)).toEqual([{ callId: 'c', fn: 'fn', serial: 1 }, { callId: 'c2', fn: 'fn', serial: 2 }, undefined])
   expect(result.frames.slice(1).map(frame => frame.activeBlockId)).toEqual(['f', 'f', 'end'])
 })
 
@@ -101,7 +101,7 @@ it('combines node budgets and depth across all bodies', () => {
 })
 
 it('preserves every unit 1–3 solution frame when wrapped in a doc', () => {
-  for (const puzzle of allStages.filter(puzzle => !puzzle.id.startsWith('u4-') && !puzzle.id.startsWith('u5-') && !puzzle.id.startsWith('u6-'))) {
+  for (const puzzle of allStages.filter(puzzle => !puzzle.params && !puzzle.id.startsWith('u4-') && !puzzle.id.startsWith('u5-') && !puzzle.id.startsWith('u6-'))) {
     expect(runAll(puzzle, { main: puzzle.solution, functions: [] })).toEqual(baseline[puzzle.id as keyof typeof baseline])
     expect(runAll(puzzle, puzzle.solution)).toEqual(baseline[puzzle.id as keyof typeof baseline])
     expect(new FunctionProgram({ main: puzzle.solution, functions: [] }).count()).toBe(Program.countBlocks(puzzle.solution))

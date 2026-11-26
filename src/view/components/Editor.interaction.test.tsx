@@ -111,6 +111,122 @@ it('함수 일반 타일 다음 추가는 main 탭에, 반복 몸체 추가는 �
   expect(panel()).toBe('body')
   click('2번 N번 반복 선택 해제')
   click('왼쪽으로 돌기')
+  // Selecting a function block alone leaves the insertion destination at main.
   expect(doc.main).toHaveLength(2)
+  expect(doc.main.at(-1)).toMatchObject({ type: 'turnLeft' })
+  expect(doc.functions[0].body).toHaveLength(2)
   expect(panel()).toBe('main')
+})
+
+it('edits input sockets, call values and repeat sources through the parameter toolbar', () => {
+  const controller = new EditorController()
+  let document: ProgramDocument = { main: [{ id: 'c', type: 'call', fn: 'star' }], functions: [{ id: 'star', icon: 'star', body: [{ id: 'r', type: 'repeat', count: 3, body: [] }] }] }
+  let tree: Node[] = []
+  const render = () => {
+    controller.configureDocument(document, next => { document = next }, false)
+    hooks.cursor = 0
+    tree = nodes(Editor({ program: document.main, onChange: main => { document = { ...document, main } }, controller, functionsEnabled: true, variablesEnabled: true, paramsEnabled: true }))
+  }
+  const click = (label: string) => {
+    const button = tree.find(node => node.type === 'button' && node.props['aria-label'] === label)
+    expect(button).toBeDefined()
+    ;(button!.props.onClick as () => void)(); render()
+  }
+  render(); click('별 함수가 값 받기')
+  expect(document.functions[0].param).toBe(true)
+  expect(document.main[0]).toMatchObject({ arg: { kind: 'number', value: 2 } })
+  controller.selectFunctionBlock(undefined, 'c'); render()
+  click('1번 별 함수 부르기 값 늘리기')
+  expect(document.main[0]).toMatchObject({ arg: { kind: 'number', value: 3 } })
+  click('A로')
+  expect(document.main[0]).toMatchObject({ arg: { kind: 'A' } })
+  controller.selectFunctionBlock('star', 'r'); render()
+  click('횟수를 A로'); click('건네받은 값으로 반복')
+  expect(document.functions[0].body[0]).toMatchObject({ countParam: true })
+  click('별 함수가 값 받지 않기')
+  expect(document.main[0]).not.toHaveProperty('arg')
+  expect(document.functions[0].body[0]).toMatchObject({ count: 3 })
+})
+
+it('QC: 반복을 빠져나오면 함수 끝에 추가하고 main 추가는 명시적으로 전환한다', () => {
+  const editor = new EditorController()
+  editor.configureDocument({ main: [], functions: [{ id: 'star', icon: 'star', body: [{ id: 'r', type: 'repeat', count: 2, body: [] }] }] }, () => {}, false)
+  editor.chooseFunction('star')
+  editor.select('r'); editor.toggleTarget(); editor.add('forward'); editor.toggleTarget()
+  expect(editor.addingToFunction).toBe(true)
+  expect(editor.getSnapshot().targetId).toBeNull()
+  editor.add('turnLeft')
+  expect(editor.functions[0].body.map(block => block.type)).toEqual(['repeat', 'turnLeft'])
+  expect(editor.program).toEqual([])
+  editor.chooseFunction(); editor.add('call')
+  expect(editor.program[0].type).toBe('call')
+})
+
+it('QC: nested repeat exit restores the containing if body or else body', () => {
+  for (const alternative of [false, true]) {
+    const repeat = { id: 'r', type: 'repeat' as const, count: 2, body: [] }
+    const editor = new EditorController()
+    editor.configure([{ id: 'if', type: 'if', condition: 'blockedAhead', body: alternative ? [] : [repeat], ...(alternative ? { else: [repeat] } : {}) }], () => {}, false)
+    editor.select('if'); editor.toggleTarget(alternative)
+    editor.select('r'); editor.toggleTarget(); editor.add('forward'); editor.toggleTarget()
+    expect(editor.getSnapshot().targetId).toBe('if')
+    expect(editor.targetElse).toBe(alternative)
+    editor.add('turnLeft')
+    const block = editor.program[0]
+    if (block.type !== 'if') throw new Error('Expected if')
+    expect((alternative ? block.else! : block.body).map(child => child.type)).toEqual(['repeat', 'turnLeft'])
+  }
+})
+
+it('QC2: leaving an if or else restores main or the explicitly chosen function body', () => {
+  for (const inFunction of [false, true]) for (const alternative of [false, true]) {
+    const editor = new EditorController()
+    editor.configureDocument({ main: [], functions: [{ id: 'star', icon: 'star', body: [{ id: 'if', type: 'if', condition: 'blockedAhead', body: [], else: [] }] }] }, () => {}, false)
+    if (inFunction) { editor.chooseFunction('star'); editor.selectFunctionBlock('star', 'if') }
+    else editor.selectFunctionBlock('star', 'if')
+    editor.toggleTarget(alternative)
+    editor.add('forward')
+    editor.toggleTarget(alternative)
+    expect(editor.addingToFunction).toBe(inFunction)
+    expect(editor.getSnapshot().targetId).toBeNull()
+    editor.add('turnLeft')
+    expect(editor.program.map(block => block.type)).toEqual(inFunction ? [] : ['turnLeft'])
+    expect(editor.functions[0].body.map(block => block.type)).toEqual(inFunction ? ['if', 'turnLeft'] : ['if'])
+  }
+})
+
+it('QC2: switching if branches keeps the original return location', () => {
+  const editor = new EditorController()
+  editor.configure([{ id: 'if', type: 'if', condition: 'blockedAhead', body: [], else: [] }], () => {}, false)
+  editor.select('if'); editor.toggleTarget(); editor.toggleTarget(true); editor.toggleTarget(true)
+  expect(editor.getSnapshot().targetId).toBeNull()
+  expect(editor.targetElse).toBe(false)
+  editor.add('turnRight')
+  expect(editor.program.map(block => block.type)).toEqual(['if', 'turnRight'])
+})
+
+
+it('QC4: selecting a newly added function repeat preserves its return location', () => {
+  const editor = new EditorController()
+  editor.configureDocument({ main: [], functions: [] }, () => {}, false)
+  editor.createFunction()
+  const fn = editor.functions[0].id
+  editor.chooseFunction(fn)
+  editor.add('repeat')
+  const repeat = editor.functions[0].body[0]
+  editor.selectFunctionBlock(fn, repeat.id)
+  editor.toggleTarget()
+  editor.add('forward')
+  editor.toggleTarget()
+  expect(editor.functionId).toBe(fn)
+  expect(editor.functionTarget).toBe(true)
+  expect(editor.getSnapshot().targetId).toBeNull()
+  editor.add('turnLeft')
+  expect(editor.program).toEqual([])
+  expect(editor.functions[0].body).toMatchObject([
+    { type: 'repeat', body: [{ type: 'forward' }] }, { type: 'turnLeft' },
+  ])
+  editor.clear()
+  editor.add('turnRight')
+  expect(editor.program).toMatchObject([{ type: 'turnRight' }])
 })

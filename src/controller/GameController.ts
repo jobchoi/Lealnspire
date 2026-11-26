@@ -25,6 +25,7 @@ export class GameController extends Observable<State> {
     this.editor.program = this.state.program
     this.editor.functions = structuredClone(this.state.doc.functions)
     this.editor.onChange = this.edit
+    this.editor.paramsEnabled = stage.params === true
     this.editor.logicEnabled = stage.id.startsWith('u6-')
     this.editor.maxBlocks = stage.maxBlocks
     this.editor.onDocumentChange = this.edit
@@ -41,7 +42,7 @@ export class GameController extends Observable<State> {
     const path = active ? findBlockPath(blocks, active) : undefined
     const checks = new Map<string, NonNullable<import('../model/types').Frame['check']>>()
     for (const frame of this.state.execution?.frames.slice(0, this.state.index + 1) ?? []) {
-      if (frame.check && frame.call?.callId === this.frame?.call?.callId) checks.set(frame.check.blockId, frame.check)
+      if (frame.check && frame.call?.serial === this.frame?.call?.serial) checks.set(frame.check.blockId, frame.check)
     }
     return [...checks.values()].filter(check => {
       const parent = findBlockPath(blocks, check.blockId)

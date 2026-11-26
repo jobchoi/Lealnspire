@@ -385,5 +385,41 @@
   "u64Title": "and or or?",
   "u64Goal": "Fix the code that's already there. The robot must keep going to the crossing where both sides are open.",
   "u64Hint1": "Run it. Where does the robot stop? What is on its left and right there?",
-  "u64Hint2": "The robot should keep going even when there is a wall on only one side. Is that and or or?"
+  "u64Hint2": "The robot should keep going even when there is a wall on only one side. Is that and or or?",
+  "unit7": "Unit 7: Parameters",
+  "unit7Congratulations": "Unit 7 complete!",
+  "u71Title": "Pass a Value",
+  "u71Goal": "Pass a value to the star function to get through both maps. You can pass a different value each time you call it.",
+  "u71Hint1": "How many cells long is each of the three parts? Which part changes between maps?",
+  "u71Hint2": "If the repeat inside the function uses ◆, it repeats as many times as the value you pass.",
+  "u72Title": "A Different Value Each Call",
+  "u72Goal": "Call the same function three times, passing a different value each time.",
+  "u72Hint1": "Are the first and last parts the same on both maps?",
+  "u72Hint2": "Pass A only for the part that changes between maps.",
+  "u73Title": "A Inside the Function",
+  "u73Goal": "Fix the code that's already there so the function uses the value it receives.",
+  "u73Hint1": "Run it. How many cells does the robot move on the second call? You passed 3 — why?",
+  "u73Hint2": "A inside the function is the outside box A. The value it receives is ◆.",
+  "parameters": {
+    "enable": {
+      "star": "Star function takes a value",
+      "moon": "Moon function takes a value"
+    },
+    "disable": {
+      "star": "Star function takes no value",
+      "moon": "Moon function takes no value"
+    },
+    "call": {
+      "star": "Step {order}: call the star function with {value}",
+      "moon": "Step {order}: call the moon function with {value}"
+    },
+    "passed": {
+      "star": "Passed {value} to the star function. Box A is still {a}.",
+      "moon": "Passed {value} to the moon function. Box A is still {a}."
+    },
+    "value": "the value passed in",
+    "useParam": "Repeat the value passed in",
+    "useA": "Use A",
+    "useNumber": "Use a number"
+  }
 }

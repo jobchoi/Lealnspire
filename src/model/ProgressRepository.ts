@@ -20,11 +20,11 @@ function stagePolicy(id: string) {
   const stage = stages.find(stage => stage.id === id)
   const palette: NonNullable<Stage['palette']> = stage?.palette ??
     ['forward', 'turnLeft', 'turnRight', 'repeat', ...(id.startsWith('u2-') ? ['if' as const] : [])]
-  return { palette, allowVariableCount: id.startsWith('u5-') }
+  return { palette, allowVariableCount: id.startsWith('u5-') || stage?.params === true }
 }
 function validStageDocument(value: unknown, id: string): value is ProgramDocument {
   const { palette, allowVariableCount } = stagePolicy(id)
-  return validDocument(value, palette, allowVariableCount, id.startsWith('u6-'))
+  return validDocument(value, palette, allowVariableCount, id.startsWith('u6-'), stages.find(stage => stage.id === id)?.params === true)
 }
 
 const knownStageIds = new Set(stages.map(stage => stage.id))

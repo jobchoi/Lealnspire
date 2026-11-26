@@ -120,5 +120,21 @@ const logicPuzzle = (number: number, world: Stage['world']): Stage => {
   return { id: `u6-${number}`, world, title: `u6${number}Title`, goal: `u6${number}Goal`, hints: { keys: [`u6${number}Hint1`, `u6${number}Hint2`], highlight: number === 1 ? 'start' : number === 3 ? 'path' : 'walls' }, grid: variants[0], variants, startDir: 'E', maxBlocks: 4, starBlocks: 4, palette: ['forward', 'turnLeft', 'turnRight', 'repeat', 'if', 'while'], solution, ...(initialProgram ? { initialProgram } : {}) }
 }
 export const unit6Stages: Stage[] = [logicPuzzle(1, 'sketchbook'), logicPuzzle(2, 'train'), logicPuzzle(3, 'handheld'), logicPuzzle(4, 'sketchbook')]
-export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages]
-export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)
+// T60 [제안·잠정]: one read-only local input, copied on each call.
+const parameterPuzzle = (number: number, world: Stage['world'], variants: string[][], args: ('A' | number)[]): Stage => {
+  const fn = 'star'
+  const functions: NonNullable<Stage['solutionFunctions']> = [{ id: fn, icon: 'star', param: true, body: [
+    { id: 'repeat', type: 'repeat', countParam: true, body: [{ id: 'f', type: 'forward' }] }, { id: 'left', type: 'turnLeft' },
+  ] }]
+  const solution: Program = args.map((arg, i) => ({ id: `call-${i}`, type: 'call', fn, arg: arg === 'A' ? { kind: 'A' } : { kind: 'number', value: arg } }))
+  const initialFunctions = structuredClone(functions)
+  initialFunctions[0].body[0] = { id: 'repeat', type: 'repeat', countVariable: 'A', body: [{ id: 'f', type: 'forward' }] }
+  return { id: `u7-${number}`, params: true, world, title: `u7${number}Title`, goal: `u7${number}Goal`, hints: { keys: [`u7${number}Hint1`, `u7${number}Hint2`], highlight: number === 3 ? 'start' : 'path' }, grid: variants[0], variants, variantVariables: [{ A: 2 }, { A: 4 }], startDir: 'E', maxBlocks: 6, starBlocks: 6, palette: ['forward', 'turnLeft', 'turnRight', 'repeat', 'call'], solution, solutionFunctions: functions, ...(number === 3 ? { initialProgram: structuredClone(solution), initialFunctions } : {}) }
+}
+export const unit7Stages: Stage[] = [
+  parameterPuzzle(1, 'sketchbook', [['G..', '##.', 'S..'], ['G....', '####.', 'S....']], ['A', 2, 'A']),
+  parameterPuzzle(2, 'train', [['G...', '###.', '#S..'], ['G...', '###.', '###.', '###.', '#S..']], [2, 'A', 3]),
+  parameterPuzzle(3, 'handheld', [['G..', '##.', '##.', 'S..'], ['G....', '####.', '####.', 'S....']], ['A', 3, 'A']),
+]
+export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages]
+export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)

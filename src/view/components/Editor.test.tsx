@@ -230,7 +230,8 @@ it('keeps function insertion exclusive, labels nested targets, and clears vanish
       expect(html).not.toContain(t('functions.noNestedCalls'))
       expect(html.split(`aria-label="${t('functions.call.star')}"`)[1].split('>')[0]).not.toContain('disabled')
     }
-    controller.chooseFunction('star')
+    // Selecting a function tile from main keeps main as the insertion location.
+    controller.chooseFunction()
     controller.selectFunctionBlock('star', 'inner')
     expect(controller.functionTarget).toBe(false)
     expect(controller.addingToFunction).toBe(false)
@@ -279,7 +280,7 @@ it('selects compact workspace views for insertion, playback return, and fixing i
   try {
     for (const locale of ['ko', 'en']) for (const world of worlds) {
       i18n.locale = locale
-      const draw = (locked = false, call?: { fn: string; callId: string }) => renderToString(<Editor theme={themes[world]} program={controller.program} onChange={() => {}} controller={controller} functionsEnabled locked={locked} call={call} />)
+      const draw = (locked = false, call?: { fn: string; callId: string; serial?: number }) => renderToString(<Editor theme={themes[world]} program={controller.program} onChange={() => {}} controller={controller} functionsEnabled locked={locked} call={call ? { ...call, serial: 1 } : undefined} />)
       const selected = (html: string, key: string) => expect(html).toContain(`aria-pressed="true">${t(key)}</button>`)
       controller.chooseFunction('star')
       selected(draw(), 'functions.show.star')
@@ -288,7 +289,7 @@ it('selects compact workspace views for insertion, playback return, and fixing i
       selected(draw(), 'functions.show.moon')
       controller.chooseFunction()
       selected(draw(), 'functions.showMain')
-      selected(draw(true, { fn: 'star', callId: 'call' }), 'functions.show.star')
+      selected(draw(true, { fn: 'star', callId: 'call', serial: 1 }), 'functions.show.star')
       selected(draw(true), 'functions.showMain')
       draw(false)
       controller.reveal('first', 'star')

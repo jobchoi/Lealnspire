@@ -99,7 +99,7 @@ it('roundtrips code only in v2, isolates corrupt variables while retaining compl
 it('unit 4 solutions retain their pre-variable frames with zero A added', () => {
   for (const puzzle of unit4Stages) {
     const result = runAll(puzzle, { main: puzzle.solution, functions: puzzle.solutionFunctions ?? [] })
-    expect(result).toEqual(unit4Baseline[puzzle.id as keyof typeof unit4Baseline])
+    expect(JSON.parse(JSON.stringify(result, (key, value) => key === 'serial' ? undefined : value))).toEqual(unit4Baseline[puzzle.id as keyof typeof unit4Baseline])
   }
 })
 

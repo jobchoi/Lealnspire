@@ -39,7 +39,7 @@ it('evaluates in functions and checks the geometry of each variant', () => {
   const doc = { main: [{ id: 'call', type: 'call' as const, fn: 'fn' }], functions: [{ id: 'fn', icon: 'star' as const, body: [branch(atom('blockedLeft'))] }] }
   const results = runAll({ ...stage, variants: [stage.grid, ['...', 'S.G']] }, doc).results
   expect(results.map(r => r.frames[1].check?.result)).toEqual([true, false])
-  expect(results[0].frames[1].call).toEqual({ callId: 'call', fn: 'fn' })
+  expect(results[0].frames[1].call).toEqual({ callId: 'call', fn: 'fn', serial: 1 })
 })
 it('validates shape and copies conditions independently during edits and cloning', () => {
   const condition = binary('and', atom('clearAhead'), not(atom('blockedLeft')))
@@ -78,13 +78,14 @@ it('rejects logic trees in older stages on v2 restore while preserving progress'
 it('documents old v2 reader rollback and resave loss against a simplified legacy validator (간이 검증기 기준)', () => {
   const oldValid = (condition: unknown) => condition === 'blockedAhead'
   const saved = { version: 2, stages: { [unit2Stages[0].id]: { completed: true, bestStars: 3, lastProgram: { main: [branch(atom('blockedLeft'))], functions: [] } }, 'u6-1': { completed: true, bestStars: 3, lastProgram: { main: [], functions: [] } } } }
-  const oldStages = Object.fromEntries(Object.entries(saved.stages).filter(([id]) => allStages.some(s => !s.id.startsWith('u6-') && s.id === id)).map(([id, entry]) => [id, { ...entry, lastProgram: oldValid((entry.lastProgram.main[0] as Extract<Block, { type: 'if' }> | undefined)?.condition) ? entry.lastProgram : { main: [], functions: [] } }]))
+  const oldStages = Object.fromEntries(Object.entries(saved.stages).filter(([id]) => allStages.some(s => !s.params && !s.id.startsWith('u6-') && s.id === id)).map(([id, entry]) => [id, { ...entry, lastProgram: oldValid((entry.lastProgram.main[0] as Extract<Block, { type: 'if' }> | undefined)?.condition) ? entry.lastProgram : { main: [], functions: [] } }]))
   const rewritten = JSON.parse(JSON.stringify({ version: 2, stages: oldStages }))
   expect(rewritten.stages[unit2Stages[0].id]).toMatchObject({ completed: true, bestStars: 3, lastProgram: { main: [], functions: [] } })
   expect(rewritten.stages['u6-1']).toBeUndefined()
 })
 it('preserves all pre-change unit 1–5 solution results and frames', () => {
-  expect(Object.fromEntries(allStages.filter(s => !s.id.startsWith('u6-')).map(s => [s.id, runAll(s, { main: s.solution, functions: s.solutionFunctions ?? [] })]))).toEqual(baseline)
+  const results = Object.fromEntries(allStages.filter(s => !s.params && !s.id.startsWith('u6-')).map(s => [s.id, runAll(s, { main: s.solution, functions: s.solutionFunctions ?? [] })]))
+  expect(JSON.parse(JSON.stringify(results, (key, value) => key === 'serial' ? undefined : value))).toEqual(baseline)
 })
 
 it('checks robot-relative left and right in every direction, including walls, edges and goals', () => {

@@ -8,7 +8,7 @@ import { HomePage, RecordDialog } from './HomePage'
 import { StageSelectPage } from './StageSelectPage'
 import { PlayPage } from './PlayPage'
 import { createProgressStore } from '../../model/ProgressRepository'
-import { stages, bonusStages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, isLastStage } from '../../model/stages'
+import { stages, bonusStages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, isLastStage } from '../../model/stages'
 import { t, i18n } from '../../i18n/I18n'
 
 const noop = () => {}
@@ -22,7 +22,7 @@ describe('화면 렌더링', () => {
     expect(home()).toContain(t('continue'))
     for (const stage of stages) store.completeStage(stage.id, 3, [])
     expect(home()).toContain(t('continue'))
-    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages]) store.completeStage(stage.id, 3, [])
+    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages]) store.completeStage(stage.id, 3, [])
     expect(home()).not.toContain(t('continue'))
   })
   it('정규 8개와 보너스 2개 카드, 잠김, 최고 별을 표시하고 이전 완료 시 다음 카드가 열린다', () => {
@@ -341,4 +341,33 @@ it('renders unit 5 values, variable controls and range failures in both locales 
       }
     }
   } finally { i18n.locale = previous }
+})
+
+it('renders parameter inputs, copied values and completion in both locales and all worlds', async () => {
+  const { worlds } = await import('../theme/themes')
+  const { ResultModal } = await import('../components/ResultModal')
+  try {
+    for (const locale of ['ko', 'en']) for (const world of worlds) {
+      i18n.locale = locale
+      const stage = { ...unit7Stages[0], world }, store = createProgressStore()
+      store.saveProgram(stage.id, { main: stage.solution, functions: stage.solutionFunctions! })
+      const game = new GameController(stage, store)
+      const draw = () => renderToString(<PlayPage stage={stage} progressStore={store} controller={game} onList={noop} onNext={noop} lastStage={false} />)
+      expect(draw()).toContain(t('parameters.disable.star'))
+      expect(draw()).toContain(t('parameters.call.star', { order: 1, value: 'A' }))
+      expect(draw()).toContain(t('parameters.value'))
+      game.step()
+      const running = draw()
+      expect(running).toContain('◆2')
+      expect(running).toContain('A → 2')
+      expect(running).toContain(t('parameters.passed.star', { value: 2, a: 2 }))
+      expect(running).toContain(t('variables.status', { value: 2 }))
+      game.reset(); draw(); game.editor.toggleParameter('star')
+      expect(draw()).toContain(t('parameters.enable.star'))
+      expect(draw()).toContain('aria-pressed="false"')
+      game.dispose()
+      const result = renderToString(<ResultModal unit7 result="success" stars={3} lastStage onRetry={noop} onClose={noop} />)
+      expect(result).toContain(t('unit7Congratulations'))
+    }
+  } finally { i18n.locale = 'ko' }
 })

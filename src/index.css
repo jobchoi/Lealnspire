@@ -574,6 +574,9 @@ button small { display: block; font-size: .75rem; }
 .play-page.functions-page .palette::before,.play-page.functions-page .palette::after { display:none; }
 .play-page.functions-page .palette-row { gap:3px; }
 .functions-page .block-call { color:#33230f; background:#fff0b9; font-size:24px; }
+/* Train cars otherwise override call symbols with white ink, including Unit 4. */
+.play-page.theme-train .palette button.block-call,
+.play-page.theme-train .workspace .block-tile.block-call { color:#33230f; background:#fff0b9; }
 @media(max-width:700px) {
  .functions-page .program-panels { grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(70px,1fr) minmax(82px,1fr); gap:2px; }
  .functions-page .function-panel { display:block; }
@@ -832,3 +835,62 @@ button small { display: block; font-size: .75rem; }
  .play-page.conditions-page.variables-page.logic-page .palette-row .palette { height:44px; grid-template-rows:44px; }
  .play-page.conditions-page.variables-page.logic-page .palette-row .palette button { height:44px; }
 }
+
+/* T60: input state uses a filled diamond or crossed outline as well as color. */
+.params-page .parameter-socket { display:flex; align-items:center; justify-content:center; gap:2px; min-width:44px; min-height:44px; padding:2px; flex-shrink:0; border:2px dashed #77522a; background:#fff; color:#593c18; }
+.params-page .parameter-socket[aria-pressed=true] { border-style:solid; background:#dbf5ef; color:#12564f; }
+.params-page .function-card header { flex-wrap:wrap; }
+.params-page .function-card header strong { flex:1; }
+.params-page .function-card-actions { flex-wrap:wrap; }
+.play-page.params-page .variable-summary .variant-cards { display:flex; }
+.params-page .tile-toolbar { overflow-x:auto; flex-wrap:nowrap; }
+.params-page .tile-toolbar button { flex-shrink:0; min-width:44px; min-height:44px; }
+.params-page .call-running { white-space:nowrap; }
+.params-page .block-call .block-symbol { font-size:18px; }
+@media (max-width:600px) {
+ .play-page.params-page .game-layout { grid-template-rows:120px minmax(0,1fr) 44px; }
+ .play-page.params-page .map-panel .board { height:120px; min-height:120px; max-height:120px; }
+ .params-page .function-card header { min-height:44px; flex-wrap:nowrap; }
+ .params-page .function-card header > [role=status] { display:none; }
+ .params-page .function-card-actions button { font-size:10px; }
+ .params-page .function-card { overflow:hidden; }
+ .params-page .function-body.workspace { min-height:44px; }
+}
+@media (prefers-reduced-motion:reduce) {
+ .params-page .parameter-socket,.params-page .call-running { animation:none; transition:none; }
+}
+
+/* T60 QC: keep controls in flow and let only the code body scroll. */
+.play-page.params-page .palette-row { flex-shrink:0; }
+.play-page.params-page .workspace .block-call .block-symbol { font:18px/24px monospace; max-width:100%; gap:0; }
+.play-page.params-page .workspace .block-call .block-symbol .theme-symbol { width:18px; height:18px; flex:0 0 18px; }
+.play-page.params-page .workspace > p { grid-column:1 / -1; margin:4px 0; overflow-wrap:normal; word-break:keep-all; }
+@media(min-width:701px) {
+ .params-page .function-card { display:flex; flex-direction:column; min-height:0; flex-shrink:1; overflow:hidden; }
+ .params-page .function-card > :not(.function-body) { flex-shrink:0; }
+ .params-page .function-body.workspace { flex:1; min-height:80px; overflow:auto; }
+}
+@media(max-width:700px) {
+ .params-page .function-card > header { position:static; width:auto; height:auto; overflow:visible; clip-path:none; flex-shrink:0; min-height:44px; padding:0; }
+}
+.play-page.params-page .palette-row .palette button { border-radius:8px; box-shadow:none; transform:none; }
+.play-page.params-page .block-budget,.play-page.params-page .insertion-status,.play-page.params-page .function-navigation { flex-shrink:0; }
+@media(max-width:700px) {
+ .play-page.params-page .workspace .block-call .block-symbol { font:12px/18px monospace; }
+ .play-page.params-page .workspace .block-call .block-symbol .theme-symbol { width:10px; height:14px; flex-basis:10px; }
+ /* A short viewport can scroll to every control and body tile. */
+ .params-page .function-panel { overflow:auto; }
+ .params-page .function-card { flex:1 0 auto; }
+}
+
+/* T60 QC2: override the sketchbook condition palette's five-column layout. */
+.play-page.conditions-page.variables-page.params-page .palette-row .palette { display:grid; flex:1; min-width:0; width:auto; height:52px; grid-template-columns:repeat(6,minmax(44px,1fr)); grid-template-rows:52px; gap:3px; padding:0; margin:0; }
+.play-page.conditions-page.variables-page.params-page .palette-row .palette button { grid-column:auto; grid-row:auto; width:100%; height:52px; min-width:44px; min-height:44px; aspect-ratio:auto; transform:none; border-radius:8px; padding:0; box-shadow:none; }
+.play-page.conditions-page.variables-page.params-page .palette::before,.play-page.conditions-page.variables-page.params-page .palette::after { display:none; }
+@media(max-width:700px) {
+ .play-page.conditions-page.variables-page.params-page .palette-row .palette { height:44px; grid-template-rows:44px; }
+ .play-page.conditions-page.variables-page.params-page .palette-row .palette button { height:44px; }
+}
+
+/* Parameter tools use the existing toolbar row without enlarging its buttons. */
+.params-page .tile-toolbar button { flex-basis:auto; padding:2px; font-size:12px; }

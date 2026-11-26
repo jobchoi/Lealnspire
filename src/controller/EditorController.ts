@@ -3,11 +3,13 @@ import { Observable } from './Observable'
 import { MAX_PROGRAM_BLOCKS, normalizeLogicProgram, normalizeLogicCondition, FunctionProgram, Program as ProgramModel } from '../model/program'
 import type { Block, Program, ProgramDocument, FunctionDef, Condition } from '../model/types'
 export class EditorController extends Observable<{ selectedId: string | null; targetId: string | null; addedId: string | null }> {
+  paramsEnabled = false
   logicEnabled = false
   functionId: string | undefined
   functionTarget = false
   get addingToFunction() { return !!this.functionId && (this.functionTarget || !!this.targetPath) }
   get editProgram(): Program { return this.functions.find(fn => fn.id === this.functionId)?.body ?? this.program }
+  private targetReturns: { id: string; targetId: string | null; targetElse: boolean; functionTarget: boolean }[] = []
   targetElse = false
   program: Program = []
   functions: FunctionDef[] = []
@@ -36,6 +38,8 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
     this.update({ selectedId: null, targetId: null, addedId: null })
     this.changeDocument(model)
   }
+  toggleParameter = (id: string) => { if (this.paramsEnabled && this.prepareEdit()) this.changeDocument(new FunctionProgram(this.doc).setParameter(id, !this.functions.find(fn => fn.id === id)?.param)) }
+  setCallArgument = (arg: import('../model/types').CallArgument) => { if (this.selectedPath && this.selectedBlock?.type === 'call' && this.prepareEdit()) this.change(ProgramModel.setCallArgument(this.editProgram, this.selectedPath, arg)) }
   removeFunction = (id: string) => { if (this.prepareEdit()) this.changeDocument(new FunctionProgram(this.doc).removeFunction(id)) }
   editFunction = (id: string, edit: (body: Program) => Program) => { if (this.prepareEdit()) this.changeDocument(new FunctionProgram(this.doc).edit(edit, id)) }
   locked = false
@@ -53,7 +57,8 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
     this.beforeEdit()
     return true
   }
-  configure(program: Program, onChange: (program: Program) => void, locked: boolean, maxBlocks?: number, logicEnabled = this.logicEnabled) {
+  configure(program: Program, onChange: (program: Program) => void, locked: boolean, maxBlocks?: number, logicEnabled = this.logicEnabled, paramsEnabled = this.paramsEnabled) {
+    this.paramsEnabled = paramsEnabled
     this.logicEnabled = logicEnabled
     this.program = this.logicEnabled ? normalizeLogicProgram(program) : program; this.onChange = onChange; this.locked = locked; this.maxBlocks = maxBlocks
   }
@@ -92,22 +97,39 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   }
   select = (id: string) => {
     if (!this.prepareEdit()) return
-    this.functionTarget = false
     const selectedId = this.state.selectedId === id ? null : id
     this.update({ ...this.state, selectedId, targetId: selectedId ? this.state.targetId : null })
   }
   reveal = (id: string | null, fn?: string) => {
     if (this.locked) return
+    this.targetReturns = []
     this.functionId = fn
     this.functionTarget = false
     const selectedId = id && new ProgramModel(this.editProgram).find(id) ? id : null
     this.update({ selectedId, targetId: null, addedId: selectedId })
   }
   acknowledgeAdded = () => { if (this.state.addedId) this.update({ ...this.state, addedId: null }) }
-  clear = () => { if (this.prepareEdit()) { this.functionId = undefined; this.functionTarget = false; this.targetElse = false; this.update({ ...this.state, selectedId: null, targetId: null }) } }
-  toggleTarget = (alternative = false) => { if (this.locked) return; const sameBranch = this.targetElse === alternative; this.targetElse = alternative; if (this.selectedBlock && hasBody(this.selectedBlock) && this.prepareEdit()) this.update({ ...this.state, targetId: sameBranch && this.state.targetId === this.state.selectedId ? null : this.state.selectedId }) }
+  clear = () => { if (this.prepareEdit()) { this.targetReturns = []; this.functionId = undefined; this.functionTarget = false; this.targetElse = false; this.update({ ...this.state, selectedId: null, targetId: null }) } }
+  toggleTarget = (alternative = false) => {
+    if (this.locked || !this.selectedBlock || !hasBody(this.selectedBlock) || !this.prepareEdit()) return
+    const leaving = this.targetElse === alternative && this.state.targetId === this.state.selectedId
+    if (leaving) {
+      const previous = this.targetReturns.pop()
+      this.targetElse = previous?.targetElse ?? false
+      this.functionTarget = previous?.functionTarget ?? false
+      this.update({ ...this.state, targetId: previous?.targetId ?? null })
+    } else {
+      // Switching between branches of the same block keeps its original return point.
+      if (this.targetReturns.at(-1)?.id !== this.state.selectedId) {
+        this.targetReturns.push({ id: this.state.selectedId!, targetId: this.state.targetId, targetElse: this.targetElse, functionTarget: this.functionTarget })
+      }
+      this.targetElse = alternative
+      this.update({ ...this.state, targetId: this.state.selectedId })
+    }
+  }
   chooseFunction = (id?: string) => {
     if (!this.prepareEdit()) return
+    this.targetReturns = []
     this.functionId = id
     this.functionTarget = !!id
     this.targetElse = false
@@ -115,7 +137,10 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   }
   selectFunctionBlock = (fn: string | undefined, id: string) => {
     if (this.locked) return
-    if (this.functionId !== fn) this.chooseFunction(fn)
+    if (this.functionId !== fn) {
+      this.chooseFunction(fn)
+      this.functionTarget = false
+    }
     this.select(id)
   }
   add = (type: Block['type'], fn = this.functions[0]?.id) => {
@@ -141,7 +166,7 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   toggleElse = () => { if (this.selectedPath && this.selectedBlock?.type === 'if' && this.prepareEdit()) { this.targetElse = false; this.change(ProgramModel.setElse(this.editProgram, this.selectedPath, !this.selectedBlock.else)) } }
   setVariableValue = (value: number) => { if (this.selectedPath && this.selectedBlock?.type === 'set' && this.prepareEdit()) this.change(ProgramModel.setVariableValue(this.editProgram, this.selectedPath, value)) }
   toggleChange = () => { if (this.selectedPath && this.selectedBlock?.type === 'change' && this.prepareEdit()) this.change(ProgramModel.toggleChange(this.editProgram, this.selectedPath)) }
-  toggleRepeatSource = () => { if (this.selectedPath && this.selectedBlock?.type === 'repeat' && this.prepareEdit()) this.change(ProgramModel.setRepeatSource(this.editProgram, this.selectedPath, this.selectedBlock.countVariable ? 'number' : 'A')) }
+  toggleRepeatSource = () => { if (this.selectedPath && this.selectedBlock?.type === 'repeat' && this.prepareEdit()) this.change(ProgramModel.setRepeatSource(this.editProgram, this.selectedPath, this.selectedBlock.countParam ? 'number' : this.selectedBlock.countVariable ? this.paramsEnabled && this.functions.find(fn => fn.id === this.functionId)?.param ? 'param' : 'number' : 'A')) }
   setCondition = (condition: Condition) => {
     if (!this.selectedPath || !this.prepareEdit()) return
     const next = structuredClone(this.editProgram)

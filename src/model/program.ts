@@ -72,11 +72,18 @@ export class Program {
       return { ...block, by: block.by === 1 ? -1 : 1 }
     })
   }
-  static setRepeatSource(program: BlockTree, path: number[], source: 'number' | 'A'): BlockTree {
+  static setRepeatSource(program: BlockTree, path: number[], source: 'number' | 'A' | 'param'): BlockTree {
     return Program.editVariableBlock(program, path, block => {
       if (block.type !== 'repeat') throw new Error('Block is not a repeat')
-      const { countVariable: _variable, ...numeric } = block
-      return source === 'A' ? { ...block, countVariable: 'A' } : { ...numeric, count: block.count ?? 3 }
+      const { countVariable: _variable, countParam: _param, ...numeric } = block
+      return source === 'param' ? { ...numeric, countParam: true } : source === 'A' ? { ...numeric, countVariable: 'A' } : { ...numeric, count: block.count ?? 3 }
+    })
+  }
+  static setCallArgument(program: BlockTree, path: number[], arg: import('./types').CallArgument): BlockTree {
+    if (arg.kind !== 'A' && (arg.kind !== 'number' || !Number.isInteger(arg.value) || arg.value < 0 || arg.value > 20)) throw new Error('Invalid call argument')
+    return Program.editVariableBlock(program, path, block => {
+      if (block.type !== 'call') throw new Error('Block is not a call')
+      return { ...block, arg: structuredClone(arg) }
     })
   }
   private static editVariableBlock(program: BlockTree, path: number[], edit: (block: Block) => Block): BlockTree {
@@ -143,46 +150,55 @@ export function normalizeLogicProgram(program: BlockTree): BlockTree {
 }
 
 /** Validate persisted documents with a shared node/ID budget across all bodies. */
-export function validDocument(value: unknown, palette?: Block['type'][], allowVariableCount = true, allowLogic = true): value is import('./types').ProgramDocument {
+export function validDocument(value: unknown, palette?: Block['type'][], allowVariableCount = true, allowLogic = true, allowParams = true): value is import('./types').ProgramDocument {
   const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
   if (!record(value) || !Array.isArray(value.main) || !Array.isArray(value.functions) || value.functions.length > 2) return false
-  const functions = new Set<string>()
+  const functions = new Map<string, boolean>()
   for (const fn of value.functions) {
     if (!record(fn) || typeof fn.id !== 'string' || !fn.id || functions.has(fn.id) || (fn.icon !== 'star' && fn.icon !== 'moon') || !Array.isArray(fn.body)) return false
-    functions.add(fn.id)
+    if (fn.param !== undefined && (!allowParams || fn.param !== true)) return false
+    functions.set(fn.id, fn.param === true)
   }
   const ids = new Set<string>()
   let nodes = 0
-  function list(input: unknown[], depth: number, inFunction: boolean): boolean {
+  function list(input: unknown[], depth: number, inFunction: boolean, param = false): boolean {
     for (const block of input) {
       if (++nodes > 60 || depth > MAX_PROGRAM_BLOCKS || !record(block) || typeof block.id !== 'string' || !block.id || ids.has(block.id)) return false
       ids.add(block.id)
+      if ('arg' in block && block.type !== 'call' || 'countParam' in block && block.type !== 'repeat') return false
       if (palette && !palette.includes(block.type as Block['type'])) return false
       switch (block.type) {
       case 'set': if (block.variable !== 'A' || !Number.isInteger(block.value) || Number(block.value) < 0 || Number(block.value) > 20) return false; break
       case 'change': if (block.variable !== 'A' || block.by !== 1 && block.by !== -1) return false; break
-      case 'call': if (inFunction || typeof block.fn !== 'string' || !functions.has(block.fn)) return false; break
+      case 'call': {
+        if (inFunction || typeof block.fn !== 'string' || !functions.has(block.fn)) return false
+        if (functions.get(block.fn)) {
+          if (!allowParams || !record(block.arg) || !(block.arg.kind === 'A' && Object.keys(block.arg).length === 1 || block.arg.kind === 'number' && Object.keys(block.arg).length === 2 && Number.isInteger(block.arg.value) && Number(block.arg.value) >= 0 && Number(block.arg.value) <= 20)) return false
+        } else if (block.arg !== undefined) return false
+        break
+      }
       case 'forward': case 'turnLeft': case 'turnRight': break
       case 'repeat': case 'if': case 'while':
         if (!Array.isArray(block.body)) return false
         if ((block.type === 'if' || block.type === 'while') && typeof block.condition !== 'string' && !allowLogic) return false
         if (block.type === 'repeat') {
+          if (block.countParam !== undefined && (!allowParams || !param || block.countParam !== true || block.countVariable !== undefined)) return false
           if (block.countVariable !== undefined && (!allowVariableCount || block.countVariable !== 'A')) return false
-          if (block.countVariable !== 'A' || block.count !== undefined) {
+          if (!block.countParam && block.countVariable !== 'A' || block.count !== undefined) {
             if (!Number.isInteger(block.count) || Number(block.count) < 2 || Number(block.count) > 10) return false
           }
         }
         if (block.type === 'while' && (block.condition !== 'clearAhead' && !validCondition(block.condition) || 'else' in block)) return false
         if (block.type === 'if' && (block.condition !== 'blockedAhead' && !validCondition(block.condition) || 'else' in block && !Array.isArray(block.else))) return false
-        if (!list(block.body, depth + 1, inFunction)) return false
-        if (block.type === 'if' && Array.isArray(block.else) && !list(block.else, depth + 1, inFunction)) return false
+        if (!list(block.body, depth + 1, inFunction, param)) return false
+        if (block.type === 'if' && Array.isArray(block.else) && !list(block.else, depth + 1, inFunction, param)) return false
         break
       default: return false
       }
     }
     return true
   }
-  return list(value.main, 1, false) && value.functions.every(fn => list(fn.body, 1, true))
+  return list(value.main, 1, false) && value.functions.every(fn => list(fn.body, 1, true, fn.param === true))
 }
 
 /** Immutable doc edits share the same tree operations for main and function bodies. */
@@ -201,6 +217,27 @@ export class FunctionProgram {
     const icon = this.doc.functions.some(fn => fn.icon === 'star') ? 'moon' : 'star'
     return new FunctionProgram({ ...this.doc, functions: [...this.doc.functions, { id: `function-${serial}`, icon, body: [] }] })
   }
+  setParameter(id: string, enabled: boolean): FunctionProgram {
+    if (!this.doc.functions.some(fn => fn.id === id)) throw new Error('Unknown function')
+    const clean = (blocks: BlockTree): BlockTree => blocks.map(block => {
+      if (block.type === 'call' && block.fn === id) {
+        const { arg: _arg, ...plain } = block
+        return enabled ? { ...plain, arg: block.arg ?? { kind: 'number', value: 2 } } : plain
+      }
+      if (!hasBody(block)) return block
+      const copy = { ...block, body: clean(block.body), ...(block.type === 'if' && block.else ? { else: clean(block.else) } : {}) }
+      if (copy.type === 'repeat' && copy.countParam) {
+        const { countParam: _param, ...plain } = copy
+        return { ...plain, count: copy.count ?? 3 }
+      }
+      return copy
+    })
+    return new FunctionProgram({ main: clean(this.doc.main), functions: this.doc.functions.map(fn => {
+      if (fn.id !== id) return fn
+      const { param: _param, ...plain } = fn
+      return enabled ? { ...fn, param: true } : { ...plain, body: clean(fn.body) }
+    }) })
+  }
   removeFunction(id: string): FunctionProgram {
     const strip = (blocks: BlockTree): BlockTree => blocks.filter(block => block.type !== 'call' || block.fn !== id).map(block => hasBody(block) ? { ...block, body: strip(block.body), ...(block.type === 'if' && block.else ? { else: strip(block.else) } : {}) } : block)
     return new FunctionProgram({ main: strip(this.doc.main), functions: this.doc.functions.filter(fn => fn.id !== id) })
@@ -213,7 +250,7 @@ export class FunctionProgram {
   create(type: Block['type'], fn = ''): Block {
     const all = [...this.doc.main, ...this.doc.functions.flatMap(def => def.body)]
     const block = createBlock(all, type)
-    return block.type === 'call' ? { ...block, fn } : block
+    return block.type === 'call' ? { ...block, fn, ...(this.doc.functions.find(def => def.id === fn)?.param ? { arg: { kind: 'number' as const, value: 2 } } : {}) } : block
   }
   add(block: Block, parent: number[] = [], fn?: string) { return this.edit(body => Program.addBlock(body, structuredClone(block), parent), fn) }
   remove(path: number[], fn?: string) { return this.edit(body => Program.deleteBlock(body, path), fn) }

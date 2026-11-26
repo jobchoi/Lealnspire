@@ -267,3 +267,11 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 사용자 결정(2026-11-26)으로 A=0 원자를 삭제하고 `blockedLeft`·`blockedRight`를 추가한다. 로봇 방향 기준 옆 칸의 벽·맵 밖을 검사하며 목표도 열린 칸이다. 기존 문자열 조건과 1~5단원 프레임은 유지한다. 조건 슬롯은 앞·왼·오른 막힘 세 원자와 not/and/or를 제공한다. 새 if는 blockedAhead 트리, while은 not blockedAhead 트리로 생성한다. 저장 v2를 유지하며 삭제된 aIsZero 저장 코드는 해당 스테이지만 비운다.
 
 `model/stages/index.ts`의 u6-1~u6-4는 각 두 맵·상한 4이고 A 표시·초기값을 쓰지 않는다. `model/unit6.test.ts`는 F/L/R·순차·repeat 2~10·if/else·while의 임의 중첩과 빈 몸체를 포함해 제한 원자만 쓰는 4블록 이하 해의 부재를 증명한다. Board와 TrainMap은 검사한 원자마다 상대 방향의 칸을 표시한다. 상세 맵·정답·증명 범위는 [unit6-logic.md](design/unit6-logic.md)를 참조한다.
+
+### T60 7단원 매개변수 [제안·잠정]
+
+- `model/types.ts`, `program.ts`, `interpreter.ts`: FunctionDef.param, call.arg(숫자/A), repeat.countParam, 호출별 복사 값·serial, 읽기 전용 ◆와 기존 exhaustive switch. 함수 몸체 호출은 계속 금지한다.
+- `model/ProgressRepository.ts`: v2 유지, params 스테이지에서만 입력·인자·◆ 및 repeat A 복원. 불량 코드는 해당 스테이지 main/functions만 비운다.
+- `model/unit7.test.ts`: u7-1~3 정답·초기 실패·저장·입력 정리·되돌리기·순차 개방 및 매개변수 없는 ≤6 문법의 두 함수 몸체 조합 전수 탐색.
+- `model/unit123456-run.fixture.json`: T60 이전 HEAD 실행기로 캡처한 1~6단원 전체 정답 프레임. 새 serial 메타데이터만 제외해 비교한다.
+- 기존 EditorController/Editor/BlockTiles와 PlayPage/StageSelectPage/ResultModal/flow에 입력 홈·인자 편집·숫자/A/◆ 원천 순환·값 전달·7단원 목록/완주를 연결한다. 브라우저 QC 제한은 `design/unit7-parameters.md` 참고.

@@ -11,17 +11,17 @@ import { BlockTiles } from './BlockTiles'
 import { Engine, Symbol } from '../theme/Symbols'
 import { t } from '../../i18n/I18n'
 
-type EditorProps = { theme?: Theme; program: Program; onChange: (program: Program) => void; maxBlocks?: number; locked?: boolean; activeBlockId?: string | null; conditions?: boolean; logicEnabled?: boolean; functionsEnabled?: boolean; variablesEnabled?: boolean; call?: Frame['call']; palette?: BlockType[]; check?: Frame['check']; checks?: NonNullable<Frame['check']>[]; loops?: Frame['loops']; failedBlockId?: string | null; controller?: EditorController }
+type EditorProps = { theme?: Theme; program: Program; onChange: (program: Program) => void; maxBlocks?: number; locked?: boolean; activeBlockId?: string | null; paramsEnabled?: boolean; conditions?: boolean; logicEnabled?: boolean; functionsEnabled?: boolean; variablesEnabled?: boolean; call?: Frame['call']; palette?: BlockType[]; check?: Frame['check']; checks?: NonNullable<Frame['check']>[]; loops?: Frame['loops']; failedBlockId?: string | null; controller?: EditorController }
 const NOT = glossary.not.keyword as 'not'
 const AND = glossary.and.keyword as 'and'
 const OR = glossary.or.keyword as 'or'
 const types = defaultTheme.blockTypes
 
-export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, locked = false, activeBlockId, conditions = false, logicEnabled = false, functionsEnabled = false, variablesEnabled = false, call, palette, check, checks, loops, failedBlockId, controller: supplied }: EditorProps) {
+export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, locked = false, activeBlockId, paramsEnabled = false, conditions = false, logicEnabled = false, functionsEnabled = false, variablesEnabled = false, call, palette, check, checks, loops, failedBlockId, controller: supplied }: EditorProps) {
   const editor = useRef<HTMLElement>(null)
   const workspace = useRef<HTMLDivElement>(null)
   const [controller] = useState(() => supplied ?? new EditorController())
-  controller.configure(program, onChange, locked, maxBlocks, logicEnabled)
+  controller.configure(program, onChange, locked, maxBlocks, logicEnabled, paramsEnabled)
   program = controller.program
   const { selectedId, targetId, addedId } = useController(controller)
   const viewContext = locked ? `run:${call?.fn ?? ''}` : `edit:${controller.functionId ?? ''}:${controller.functionTarget}:${failedBlockId ?? ''}`
@@ -74,13 +74,18 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
           <button disabled={locked} aria-label={t(selectedBlock.else ? 'removeElse' : 'addElse')} onClick={controller.toggleElse}>{t(selectedBlock.else ? 'removeElse' : 'addElse')}</button>
           {selectedBlock.else && <button disabled={locked} aria-label={label(t('selectElse'))} onClick={() => controller.toggleTarget(true)}>{t('selectElse')}</button>}
         </>}
+        {selectedBlock.type === 'call' && selectedBlock.arg && <>
+          <button disabled={locked || selectedBlock.arg.kind === 'number' && selectedBlock.arg.value <= 0} aria-label={label(t('variables.decrease'))} onClick={() => controller.setCallArgument({ kind: 'number', value: selectedBlock.arg?.kind === 'number' ? selectedBlock.arg.value - 1 : 2 })}>−</button>
+          <button disabled={locked || selectedBlock.arg.kind === 'number' && selectedBlock.arg.value >= 20} aria-label={label(t('variables.increase'))} onClick={() => controller.setCallArgument({ kind: 'number', value: selectedBlock.arg?.kind === 'number' ? selectedBlock.arg.value + 1 : 2 })}>+</button>
+          <button disabled={locked} aria-label={t(selectedBlock.arg.kind === 'A' ? 'parameters.useNumber' : 'parameters.useA')} onClick={() => controller.setCallArgument(selectedBlock.arg?.kind === 'A' ? { kind: 'number', value: 2 } : { kind: 'A' })}>{t(selectedBlock.arg.kind === 'A' ? 'parameters.useNumber' : 'parameters.useA')}</button>
+        </>}
         {selectedBlock.type === 'set' && <>
           <button disabled={locked || selectedBlock.value <= 0} aria-label={label(t('variables.decrease'))} onClick={() => controller.setVariableValue(selectedBlock.value - 1)}>−</button>
           <button disabled={locked || selectedBlock.value >= 20} aria-label={label(t('variables.increase'))} onClick={() => controller.setVariableValue(selectedBlock.value + 1)}>+</button>
         </>}
         {selectedBlock.type === 'change' && <button disabled={locked} aria-label={t('variables.toggleChange')} onClick={controller.toggleChange}>{t('variables.toggleChange')}</button>}
-        {selectedBlock.type === 'repeat' && variablesEnabled && <button disabled={locked} aria-label={t(selectedBlock.countVariable ? 'variables.useNumber' : 'variables.useA')} onClick={controller.toggleRepeatSource}>{t(selectedBlock.countVariable ? 'variables.repeatNumber' : 'variables.repeatA')}</button>}
-        {selectedBlock.type === 'repeat' && !selectedBlock.countVariable && <>
+        {selectedBlock.type === 'repeat' && variablesEnabled && <button disabled={locked} aria-label={t(paramsEnabled && selectedBlock.countVariable && targetFunction?.param ? 'parameters.useParam' : selectedBlock.countVariable || selectedBlock.countParam ? 'variables.useNumber' : 'variables.useA')} onClick={controller.toggleRepeatSource}>{paramsEnabled && selectedBlock.countVariable && targetFunction?.param ? '◆' : t(selectedBlock.countVariable || selectedBlock.countParam ? 'variables.repeatNumber' : 'variables.repeatA')}</button>}
+        {selectedBlock.type === 'repeat' && !selectedBlock.countVariable && !selectedBlock.countParam && <>
           <button disabled={locked || (selectedBlock.count ?? 3) <= 2} aria-label={label(t('decrease'))} onClick={() => controller.setCount((selectedBlock.count ?? 3) - 1)}>−</button>
           <button disabled={locked || (selectedBlock.count ?? 3) >= 10} aria-label={label(t('increase'))} onClick={() => controller.setCount((selectedBlock.count ?? 3) + 1)}>+</button>
         </>}
@@ -117,7 +122,7 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
     </div></div>
     {functionsEnabled && <section className="function-panel" aria-label={t('functions.panel')}>
       {controller.functions.map(fn => <article key={fn.id} className={`function-card${call?.fn === fn.id ? ' function-active' : ''}${controller.functionTarget && controller.functionId === fn.id ? ' function-target' : ''}`} data-function-id={fn.id} data-visible={visiblePanel === fn.id}>
-        <header><strong><span className="concept-keyword">{glossary.function.keyword}</span> <span aria-hidden="true"><Symbol name={fn.icon} /></span></strong>{call?.fn === fn.id && <span role="status">{t('functions.running')}</span>}</header>
+        <header><strong><span className="concept-keyword">{glossary.function.keyword}</span> <span aria-hidden="true"><Symbol name={fn.icon} /></span></strong>{paramsEnabled && <button className="parameter-socket" aria-pressed={!!fn.param} disabled={locked} aria-label={t(`parameters.${fn.param ? 'disable' : 'enable'}.${fn.icon}`)} onClick={() => controller.toggleParameter(fn.id)}><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 2 22 12 12 22 2 12Z" fill={fn.param ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" />{!fn.param && <path d="M3 21 21 3" stroke="currentColor" strokeWidth="2" />}</svg><span>{fn.param ? call?.fn === fn.id ? `◆${call.arg ?? ''}` : '◆' : '−'}</span></button>}{call?.fn === fn.id && <span role="status">{t('functions.running')}</span>}</header>
         <div className="function-card-actions"><button disabled={locked} aria-pressed={controller.functionTarget && controller.functionId === fn.id} aria-label={t(`functions.target.${fn.icon}`)} onClick={() => { controller.chooseFunction(fn.id); setPanelChoice({ context: '', tab: fn.id }) }}>{t(`functions.target.${fn.icon}`)}</button>{controller.functionTarget && controller.functionId === fn.id && <button disabled={locked} aria-label={t(`functions.stop.${fn.icon}`)} onClick={() => { controller.chooseFunction(); showPanel() }}>{t(`functions.stop.${fn.icon}`)}</button>}<button disabled={locked} aria-label={t(`functions.remove.${fn.icon}`)} title={t('functions.deleteNotice')} onClick={() => controller.removeFunction(fn.id)}>✕</button></div>
         <p className="function-delete-notice">{t('functions.deleteNotice')}</p>
         <div className="function-body workspace" role="group" aria-label={t(`functions.body.${fn.icon}`)} tabIndex={0}>

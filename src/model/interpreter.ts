@@ -12,6 +12,7 @@ export class Interpreter {
     if (!Array.isArray(program) && !validDocument(doc)) throw new Error('Invalid program doc')
     let a = initialVariables.A
     if (!Number.isInteger(a) || a < 0 || a > 20) throw new Error('Invalid initial variable value')
+    let serial = 0
     let call: Frame['call']
     const grid = parseGrid(stage.grid)
     let pos = { ...grid.start }
@@ -63,16 +64,17 @@ export class Interpreter {
         }
         case 'call': {
           const definition = doc.functions.find(fn => fn.id === block.fn)!
-          call = { callId: block.id, fn: block.fn }
+          if (call || !definition) throw new Error('Invalid function call')
+          call = { callId: block.id, fn: block.fn, serial: ++serial, ...(definition.param ? { arg: block.arg?.kind === 'A' ? a : block.arg?.value } : {}) }
           const stopped = execute(definition.body, loops)
           call = undefined
           if (stopped) return true
           break
         }
         case 'repeat': {
-          const count = block.countVariable === 'A' ? a : (block.count ?? NaN)
+          const count = block.countParam ? (call?.arg ?? NaN) : block.countVariable === 'A' ? a : (block.count ?? NaN)
           if (block.countVariable !== undefined && block.countVariable !== 'A') throw new Error('Unknown variable')
-          if (!Number.isInteger(count) || count < 0 || count > 20 || !block.countVariable && (count < 2 || count > 10)) throw new Error('Invalid repeat count')
+          if (!Number.isInteger(count) || count < 0 || count > 20 || !block.countVariable && !block.countParam && (count < 2 || count > 10)) throw new Error('Invalid repeat count')
           for (let i = 0; i < count; i++) {
             // Bound interpreter work even when the body produces no frames.
             if (repeatEntries === 1000) { result = 'stepLimit'; return true }
