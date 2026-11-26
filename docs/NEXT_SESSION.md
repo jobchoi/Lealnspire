@@ -45,8 +45,13 @@
 
 ## 다음 작업
 
-1. **T63 8단원 반환값 QC**: 구현은 폴더 `../Lealnspire-T63`(브랜치 `feature/T63-returns`, Codex B, verify 320개 보고)에 커밋 전 상태로 있음. v1.7.0(T66) 위로 병합 → Claude E2E·스크린샷 QC → GPT 교차 검토 → v1.8.0
-2. 이벤트 → 리스트·탐색 → 종합(ROADMAP 라운드 3, T67~). 기획은 GPT 읽기 전용, 구현은 Codex 두 개 병렬(worktree)
-3. 제안: T62(E2E 부하), T64(시안 대비 다듬기 — `docs/design/qc/compare-*.png`), T65(지도 렌더러 PixiJS, 승인 필요)
+- **병렬 작업 폴더(git worktree)** — 모두 `~/project/` 아래:
+  - `Lealnspire-T63` (브랜치 `feature/T63-returns`): 8단원 반환값. 구현·v1.7.0 병합 커밋, QC 1차 지적 중 2건 남음(`docs/handoff/T63.md` 'QC 1차 이어서'), 수정은 커밋 전 작업 트리에 있음
+  - `Lealnspire-T67` (브랜치 `feature/T67-events`, T63 위): 9단원 이벤트. Codex가 1/4 단계에서 중단, Model 일부 수정이 커밋 전 작업 트리에 있음 → 지시서 `docs/handoff/T67.md`로 이어서
+  - `Lealnspire-v160`: v1.6.0 사본(시안 비교·UI/UX 리뷰용, `npx vite --port 5180`)
+- 2026-11-26 22:27 **GPT(Codex) 사용량 한도** 도달(23:36 재개 가능) — 두 Codex가 동시에 멈춤. 병렬 실행은 사용량을 두 배로 씀
+1. T63 남은 2건 → Claude 전체 E2E·스크린샷 → GPT 교차 검토 → v1.8.0
+2. T67 이어서 → QC → v1.9.0, 이어서 리스트·탐색 → 종합(T68~)
+3. 제안: T62(E2E 부하), T64(시안 대비 다듬기), T65(지도 렌더러 PixiJS, 승인 필요)
 4. 사용자와 함께 논의: 연령 구분, 별 기준, 실제 배포 시점(라즈베리파이), 블로그 원고(`docs/blog/`)
 - 작업 방식(사용자, 2026-11-26): 12월 초까지 GPT(Codex) 최대 활용, GPT 두 스레드 병렬, Claude는 지시·QC·기록
