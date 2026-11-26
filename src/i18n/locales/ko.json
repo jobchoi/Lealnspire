@@ -446,6 +446,8 @@
     "ahead": "앞 칸 수",
     "received": "별 함수가 {value}를 돌려줬어요.",
     "skipped": "이번 호출에서 실행 안 함",
+    "sourceShort": "↩ 값",
+    "repeat": {"star": "{order}번 반복: 별 함수가 돌려준 값만큼", "moon": "{order}번 반복: 달 함수가 돌려준 값만큼"},
     "source": "반환값 원천 바꾸기",
     "repeatSource": "반복 횟수 원천 바꾸기",
     "output": "돌려주는 값 (return)"

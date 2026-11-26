@@ -103,10 +103,11 @@ Claude Code는 세션마다 이 파일을 자동으로 읽습니다.
 | `hotfix/<버전>` | 배포본 긴급 수정 | `master` → `master`와 `develop` |
 
 - 작업 하나당 `feature/*` 브랜치 하나를 `develop` 최신 상태에서 만듭니다. 작업 브랜치에는 push해도 됩니다.
-- push는 항상 브랜치를 명시합니다: `git push origin feature/<이름>` (처음은 `-u`). 맨 `git push`는 쓰지 않습니다. `.claude/settings.json`이 `feature/*`, `bugfix/*` push만 자동 허용하고, force push·삭제·`develop`/`master` push는 거부합니다.
+- push는 항상 브랜치를 명시합니다: `git push origin feature/<이름>` (처음은 `-u`). 맨 `git push`는 쓰지 않습니다. `.claude/settings.json`이 `feature/*`·`bugfix/*`·`develop`·`master`·`release/*`·태그(`v*`) push를 허용하고, force push·삭제는 거부합니다.
+- **develop·master 반영과 버전 태그·release 브랜치 push는 Claude가 직접 해도 됩니다(사용자 결정 2026-11-26).** 단, 전체 검증(verify·e2e·e2e:prod)을 통과한 버전만 반영하고 CHANGELOG·RELEASE에 기록합니다.
 - 원격은 SSH(`git@github.com:jobchoi/Lealnspire.git`)이며 인증은 각 PC의 `~/.ssh` 키를 씁니다. 키나 토큰은 저장소에 두지 않습니다.
 - 작업이 끝나면 `develop`으로 가는 PR을 만들 수 있지만, **병합은 사용자가 하거나 요청할 때만** 합니다.
-- `release/*`, `hotfix/*`, `support/*` 생성과 `master` 반영, 버전 태그는 사용자 요청이 있을 때만 합니다.
+- `release/*` 생성·`master` 반영·버전 태그는 검증을 통과한 버전에 한해 Claude가 진행합니다(사용자 결정 2026-11-26). `hotfix/*`, `support/*`는 사용자 요청이 있을 때만 합니다.
 - 클라우드 세션이 다른 이름의 브랜치(예: `claude/...`)를 지정했더라도 위 이름 규칙을 우선하고, 어떤 브랜치를 썼는지 보고에 적습니다.
 
 ## 6. 커밋과 보고
@@ -121,8 +122,7 @@ Claude Code는 세션마다 이 파일을 자동으로 읽습니다.
 
 ## 7. 하지 않는 것(사용자 요청 없이)
 
-- `develop` 또는 `master`에 병합·직접 push, pull request 병합
-- `release/*`, `hotfix/*` 브랜치 생성, 버전 태그 추가
+- pull request 병합, `hotfix/*` 브랜치 생성(develop·master 반영, release 브랜치, 버전 태그는 2026-11-26부터 허용 — 5절)
 - 배포(GitHub Pages 등), 블로그나 외부 서비스 발행
 - API 키, 토큰, 비밀번호 등 비밀 정보를 저장소·문서·커밋에 기록(`.env*`는 gitignore 대상)
 - 유료 API 호출이나 자동 실행(예약 작업, AI를 호출하는 CI)을 추가. 필요하면 **방식과 예상 비용을 먼저 설명하고 승인**을 받습니다.

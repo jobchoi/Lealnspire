@@ -24,14 +24,14 @@
 .theme-train .train-island .board-robot { position:static; }
 .theme-train .editor { background:#fffbeb; border-radius:22px; padding:16px; box-shadow:0 10px #d6b98c,0 30px 40px -20px #0006; }
 .theme-train .palette { display:flex; gap:14px; padding-bottom:6px; }
-.theme-train .palette button { flex:0 0 auto; width:92px; height:78px; border:0; border-radius:14px; color:#fff; background:var(--c); box-shadow:0 6px #0003; font-size:15px; }
+.theme-train .palette button { flex:0 0 auto; width:92px; height:78px; border:0; border-radius:14px; color:#fff; background:var(--c, #235b70); box-shadow:0 6px #0003; font-size:15px; }
 .theme-train .block-forward { --c:#2563eb; }
 .theme-train .block-turnLeft,.theme-train .block-turnRight { --c:#15803d; }
 .theme-train .block-repeat { --c:#f59e0b; }
 .theme-train .workspace { border:0; border-radius:0; background:transparent; padding-bottom:16px; }
 .theme-train .workspace > .tile-list { padding-top:12px; padding-bottom:18px; }
 .theme-train .tile-list { align-items:flex-end; row-gap:28px; background:repeating-linear-gradient(90deg,#78350f 0 10px,transparent 10px 22px) 0 calc(100% - 2px)/100% 8px no-repeat,linear-gradient(#57534e,#57534e) 0 calc(100% - 8px)/100% 3px no-repeat,linear-gradient(#57534e,#57534e) 0 100%/100% 3px no-repeat; }
-.theme-train .block-tile { background:var(--c); color:white; border:0; border-radius:12px 12px 6px 6px; box-shadow:inset 0 -8px #0002; margin-bottom:12px; }
+.theme-train .block-tile { background:var(--c, #235b70); color:white; border:0; border-radius:12px 12px 6px 6px; box-shadow:inset 0 -8px #0002; margin-bottom:12px; }
 .theme-train .tile-item { position:relative; padding-right:5px; }
 .theme-train .tile-item::after { content:''; position:absolute; right:-4px; bottom:28px; width:10px; height:6px; background:#57534e; }
 .theme-train .block-tile::before,.theme-train .block-tile::after { content:''; position:absolute; bottom:-10px; width:20px; height:20px; border-radius:50%; background:#292524; box-shadow:inset 0 0 0 5px #57534e; }
