@@ -17,7 +17,8 @@ async function openU21(page: Page) {
   return g
 }
 const ifBlock = (page: Page) => page.locator('.palette').getByRole('button', { name: '앞이 막혔으면', exact: true })
-const into = (g: Game) => g.press(g.action(/추가 대상으로 선택$|안에 넣기$/))
+/** 이미 그 블록 안에 넣는 중이면(안쪽에서 '넣기 해제'로 바깥 블록에 돌아온 경우 — T60 복귀 규칙) 다시 누르지 않음 */
+const into = async (g: Game) => { if (await g.page.getByRole('button', { name: /(?<!else )안에 넣기$|추가 대상으로 선택$/ }).count()) await g.press(g.action(/(?<!else )안에 넣기$|추가 대상으로 선택$/)) }
 const out = (g: Game) => g.press(g.action(/선택 해제$|넣기 해제$/))
 
 /** repeat N [ if 앞 막힘 [ 돌기 ], 앞으로 ] 를 사용자처럼 조립(기본: 4번, 오른쪽) */
