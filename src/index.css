@@ -1038,3 +1038,25 @@ button small { display: block; font-size: .75rem; }
 /* 9단원은 시나리오마다 맵이 같아 카드 그림이 정보가 아님 — 좁은 화면에서는 신호열만(2단원 카드 규칙보다 강하게) */
 @media (max-width:700px) { .play-page.events-page.conditions-page:not(.functions-page) .map-panel > .variant-cards button > svg { display:none; } }
 .events-page .sr-only,.returns-page .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+
+/* T69 QC(Claude): 리스트 칸을 내용 크기로 — 빈 포인터 줄이 늘 한 줄을 차지하지 않게, 좁은 화면은 칸을 한 줄로 */
+.lists-page .list-pointers:empty { display:none; }
+@media (max-width:700px) {
+ .lists-page .list-cells li { flex-direction:row; align-items:center; gap:2px; min-width:0; padding:0 3px; }
+ .lists-page .list-cells small { border-bottom:0; border-right:1px solid #245f73; padding-right:2px; }
+ /* set 타일 글자가 좁은 타일 밖으로 넘치지 않게(5단원과 공통) */
+}
+@media (min-width:1000px) and (min-height:600px) {
+ .play-page.lists-page .map-panel .art-board,.play-page.lists-page .map-panel .train-island { max-height:calc(100dvh - 400px); }
+ .play-page.lists-page.theme-handheld .map-panel .board.art-board { max-height:calc(100dvh - 550px); }
+}
+@media (max-width:700px) {
+ .play-page.lists-page .workspace .block-repeat .repeat-count { font-size:12px; letter-spacing:-.5px; }
+ .play-page.lists-page .workspace .block-set strong { font-size:10px; letter-spacing:-.5px; white-space:nowrap; }
+}
+@media (max-width:370px) {
+ /* 가장 좁은 화면: set을 위 줄, A ← n을 아래 줄로 */
+ .play-page.lists-page .workspace .block-set strong { white-space:normal; text-align:center; line-height:1.1; }
+ .play-page.lists-page .workspace .block-set strong .concept-keyword { display:block; }
+}
+@media (max-width:700px) { .play-page.lists-page.theme-train .workspace .block-set strong { position:relative; bottom:6px; } }

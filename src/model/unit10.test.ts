@@ -188,3 +188,15 @@ it('enforces current lexical scope, body structure, depth and shared node budget
   for (const stage of unit10Stages) runAll(stage, stage.solution)
   expect(unit10Stages).toEqual(before)
 })
+
+// T69 GPT 검토 권장(Claude 추가): 안쪽 순회 몸체에서도 ▣는 가장 안쪽 원소, 증명 전제의 출발 방향 고정
+it('uses the innermost current value inside a nested for each body', () => {
+  const stage = { ...unit10Stages[0], variants: undefined, lists: [[2, 3]], grid: ['S#G'] }
+  const program: Block[] = [{ id: 'outer', type: 'forEach', body: [{ id: 'inner', type: 'forEach', body: [{ id: 'r', type: 'repeat', countSource: 'current', body: [{ id: 'turn', type: 'turnLeft' }] }] }] }]
+  const reads = run(stage, program).frames.filter(f => f.list?.read?.blockId === 'r' && f.activeBlockId === 'r').map(f => f.list?.read?.value)
+  // 바깥 2회 × 안쪽 [2, 3] → 안쪽 원소가 차례로 읽힘
+  expect(reads).toEqual([2, 3, 2, 3])
+})
+it('pins the start direction assumed by the proof', () => {
+  for (const stage of unit10Stages) expect(stage.startDir).toBe('E')
+})

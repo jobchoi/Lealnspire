@@ -79,7 +79,7 @@
     "change": "상자 A 1 바꾸기",
     "return": "값 돌려주기 (return)",
     "on": "신호가 오면 실행 (on)",
-    "forEach": "리스트 값 하나씩 꺼내기 (for each)"
+    "forEach": "리스트"
   },
   "tools": "블록 작업 막대",
   "chooseTile": "블록을 눌러 선택하세요.",
@@ -145,7 +145,7 @@
       "turnRight": "오른쪽",
       "return": "return",
       "on": "신호가 오면 실행 (on)",
-      "forEach": "리스트 값 하나씩 꺼내기 (for each)"
+      "forEach": "리스트"
     },
     "train": {
       "name": "기차 마을",
@@ -158,7 +158,7 @@
       "turnRight": "오른쪽 칸",
       "return": "return",
       "on": "신호가 오면 실행 (on)",
-      "forEach": "리스트 값 하나씩 꺼내기 (for each)"
+      "forEach": "리스트"
     },
     "handheld": {
       "name": "나의 게임기",
@@ -171,7 +171,7 @@
       "turnRight": "오른쪽",
       "return": "return",
       "on": "신호가 오면 실행 (on)",
-      "forEach": "리스트 값 하나씩 꺼내기 (for each)"
+      "forEach": "리스트"
     }
   },
   "stage1Hint1": "로봇과 별 사이의 칸을 세어 보세요.",
@@ -523,6 +523,7 @@
     "eachPointer": "▼ 순회: 번호 {index}, 값 {value}",
     "atPointer": "◆ L[A]: 번호 {index}, 값 {value}",
     "range": "번호 {index}인 칸이 없어요. 이 리스트의 길이는 {length}예요.",
+    "repeat": {"current": "{order}번 반복: 지금 꺼낸 값만큼", "listAtA": "{order}번 반복: 리스트의 A번 칸 값만큼", "listLength": "{order}번 반복: 리스트 길이만큼"},
     "rangeShort": "번호 {index} 없음 / 길이 {length}"
   }
 }

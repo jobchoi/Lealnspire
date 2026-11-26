@@ -89,8 +89,8 @@ for (const world of worlds) {
       }
       for (const t of await page.locator('.workspace').getByRole('button', { name: /번 / }).all()) {
         if (!(await t.isVisible())) continue
-        const overflow = await t.evaluate(e => [...e.querySelectorAll('*')].filter(c => !c.closest('.repeat-ribbon')).some(c => { const a = c.getBoundingClientRect(), b = e.getBoundingClientRect(); return a.width > 0 && (a.right > b.right + 1 || a.left < b.left - 1) }))
-        expect(overflow, `${await t.getAttribute('aria-label')}: 글자가 타일 밖으로`).toBe(false)
+        const overflow = await t.evaluate(e => [...e.querySelectorAll('*')].filter(c => !c.closest('.repeat-ribbon')).filter(c => { const a = c.getBoundingClientRect(), b = e.getBoundingClientRect(); return a.width > 0 && (a.right > b.right + 1 || a.left < b.left - 1) }).map(c => `${c.tagName}.${c.getAttribute('class') ?? ''}`).join(' '))
+        expect(overflow, `${await t.getAttribute('aria-label')}: 글자가 타일 밖으로`).toBe('')
         expect(await contrastOf(t), `${world} ${await t.getAttribute('aria-label')} 대비`).toBeGreaterThanOrEqual(3)
       }
       expect(await page.evaluate(() => document.documentElement.scrollHeight - innerHeight), '세로 스크롤 없음').toBeLessThanOrEqual(viewport.width >= 1000 ? 0 : 99999)
