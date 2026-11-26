@@ -1,4 +1,4 @@
-import { expect, Game, test } from './helpers'
+import { contrastOf, expect, Game, test } from './helpers'
 import { unit6Stages } from '../src/model/stages'
 
 const completed = ['1','2','3','4','5','6','7','8', ...[2,3,4,5].flatMap(n => Array.from({ length: n === 2 ? 6 : 3 }, (_, i) => `u${n}-${i + 1}`)), 'u6-1', 'u6-2', 'u6-3']
@@ -15,6 +15,11 @@ async function open(page: import('@playwright/test').Page, name: string, replay 
   await game.press(game.button('스테이지 목록'))
   await game.press(page.locator('.stage-card', { hasText: name }))
   return game
+}
+/** not 켜기/끄기 버튼(aria-pressed) */
+async function setNot(page: import('@playwright/test').Page, which: '첫 조건' | '둘째 조건', on: boolean) {
+  const button = page.getByRole('button', { name: `${which} not`, exact: true })
+  if ((await button.getAttribute('aria-pressed') === 'true') !== on) await new Game(page).press(button)
 }
 test('u6-4 조건을 고치고 검사 결과와 성공을 확인한다', async ({ page }) => {
   const game = await open(page, 'and일까, or일까')
@@ -47,7 +52,7 @@ test('@layout 영어와 좁은 화면에서 조건 편집을 표시한다', asyn
 test('u6-1에서 not으로 초기 while을 고쳐 두 맵을 통과한다', async ({ page }) => {
   const game = await open(page, 'not: 반대로 바꾸기')
   await game.select('1')
-  await page.getByLabel('첫 조건').locator('..').locator('..').getByRole('checkbox').check()
+  await setNot(page, '첫 조건', true)
   await game.speed('빠르게')
   expect(await game.runToEnd()).toContain('성공')
 })
@@ -84,7 +89,7 @@ for (const world of worlds) {
 test('검사 결과에 and와 not 반전 전후를 표시한다', async ({ page }) => {
   const game = await open(page, 'and일까, or일까')
   await game.select('1')
-  await page.getByLabel('첫 조건').locator('..').locator('..').getByRole('checkbox').check()
+  await setNot(page, '첫 조건', true)
   await game.press(game.button('한 단계'))
   await expect(page.locator('.logic-results')).toContainText('and')
   await expect(page.locator('.logic-results')).toContainText(/왼쪽이 막힘:.*→ not:/)
@@ -101,8 +106,8 @@ async function buildSideRule(game: Game, page: import('@playwright/test').Page) 
   await game.select('1.1')
   await game.press(game.action(/(?<!else )안에 넣기$|추가 대상으로 선택$/)); await game.add('L'); await game.press(game.action(/선택 해제$|넣기 해제$/))
   await game.select('1.1')
-  await page.getByLabel('첫 조건').selectOption('blockedLeft')
-  await page.getByLabel('첫 조건').locator('..').locator('..').getByRole('checkbox').first().check()
+  await page.getByLabel('첫 조건', { exact: true }).selectOption('blockedLeft')
+  await setNot(page, '첫 조건', true)
 }
 test('u6-2: 옆 센서 조건을 처음부터 조립해 두 맵을 통과한다', async ({ page }) => {
   const game = await open(page, '옆을 보는 로봇')
@@ -120,9 +125,8 @@ test('u6-3: 왼쪽만 보는 규칙은 막다른 갈래에서 실패하고, and�
   await game.press(game.dialog.getByRole('button', { name: /고치기/ }))
   await game.select('1.1')
   await page.getByLabel('조건 조합').selectOption('and')
-  await page.getByLabel('둘째 조건').selectOption('blockedRight')
-  const right = page.getByLabel('둘째 조건').locator('..').locator('..').getByRole('checkbox').last()
-  if (!(await right.isChecked())) await right.check()
+  await page.getByLabel('둘째 조건', { exact: true }).selectOption('blockedRight')
+  await setNot(page, '둘째 조건', true)
   expect(await game.blockCount()).toBe(4)
   await page.screenshot({ path: 'e2e-results/screens/logic-u63-and.png' })
   expect(await game.runToEnd()).toContain('성공')
@@ -133,7 +137,7 @@ test('u6-3 한 단계: 갈림길 검사에서 두 조건 결과와 최종 결과
   await buildSideRule(game, page)
   await game.select('1.1')
   await page.getByLabel('조건 조합').selectOption('and')
-  await page.getByLabel('둘째 조건').selectOption('blockedRight')
+  await page.getByLabel('둘째 조건', { exact: true }).selectOption('blockedRight')
   await game.press(game.button('한 단계'))
   await expect(page.locator('.logic-results')).toContainText('and')
   await expect(page.locator('.logic-results')).toContainText('결과')
@@ -186,6 +190,12 @@ for (const world of worlds) {
           expect(overlap, `팔레트 ${await button.getAttribute('aria-label')} 버튼이 "${(await text.innerText()).slice(0, 12)}" 문장과 겹침`).toBe(false)
         }
       }
+      // 켜진 not 버튼은 글자가 보이고(대비 3:1 이상) 선택 항목에 이모지·대체 상자(□)가 없다
+      const onNot = page.getByRole('button', { name: '첫 조건 not', exact: true })
+      await expect(onNot).toHaveAttribute('aria-pressed', 'true')
+      await expect(onNot).toContainText('not')
+      expect(await contrastOf(onNot), '켜진 not 글자 대비').toBeGreaterThanOrEqual(3)
+      for (const option of await editor.locator('option').allInnerTexts()) expect(option, '선택 항목 기호').not.toMatch(/\p{Extended_Pictographic}|▥|□/u)
       const buttons = await Promise.all((await page.locator('.palette button').all()).map(async b => ({ name: await b.getAttribute('aria-label'), box: (await b.boundingBox())! })))
       for (const [i, a] of buttons.entries()) for (const c of buttons.slice(i + 1)) {
         const overlap = Math.min(a.box.x + a.box.width, c.box.x + c.box.width) - Math.max(a.box.x, c.box.x) > 2 && Math.min(a.box.y + a.box.height, c.box.y + c.box.height) - Math.max(a.box.y, c.box.y) > 2
