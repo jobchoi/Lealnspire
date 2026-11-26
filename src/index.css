@@ -900,17 +900,16 @@ button small { display: block; font-size: .75rem; }
 .returns-page .return-transfer { display:block; border:2px solid #235b70; padding:2px 4px; border-radius:3px; font:12px/1.3 monospace; overflow-wrap:anywhere; }
 .returns-page .ahead-observation { margin:0; border:2px dashed #654b27; background:#fff8df; color:#49351a; font-size:12px; }
 .returns-page .map-panel { position:relative; }
-.returns-page .ahead-observation { position:absolute; top:0; right:0; z-index:2; }
+.returns-page .ahead-observation { position:absolute; top:4px; right:8px; max-width:calc(100% - 16px); box-sizing:border-box; z-index:2; }
 .play-page .block-return { color:#163e51; background:#d7eff8; border:2px solid #235b70; }
-.returns-page .block-return .block-symbol { display:none; }
+.returns-page .workspace .block-return .block-symbol { display:none; }
 .returns-page .return-value { max-width:100%; font-size:12px; line-height:1.1; overflow-wrap:anywhere; }
 .returns-page .return-skipped { opacity:.55; border-style:dashed; }
 .returns-page .return-skip-label { position:absolute; right:1px; top:0; font:bold 16px/1 monospace; }
 .returns-page .return-count { position:absolute; bottom:0; right:0; padding:0 2px; border:1px solid #235b70; background:#fff; color:#163e51; font:bold 11px/1.2 monospace; }
 .play-page.conditions-page.variables-page.params-page.returns-page .palette-row .palette { height:auto; grid-template-columns:repeat(5,minmax(44px,1fr)); grid-template-rows:repeat(2,44px); }
 .play-page.conditions-page.variables-page.params-page.returns-page .palette-row .palette button { height:44px; min-height:44px; }
-.returns-page .tile-toolbar { flex-wrap:wrap; overflow:visible; }
-.returns-page .tile-toolbar button { min-width:44px; min-height:44px; white-space:normal; overflow-wrap:anywhere; }
+
 .returns-page .block-repeat .repeat-count { font:12px/1 monospace; }
 @media (max-width:700px) {
  .returns-page .variable-summary { flex-wrap:wrap; }
@@ -924,3 +923,6 @@ button small { display: block; font-size: .75rem; }
 }
 .returns-page .parameter-socket { order:-1; }
 .returns-page .return-skipped-notice { flex-shrink:0; margin:2px 0; font-size:11px; line-height:1.2; color:#3f4851; }
+
+/* Keep non-directional palette symbols legible inside the 44px command row. */
+.play-page.returns-page .palette :is(.block-return,.block-set,.block-change) .theme-symbol { width:28px; height:28px; }

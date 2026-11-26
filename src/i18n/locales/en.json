@@ -446,6 +446,8 @@
     "ahead": "cells ahead",
     "received": "The star function returned {value}.",
     "skipped": "Not run this call",
+    "sourceShort": "↩ Value",
+    "repeat": {"star": "Step {order}: repeat as many times as the star function returns", "moon": "Step {order}: repeat as many times as the moon function returns"},
     "source": "Change return value source",
     "repeatSource": "Change repeat count source",
     "output": "Returned value (return)"

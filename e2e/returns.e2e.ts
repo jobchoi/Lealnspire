@@ -95,8 +95,9 @@ for (const world of worlds) {
       if (await btn(page, '별 함수 보기').isVisible()) await g.press(btn(page, '별 함수 보기'))
       for (const tile of await page.locator('.function-panel, .workspace').getByRole('button', { name: /값 돌려주기|별 함수/ }).all()) {
         if (!(await tile.isVisible())) continue
-        const overflow = await tile.evaluate(e => [...e.querySelectorAll('*')].some(c => { const a = c.getBoundingClientRect(), b = e.getBoundingClientRect(); return a.width > 0 && (a.right > b.right + 1 || a.left < b.left - 1) }))
-        expect(overflow, `${await tile.getAttribute('aria-label')}: 글자가 타일 밖으로`).toBe(false)
+        // repeat-ribbon은 중첩 반복을 잇는 장식 띠라 일부러 타일 밖으로 이어짐 — 글자·기호만 검사
+        const overflow = await tile.evaluate(e => [...e.querySelectorAll('*')].filter(c => !c.closest('.repeat-ribbon')).filter(c => { const a = c.getBoundingClientRect(), b = e.getBoundingClientRect(); return a.width > 0 && (a.right > b.right + 1 || a.left < b.left - 1) }).map(c => `${c.tagName}.${c.getAttribute('class') ?? ''}`).join(' '))
+        expect(overflow, `${await tile.getAttribute('aria-label')}: 글자가 타일 밖으로`).toBe('')
         expect(await contrastOf(tile), `${world} ${await tile.getAttribute('aria-label')} 대비`).toBeGreaterThanOrEqual(3)
       }
       await page.screenshot({ path: `e2e-results/screens/returns-layout-${worlds.indexOf(world)}-${viewport.width}.png` })

@@ -85,7 +85,7 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, ret
         {returnValue && <>
           <button disabled={locked || returnValue.kind === 'number' && returnValue.value <= 0} aria-label={label(t('variables.decrease'))} onClick={() => controller.setReturnValue({ kind: 'number', value: returnValue.kind === 'number' ? returnValue.value - 1 : 0 })}>−</button>
           <button disabled={locked || returnValue.kind === 'number' && returnValue.value >= 20} aria-label={label(t('variables.increase'))} onClick={() => controller.setReturnValue({ kind: 'number', value: returnValue.kind === 'number' ? returnValue.value + 1 : 1 })}>+</button>
-          <button disabled={locked} aria-label={t('returns.source')} onClick={() => controller.setReturnValue(returnValue.kind === 'number' ? { kind: 'A' } : returnValue.kind === 'A' && targetFunction?.param ? { kind: 'param' } : returnValue.kind === 'ahead' ? { kind: 'number', value: 0 } : { kind: 'ahead' })}>{t('returns.source')}</button>
+          <button disabled={locked} aria-label={t('returns.source')} onClick={() => controller.setReturnValue(returnValue.kind === 'number' ? { kind: 'A' } : returnValue.kind === 'A' && targetFunction?.param ? { kind: 'param' } : returnValue.kind === 'ahead' ? { kind: 'number', value: 0 } : { kind: 'ahead' })}>{t('returns.sourceShort')}</button>
         </>}
         {valueCall && valueFunction?.param && <>
           <button disabled={locked || valueCall.arg?.kind === 'number' && valueCall.arg.value <= 0} aria-label={label(t('variables.decrease'))} onClick={() => controller.setValueCallArgument({ kind: 'number', value: valueCall.arg?.kind === 'number' ? valueCall.arg.value - 1 : 0 })}>−</button>
