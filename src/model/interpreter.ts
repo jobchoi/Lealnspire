@@ -1,7 +1,7 @@
 import { programDocument } from './types'
 import { validCondition, validDocument } from './program'
 import { cellKey, parseGrid } from './grid'
-import type { Block, Condition, ConditionAtom, Dir, Frame, ProgramInput, RunResult, RunAllResult, Stage, ValueCall, ReturnTrace } from './types'
+import type { Block, Condition, ConditionAtom, Dir, Frame, ProgramInput, RunResult, RunAllResult, EventSignal, EventState, Stage, ValueCall, ReturnTrace } from './types'
 
 const directions: Dir[] = ['N', 'E', 'S', 'W']
 const offsets = { N: [0, -1], E: [1, 0], S: [0, 1], W: [-1, 0] } as const
@@ -9,7 +9,10 @@ const offsets = { N: [0, -1], E: [1, 0], S: [0, 1], W: [-1, 0] } as const
 export class Interpreter {
   static run(stage: Stage, program: ProgramInput, initialVariables = stage.variantVariables?.[0] ?? { A: 0 }): RunResult {
     const doc = programDocument(program)
-    if (!Array.isArray(program) && !validDocument(doc)) throw new Error('Invalid program doc')
+    if ((!Array.isArray(program) || stage.events) && !validDocument(doc, undefined, true, true, true, true, stage.events === true)) throw new Error('Invalid program doc')
+    const eventState: EventState = { cursor: 0, queue: [], doors: { a: false, b: false }, phase: 'idle' }
+    const signals = stage.signals?.[0] ?? []
+    if (signals.some(signal => !['◇', '○', '△'].includes(signal))) throw new Error('Unknown signal')
     let a = initialVariables.A
     if (!Number.isInteger(a) || a < 0 || a > 20) throw new Error('Invalid initial variable value')
     let serial = 0
@@ -26,7 +29,7 @@ export class Interpreter {
     function blockedAhead(relative = 0): boolean {
       const [dx, dy] = offsets[directions[(directions.indexOf(dir) + relative) % 4]]
       const next = { x: pos.x + dx, y: pos.y + dy }
-      return next.x < 0 || next.y < 0 || next.x >= grid.width || next.y >= grid.height || grid.walls.has(cellKey(next))
+      return next.x < 0 || next.y < 0 || next.x >= grid.width || next.y >= grid.height || grid.walls.has(cellKey(next)) || !!grid.doors.get(cellKey(next)) && !eventState.doors[grid.doors.get(cellKey(next))!]
     }
     function check(condition: 'blockedAhead' | 'clearAhead' | Condition, blockId: string): NonNullable<Frame['check']> {
       if (typeof condition === 'string') return { blockId, condition, result: condition === 'blockedAhead' ? blockedAhead() : !blockedAhead() }
@@ -55,7 +58,7 @@ export class Interpreter {
       let count = 0
       while (count < 20) {
         const next = { x: pos.x + dx * (count + 1), y: pos.y + dy * (count + 1) }
-        if (next.x < 0 || next.y < 0 || next.x >= grid.width || next.y >= grid.height || grid.walls.has(cellKey(next))) break
+        if (next.x < 0 || next.y < 0 || next.x >= grid.width || next.y >= grid.height || grid.walls.has(cellKey(next)) || !!grid.doors.get(cellKey(next)) && !eventState.doors[grid.doors.get(cellKey(next))!]) break
         count++
       }
       return count
@@ -78,6 +81,7 @@ export class Interpreter {
     function execute(blocks: Block[], loops: NonNullable<Frame['loops']> = []): Signal {
       for (const block of blocks) {
         switch (block.type) {
+        case 'on': break
         case 'set':
         case 'change': {
           if (steps === 1000) { result = 'stepLimit'; return stop }
@@ -191,14 +195,52 @@ export class Interpreter {
       }
       return continuing
     }
-    execute(doc.main)
+    const main = execute(doc.main)
+    function eventFrame(phase: EventState['phase'], id: string | null, signal?: EventSignal): boolean {
+      if (steps >= 1000) { result = 'stepLimit'; return false }
+      steps++
+      eventState.phase = phase
+      eventState.signal = signal
+      frames.push({ variables: { A: a }, pos: { ...pos }, dir, activeBlockId: id, events: structuredClone(eventState) })
+      return true
+    }
+    if (stage.events && main.kind === 'continue') {
+      while (eventState.cursor < signals.length || eventState.queue.length) {
+        if (eventState.cursor < signals.length) {
+          if (eventState.cursor >= 128 || eventState.queue.length >= 64) { result = 'stepLimit'; break }
+          const signal = signals[eventState.cursor++] as EventSignal
+          if (signal === '◇') eventState.doors.a = true
+          if (signal === '○') eventState.doors.b = true
+          eventState.queue.push(signal)
+          if (!eventFrame('arrival', null, signal)) break
+        }
+        const signal = eventState.queue.shift()!
+        const handler = doc.main.find(block => block.type === 'on' && block.signal === signal)
+        if (!handler || handler.type !== 'on') {
+          if (!eventFrame('unconnected', null, signal)) break
+          continue
+        }
+        eventState.handler = { onId: handler.id, signal, serial: ++serial }
+        if (!eventFrame('start', handler.id, signal)) break
+        const first = frames.length
+        const outcome = execute(handler.body)
+        for (let i = first; i < frames.length; i++) frames[i].events = structuredClone(eventState)
+        if (outcome.kind === 'stop') break
+        delete eventState.handler
+        if (!eventFrame('end', handler.id, signal)) break
+      }
+    }
+    if (stage.events) {
+      // Main frames precede all device changes; preserve that initial state.
+      for (const frame of frames) if (!frame.events) frame.events = { cursor: 0, queue: [], doors: { a: false, b: false }, phase: 'idle' }
+    }
     return { frames, result, ...(whileLimitCall ? { whileLimitCall } : {}), ...(whileLimitBlockId ? { whileLimitBlockId } : {}) }
   }
 }
 export const run = Interpreter.run
 
 export function runAll(stage: Stage, program: ProgramInput): RunAllResult {
-  const results = (stage.variants ?? [stage.grid]).map((grid, index) => run({ ...stage, grid }, program, stage.variantVariables?.[index] ?? { A: 0 }))
+  const results = (stage.variants ?? [stage.grid]).map((grid, index) => run({ ...stage, grid, signals: stage.signals ? [stage.signals[index] ?? []] : undefined }, program, stage.variantVariables?.[index] ?? { A: 0 }))
   const index = results.findIndex(execution => execution.result !== 'success')
   return { results, result: index < 0 ? 'success' : results[index].result, failedVariant: index < 0 ? null : index }
 }

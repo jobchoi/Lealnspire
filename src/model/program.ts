@@ -158,7 +158,7 @@ export function normalizeLogicProgram(program: BlockTree): BlockTree {
 }
 
 /** Validate persisted documents with a shared node/ID budget across all bodies. */
-export function validDocument(value: unknown, palette?: Block['type'][], allowVariableCount = true, allowLogic = true, allowParams = true, allowReturns = true): value is import('./types').ProgramDocument {
+export function validDocument(value: unknown, palette?: Block['type'][], allowVariableCount = true, allowLogic = true, allowParams = true, allowReturns = true, allowEvents = true): value is import('./types').ProgramDocument {
   const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
   if (!record(value) || !Array.isArray(value.main) || !Array.isArray(value.functions) || value.functions.length > 2) return false
   const functions = new Map<string, boolean>()
@@ -173,6 +173,7 @@ export function validDocument(value: unknown, palette?: Block['type'][], allowVa
   function valueCall(value: unknown): boolean {
     return record(value) && typeof value.fn === 'string' && functions.has(value.fn) && Object.keys(value).every(key => key === 'fn' || key === 'arg') && (functions.get(value.fn) ? allowParams && argument(value.arg) : value.arg === undefined)
   }
+  const signals = new Set<string>()
   const ids = new Set<string>()
   let nodes = 0
   function list(input: unknown[], depth: number, inFunction: boolean, param = false): boolean {
@@ -184,6 +185,11 @@ export function validDocument(value: unknown, palette?: Block['type'][], allowVa
       if ('arg' in block && block.type !== 'call' || 'countParam' in block && block.type !== 'repeat') return false
       if (palette && !palette.includes(block.type as Block['type'])) return false
       switch (block.type) {
+      case 'on':
+        if (!allowEvents || inFunction || depth !== 1 || !['◇', '○', '△'].includes(String(block.signal)) || signals.has(String(block.signal)) || !Array.isArray(block.body)) return false
+        signals.add(String(block.signal))
+        if (!list(block.body, depth + 1, false)) return false
+        break
       case 'return':
         if (!allowReturns || !inFunction || !record(block.value) || !(argument(block.value) || Object.keys(block.value).length === 1 && (block.value.kind === 'ahead' || block.value.kind === 'param' && allowParams && param))) return false
         break
