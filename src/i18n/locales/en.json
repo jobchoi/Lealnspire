@@ -77,7 +77,7 @@
     "set": "Set box A",
     "change": "Change box A by 1",
     "return": "Return a value (return)",
-    "on": "on"
+    "on": "Run when a signal comes (on)"
   },
   "tools": "Block tools",
   "chooseTile": "Tap a block to select it.",
@@ -142,7 +142,7 @@
       "turnLeft": "Left",
       "turnRight": "Right",
       "return": "return",
-      "on": "on"
+      "on": "Run when a signal comes (on)"
     },
     "train": {
       "name": "Train Town",
@@ -154,7 +154,7 @@
       "turnLeft": "Left car",
       "turnRight": "Right car",
       "return": "return",
-      "on": "on"
+      "on": "Run when a signal comes (on)"
     },
     "handheld": {
       "name": "Pocket Console",
@@ -166,7 +166,7 @@
       "turnLeft": "Left",
       "turnRight": "Right",
       "return": "return",
-      "on": "on"
+      "on": "Run when a signal comes (on)"
     }
   },
   "stage1Hint1": "Count the cells between the robot and the star.",

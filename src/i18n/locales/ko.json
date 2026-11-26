@@ -77,7 +77,7 @@
     "set": "상자 A에 값 넣기",
     "change": "상자 A 1 바꾸기",
     "return": "값 돌려주기 (return)",
-    "on": "on"
+    "on": "신호가 오면 실행 (on)"
   },
   "tools": "블록 작업 막대",
   "chooseTile": "블록을 눌러 선택하세요.",
@@ -142,7 +142,7 @@
       "turnLeft": "왼쪽",
       "turnRight": "오른쪽",
       "return": "return",
-      "on": "on"
+      "on": "신호가 오면 실행 (on)"
     },
     "train": {
       "name": "기차 마을",
@@ -154,7 +154,7 @@
       "turnLeft": "왼쪽 칸",
       "turnRight": "오른쪽 칸",
       "return": "return",
-      "on": "on"
+      "on": "신호가 오면 실행 (on)"
     },
     "handheld": {
       "name": "나의 게임기",
@@ -166,7 +166,7 @@
       "turnLeft": "왼쪽",
       "turnRight": "오른쪽",
       "return": "return",
-      "on": "on"
+      "on": "신호가 오면 실행 (on)"
     }
   },
   "stage1Hint1": "로봇과 별 사이의 칸을 세어 보세요.",
