@@ -1,6 +1,6 @@
 import { programDocument } from './types'
 import type { Program, ProgramDocument, ProgramInput, FunctionDef, Stage } from './types'
-import { validDocument } from './program'
+import { normalizeLogicProgram, validDocument } from './program'
 import { allStages as stages, stages as unit1Stages } from './stages'
 
 export type StageProgress = { completed: boolean; bestStars: number; lastProgram: Program; functions?: FunctionDef[] }
@@ -37,7 +37,7 @@ function normalizeStages(entries: Record<string, unknown>, withFunctions = false
       bestStars: Number.isInteger(entry.bestStars) && (entry.bestStars as number) >= 0 && (entry.bestStars as number) <= 3
         ? entry.bestStars as number : 0,
       ...(withFunctions && Array.isArray(entry.functions) && entry.functions.length ? { functions: entry.functions as FunctionDef[] } : {}),
-      lastProgram: validStageDocument({ main: entry.lastProgram, functions: withFunctions ? entry.functions ?? [] : [] }, id) ? entry.lastProgram as Program : [],
+      lastProgram: validStageDocument({ main: entry.lastProgram, functions: withFunctions ? entry.functions ?? [] : [] }, id) ? (id.startsWith('u6-') ? normalizeLogicProgram(entry.lastProgram as Program) : entry.lastProgram as Program) : [],
     }]]
   }))
 }

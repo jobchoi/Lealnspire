@@ -365,6 +365,7 @@
     "false": "False",
     "result": "Result",
     "predict": "Look at both conditions and predict the result.",
+    "predictionRow": "Row {row}: blocked on the left {p}, blocked on the right {q} — {operator} result",
     "check": "Check answers",
     "blockedLeft": "Blocked on the left",
     "blockedRight": "Blocked on the right"

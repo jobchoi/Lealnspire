@@ -1,6 +1,6 @@
 import { hasBody, blockAt, listAt } from '../model/editor'
 import { Observable } from './Observable'
-import { MAX_PROGRAM_BLOCKS, FunctionProgram, Program as ProgramModel } from '../model/program'
+import { MAX_PROGRAM_BLOCKS, normalizeLogicProgram, normalizeLogicCondition, FunctionProgram, Program as ProgramModel } from '../model/program'
 import type { Block, Program, ProgramDocument, FunctionDef, Condition } from '../model/types'
 export class EditorController extends Observable<{ selectedId: string | null; targetId: string | null; addedId: string | null }> {
   logicEnabled = false
@@ -53,8 +53,9 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
     this.beforeEdit()
     return true
   }
-  configure(program: Program, onChange: (program: Program) => void, locked: boolean, maxBlocks?: number) {
-    this.program = program; this.onChange = onChange; this.locked = locked; this.maxBlocks = maxBlocks
+  configure(program: Program, onChange: (program: Program) => void, locked: boolean, maxBlocks?: number, logicEnabled = this.logicEnabled) {
+    this.logicEnabled = logicEnabled
+    this.program = this.logicEnabled ? normalizeLogicProgram(program) : program; this.onChange = onChange; this.locked = locked; this.maxBlocks = maxBlocks
   }
   get canUndo() { return !this.locked && (this.undoControls?.available() ?? false) }
   undo = () => { if (this.canUndo) this.undoControls?.undo() }
@@ -145,7 +146,7 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
     if (!this.selectedPath || !this.prepareEdit()) return
     const next = structuredClone(this.editProgram)
     const block = blockAt(next, this.selectedPath)
-    if (block?.type === 'if' || block?.type === 'while') { block.condition = condition; this.change(next) }
+    if (block?.type === 'if' || block?.type === 'while') { block.condition = this.logicEnabled ? normalizeLogicCondition(condition) : condition; this.change(next) }
   }
   setCount = (count: number) => { if (this.selectedPath && this.prepareEdit()) this.change(new ProgramModel(this.editProgram).setCount(this.selectedPath, count).toBlocks()) }
 }

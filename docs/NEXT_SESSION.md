@@ -18,6 +18,7 @@
 - **3단원(조건 반복 while)**: `while [앞 열림]`, 끝나지 않는 반복 안내, u3-1~u3-3 (v1.3.0)
 - **4단원(함수)**: 그림 카드 함수(별·달), 호출, 재귀 금지, 좁은 화면 main/함수 탭, u4-1~u4-3 (v1.4.0)
 - **5단원(변수)**: 상자 A, set·change·repeat A, 맵별 시작 값, u5-1~u5-3 (v1.5.0)
+- **6단원(논리)**: 앞·왼·오른 막힘 센서, not/and/or(두 조건까지), 조건 편집 줄, 항별 결과 표시, u6-1~u6-4, 진리표 예측 (v1.6.0, 옆 센서 방식은 사용자 결정 2026-11-26)
 - **6단원(논리 not/and/or) [잠정]**: 원자 앞 열림·앞 막힘·A=0, 연산자 하나, 원자별 결과 표시, u6-1~u6-3, 네 조합 예측 (T51·T52, 2026-11-26)
 - **영어**: 전체 문구·안내 페이지, 언어 선택 유지. 개념어(`repeat`, `if`)는 영어 그대로(사용자 결정 2026-11-25)
 - **저장 v2**: `lealnspire.progress.v2`, v1 원본 보존(롤백 가능)
@@ -25,47 +26,26 @@
 - **작업 방식 확정(사용자, 2026-11-26)**: 2026년 12월 초까지는 GPT(Codex)를 최대한 활용하고 Claude 사용은 지시·QC·기록으로 최소화. 12월 이후 다시 확인
 - 여러 PC에서 이어서 작업합니다. 어느 PC든 시작할 때 `git fetch origin --prune` → 이 파일의 작업 브랜치로 `git switch` → `bash scripts/setup.sh`
 
-## 마지막 검증 결과 (2026-11-25, 집 PC WSL, Claude 실행)
+## 마지막 검증 결과 (2026-11-26, 집 PC WSL, Claude 실행)
 
 | 항목 | 결과 |
 |---|---|
-| `npm run verify` | 통과(테스트 272개, 3회 연속) |
-| `npm run e2e` | 216개 통과 — 2회 연속 |
+| `npm run verify` | 통과(테스트 292개) |
+| `npm run e2e` | 298개 통과·4개 건너뜀·3개 실패(a11y 키보드 desktop, 전체 실행 부하 — 단독 3회 반복 45개 통과, T62) |
 | `npm run e2e:prod` | 4개 통과 |
 | GitHub Actions | 확인 못 함(`gh` 없음) |
-| 알려진 제한 | 실제 모바일 기기·사파리·파이어폭스 미검증, if 몸체 사이 끌어 옮기기 없음(삭제 후 다시 놓기) |
-
-### 6단원 검증 (2026-11-26, 원격 PC WSL, Claude 실행)
-
-| 항목 | 결과 |
-|---|---|
-| `npm run verify` | 통과(테스트 287개) |
-| `npm run e2e` | 256개 통과·4개 건너뜀(다른 작업 없이 단독 실행) |
-| `npm run e2e:prod` | 4개 통과 |
-| 화면 | u6-3 데스크톱 검사 화면·u6-1 작은 폰 육안 확인, 콘솔 오류 0 |
-| GitHub Actions | 확인 못 함(`gh` 없음) |
-
-### 원격 PC 동기화 확인 (2026-11-26, 원격 PC WSL, Claude 실행)
-
-| 항목 | 결과 |
-|---|---|
-| 브랜치 | `feature/T50-variables-stabilize`로 전환, 뒤처진 로컬 `feature/T1-engine`·`feature/T14-t13-polish` 빨리 감기 |
-| `bash scripts/setup.sh` | 통과(Node 22.23.5, npm ci, Claude PATH, GitHub SSH, verify 272개) |
-| `npm run e2e` | 처음에는 220개 모두 실패(E2E용 Chromium 미설치) → 설치 후 215개 통과·4개 건너뜀·1개 실패, 실패한 `function-tabs.e2e.ts`(en sketchbook 360)는 단독 재실행에서 통과 → 간헐 실패로 보고 T58로 등록 |
-| `npm run e2e:prod` | 4개 통과 |
-| setup 보강 | `setup.sh`·`setup.ps1`이 E2E용 Chromium도 설치·점검(구현 Codex, QC Claude: `--check` 있음/없음 두 경우 확인). `setup.ps1`은 이 PC의 Windows에 Node가 없어 **미검증** |
-| Codex | VS Code 확장의 codex(0.162) 사용 가능, ChatGPT 로그인 확인 |
-| GitHub Actions | 확인 못 함(`gh` 없음) |
+| 알려진 제한 | 실제 모바일 기기·사파리·파이어폭스 미검증, 전체 E2E 부하 간헐 실패(T62) |
 
 ## 병합·태그
 
-- 태그 `v0.1.0`·`v0.2.0`·`v1.0.0`·`v1.1.0`·`v1.2.0`·`v1.3.0`·`v1.3.1`·`v1.4.0`·`v1.4.1`·`v1.5.0`·`v1.5.1` 원격에 있음. 로컬 develop·master·release/1.1.0은 v1.1.0과 그 뒤 문서 커밋까지 준비
-- **develop·master push는 사용자가 실행**(`.claude/settings.json`이 AI 금지). 2026-11-25 기준 원격 develop·master는 아직 옛 상태(Android 코드). 명령: `git push origin develop master release/1.0.0 release/1.1.0 release/1.2.0 release/1.3.0 release/1.3.1 release/1.4.0 release/1.4.1 release/1.5.0 release/1.5.1`
+- 태그 `v0.1.0`~`v1.5.1`과 `v1.6.0` 원격에 있음. 로컬 develop·master·release/1.6.0은 v1.6.0까지 준비
+- **develop·master push는 사용자가 실행**(`.claude/settings.json`이 AI 금지). 원격 develop·master는 아직 옛 상태. 명령: `git push origin develop master release/1.0.0 release/1.1.0 release/1.2.0 release/1.3.0 release/1.3.1 release/1.4.0 release/1.4.1 release/1.5.0 release/1.5.1 release/1.6.0`
+- 두 PC가 같은 T51을 동시에 진행한 일이 있었음(이 PC 대안은 `feature/T51-logic-alt`에 보존, 사용하지 않음). **시작할 때 반드시 `git fetch origin --prune` 후 원격 브랜치·이 파일을 확인**
 
 ## 다음 작업
 
-0. T58·T51·T52 완료(2026-11-26). 브랜치는 T50 → T58 → T51 → T52 순서로 쌓임. 블로그 원고 초안은 `docs/blog/`(발행 전 사용자 검토)
-0-1. 사용자 확인: 6단원 두 번째 조건 'A=0'(대안: 왼쪽 열림 센서), 블록 상한 4(5부터 논리 없이 풀림), v1.6.0 버전·태그 여부
-
-1. 매개변수 → 반환값 → 이벤트 → 리스트(ROADMAP 라운드 3)(ROADMAP 라운드 3, TASKS T41~T57)
-3. 사용자와 함께 논의: 연령 구분 필요 여부, 별 기준 확정, 실제 배포 시점(라즈베리파이)
+1. **T60 7단원 매개변수**: 지시서 `docs/handoff/T60.md`, 설계 `docs/design/unit7-parameters.md`(GPT 기획 → Claude 확정). Codex 구현 → Claude E2E·스크린샷 QC → GPT 교차 검토 → v1.7.0
+2. 이어서 반환값 → 이벤트 → 리스트(ROADMAP 라운드 3, T63~)
+3. T62(E2E 부하 간헐 실패) 제안
+4. 사용자와 함께 논의: 연령 구분, 별 기준, 실제 배포 시점(라즈베리파이), 블로그 원고(`docs/blog/`, 발행 전)
+- 작업 방식(사용자, 2026-11-26): 12월 초까지 GPT(Codex) 최대 활용, Claude는 지시·QC·기록. 교차 검증이 필요하면 GPT 적극 사용

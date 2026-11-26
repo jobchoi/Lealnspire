@@ -365,6 +365,7 @@
     "false": "거짓",
     "result": "결과",
     "predict": "두 조건의 결과를 보고 최종 결과를 골라요.",
+    "predictionRow": "{row}번: 왼쪽이 막힘 {p}, 오른쪽이 막힘 {q}일 때 {operator} 결과",
     "check": "답 확인",
     "blockedLeft": "왼쪽이 막힘",
     "blockedRight": "오른쪽이 막힘"

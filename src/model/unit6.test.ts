@@ -92,8 +92,7 @@ function search(stage: Stage, atoms: number[], limit: number) {
 
 for (const stage of puzzles.slice(1)) it(`${stage.id}: exhaust programs through four blocks with restricted atoms`, () => {
   const result = search(stage, stage.id === 'u6-2' ? [0] : [0, 3, 1], 4)
-  console.log(stage.id, result)
-  expect(result.transforms).toBeGreaterThan(1000)
+  expect(result).toEqual(({ 'u6-2': { transforms: 1466, work: 12936 }, 'u6-3': { transforms: 14334, work: 129582 }, 'u6-4': { transforms: 14399, work: 129735 } } as Record<string, typeof result>)[stage.id])
 })
 
 it('unlocks sequentially and isolates logic code by stage when restoring', async () => {

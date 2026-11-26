@@ -21,7 +21,8 @@ export function Editor({ theme = defaultTheme, program, onChange, maxBlocks, loc
   const editor = useRef<HTMLElement>(null)
   const workspace = useRef<HTMLDivElement>(null)
   const [controller] = useState(() => supplied ?? new EditorController())
-  controller.configure(program, onChange, locked, maxBlocks)
+  controller.configure(program, onChange, locked, maxBlocks, logicEnabled)
+  program = controller.program
   const { selectedId, targetId, addedId } = useController(controller)
   const viewContext = locked ? `run:${call?.fn ?? ''}` : `edit:${controller.functionId ?? ''}:${controller.functionTarget}:${failedBlockId ?? ''}`
   const preferredPanel = locked ? call?.fn : controller.functionId

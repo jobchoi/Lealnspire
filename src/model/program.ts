@@ -122,6 +122,26 @@ export function validCondition(value: unknown): value is Condition {
   return operand(value) || record(value) && Object.keys(value).length === 3 && (value.kind === 'and' || value.kind === 'or') && operand(value.left) && operand(value.right)
 }
 
+/** Canonical sensor conditions for the logic editor; callers gate this to unit 6. */
+export function normalizeLogicCondition(condition: Condition | 'blockedAhead' | 'clearAhead'): Condition {
+  if (typeof condition === 'string') return normalizeLogicCondition({ kind: 'atom', atom: condition })
+  if (condition.kind === 'atom') return condition.atom === 'clearAhead'
+    ? { kind: 'not', operand: { kind: 'atom', atom: 'blockedAhead' } } : structuredClone(condition)
+  if (condition.kind === 'not') {
+    const operand = normalizeLogicCondition(condition.operand)
+    return operand.kind === 'not' ? operand.operand : { kind: 'not', operand }
+  }
+  return { ...condition, left: normalizeLogicCondition(condition.left), right: normalizeLogicCondition(condition.right) }
+}
+export function normalizeLogicProgram(program: BlockTree): BlockTree {
+  return program.map(block => hasBody(block) ? {
+    ...block,
+    body: normalizeLogicProgram(block.body),
+    ...(block.type === 'if' || block.type === 'while' ? { condition: normalizeLogicCondition(block.condition) } : {}),
+    ...(block.type === 'if' && block.else ? { else: normalizeLogicProgram(block.else) } : {}),
+  } as Block : structuredClone(block))
+}
+
 /** Validate persisted documents with a shared node/ID budget across all bodies. */
 export function validDocument(value: unknown, palette?: Block['type'][], allowVariableCount = true, allowLogic = true): value is import('./types').ProgramDocument {
   const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)

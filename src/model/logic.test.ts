@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest'
 import { run, runAll } from './interpreter'
-import { Program, validCondition, validDocument } from './program'
+import { normalizeLogicProgram, Program, validCondition, validDocument } from './program'
 import { cloneBlock } from './editor'
 import { ProgressRepository, progressV2Key } from './ProgressRepository'
 import { allStages, unit2Stages } from './stages'
@@ -64,15 +64,18 @@ it('rejects logic trees in older stages on v2 restore while preserving progress'
   expect(validDocument(doc)).toBe(true)
   expect(new ProgressRepository(storage).getDocument(target)).toEqual({ main: [], functions: [] })
   expect(data.get(progressV2Key)).not.toContain('variables')
+  const logicStage = allStages.find(stage => stage.id === 'u6-3')!
+  repo.completeStage(logicStage.id, 3, doc)
+  expect(new ProgressRepository(storage).getDocument(logicStage)).toEqual({ ...doc, main: normalizeLogicProgram(doc.main) })
   const saved = JSON.parse(data.get(progressV2Key)!)
-  saved.stages[target.id].lastProgram.main[0].condition.left.atom = 'unknown'
+  saved.stages[logicStage.id].lastProgram.main[0].condition.left.atom = 'unknown'
   data.set(progressV2Key, JSON.stringify(saved))
   const restored = new ProgressRepository(storage)
-  expect(restored.getDocument(target)).toEqual({ main: [], functions: [] })
-  expect(restored.getProgress().stages[target.id]).toMatchObject({ completed: true, bestStars: 3 })
+  expect(restored.getDocument(logicStage)).toEqual({ main: [], functions: [] })
+  expect(restored.getProgress().stages[logicStage.id]).toMatchObject({ completed: true, bestStars: 3 })
   expect(restored.getProgress().stages[other.id]).toMatchObject({ completed: true, bestStars: 2 })
 })
-it('documents old v2 reader rollback and resave loss with an independent legacy condition validator', () => {
+it('documents old v2 reader rollback and resave loss against a simplified legacy validator (간이 검증기 기준)', () => {
   const oldValid = (condition: unknown) => condition === 'blockedAhead'
   const saved = { version: 2, stages: { [unit2Stages[0].id]: { completed: true, bestStars: 3, lastProgram: { main: [branch(atom('blockedLeft'))], functions: [] } }, 'u6-1': { completed: true, bestStars: 3, lastProgram: { main: [], functions: [] } } } }
   const oldStages = Object.fromEntries(Object.entries(saved.stages).filter(([id]) => allStages.some(s => !s.id.startsWith('u6-') && s.id === id)).map(([id, entry]) => [id, { ...entry, lastProgram: oldValid((entry.lastProgram.main[0] as Extract<Block, { type: 'if' }> | undefined)?.condition) ? entry.lastProgram : { main: [], functions: [] } }]))
@@ -107,4 +110,34 @@ it('rejects retired A=0 saves only for the affected stage and preserves completi
   expect(restored.getDocument(first).main).toEqual([])
   expect(restored.getProgress().stages[first.id]).toMatchObject({ completed: true, bestStars: 3 })
   expect(restored.getDocument(second).main).toEqual(second.solution)
+})
+
+it('normalizes clearAhead throughout unit 6 restores and edits without changing execution', async () => {
+  const { EditorController } = await import('../controller/EditorController')
+  const target = allStages.find(stage => stage.id === 'u6-3')!
+  const conditions: (Condition | 'clearAhead')[] = ['clearAhead', atom('clearAhead'), not(atom('clearAhead')),
+    binary('and', atom('clearAhead'), not(atom('clearAhead'))), binary('or', not(atom('clearAhead')), atom('blockedLeft'))]
+  for (const condition of conditions) {
+    const original: Block[] = [{ id: 'loop', type: 'while', condition, body: [branch(atom('clearAhead'))] }]
+    const normalized = normalizeLogicProgram(original)
+    expect(JSON.stringify(normalized)).not.toContain('clearAhead')
+    expect(validDocument({ main: normalized, functions: [] })).toBe(true)
+    expect(normalizeLogicProgram(normalized)).toEqual(normalized)
+    const before = runAll(target, original), after = runAll(target, normalized)
+    const behavior = (result: ReturnType<typeof runAll>) => result.results.map(run => ({ result: run.result, frames: run.frames.map(({ check, ...frame }) => ({ ...frame, ...(check ? { checkResult: check.result } : {}) })) }))
+    expect(behavior(after)).toEqual(behavior(before))
+    const raw = JSON.stringify({ version: 2, stages: { [target.id]: { completed: true, bestStars: 3, lastProgram: { main: original, functions: [] } } } })
+    const repo = new ProgressRepository({ getItem: key => key === progressV2Key ? raw : null, setItem: () => {} })
+    expect(repo.getDocument(target).main).toEqual(normalized)
+    const editor = new EditorController(); editor.logicEnabled = true
+    editor.configure(original, () => {}, false)
+    expect(editor.program).toEqual(normalized)
+    editor.select('loop'); editor.setCondition(atom('clearAhead'))
+    expect(editor.selectedBlock).toMatchObject({ condition: not(atom('blockedAhead')) })
+  }
+  const earlier: Block[] = [{ id: 'old', type: 'while', condition: 'clearAhead', body: [] }]
+  const editor = new EditorController(); editor.configure(earlier, () => {}, false)
+  expect(editor.program).toEqual(earlier)
+  const nested: Block[] = [{ id: 'repeat', type: 'repeat', count: 2, body: [branch(not(atom('clearAhead'))) ] }]
+  expect(JSON.stringify(normalizeLogicProgram(nested))).not.toContain('clearAhead')
 })
