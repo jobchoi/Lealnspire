@@ -178,5 +178,20 @@ export const unit10Stages: Stage[] = [
   listStage(2, 'train', listMaps, [[2, 1], [4, 1]], [{ id: 'set', type: 'set', variable: 'A', value: 0 }, listRepeat('listAtA'), { id: 'left', type: 'turnLeft' }, { id: 'finish', type: 'forward' }], 5),
   listStage(3, 'handheld', listMaps, [[7, 9], [6, 0, 8, 3]], [listRepeat('listLength'), { id: 'left', type: 'turnLeft' }, { id: 'finish', type: 'forward' }], 4),
 ]
-export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages, ...unit9Stages, ...unit10Stages]
-export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, unit10Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)
+const searchProgram = (direction: 'front' | 'back', stop = true): Program => [
+  { id: 'each', type: 'forEach', direction, body: [{ id: 'match', type: 'if', condition: { kind: 'atom', atom: 'matchesTarget' }, body: stop ? [{ id: 'stop', type: 'breakForEach' }] : [] }] },
+  { id: 'finish', type: 'forward' },
+]
+export const unit11Stages: Stage[] = [
+  [[7, 2, 4], [4, 2, 7]], [[7, 2, 4, 1, 3], [2, 7, 4, 1, 3]], [[2, 4, 1, 7, 3], [2, 4, 1, 3, 7]],
+].map((lists, index) => ({
+  id: `u11-${index + 1}`, world: (['sketchbook', 'train', 'handheld'] as const)[index],
+  title: `u11${index + 1}Title`, goal: `u11${index + 1}Goal`,
+  hints: { keys: [`u11${index + 1}Hint1`, `u11${index + 1}Hint2`], highlight: index === 1 ? 'path' : 'start' },
+  grid: ['SG'], variants: [['SG'], ['SG']], lists, variantVariables: [{ A: 0 }, { A: 0 }], startDir: 'E',
+  search: { target: 7, maxComparisons: index === 0 ? 3 : 2 }, maxBlocks: index === 0 ? 3 : 4, starBlocks: index === 0 ? 3 : 4,
+  palette: ['forward', 'forEach', 'if', 'breakForEach'], solution: searchProgram(index === 2 ? 'back' : 'front', index !== 0),
+  ...(index === 1 ? { initialProgram: searchProgram('front', false) } : index === 2 ? { initialProgram: searchProgram('front') } : {}),
+}))
+export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages, ...unit9Stages, ...unit10Stages, ...unit11Stages]
+export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, unit10Stages, unit11Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)

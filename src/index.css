@@ -1060,3 +1060,49 @@ button small { display: block; font-size: .75rem; }
  .play-page.lists-page .workspace .block-set strong .concept-keyword { display:block; }
 }
 @media (max-width:700px) { .play-page.lists-page.theme-train .workspace .block-set strong { position:relative; bottom:6px; } }
+
+/* T70 search extends the lists layout; previous unit layouts stay scoped. */
+.search-page .search-target-inline { display:inline-flex; width:1.2em; height:1.2em; vertical-align:middle; }
+.search-page .search-target-inline svg { width:100%; height:100%; }
+.search-page .search-target { display:inline-flex; align-items:center; gap:4px; font-weight:bold; }
+.search-page .search-target svg { width:26px; height:26px; }
+.search-page .search-count { margin-left:auto; }
+.search-page .list-cells { flex-basis:100%; justify-content:center; gap:8px; }
+.search-page .list-cells li { position:relative; flex:1; max-width:104px; min-height:62px; border:2px solid #245f73; }
+.search-page .list-cells li.search-comparing { outline:4px solid #183d4a; outline-offset:2px; }
+.search-page .list-cells li.search-unseen { border:2px dashed #617b84; background:transparent; color:#425a63; }
+.search-page .search-mark { display:inline-flex; align-self:center; width:22px; height:22px; color:#183d4a; }
+.search-page .search-mark svg { width:100%; height:100%; }
+.search-page .search-summary { flex-basis:100%; display:flex; flex-wrap:wrap; justify-content:space-between; gap:2px 8px; min-height:18px; }
+.search-page .search-summary:empty { display:none; }
+.search-page .workspace .block-forEach .search-direction { display:inline; margin-left:4px; font-size:18px; }
+.play-page.search-page :is(.palette,.workspace) .block-breakForEach { --c:#69439b; color:#40265e; background:#f5edff; border:2px solid #69439b; }
+.search-page .empty-repeat { max-width:190px; white-space:normal; font:12px/16px sans-serif; }
+.search-page .tile-toolbar button { min-width:44px; min-height:44px; }
+.play-page.search-page .map-panel .art-board,.play-page.search-page .map-panel .train-island { max-height:150px; }
+@media (max-width:700px) {
+ .play-page.conditions-page.variables-page.lists-page.search-page .palette-row .palette { grid-template-rows:44px; height:44px; }
+ .search-page .list-state { padding:3px 5px; }
+ .search-page .list-cells { gap:5px; }
+ .search-page .list-cells li { flex-direction:column; padding:0; min-height:48px; }
+ .search-page .list-cells small { border-right:0; border-bottom:1px solid #245f73; padding:0; }
+ .search-page .search-mark { width:16px; height:16px; }
+ .search-page .search-target svg { width:18px; height:18px; }
+ .search-page .search-count,.search-page .search-summary { font:11px/14px sans-serif; }
+ .search-page .empty-repeat { max-width:110px; font:10px/12px sans-serif; }
+ .play-page.search-page .map-panel .art-board,.play-page.search-page .map-panel .train-island,.play-page.search-page.theme-handheld .map-panel .board.art-board { max-height:74px; }
+}
+@media (prefers-reduced-motion:reduce) { .search-page .search-mark { animation:none; transition:none; } }
+
+/* T70 QC(Claude): 좁은 화면에서 리스트 칸 상자가 작업 공간을 밀어내지 않게 — 칸을 낮게, 표시 줄을 압축 */
+@media (max-width:700px) {
+ .search-page .list-cells li { min-height:0; max-width:none; }
+ .search-page .search-mark { width:14px; height:14px; }
+ .search-page .search-summary { font:10px/14px sans-serif; min-height:0; }
+ .search-page .list-pointers { display:none; }
+ .play-page.search-page .map-panel .art-board,.play-page.search-page .map-panel .train-island { max-height:90px; }
+}
+@media (max-width:700px) {
+ /* 11단원 맵은 S·G 한 줄이라 작아도 됨 — 리스트 칸·작업 공간에 높이를 돌려줌 */
+ .play-page.search-page .map-panel .art-board,.play-page.search-page .map-panel .train-island,.play-page.search-page.theme-handheld .map-panel .art-board { height:72px; max-height:72px; }
+}

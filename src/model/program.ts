@@ -143,7 +143,7 @@ export const countBlocks = Program.countBlocks
 /** Only an atom, a negated atom, or one binary operator with atomic operands is accepted. */
 export function validCondition(value: unknown): value is Condition {
   const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
-  const atom = (v: unknown): boolean => record(v) && Object.keys(v).length === 2 && v.kind === 'atom' && (v.atom === 'clearAhead' || v.atom === 'blockedAhead' || v.atom === 'blockedLeft' || v.atom === 'blockedRight')
+  const atom = (v: unknown): boolean => record(v) && Object.keys(v).length === 2 && v.kind === 'atom' && (v.atom === 'matchesTarget' || v.atom === 'clearAhead' || v.atom === 'blockedAhead' || v.atom === 'blockedLeft' || v.atom === 'blockedRight')
   const operand = (v: unknown): boolean => atom(v) || record(v) && Object.keys(v).length === 2 && v.kind === 'not' && atom(v.operand)
   return operand(value) || record(value) && Object.keys(value).length === 3 && (value.kind === 'and' || value.kind === 'or') && operand(value.left) && operand(value.right)
 }
@@ -169,9 +169,10 @@ export function normalizeLogicProgram(program: BlockTree): BlockTree {
 }
 
 /** Validate persisted documents with a shared node/ID budget across all bodies. */
-export function validDocument(value: unknown, palette?: Block['type'][], allowVariableCount = true, allowLogic = true, allowParams = true, allowReturns = true, allowEvents = true, allowLists = true): value is import('./types').ProgramDocument {
+export function validDocument(value: unknown, palette?: Block['type'][], allowVariableCount = true, allowLogic = true, allowParams = true, allowReturns = true, allowEvents = true, allowLists = true, allowSearch = true): value is import('./types').ProgramDocument {
   const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
   if (!record(value) || !Array.isArray(value.main) || !Array.isArray(value.functions) || value.functions.length > 2) return false
+  if (allowSearch && palette?.includes('breakForEach') && value.functions.length) return false
   const functions = new Map<string, boolean>()
   for (const fn of value.functions) {
     if (!record(fn) || typeof fn.id !== 'string' || !fn.id || functions.has(fn.id) || (fn.icon !== 'star' && fn.icon !== 'moon') || !Array.isArray(fn.body)) return false
@@ -196,7 +197,13 @@ export function validDocument(value: unknown, palette?: Block['type'][], allowVa
       if ('countCall' in block && (!allowReturns || block.type !== 'repeat')) return false
       if ('arg' in block && block.type !== 'call' || 'countParam' in block && block.type !== 'repeat') return false
       if (palette && !palette.includes(block.type as Block['type'])) return false
+      if ('direction' in block && (block.type !== 'forEach' || !allowSearch || !['front', 'back'].includes(String(block.direction)))) return false
+      if (allowSearch && palette?.includes('breakForEach') && (block.type === 'forward' && (depth !== 1 || inFunction) || block.type === 'if' && (!record(block.condition) || block.condition.kind !== 'atom' || block.condition.atom !== 'matchesTarget'))) return false
+      if ((block.type === 'if' || block.type === 'while') && record(block.condition) && validCondition(block.condition) && JSON.stringify(block.condition).includes('matchesTarget') && (!allowSearch || block.type !== 'if' || block.condition.kind !== 'atom' || block.condition.atom !== 'matchesTarget' || !inEach)) return false
       switch (block.type) {
+      case 'breakForEach':
+        if (!allowSearch || !inEach || inFunction) return false
+        break
       case 'forEach':
         if (!allowLists || inFunction || !Array.isArray(block.body) || !list(block.body, depth + 1, false, false, true)) return false
         break
@@ -220,7 +227,7 @@ export function validDocument(value: unknown, palette?: Block['type'][], allowVa
       case 'forward': case 'turnLeft': case 'turnRight': break
       case 'repeat': case 'if': case 'while':
         if (!Array.isArray(block.body)) return false
-        if ((block.type === 'if' || block.type === 'while') && typeof block.condition !== 'string' && !allowLogic) return false
+        if ((block.type === 'if' || block.type === 'while') && typeof block.condition !== 'string' && !allowLogic && !(allowSearch && record(block.condition) && block.condition.kind === 'atom' && block.condition.atom === 'matchesTarget')) return false
         if (block.type === 'repeat') {
           if (block.countSource !== undefined) {
             if (!allowLists || inFunction || !['current', 'listAtA', 'listLength'].includes(String(block.countSource)) || block.countSource === 'current' && !inEach || block.count !== undefined || block.countVariable !== undefined || block.countParam !== undefined || block.countCall !== undefined) return false

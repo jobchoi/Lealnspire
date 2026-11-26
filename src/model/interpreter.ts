@@ -19,12 +19,14 @@ export function supplySignal(state: EventState, signal: EventSignal): boolean {
 export class Interpreter {
   static run(stage: Stage, program: ProgramInput, initialVariables = stage.variantVariables?.[0] ?? { A: 0 }): RunResult {
     const doc = programDocument(program)
-    if ((!Array.isArray(program) || stage.events || stage.lists) && !validDocument(doc, undefined, true, true, true, true, stage.events === true, !!stage.lists)) throw new Error('Invalid program doc')
+    if ((!Array.isArray(program) || stage.events || stage.lists) && !validDocument(doc, stage.search ? ['forward', 'forEach', 'if', 'breakForEach'] : undefined, true, true, true, true, stage.events === true, !!stage.lists, !!stage.search)) throw new Error('Invalid program doc')
     if (stage.lists && (stage.lists.length !== (stage.variants?.length ?? 1) || stage.lists.some(list => !Array.isArray(list) || list.length < 1 || list.length > 5 || list.some(value => !Number.isInteger(value) || value < 0 || value > 10)))) throw new Error('Invalid stage lists')
+    if (stage.search && (!stage.lists || !Number.isInteger(stage.search.target) || stage.search.target < 0 || stage.search.target > 10 || !Number.isInteger(stage.search.maxComparisons) || stage.search.maxComparisons < 0 || doc.functions.length)) throw new Error('Invalid search stage')
+    const search: NonNullable<Frame['search']> = { count: 0, checked: [] }
     const list = stage.lists?.[0]
     let current: NonNullable<Frame['list']>['current']
     let read: NonNullable<Frame['list']>['read']
-    const listTrace = () => list ? { list: { ...(current ? { current: { ...current } } : {}), ...(read ? { read: { ...read } } : {}) } } : {}
+    const listTrace = () => list ? { ...(stage.search ? { search: structuredClone(search) } : {}), list: { ...(current ? { current: { ...current } } : {}), ...(read ? { read: { ...read } } : {}) } } : {}
     const eventState: EventState = { cursor: 0, queue: [], doors: { a: false, b: false }, phase: 'idle' }
     const signals = stage.signals?.[0] ?? []
     if (signals.some(signal => !['◇', '○', '△'].includes(signal))) throw new Error('Unknown signal')
@@ -48,11 +50,21 @@ export class Interpreter {
     }
     function check(condition: 'blockedAhead' | 'clearAhead' | Condition, blockId: string): NonNullable<Frame['check']> {
       if (typeof condition === 'string') return { blockId, condition, result: condition === 'blockedAhead' ? blockedAhead() : !blockedAhead() }
+      if (condition.kind === 'atom' && condition.atom === 'matchesTarget') {
+        if (!stage.search || !current) throw new Error('Invalid search comparison')
+        const match = current.value === stage.search.target
+        search.count++
+        if (!search.checked.includes(current.index)) search.checked.push(current.index)
+        search.comparison = { index: current.index, value: current.value, match }
+        if (match) search.foundIndex = current.index
+        return { blockId, condition: structuredClone(condition), result: match }
+      }
       if (!validCondition(condition)) throw new Error('Unknown condition')
       const atoms: NonNullable<NonNullable<Frame['check']>['atoms']> = []
       function evaluate(node: Condition, path: string[], negated = false): boolean {
         if (node.kind === 'not') return evaluate(node.operand, [...path, 'operand'], true)
         if (node.kind === 'atom') {
+          if (node.atom === 'matchesTarget') throw new Error('Invalid search comparison')
           const value = node.atom === 'blockedLeft' ? blockedAhead(3) : node.atom === 'blockedRight' ? blockedAhead(1) : node.atom === 'blockedAhead' ? blockedAhead() : !blockedAhead()
           const result = negated ? !value : value
           atoms.push({ atom: node.atom as ConditionAtom, value, path, result })
@@ -64,7 +76,7 @@ export class Interpreter {
       }
       return { blockId, condition: structuredClone(condition), result: evaluate(condition, []), atoms }
     }
-    type Signal = { kind: 'continue' } | { kind: 'return'; value: number } | { kind: 'stop' }
+    type Signal = { kind: 'continue' } | { kind: 'return'; value: number } | { kind: 'stop' } | { kind: 'breakForEach' }
     const continuing: Signal = { kind: 'continue' }
     const stop: Signal = { kind: 'stop' }
     let valueRepeatId: string | undefined
@@ -96,17 +108,29 @@ export class Interpreter {
     function execute(blocks: Block[], loops: NonNullable<Frame['loops']> = []): Signal {
       for (const block of blocks) {
         switch (block.type) {
+        case 'breakForEach': {
+          if (!stage.search || !current) throw new Error('Invalid traversal break')
+          if (steps === 1000) { result = 'stepLimit'; return stop }
+          steps++
+          frames.push({ ...listTrace(), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, loops: structuredClone(loops) })
+          return { kind: 'breakForEach' }
+        }
         case 'forEach': {
           if (!list) throw new Error('Lists disabled')
           const outer = current
-          for (let index = 0; index < list.length; index++) {
+          for (let visit = 0; visit < list.length; visit++) {
+            const index = block.direction === 'back' ? list.length - 1 - visit : visit
             if (steps === 1000 || repeatEntries === 1000) { result = 'stepLimit'; return stop }
             steps++; repeatEntries++
             current = { blockId: block.id, index, value: list[index] }
             read = undefined
-            const eachLoops = [...loops, { blockId: block.id, iteration: index + 1, count: list.length }]
+            const eachLoops = [...loops, { blockId: block.id, iteration: visit + 1, count: list.length }]
             frames.push({ ...listTrace(), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, loops: eachLoops })
             const signal = execute(block.body, eachLoops)
+            if (signal.kind === 'breakForEach') {
+              search.stopped = { blockId: block.id, remaining: Array.from({ length: list.length - visit - 1 }, (_, n) => block.direction === 'back' ? index - n - 1 : index + n + 1) }
+              break
+            }
             if (signal.kind !== 'continue') return signal
           }
           current = outer
@@ -221,7 +245,7 @@ export class Interpreter {
           pos = next
           const goal = cellKey(pos) === cellKey(grid.goal)
           frames.push({ ...listTrace(), ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: goal ? 'goal' : 'move' })
-          if (goal) { result = 'success'; return stop }
+          if (goal) { result = stage.search ? search.foundIndex === undefined ? 'unfinished' : search.count > stage.search.maxComparisons ? 'comparisonLimit' : 'success' : 'success'; return stop }
           break
         }
         case 'turnLeft':
@@ -295,6 +319,11 @@ export function failurePoint(execution: RunResult | RunAllResult): { blockId: st
     if (execution.failedVariant === null) return null
     const point = failurePoint(execution.results[execution.failedVariant])
     return point ? { ...point, variant: execution.failedVariant } : null
+  }
+  if (execution.result === 'comparisonLimit') {
+    const frame = execution.frames.at(-1)!
+    const each = execution.frames.slice().reverse().find(f => f.event === 'check' && f.list?.current)?.list?.current?.blockId
+    return each ? { blockId: each, position: { ...frame.pos }, direction: frame.dir } : null
   }
   if (execution.result === 'stepLimit' && execution.whileLimitBlockId) {
     const frame = execution.frames[execution.frames.length - 1]

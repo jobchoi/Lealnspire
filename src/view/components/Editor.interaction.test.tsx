@@ -329,3 +329,35 @@ it('adds list bodies and cycles repeat list sources through actual toolbar event
   click('반복에 쓸 값 바꾸기'); expect(controller.selectedBlock).toMatchObject({ countSource: 'listLength' })
   click('반복에 쓸 값 바꾸기'); expect(controller.selectedBlock).toMatchObject({ count: 3 })
 })
+
+it('uses search direction toolbar events and disables forward inside traversal/condition bodies', () => {
+  const controller = new EditorController()
+  let program: Program = []
+  let tree: Node[] = []
+  const render = () => {
+    hooks.cursor = 0
+    tree = nodes(Editor({ program, onChange: next => { program = next }, controller, searchEnabled: true, listsEnabled: true, variablesEnabled: true, palette: ['forward', 'forEach', 'if', 'breakForEach'] }))
+  }
+  const button = (label: string) => tree.find(node => node.type === 'button' && node.props['aria-label'] === label)!
+  const click = (label: string) => {
+    expect(button(label)).toBeDefined(); expect(button(label).props.disabled).toBeFalsy()
+    ;(button(label).props.onClick as () => void)(); render()
+  }
+  render()
+  expect(button('▣가 목표 값과 같으면').props.disabled).toBe(true)
+  expect(button('순회 멈추기').props.disabled).toBe(true)
+  click('리스트'); controller.select('block-1'); render()
+  click('순회 방향 바꾸기'); expect(program[0]).toMatchObject({ direction: 'back' })
+  click('순회 방향 바꾸기'); expect(program[0]).toMatchObject({ direction: 'front' })
+  click('1번 리스트 안에 넣기')
+  expect(button('앞으로').props.disabled).toBe(true)
+  click('▣가 목표 값과 같으면')
+  controller.select('block-2'); render()
+  expect(button('else 추가')).toBeDefined()
+  click('1.1번 ▣가 목표 값과 같으면 안에 넣기')
+  expect(button('앞으로').props.disabled).toBe(true)
+  click('순회 멈추기')
+  render(); click('else 추가'); click('1.1번 ▣가 목표 값과 같으면 else 안에 넣기')
+  expect(button('앞으로').props.disabled).toBe(true)
+  expect(program[0]).toMatchObject({ body: [{ condition: { kind: 'atom', atom: 'matchesTarget' }, body: [{ type: 'breakForEach' }] }] })
+})

@@ -4,6 +4,8 @@ export function Symbol({ name, pixel = false, world }: { name: string; pixel?: b
   const command = ({ forward: 'up', turnLeft: 'left', turnRight: 'right', repeat: 'loop' } as Record<string, string>)[name]
   if (kind && command) return <svg className="theme-symbol" viewBox={kind === 'sketchbook' ? '0 0 60 60' : kind === 'handheld' ? '0 0 8 8' : '0 0 24 24'} aria-hidden="true"><use href={`#${kind}-${kind === 'handheld' ? ({ up: 'pu', left: 'pl', right: 'pr', loop: 'pp' } as Record<string, string>)[command] : command}`} /></svg>
   const paths: Record<string, string> = {
+    target: 'M29 16a13 13 0 1 1-26 0 13 13 0 0 1 26 0M24 16a8 8 0 1 1-16 0 8 8 0 0 1 16 0M19 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0',
+    breakForEach: 'M3 8h18v16H3zM27 5v22M8 12l9 8M17 12l-9 8',
     forEach: 'M2 8h8v14H2zM12 8h8v14h-8zM22 8h8v14h-8zM4 28h22m-5-4 5 4-5 4',
     on: 'M5 16h8M19 6v20M13 10l6 6-6 6M24 8h4v16h-4',
     diamond: 'M16 3 29 16 16 29 3 16Z',
