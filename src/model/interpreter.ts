@@ -1,7 +1,7 @@
 import { programDocument } from './types'
-import { validDocument } from './program'
+import { validCondition, validDocument } from './program'
 import { cellKey, parseGrid } from './grid'
-import type { Block, Dir, Frame, ProgramInput, RunResult, RunAllResult, Stage } from './types'
+import type { Block, Condition, ConditionAtom, Dir, Frame, ProgramInput, RunResult, RunAllResult, Stage } from './types'
 
 const directions: Dir[] = ['N', 'E', 'S', 'W']
 const offsets = { N: [0, -1], E: [1, 0], S: [0, 1], W: [-1, 0] } as const
@@ -26,6 +26,24 @@ export class Interpreter {
       const [dx, dy] = offsets[dir]
       const next = { x: pos.x + dx, y: pos.y + dy }
       return next.x < 0 || next.y < 0 || next.x >= grid.width || next.y >= grid.height || grid.walls.has(cellKey(next))
+    }
+    function check(condition: 'blockedAhead' | 'clearAhead' | Condition, blockId: string): NonNullable<Frame['check']> {
+      if (typeof condition === 'string') return { blockId, condition, result: condition === 'blockedAhead' ? blockedAhead() : !blockedAhead() }
+      if (!validCondition(condition)) throw new Error('Unknown condition')
+      const atoms: NonNullable<NonNullable<Frame['check']>['atoms']> = []
+      function evaluate(node: Condition, path: string[], negated = false): boolean {
+        if (node.kind === 'not') return evaluate(node.operand, [...path, 'operand'], true)
+        if (node.kind === 'atom') {
+          const value = node.atom === 'aIsZero' ? a === 0 : node.atom === 'blockedAhead' ? blockedAhead() : !blockedAhead()
+          const result = negated ? !value : value
+          atoms.push({ atom: node.atom as ConditionAtom, value, path, result })
+          return result
+        }
+        const left = evaluate(node.left, [...path, 'left'])
+        const right = evaluate(node.right, [...path, 'right'])
+        return node.kind === 'and' ? left && right : left || right
+      }
+      return { blockId, condition: structuredClone(condition), result: evaluate(condition, []), atoms }
     }
     function execute(blocks: Block[], loops: NonNullable<Frame['loops']> = []): boolean {
       for (const block of blocks) {
@@ -64,15 +82,14 @@ export class Interpreter {
           break
         }
         case 'while': {
-          if (block.condition !== 'clearAhead') throw new Error('Unknown condition')
           let iteration = 1
           for (;;) {
             if (steps === 1000) { result = 'stepLimit'; whileLimitBlockId = block.id; whileLimitCall = call ? { ...call } : undefined; return true }
             steps++
-            const checked = !blockedAhead()
+            const checked = check(block.condition, block.id)
             const currentLoops = [...loops, { blockId: block.id, iteration }]
-            frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, loops: currentLoops, event: 'check', check: { blockId: block.id, condition: block.condition, result: checked } })
-            if (!checked) break
+            frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, loops: currentLoops, event: 'check', check: checked })
+            if (!checked.result) break
             if (execute(block.body, currentLoops)) {
               if (result === 'stepLimit' && !whileLimitBlockId) { whileLimitBlockId = block.id; whileLimitCall = call ? { ...call } : undefined }
               return true
@@ -84,10 +101,9 @@ export class Interpreter {
         case 'if': {
           if (steps === 1000) { result = 'stepLimit'; return true }
           steps++
-          if (block.condition !== 'blockedAhead') throw new Error('Unknown condition')
-          const checked = blockedAhead()
-          frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'check', check: { blockId: block.id, condition: block.condition, result: checked } })
-          if (execute(checked ? block.body : block.else ?? [], loops)) return true
+          const checked = check(block.condition, block.id)
+          frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'check', check: checked })
+          if (execute(checked.result ? block.body : block.else ?? [], loops)) return true
           break
         }
         case 'forward': {

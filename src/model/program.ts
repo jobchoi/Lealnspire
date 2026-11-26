@@ -1,4 +1,4 @@
-import type { Block, Program as BlockTree } from './types'
+import type { Block, Condition, Program as BlockTree } from './types'
 import { createBlock, findBlockPath, hasBody, blockAt, cloneBlock } from './editor'
 
 export const MAX_PROGRAM_BLOCKS = 10
@@ -86,6 +86,14 @@ export class Program {
       return list.map((block, i) => i === index ? edit(block) : block)
     })
   }
+  static setCondition(program: BlockTree, path: number[], condition: Condition | 'blockedAhead' | 'clearAhead'): BlockTree {
+    if (typeof condition !== 'string' && !validCondition(condition)) throw new Error('Invalid condition')
+    return Program.editVariableBlock(program, path, block => {
+      if (block.type !== 'if' && block.type !== 'while') throw new Error('Block has no condition')
+      if (typeof condition === 'string' && condition !== (block.type === 'if' ? 'blockedAhead' : 'clearAhead')) throw new Error('Invalid condition')
+      return { ...block, condition: structuredClone(condition) } as Block
+    })
+  }
   static setElse(program: BlockTree, path: number[], enabled: boolean): BlockTree {
     const [parent, index] = splitPath(path)
     return updateList(program, parent, list => {
@@ -105,6 +113,14 @@ export const deleteBlock = Program.deleteBlock
 export const moveBlock = Program.moveBlock
 export const setRepeatCount = Program.setRepeatCount
 export const countBlocks = Program.countBlocks
+
+/** Only an atom, a negated atom, or one binary operator with atomic operands is accepted. */
+export function validCondition(value: unknown): value is Condition {
+  const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
+  const atom = (v: unknown): boolean => record(v) && Object.keys(v).length === 2 && v.kind === 'atom' && (v.atom === 'clearAhead' || v.atom === 'blockedAhead' || v.atom === 'aIsZero')
+  const operand = (v: unknown): boolean => atom(v) || record(v) && Object.keys(v).length === 2 && v.kind === 'not' && atom(v.operand)
+  return operand(value) || record(value) && Object.keys(value).length === 3 && (value.kind === 'and' || value.kind === 'or') && operand(value.left) && operand(value.right)
+}
 
 /** Validate persisted documents with a shared node/ID budget across all bodies. */
 export function validDocument(value: unknown, palette?: Block['type'][], allowVariableCount = true): value is import('./types').ProgramDocument {
@@ -135,8 +151,8 @@ export function validDocument(value: unknown, palette?: Block['type'][], allowVa
             if (!Number.isInteger(block.count) || Number(block.count) < 2 || Number(block.count) > 10) return false
           }
         }
-        if (block.type === 'while' && (block.condition !== 'clearAhead' || 'else' in block)) return false
-        if (block.type === 'if' && (block.condition !== 'blockedAhead' || 'else' in block && !Array.isArray(block.else))) return false
+        if (block.type === 'while' && (block.condition !== 'clearAhead' && !validCondition(block.condition) || 'else' in block)) return false
+        if (block.type === 'if' && (block.condition !== 'blockedAhead' && !validCondition(block.condition) || 'else' in block && !Array.isArray(block.else))) return false
         if (!list(block.body, depth + 1, inFunction)) return false
         if (block.type === 'if' && Array.isArray(block.else) && !list(block.else, depth + 1, inFunction)) return false
         break

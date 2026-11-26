@@ -29,6 +29,7 @@ export function cloneBlock(program: Program, block: Block): Block {
   function copy(source: Block): Block {
     const fresh = createBlock(allocated, source.type)
     allocated.push(fresh)
+    source = structuredClone(source)
     return hasBody(source) ? { ...source, id: fresh.id, body: source.body.map(copy), ...(source.type === 'if' && source.else ? { else: source.else.map(copy) } : {}) } : { ...source, id: fresh.id }
   }
   return copy(block)
