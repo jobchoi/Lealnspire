@@ -33,20 +33,37 @@ test('u6-4 조건을 고치고 검사 결과와 성공을 확인한다', async (
   await expect(game.dialog).toHaveCount(0)
   expect(await game.runToEnd()).toContain('성공')
 })
-test('선택 예측의 네 조합을 확인하고 다시 도전한다', async ({ page }) => {
+test('선택 예측: 진리표 8칸을 맞게 고르면 모두 ✓, 다시 고르기는 답을 비운다', async ({ page }) => {
   const game = await open(page, 'not: 반대로 바꾸기')
   await game.press(game.button('스테이지 목록'))
   await game.press(page.locator('li', { has: page.locator('.stage-card', { hasText: 'not: 반대로 바꾸기' }) }).locator('.prediction-entry'))
-  for (const select of await page.locator('.logic-prediction select').all()) await select.selectOption('true')
+  const selects = page.locator('.logic-prediction select')
+  await expect(selects).toHaveCount(8)
+  // 행: (참,참) (참,거짓) (거짓,참) (거짓,거짓), 열: and, or
+  const truth = [true, true, false, true, false, true, false, false]
+  for (const [i, value] of truth.entries()) await selects.nth(i).selectOption(String(value))
   await game.press(game.button('답 확인'))
-  await expect(page.locator('.logic-prediction')).toContainText('✕')
+  await expect(page.locator('.logic-prediction')).not.toContainText('✕')
+  expect((await page.locator('.logic-prediction').innerText()).match(/✓/g)).toHaveLength(8)
   await game.press(game.button('다시 고르기'))
+  for (let i = 0; i < 8; i++) await expect(selects.nth(i)).toHaveValue('')
+  // 하나만 틀리게(and 첫 칸을 거짓) 고르면 그 칸만 ✕
+  for (const [i, value] of truth.entries()) await selects.nth(i).selectOption(String(i === 0 ? !value : value))
+  await game.press(game.button('답 확인'))
+  expect((await page.locator('.logic-prediction').innerText()).match(/✕/g)).toHaveLength(1)
 })
 test('@layout 영어와 좁은 화면에서 조건 편집을 표시한다', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 })
-  const game = await open(page, 'and일까, or일까')
-  await game.select('1')
-  await expect(page.getByLabel('조건 조합')).toBeVisible()
+  await open(page, 'and일까, or일까')
+  await page.goto('/?lang=en')
+  const game = new Game(page)
+  await game.press(page.getByRole('button', { name: 'Stages' }))
+  await game.press(page.locator('.stage-card', { hasText: 'and or or?' }))
+  await game.press(page.locator('.workspace [data-block-id]').first())
+  const editor = page.locator('.logic-editor')
+  await expect(page.getByLabel('Condition operator')).toBeVisible()
+  await expect(editor).not.toContainText(/[가-힣]/)
+  await game.noHorizontalScroll()
   await page.screenshot({ path: 'e2e-results/screens/logic-narrow.png' })
 })
 test('u6-1에서 not으로 초기 while을 고쳐 두 맵을 통과한다', async ({ page }) => {
