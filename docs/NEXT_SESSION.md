@@ -2,7 +2,7 @@
 
 > 이 파일은 작업이 끝날 때마다 덮어씁니다. 작업 목록은 [TASKS.md](TASKS.md), 과거 기록은 [WORK_HISTORY.md](WORK_HISTORY.md)에 있습니다.
 
-마지막 갱신: 2026-11-25 · 작업 브랜치 `feature/T50-variables-stabilize` · 버전 **v1.5.1**
+마지막 갱신: 2026-11-26 · 작업 브랜치 `feature/T50-variables-stabilize` · 버전 **v1.5.1**
 
 ## 시작하는 법
 
@@ -21,6 +21,8 @@
 - **영어**: 전체 문구·안내 페이지, 언어 선택 유지. 개념어(`repeat`, `if`)는 영어 그대로(사용자 결정 2026-11-25)
 - **저장 v2**: `lealnspire.progress.v2`, v1 원본 보존(롤백 가능)
 - 작업 방식: Claude가 기획·지시서·번역·E2E·QC·기록, Codex가 구현, 기획·검토는 GPT와 교차(ROADMAP 라운드 1~3)
+- **작업 방식 확정(사용자, 2026-11-26)**: 2026년 12월 초까지는 GPT(Codex)를 최대한 활용하고 Claude 사용은 지시·QC·기록으로 최소화. 12월 이후 다시 확인
+- 여러 PC에서 이어서 작업합니다. 어느 PC든 시작할 때 `git fetch origin --prune` → 이 파일의 작업 브랜치로 `git switch` → `bash scripts/setup.sh`
 
 ## 마지막 검증 결과 (2026-11-25, 집 PC WSL, Claude 실행)
 
@@ -32,12 +34,26 @@
 | GitHub Actions | 확인 못 함(`gh` 없음) |
 | 알려진 제한 | 실제 모바일 기기·사파리·파이어폭스 미검증, if 몸체 사이 끌어 옮기기 없음(삭제 후 다시 놓기) |
 
+### 원격 PC 동기화 확인 (2026-11-26, 원격 PC WSL, Claude 실행)
+
+| 항목 | 결과 |
+|---|---|
+| 브랜치 | `feature/T50-variables-stabilize`로 전환, 뒤처진 로컬 `feature/T1-engine`·`feature/T14-t13-polish` 빨리 감기 |
+| `bash scripts/setup.sh` | 통과(Node 22.23.5, npm ci, Claude PATH, GitHub SSH, verify 272개) |
+| `npm run e2e` | 처음에는 220개 모두 실패(E2E용 Chromium 미설치) → 설치 후 215개 통과·4개 건너뜀·1개 실패, 실패한 `function-tabs.e2e.ts`(en sketchbook 360)는 단독 재실행에서 통과 → 간헐 실패로 보고 T58로 등록 |
+| `npm run e2e:prod` | 4개 통과 |
+| setup 보강 | `setup.sh`·`setup.ps1`이 E2E용 Chromium도 설치·점검(구현 Codex, QC Claude: `--check` 있음/없음 두 경우 확인). `setup.ps1`은 이 PC의 Windows에 Node가 없어 **미검증** |
+| Codex | VS Code 확장의 codex(0.162) 사용 가능, ChatGPT 로그인 확인 |
+| GitHub Actions | 확인 못 함(`gh` 없음) |
+
 ## 병합·태그
 
 - 태그 `v0.1.0`·`v0.2.0`·`v1.0.0`·`v1.1.0`·`v1.2.0`·`v1.3.0`·`v1.3.1`·`v1.4.0`·`v1.4.1`·`v1.5.0`·`v1.5.1` 원격에 있음. 로컬 develop·master·release/1.1.0은 v1.1.0과 그 뒤 문서 커밋까지 준비
 - **develop·master push는 사용자가 실행**(`.claude/settings.json`이 AI 금지). 2026-11-25 기준 원격 develop·master는 아직 옛 상태(Android 코드). 명령: `git push origin develop master release/1.0.0 release/1.1.0 release/1.2.0 release/1.3.0 release/1.3.1 release/1.4.0 release/1.4.1 release/1.5.0 release/1.5.1`
 
 ## 다음 작업
+
+0. (작음) T58 간헐 실패 E2E 안정화
 
 1. 논리(not/and/or, T51) → 매개변수 → 반환값 → 이벤트 → 리스트(ROADMAP 라운드 3)(ROADMAP 라운드 3, TASKS T41~T57)
 3. 사용자와 함께 논의: 연령 구분 필요 여부, 별 기준 확정, 실제 배포 시점(라즈베리파이)

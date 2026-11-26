@@ -1,5 +1,12 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-26 — 원격 PC 동기화와 setup 보강 (구현 Codex, QC·기록 Claude)
+
+- 원격 PC(WSL)의 작업 폴더가 11-20 상태(`claude/blissful-keller-3yrx8x`)에 머물러 있어 최신 `feature/T50-variables-stabilize`(v1.5.1)로 전환하고 `scripts/setup.sh` 실행
+- 발견: setup이 Playwright MCP용 브라우저만 받고 `npm run e2e`용 Chromium(headless shell)은 받지 않아 새 PC에서 e2e 220개가 모두 실패 → Codex가 `setup.sh`·`setup.ps1`에 설치(전체 실행)와 존재 점검(`--check`) 추가
+- 결정(사용자): 12월 초까지 GPT(Codex) 중심 작업 방식 유지, 여러 PC에서 이어 가므로 재개 흐름을 문서에 남김
+- 검증: setup 통과(verify 272개), e2e 215 통과·4 건너뜀·1 간헐 실패(단독 재실행 통과, T58), e2e:prod 4개 통과, `setup.sh --check` 브라우저 있음/없음 두 경우 확인. `setup.ps1` 미검증(Windows에 Node 없음), GitHub Actions 미확인
+
 ## 2026-11-25 — T50 변수 단원 안정화 + T49 다듬기, v1.5.1 (검토 GPT, 구현 Codex, E2E·문서·QC Claude)
 
 - GPT 읽기 전용 교차 검토(`git diff 2b3e252 HEAD`): 필수 2 — 팔레트가 없는 1·2단원 등에 저장된 set·change·`repeat A`가 그대로 복원됨(상자 표시·편집 버튼 없이 동작), 700px 이하에서 값 변화(2 → 3) 표시를 숨김. 권장 — change가 glossary 밖, 화면 E2E 범위(영어·세 월드·편집·여러 맵 범위 오류), **CHANGELOG 롤백 설명 부정확**(A로 바꾼 repeat은 옛 버전이 숫자 반복으로 실행), 증명 범위 과장(u5-3 제외)

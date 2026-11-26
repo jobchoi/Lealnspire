@@ -1,4 +1,12 @@
-# 2026-11-23 갱신 — 먼저 읽기
+# 2026-11-26 갱신 — 가장 먼저 읽기
+
+- **Lealnspire 최신 브랜치는 `feature/T50-variables-stabilize`(v1.5.1)**입니다. 아래 2절 표의 `feature/T1-engine`은 11-20 기준이라 오래됐습니다. 최신 상태는 그 브랜치의 `docs/NEXT_SESSION.md`를 보세요.
+- 어느 PC에서든 재개 순서: `git fetch origin --prune` → `git switch feature/T50-variables-stabilize`(이후에는 NEXT_SESSION.md의 작업 브랜치) → `bash scripts/setup.sh` → Claude Code 재시작·MCP 승인
+- setup이 이제 E2E용 Chromium도 설치합니다(11-26 이전 setup으로 구성한 PC는 `npx playwright install chromium` 한 번 실행).
+- 작업 방식: 12월 초까지 GPT(Codex) 중심, Claude는 지시·QC·기록. Codex는 `scripts/codex-run.sh`, 실행 파일이 PATH에 없으면 VS Code 확장의 codex를 자동으로 찾습니다.
+- 원격 `develop`·`master`는 아직 옛 Android 코드입니다. 병합본 push는 사용자가 병합본이 있는 PC에서 실행합니다(NEXT_SESSION.md "병합·태그").
+
+# 2026-11-23 갱신
 
 | 프로젝트 | 작업 브랜치 | 상태 | 다음 |
 |---|---|---|---|

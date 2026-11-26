@@ -79,11 +79,13 @@ if valid_node && has npm; then
   if [ -z "$mcp_version" ]; then fail '.mcp.json에서 Playwright MCP 버전을 읽지 못했습니다.'; fi
   if [ "$check" -eq 1 ]; then
     [ -d node_modules ] && ok 'node_modules 존재' || warn 'node_modules가 없습니다. npm ci가 필요합니다.'
+    node -e 'try { const fs=require("fs"), path=require("path"), core=require("playwright-core"), browsers=require(path.join(path.dirname(require.resolve("playwright-core")),"browsers.json")); const executable=core.chromium.executablePath(), parts=executable.split(path.sep), i=parts.findIndex(x=>/^chromium-\d+$/.test(x)), revision=browsers.browsers.find(x=>x.name==="chromium-headless-shell").revision; if(i<0||!fs.existsSync(executable)) process.exit(1); const dir=path.join(parts.slice(0,i).join(path.sep)||path.sep,"chromium_headless_shell-"+revision), name=process.platform==="win32"?"chrome-headless-shell.exe":"chrome-headless-shell"; process.exit(fs.readdirSync(dir).some(x=>fs.existsSync(path.join(dir,x,name)))?0:1) } catch { process.exit(1) }' && ok 'E2E Chromium 및 헤드리스 셸 존재' || warn 'E2E Chromium 또는 헤드리스 셸이 없습니다. npx playwright install chromium이 필요합니다.'
     browser=$(find "$HOME/.cache/ms-playwright" -type f -name chrome 2>/dev/null | head -n 1)
     [ -n "$browser" ] && ok 'Playwright 브라우저 존재' || warn 'Playwright 브라우저가 없습니다.'
     NODE_SETUP_DIR="$(dirname "$(command -v node)")" node -e 'try { const s=require("./.claude/settings.local.json"); process.exit(typeof s.env?.PATH === "string" && s.env.PATH.split(require("path").delimiter).includes(process.env.NODE_SETUP_DIR) ? 0 : 1) } catch { process.exit(1) }' && ok 'Claude Code PATH에 Node 경로 포함' || warn 'Claude Code PATH에 Node 경로가 없습니다.' 
   else
     npm ci && ok 'npm ci 완료' || fail 'npm ci 실패'
+    npx --no-install playwright install chromium && ok 'E2E Chromium 준비됨' || fail 'E2E Chromium 설치 실패'
     if [ -n "$mcp_version" ]; then npx -y "@playwright/mcp@$mcp_version" install-browser chrome-for-testing && ok 'Playwright 브라우저 준비됨' || fail 'Playwright 브라우저 설치 실패'; fi
     if [ "$(uname -s)" = Linux ]; then
       browser=$(find "${HOME}/.cache/ms-playwright" -type f \( -name chrome -o -name chrome-linux64 \) 2>/dev/null | head -n 1)

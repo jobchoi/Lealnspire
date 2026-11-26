@@ -71,6 +71,7 @@ if ((ValidNode) -and (Has 'npm')) {
     } catch { Fail '.mcp.json에서 Playwright MCP 버전을 읽지 못했습니다.'; $arg = $null }
     if ($Check) {
         if (Test-Path node_modules) { Ok 'node_modules 존재' } else { Warn 'node_modules가 없습니다. npm ci가 필요합니다.' }
+        & node -e 'try { const fs=require(\"fs\"), path=require(\"path\"), core=require(\"playwright-core\"), browsers=require(path.join(path.dirname(require.resolve(\"playwright-core\")),\"browsers.json\")); const executable=core.chromium.executablePath(), parts=executable.split(path.sep), i=parts.findIndex(x=>/^chromium-\d+$/.test(x)), revision=browsers.browsers.find(x=>x.name===\"chromium-headless-shell\").revision; if(i<0||!fs.existsSync(executable)) process.exit(1); const dir=path.join(parts.slice(0,i).join(path.sep)||path.sep,\"chromium_headless_shell-\"+revision), name=process.platform===\"win32\"?\"chrome-headless-shell.exe\":\"chrome-headless-shell\"; process.exit(fs.readdirSync(dir).some(x=>fs.existsSync(path.join(dir,x,name)))?0:1) } catch { process.exit(1) }'; if ($LASTEXITCODE -eq 0) { Ok 'E2E Chromium 및 헤드리스 셸 존재' } else { Warn 'E2E Chromium 또는 헤드리스 셸이 없습니다. npx playwright install chromium이 필요합니다.' }
         $browserRoot = Join-Path $env:LOCALAPPDATA 'ms-playwright'
         $browser = if (Test-Path $browserRoot) { Get-ChildItem $browserRoot -Filter chrome.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1 }
         if ($browser) { Ok 'Playwright 브라우저 존재' } else { Warn 'Playwright 브라우저가 없습니다.' }
@@ -81,6 +82,7 @@ if ((ValidNode) -and (Has 'npm')) {
         } catch { Warn 'Claude Code PATH 설정을 확인하지 못했습니다.' }
     } else {
         & npm ci; if ($LASTEXITCODE -eq 0) { Ok 'npm ci 완료' } else { Fail 'npm ci 실패' }
+        & npx --no-install playwright install chromium; if ($LASTEXITCODE -eq 0) { Ok 'E2E Chromium 준비됨' } else { Fail 'E2E Chromium 설치 실패' }
         if ($arg) { & npx -y $arg install-browser chrome-for-testing; if ($LASTEXITCODE -eq 0) { Ok 'Playwright 브라우저 준비됨' } else { Fail 'Playwright 브라우저 설치 실패' } }
         try {
             $file = '.claude/settings.local.json'
