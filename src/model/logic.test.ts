@@ -55,13 +55,14 @@ it('validates shape and copies conditions independently during edits and cloning
     expect(validDocument({ main: [{ id: 'x', type: 'if', condition: invalid, body: [] }], functions: [] })).toBe(false)
   }
 })
-it('roundtrips v2 and isolates invalid expressions, preserving other progress', () => {
+it('rejects logic trees in older stages on v2 restore while preserving progress', () => {
   const data = new Map<string, string>()
   const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => { data.set(key, value) } }
   const target = unit2Stages[0], other = unit2Stages[1]
   const doc = { main: [branch(binary('and', atom('clearAhead'), not(atom('aIsZero'))))], functions: [] }
   const repo = new ProgressRepository(storage); repo.completeStage(target.id, 3, doc); repo.completeStage(other.id, 2, [])
-  expect(new ProgressRepository(storage).getDocument(target)).toEqual(doc)
+  expect(validDocument(doc)).toBe(true)
+  expect(new ProgressRepository(storage).getDocument(target)).toEqual({ main: [], functions: [] })
   expect(data.get(progressV2Key)).not.toContain('variables')
   const saved = JSON.parse(data.get(progressV2Key)!)
   saved.stages[target.id].lastProgram.main[0].condition.left.atom = 'unknown'
@@ -70,6 +71,22 @@ it('roundtrips v2 and isolates invalid expressions, preserving other progress', 
   expect(restored.getDocument(target)).toEqual({ main: [], functions: [] })
   expect(restored.getProgress().stages[target.id]).toMatchObject({ completed: true, bestStars: 3 })
   expect(restored.getProgress().stages[other.id]).toMatchObject({ completed: true, bestStars: 2 })
+})
+it('reproduces the four-block atomic shortcut on all proposed unit 6 maps', () => {
+  const shortcut: Block[] = [
+    { id: 'left', type: 'turnLeft' },
+    { id: 'if', type: 'if', condition: atom('clearAhead'), body: [], else: [{ id: 'right', type: 'turnRight' }] },
+    { id: 'forward', type: 'forward' },
+  ]
+  expect(Program.countBlocks(shortcut)).toBe(4)
+  for (const [variants, values] of [
+    [[['##', 'SG'], ['G#', 'S.'], ['G#', 'S#']], [0, 1, 0]],
+    [[['G#', 'S#'], ['G#', 'S.'], ['##', 'SG']], [1, 0, 1]],
+    [[['##', 'SG'], ['G#', 'S.'], ['G#', 'S#']], [0, 1, 0]],
+  ] as const) {
+    const puzzle = { ...stage, grid: [...variants[0]], variants: variants.map(grid => [...grid]), variantVariables: values.map(A => ({ A })) }
+    expect(runAll(puzzle, shortcut).results.map(result => result.result)).toEqual(['success', 'success', 'success'])
+  }
 })
 it('documents old v2 reader rollback and resave loss with an independent legacy condition validator', () => {
   const oldValid = (condition: unknown) => condition === 'blockedAhead'

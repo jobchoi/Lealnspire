@@ -24,7 +24,7 @@ function stagePolicy(id: string) {
 }
 function validStageDocument(value: unknown, id: string): value is ProgramDocument {
   const { palette, allowVariableCount } = stagePolicy(id)
-  return validDocument(value, palette, allowVariableCount)
+  return validDocument(value, palette, allowVariableCount, id.startsWith('u6-'))
 }
 
 const knownStageIds = new Set(stages.map(stage => stage.id))

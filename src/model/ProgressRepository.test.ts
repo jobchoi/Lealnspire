@@ -13,6 +13,20 @@ function fakeStorage(raw: string | null = null) {
 const serialize = (lastProgram: unknown = program, bestStars: unknown = 3, completed: unknown = true) =>
   JSON.stringify({ version: 1, stages: { [stages[0].id]: { completed, bestStars, lastProgram } } })
 
+it('clears persisted logic trees in earlier units, including nested branches and function bodies', () => {
+  const storage = fakeStorage()
+  const store = createProgressStore(storage)
+  const condition = { kind: 'atom', atom: 'aIsZero' } as const
+  const cases: ({ id: string } & import('./types').ProgramDocument)[] = [
+    { id: 'u2-1', main: [{ id: 'r', type: 'repeat', count: 2, body: [{ id: 'i', type: 'if', condition, body: [] }] }], functions: [] },
+    { id: 'u3-1', main: [{ id: 'w', type: 'while', condition, body: [] }], functions: [] },
+    { id: 'u4-1', main: [], functions: [{ id: 'fn', icon: 'star', body: [{ id: 'i', type: 'if', condition, body: [] }] }] },
+  ]
+  for (const entry of cases) store.completeStage(entry.id, 3, { main: entry.main, functions: entry.functions })
+  const restored = createProgressStore(storage)
+  for (const entry of cases) expect(restored.getProgress().stages[entry.id]).toEqual({ completed: true, bestStars: 3, lastProgram: [] })
+})
+
 describe('진행 상황 저장', () => {
   it('편집과 성공 결과가 새 저장소에서도 유지되고 최고 별이 낮아지지 않는다', () => {
     const storage = fakeStorage()
