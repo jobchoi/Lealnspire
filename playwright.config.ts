@@ -6,6 +6,8 @@ export default defineConfig({
   testMatch: '**/*.e2e.ts',
   outputDir: 'e2e-results',
   fullyParallel: true,
+  // T62: 기본(코어 절반=10)에서는 개발 서버 부하로 매번 다른 테스트 1~3개가 시간 초과 → 6으로 제한(재시도로 숨기지 않음)
+  workers: process.env.E2E_WORKERS ? Number(process.env.E2E_WORKERS) : 6,
   retries: 0,
   reporter: [['list']],
   use: {
