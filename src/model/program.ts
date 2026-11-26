@@ -82,11 +82,12 @@ export class Program {
       return { ...block, by: block.by === 1 ? -1 : 1 }
     })
   }
-  static setRepeatSource(program: BlockTree, path: number[], source: 'number' | 'A' | 'param' | import('./types').ValueCall): BlockTree {
+  static setRepeatSource(program: BlockTree, path: number[], source: 'number' | 'A' | 'param' | import('./types').ListSource | import('./types').ValueCall): BlockTree {
     return Program.editVariableBlock(program, path, block => {
       if (block.type !== 'repeat') throw new Error('Block is not a repeat')
-      const { countVariable: _variable, countParam: _param, countCall: _call, ...numeric } = block
+      const { countVariable: _variable, countParam: _param, countCall: _call, countSource: _source, ...numeric } = block
       if (typeof source === 'object') return { ...numeric, countCall: structuredClone(source) }
+      if (source === 'current' || source === 'listAtA' || source === 'listLength') { const { count: _count, ...plain } = numeric; return { ...plain, countSource: source } }
       return source === 'param' ? { ...numeric, countParam: true } : source === 'A' ? { ...numeric, countVariable: 'A' } : { ...numeric, count: block.count ?? 3 }
     })
   }
@@ -168,7 +169,7 @@ export function normalizeLogicProgram(program: BlockTree): BlockTree {
 }
 
 /** Validate persisted documents with a shared node/ID budget across all bodies. */
-export function validDocument(value: unknown, palette?: Block['type'][], allowVariableCount = true, allowLogic = true, allowParams = true, allowReturns = true, allowEvents = true): value is import('./types').ProgramDocument {
+export function validDocument(value: unknown, palette?: Block['type'][], allowVariableCount = true, allowLogic = true, allowParams = true, allowReturns = true, allowEvents = true, allowLists = true): value is import('./types').ProgramDocument {
   const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
   if (!record(value) || !Array.isArray(value.main) || !Array.isArray(value.functions) || value.functions.length > 2) return false
   const functions = new Map<string, boolean>()
@@ -186,15 +187,19 @@ export function validDocument(value: unknown, palette?: Block['type'][], allowVa
   const signals = new Set<string>()
   const ids = new Set<string>()
   let nodes = 0
-  function list(input: unknown[], depth: number, inFunction: boolean, param = false): boolean {
+  function list(input: unknown[], depth: number, inFunction: boolean, param = false, inEach = false): boolean {
     for (const block of input) {
       if (++nodes > 60 || depth > MAX_PROGRAM_BLOCKS || !record(block) || typeof block.id !== 'string' || !block.id || ids.has(block.id)) return false
       ids.add(block.id)
+      if ('countSource' in block && (!allowLists || block.type !== 'repeat')) return false
       if ('value' in block && block.type !== 'set' && block.type !== 'return') return false
       if ('countCall' in block && (!allowReturns || block.type !== 'repeat')) return false
       if ('arg' in block && block.type !== 'call' || 'countParam' in block && block.type !== 'repeat') return false
       if (palette && !palette.includes(block.type as Block['type'])) return false
       switch (block.type) {
+      case 'forEach':
+        if (!allowLists || inFunction || !Array.isArray(block.body) || !list(block.body, depth + 1, false, false, true)) return false
+        break
       case 'on':
         if (!allowEvents || inFunction || depth !== 1 || typeof block.signal !== 'string' || !['◇', '○', '△'].includes(block.signal) || signals.has(String(block.signal)) || !Array.isArray(block.body)) return false
         signals.add(String(block.signal))
@@ -217,17 +222,20 @@ export function validDocument(value: unknown, palette?: Block['type'][], allowVa
         if (!Array.isArray(block.body)) return false
         if ((block.type === 'if' || block.type === 'while') && typeof block.condition !== 'string' && !allowLogic) return false
         if (block.type === 'repeat') {
+          if (block.countSource !== undefined) {
+            if (!allowLists || inFunction || !['current', 'listAtA', 'listLength'].includes(String(block.countSource)) || block.countSource === 'current' && !inEach || block.count !== undefined || block.countVariable !== undefined || block.countParam !== undefined || block.countCall !== undefined) return false
+          }
           if (block.countCall !== undefined && (inFunction || !valueCall(block.countCall) || block.countVariable !== undefined || block.countParam !== undefined)) return false
           if (block.countParam !== undefined && (!allowParams || !param || block.countParam !== true || block.countVariable !== undefined)) return false
           if (block.countVariable !== undefined && (!allowVariableCount || block.countVariable !== 'A')) return false
-          if (!block.countCall && !block.countParam && block.countVariable !== 'A' || block.count !== undefined) {
+          if (!block.countSource && !block.countCall && !block.countParam && block.countVariable !== 'A' || block.count !== undefined) {
             if (!Number.isInteger(block.count) || Number(block.count) < 2 || Number(block.count) > 10) return false
           }
         }
         if (block.type === 'while' && (block.condition !== 'clearAhead' && !validCondition(block.condition) || 'else' in block)) return false
         if (block.type === 'if' && (block.condition !== 'blockedAhead' && !validCondition(block.condition) || 'else' in block && !Array.isArray(block.else))) return false
-        if (!list(block.body, depth + 1, inFunction, param)) return false
-        if (block.type === 'if' && Array.isArray(block.else) && !list(block.else, depth + 1, inFunction, param)) return false
+        if (!list(block.body, depth + 1, inFunction, param, inEach)) return false
+        if (block.type === 'if' && Array.isArray(block.else) && !list(block.else, depth + 1, inFunction, param, inEach)) return false
         break
       default: return false
       }

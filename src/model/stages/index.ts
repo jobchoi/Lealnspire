@@ -165,5 +165,18 @@ export const unit9Stages: Stage[] = [
   eventPuzzle(2, 'train', ['#######', '#Sa.bG#', '#######'], [['◇', '○'], ['◇', '△', '○']], 6),
   eventPuzzle(3, 'handheld', ['###G#', '###.#', '#Sa.#', '#####'], [['◇', '○'], ['△', '◇', '○']], 7),
 ]
-export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages, ...unit9Stages]
-export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)
+const listStage = (number: number, world: Stage['world'], variants: string[][], lists: number[][], solution: Program, budget: number): Stage => ({
+  id: `u10-${number}`, world, grid: variants[0], variants, lists, variantVariables: [{ A: 0 }, { A: 0 }], startDir: 'E',
+  title: `u10${number}Title`, goal: `u10${number}Goal`, hints: { keys: [`u10${number}Hint1`, `u10${number}Hint2`], highlight: 'path' },
+  palette: ['forward', 'turnLeft', 'turnRight', 'repeat', 'set', 'change', 'forEach'], maxBlocks: budget, starBlocks: budget, solution,
+  ...(number === 2 ? { initialProgram: solution.map(block => block.type === 'set' ? { ...block, value: 1 } : structuredClone(block)) } : {}),
+})
+const listMaps = [['##G', 'S..'], ['####G', 'S....']]
+const listRepeat = (source: 'current' | 'listAtA' | 'listLength'): Block => ({ id: 'repeat', type: 'repeat', countSource: source, body: [{ id: 'f', type: 'forward' }] })
+export const unit10Stages: Stage[] = [
+  listStage(1, 'sketchbook', [['#G.', '##.', '##.', 'S..'], ['G....', '###S.']], [[2, 3, 1], [1, 1, 4]], [{ id: 'each', type: 'forEach', body: [listRepeat('current'), { id: 'left', type: 'turnLeft' }] }], 4),
+  listStage(2, 'train', listMaps, [[2, 1], [4, 1]], [{ id: 'set', type: 'set', variable: 'A', value: 0 }, listRepeat('listAtA'), { id: 'left', type: 'turnLeft' }, { id: 'finish', type: 'forward' }], 5),
+  listStage(3, 'handheld', listMaps, [[7, 9], [6, 0, 8, 3]], [listRepeat('listLength'), { id: 'left', type: 'turnLeft' }, { id: 'finish', type: 'forward' }], 4),
+]
+export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages, ...unit9Stages, ...unit10Stages]
+export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, unit10Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)

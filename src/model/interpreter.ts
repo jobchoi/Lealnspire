@@ -19,7 +19,12 @@ export function supplySignal(state: EventState, signal: EventSignal): boolean {
 export class Interpreter {
   static run(stage: Stage, program: ProgramInput, initialVariables = stage.variantVariables?.[0] ?? { A: 0 }): RunResult {
     const doc = programDocument(program)
-    if ((!Array.isArray(program) || stage.events) && !validDocument(doc, undefined, true, true, true, true, stage.events === true)) throw new Error('Invalid program doc')
+    if ((!Array.isArray(program) || stage.events || stage.lists) && !validDocument(doc, undefined, true, true, true, true, stage.events === true, !!stage.lists)) throw new Error('Invalid program doc')
+    if (stage.lists && (stage.lists.length !== (stage.variants?.length ?? 1) || stage.lists.some(list => !Array.isArray(list) || list.length < 1 || list.length > 5 || list.some(value => !Number.isInteger(value) || value < 0 || value > 10)))) throw new Error('Invalid stage lists')
+    const list = stage.lists?.[0]
+    let current: NonNullable<Frame['list']>['current']
+    let read: NonNullable<Frame['list']>['read']
+    const listTrace = () => list ? { list: { ...(current ? { current: { ...current } } : {}), ...(read ? { read: { ...read } } : {}) } } : {}
     const eventState: EventState = { cursor: 0, queue: [], doors: { a: false, b: false }, phase: 'idle' }
     const signals = stage.signals?.[0] ?? []
     if (signals.some(signal => !['◇', '○', '△'].includes(signal))) throw new Error('Unknown signal')
@@ -82,7 +87,7 @@ export class Interpreter {
       }
       call = { callId: id, fn: value.fn, serial: ++serial, ...(definition.param ? { arg: value.arg?.kind === 'A' ? a : value.arg?.value } : {}) }
       valueRepeatId = repeatId
-      if (stage.returns) frames.push({ variables: { A: a }, call: { ...call }, pos: { ...pos }, dir, activeBlockId: id, ...(loops.length ? { loops: structuredClone(loops) } : {}) })
+      if (stage.returns) frames.push({ ...listTrace(), variables: { A: a }, call: { ...call }, pos: { ...pos }, dir, activeBlockId: id, ...(loops.length ? { loops: structuredClone(loops) } : {}) })
       const signal = execute(definition.body, loops)
       call = undefined
       valueRepeatId = undefined
@@ -91,6 +96,24 @@ export class Interpreter {
     function execute(blocks: Block[], loops: NonNullable<Frame['loops']> = []): Signal {
       for (const block of blocks) {
         switch (block.type) {
+        case 'forEach': {
+          if (!list) throw new Error('Lists disabled')
+          const outer = current
+          for (let index = 0; index < list.length; index++) {
+            if (steps === 1000 || repeatEntries === 1000) { result = 'stepLimit'; return stop }
+            steps++; repeatEntries++
+            current = { blockId: block.id, index, value: list[index] }
+            read = undefined
+            const eachLoops = [...loops, { blockId: block.id, iteration: index + 1, count: list.length }]
+            frames.push({ ...listTrace(), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, loops: eachLoops })
+            const signal = execute(block.body, eachLoops)
+            if (signal.kind !== 'continue') return signal
+          }
+          current = outer
+          read = undefined
+          frames.push({ ...listTrace(), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: structuredClone(loops) } : {}) })
+          break
+        }
         case 'on':
           if (!stage.events) throw new Error('Events disabled')
           break
@@ -103,7 +126,7 @@ export class Interpreter {
           const to = block.type === 'set' ? block.value : a + block.by
           const valid = Number.isInteger(to) && to >= 0 && to <= 20
           if (valid) a = to
-          frames.push({ variables: { A: a }, variableChange: { variable: 'A', from, to }, ...(call ? { call: { ...call } } : {}), pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}) })
+          frames.push({ ...listTrace(), variables: { A: a }, variableChange: { variable: 'A', from, to }, ...(call ? { call: { ...call } } : {}), pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}) })
           if (!valid) { result = 'variableRange'; return stop }
           break
         }
@@ -118,7 +141,7 @@ export class Interpreter {
           const definition = doc.functions.find(fn => fn.id === call!.fn)!
           const all = ids(definition.body)
           const returned: ReturnTrace = { ...call, blockId: block.id, value, ...(valueRepeatId ? { repeatId: valueRepeatId } : {}), skippedIds: all.slice(all.indexOf(block.id) + 1) }
-          frames.push({ variables: { A: a }, call: { ...call }, returned, ...(block.value.kind === 'ahead' ? { sensorAhead: value } : {}), pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: structuredClone(loops) } : {}) })
+          frames.push({ ...listTrace(), variables: { A: a }, call: { ...call }, returned, ...(block.value.kind === 'ahead' ? { sensorAhead: value } : {}), pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: structuredClone(loops) } : {}) })
           return { kind: 'return', value }
         }
         case 'call': {
@@ -127,20 +150,30 @@ export class Interpreter {
           break
         }
         case 'repeat': {
+          let listCount: number | undefined
+          if (block.countSource) {
+            if (!list || block.countSource === 'current' && !current) throw new Error('Invalid list source')
+            if (steps === 1000) { result = 'stepLimit'; return stop }
+            steps++
+            listCount = block.countSource === 'current' ? current!.value : block.countSource === 'listLength' ? list.length : list[a]
+            read = { blockId: block.id, source: block.countSource, length: list.length, ...(block.countSource === 'listAtA' ? { index: a } : {}), ...(listCount === undefined ? { error: true } : { value: listCount }) }
+            frames.push({ ...listTrace(), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: structuredClone(loops) } : {}) })
+            if (listCount === undefined) { result = 'indexRange'; return stop }
+          }
           let returnedCount: number | undefined
           if (block.countCall) {
             const signal = invoke(block.countCall, block.id, loops, block.id)
             if (signal.kind === 'stop') return signal
             if (signal.kind !== 'return') {
               result = 'missingReturn'
-              frames.push({ variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: structuredClone(loops) } : {}) })
+              frames.push({ ...listTrace(), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: structuredClone(loops) } : {}) })
               return stop
             }
             returnedCount = signal.value
           }
-          const count = block.countCall ? returnedCount! : block.countParam ? (call?.arg ?? NaN) : block.countVariable === 'A' ? a : (block.count ?? NaN)
+          const count = block.countSource ? listCount! : block.countCall ? returnedCount! : block.countParam ? (call?.arg ?? NaN) : block.countVariable === 'A' ? a : (block.count ?? NaN)
           if (block.countVariable !== undefined && block.countVariable !== 'A') throw new Error('Unknown variable')
-          if (!Number.isInteger(count) || count < 0 || count > 20 || !block.countCall && !block.countVariable && !block.countParam && (count < 2 || count > 10)) throw new Error('Invalid repeat count')
+          if (!Number.isInteger(count) || count < 0 || count > 20 || !block.countSource && !block.countCall && !block.countVariable && !block.countParam && (count < 2 || count > 10)) throw new Error('Invalid repeat count')
           for (let i = 0; i < count; i++) {
             // Bound interpreter work even when the body produces no frames.
             if (repeatEntries === 1000) { result = 'stepLimit'; return stop }
@@ -157,7 +190,7 @@ export class Interpreter {
             steps++
             const checked = check(block.condition, block.id)
             const currentLoops = [...loops, { blockId: block.id, iteration }]
-            frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, loops: currentLoops, event: 'check', check: checked })
+            frames.push({ ...listTrace(), ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, loops: currentLoops, event: 'check', check: checked })
             if (!checked.result) break
             const signal = execute(block.body, currentLoops)
             if (signal.kind !== 'continue') {
@@ -172,7 +205,7 @@ export class Interpreter {
           if (steps === 1000) { result = 'stepLimit'; return stop }
           steps++
           const checked = check(block.condition, block.id)
-          frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'check', check: checked })
+          frames.push({ ...listTrace(), ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'check', check: checked })
           const signal = execute(checked.result ? block.body : block.else ?? [], loops)
           if (signal.kind !== 'continue') return signal
           break
@@ -183,11 +216,11 @@ export class Interpreter {
           const [dx, dy] = offsets[dir]
           const next = { x: pos.x + dx, y: pos.y + dy }
           if (blockedAhead()) {
-            frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'bump' }); result = 'collision'; return stop
+            frames.push({ ...listTrace(), ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'bump' }); result = 'collision'; return stop
           }
           pos = next
           const goal = cellKey(pos) === cellKey(grid.goal)
-          frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: goal ? 'goal' : 'move' })
+          frames.push({ ...listTrace(), ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: goal ? 'goal' : 'move' })
           if (goal) { result = 'success'; return stop }
           break
         }
@@ -196,7 +229,7 @@ export class Interpreter {
           if (steps === 1000) { result = 'stepLimit'; return stop }
           steps++
           dir = directions[(directions.indexOf(dir) + (block.type === 'turnRight' ? 1 : 3)) % 4]
-          frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'turn' })
+          frames.push({ ...listTrace(), ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'turn' })
           break
         }
         default: {
@@ -213,7 +246,7 @@ export class Interpreter {
       steps++
       eventState.phase = phase
       eventState.signal = signal
-      frames.push({ variables: { A: a }, pos: { ...pos }, dir, activeBlockId: id, events: structuredClone(eventState) })
+      frames.push({ ...listTrace(), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: id, events: structuredClone(eventState) })
       return true
     }
     if (stage.events && main.kind === 'continue') {
@@ -250,7 +283,8 @@ export class Interpreter {
 export const run = Interpreter.run
 
 export function runAll(stage: Stage, program: ProgramInput): RunAllResult {
-  const results = (stage.variants ?? [stage.grid]).map((grid, index) => run({ ...stage, grid, signals: stage.signals ? [stage.signals[index] ?? []] : undefined }, program, stage.variantVariables?.[index] ?? { A: 0 }))
+  if (stage.lists && stage.lists.length !== (stage.variants?.length ?? 1)) throw new Error('Invalid stage lists')
+  const results = (stage.variants ?? [stage.grid]).map((grid, index) => run({ ...stage, grid, ...(stage.lists ? { variants: undefined, lists: [stage.lists[index]] } : {}), signals: stage.signals ? [stage.signals[index] ?? []] : undefined }, program, stage.variantVariables?.[index] ?? { A: 0 }))
   const index = results.findIndex(execution => execution.result !== 'success')
   return { results, result: index < 0 ? 'success' : results[index].result, failedVariant: index < 0 ? null : index }
 }

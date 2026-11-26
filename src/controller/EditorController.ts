@@ -3,6 +3,7 @@ import { Observable } from './Observable'
 import { MAX_PROGRAM_BLOCKS, normalizeLogicProgram, normalizeLogicCondition, FunctionProgram, Program as ProgramModel } from '../model/program'
 import type { Block, Program, ProgramDocument, FunctionDef, Condition } from '../model/types'
 export class EditorController extends Observable<{ selectedId: string | null; targetId: string | null; addedId: string | null }> {
+  listsEnabled = false
   eventsEnabled = false
   returnsEnabled = false
   paramsEnabled = false
@@ -59,7 +60,8 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
     this.beforeEdit()
     return true
   }
-  configure(program: Program, onChange: (program: Program) => void, locked: boolean, maxBlocks?: number, logicEnabled = this.logicEnabled, paramsEnabled = this.paramsEnabled, returnsEnabled = this.returnsEnabled, eventsEnabled = this.eventsEnabled) {
+  configure(program: Program, onChange: (program: Program) => void, locked: boolean, maxBlocks?: number, logicEnabled = this.logicEnabled, paramsEnabled = this.paramsEnabled, returnsEnabled = this.returnsEnabled, eventsEnabled = this.eventsEnabled, listsEnabled = this.listsEnabled) {
+    this.listsEnabled = listsEnabled
     this.eventsEnabled = eventsEnabled
     this.returnsEnabled = returnsEnabled
     this.paramsEnabled = paramsEnabled
@@ -150,6 +152,7 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   }
   add = (type: Block['type'], fn = this.functions[0]?.id) => {
     if (this.locked || this.atLimit || !this.prepareEdit()) return
+    if (type === 'forEach' && !this.listsEnabled) return
     if (type === 'on' && (!this.eventsEnabled || this.functionId || this.targetPath)) return
     if (type === 'return' && (!this.returnsEnabled || !this.addingToFunction)) return
     if (type === 'call' && this.addingToFunction) return
@@ -186,6 +189,14 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   toggleRepeatSource = () => {
     if (!this.selectedPath || this.selectedBlock?.type !== 'repeat' || !this.prepareEdit()) return
     const block = this.selectedBlock
+    if (this.listsEnabled) {
+      const inEach = this.selectedPath.slice(0, -1).some((_, i) => blockAt(this.editProgram, this.selectedPath!.slice(0, i + 1))?.type === 'forEach')
+      const sources: ('number' | 'A' | import('../model/types').ListSource)[] = ['number', 'A', ...(inEach ? ['current' as const] : []), 'listAtA', 'listLength']
+      const source = block.countSource ?? block.countVariable ?? 'number'
+      const next = sources[(sources.indexOf(source) + 1) % sources.length]
+      this.change(ProgramModel.setRepeatSource(this.editProgram, this.selectedPath, next))
+      return
+    }
     const canParam = this.paramsEnabled && this.functions.find(fn => fn.id === this.functionId)?.param
     const calls = this.returnsEnabled && !this.functionId ? this.functions : []
     const firstCall = calls[0]

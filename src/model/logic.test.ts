@@ -78,13 +78,13 @@ it('rejects logic trees in older stages on v2 restore while preserving progress'
 it('documents old v2 reader rollback and resave loss against a simplified legacy validator (간이 검증기 기준)', () => {
   const oldValid = (condition: unknown) => condition === 'blockedAhead'
   const saved = { version: 2, stages: { [unit2Stages[0].id]: { completed: true, bestStars: 3, lastProgram: { main: [branch(atom('blockedLeft'))], functions: [] } }, 'u6-1': { completed: true, bestStars: 3, lastProgram: { main: [], functions: [] } } } }
-  const oldStages = Object.fromEntries(Object.entries(saved.stages).filter(([id]) => allStages.some(s => !s.events && !s.params && !s.id.startsWith('u6-') && s.id === id)).map(([id, entry]) => [id, { ...entry, lastProgram: oldValid((entry.lastProgram.main[0] as Extract<Block, { type: 'if' }> | undefined)?.condition) ? entry.lastProgram : { main: [], functions: [] } }]))
+  const oldStages = Object.fromEntries(Object.entries(saved.stages).filter(([id]) => allStages.some(s => !s.lists && !s.events && !s.params && !s.id.startsWith('u6-') && s.id === id)).map(([id, entry]) => [id, { ...entry, lastProgram: oldValid((entry.lastProgram.main[0] as Extract<Block, { type: 'if' }> | undefined)?.condition) ? entry.lastProgram : { main: [], functions: [] } }]))
   const rewritten = JSON.parse(JSON.stringify({ version: 2, stages: oldStages }))
   expect(rewritten.stages[unit2Stages[0].id]).toMatchObject({ completed: true, bestStars: 3, lastProgram: { main: [], functions: [] } })
   expect(rewritten.stages['u6-1']).toBeUndefined()
 })
 it('preserves all pre-change unit 1–5 solution results and frames', () => {
-  const results = Object.fromEntries(allStages.filter(s => !s.events && !s.params && !s.id.startsWith('u6-')).map(s => [s.id, runAll(s, { main: s.solution, functions: s.solutionFunctions ?? [] })]))
+  const results = Object.fromEntries(allStages.filter(s => !s.lists && !s.events && !s.params && !s.id.startsWith('u6-')).map(s => [s.id, runAll(s, { main: s.solution, functions: s.solutionFunctions ?? [] })]))
   expect(JSON.parse(JSON.stringify(results, (key, value) => key === 'serial' ? undefined : value))).toEqual(baseline)
 })
 

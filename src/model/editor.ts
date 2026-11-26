@@ -1,7 +1,7 @@
 import type { Block, Program } from './types'
 
 export function hasBody(block: Block): block is Extract<Block, { body: Block[] }> {
-  return block.type === 'on' || block.type === 'while' || block.type === 'repeat' || block.type === 'if'
+  return block.type === 'forEach' || block.type === 'on' || block.type === 'while' || block.type === 'repeat' || block.type === 'if'
 }
 
 export function findBlockPath(program: Program, id: string): number[] | undefined {
@@ -20,7 +20,7 @@ export function createBlock(program: Program, type: Block['type']): Block {
   let serial = 1
   while (findBlockPath(program, `block-${serial}`)) serial++
   const id = `block-${serial}`
-  return type === 'on' ? { id, type, signal: '◇', body: [] } : type === 'return' ? { id, type, value: { kind: 'ahead' } } : type === 'set' ? { id, type, variable: 'A', value: 0 } : type === 'change' ? { id, type, variable: 'A', by: 1 } : type === 'call' ? { id, type, fn: '' } : type === 'while' ? { id, type, condition: 'clearAhead', body: [] } : type === 'if' ? { id, type, condition: 'blockedAhead', body: [] } : type === 'repeat' ? { id, type, count: 3, body: [] } : { id, type }
+  return type === 'forEach' ? { id, type, body: [] } : type === 'on' ? { id, type, signal: '◇', body: [] } : type === 'return' ? { id, type, value: { kind: 'ahead' } } : type === 'set' ? { id, type, variable: 'A', value: 0 } : type === 'change' ? { id, type, variable: 'A', by: 1 } : type === 'call' ? { id, type, fn: '' } : type === 'while' ? { id, type, condition: 'clearAhead', body: [] } : type === 'if' ? { id, type, condition: 'blockedAhead', body: [] } : type === 'repeat' ? { id, type, count: 3, body: [] } : { id, type }
 }
 
 /** Copy a subtree, allocating fresh IDs against the destination and earlier copies. */

@@ -21,7 +21,7 @@ export const defaultTheme: Theme = {
   blockName: type => t(`blocks.${type}`),
   blockClass: type => `block-${type}`,
   repeat: count => `×${count}`,
-  paletteName: type => type === 'repeat' ? glossary.repeat.keyword : t(`blocks.${type}`),
+  paletteName: type => type === 'forEach' ? glossary.list.keyword : type === 'repeat' ? glossary.repeat.keyword : t(`blocks.${type}`),
   buttonLabel: key => t(key),
   arrow: direction => ({ N: '▲', E: '▶', S: '▼', W: '◀' })[direction],
 }

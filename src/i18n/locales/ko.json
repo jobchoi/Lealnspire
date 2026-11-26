@@ -61,7 +61,8 @@
     "unfinished": "목적지에 도달하지 못했어요",
     "stepLimit": "실행 단계가 너무 많아요. 반복 횟수와 블록을 줄여 보세요.",
     "variableRange": "상자 A의 값이 0보다 작거나 20보다 커졌어요",
-    "missingReturn": "함수가 값을 돌려주지 않았어요. return이 실행됐나요?"
+    "missingReturn": "함수가 값을 돌려주지 않았어요. return이 실행됐나요?",
+    "indexRange": "번호가 리스트 범위를 벗어났어요."
   },
   "title": "Lealnspire",
   "stage": "스테이지",
@@ -77,7 +78,8 @@
     "set": "상자 A에 값 넣기",
     "change": "상자 A 1 바꾸기",
     "return": "값 돌려주기 (return)",
-    "on": "신호가 오면 실행 (on)"
+    "on": "신호가 오면 실행 (on)",
+    "forEach": "리스트"
   },
   "tools": "블록 작업 막대",
   "chooseTile": "블록을 눌러 선택하세요.",
@@ -142,7 +144,8 @@
       "turnLeft": "왼쪽",
       "turnRight": "오른쪽",
       "return": "return",
-      "on": "신호가 오면 실행 (on)"
+      "on": "신호가 오면 실행 (on)",
+      "forEach": "리스트"
     },
     "train": {
       "name": "기차 마을",
@@ -154,7 +157,8 @@
       "turnLeft": "왼쪽 칸",
       "turnRight": "오른쪽 칸",
       "return": "return",
-      "on": "신호가 오면 실행 (on)"
+      "on": "신호가 오면 실행 (on)",
+      "forEach": "리스트"
     },
     "handheld": {
       "name": "나의 게임기",
@@ -166,7 +170,8 @@
       "turnLeft": "왼쪽",
       "turnRight": "오른쪽",
       "return": "return",
-      "on": "신호가 오면 실행 (on)"
+      "on": "신호가 오면 실행 (on)",
+      "forEach": "리스트"
     }
   },
   "stage1Hint1": "로봇과 별 사이의 칸을 세어 보세요.",
@@ -492,5 +497,33 @@
     "connection": "연결할 신호",
     "swap": "이미 연결된 신호를 고르면 두 처리기의 연결이 서로 바뀌어요.",
     "empty": "없음"
+  },
+  "unit10": "10단원: 리스트 (list)",
+  "unit10Congratulations": "10단원 완주!",
+  "u101Title": "하나씩 꺼내요",
+  "u101Goal": "리스트의 값을 순서대로 사용해 두 맵을 통과해요.",
+  "u101Hint1": "각 구간의 길이와 리스트 값을 비교해 보세요.",
+  "u101Hint2": "다음 원소로 넘어가면 ▣는 어떤 값이 될까요?",
+  "u102Title": "첫 칸의 번호",
+  "u102Goal": "첫 원소를 읽도록 코드를 고쳐요.",
+  "u102Hint1": "칸 번호와 칸에 든 값은 달라요.",
+  "u102Hint2": "첫 칸 위에 적힌 번호는 무엇인가요?",
+  "u103Title": "값 말고 길이",
+  "u103Goal": "리스트의 칸 수를 사용해 두 맵을 통과해요.",
+  "u103Hint1": "원소 값과 칸 수를 따로 살펴보세요.",
+  "u103Hint2": "길이와 마지막 칸 번호는 같을까요?",
+  "lists": {
+    "tile": "{order}번 리스트의 값을 하나씩 꺼내기",
+    "current": "지금 꺼낸 값",
+    "source": "반복에 쓸 값 바꾸기",
+    "target": "{order}번 리스트 몸체에 넣기",
+    "index": "번호 {index}",
+    "value": "값 {value}",
+    "length": "length {length}",
+    "eachPointer": "▼ 순회: 번호 {index}, 값 {value}",
+    "atPointer": "◆ L[A]: 번호 {index}, 값 {value}",
+    "range": "번호 {index}인 칸이 없어요. 이 리스트의 길이는 {length}예요.",
+    "repeat": {"current": "{order}번 반복: 지금 꺼낸 값만큼", "listAtA": "{order}번 반복: 리스트의 A번 칸 값만큼", "listLength": "{order}번 반복: 리스트 길이만큼"},
+    "rangeShort": "번호 {index} 없음 / 길이 {length}"
   }
 }
