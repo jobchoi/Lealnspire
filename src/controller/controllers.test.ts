@@ -505,3 +505,27 @@ it('retains outer branch checks during inner checks and clears them after leavin
   second.step(); second.step()
   expect(second.branchChecks).toEqual([])
 })
+
+
+it('T66: deselection discards nested return points in main, functions and else branches', () => {
+  for (const inFunction of [false, true]) for (const alternative of [false, true]) {
+    const editor = new EditorController()
+    const inner = { id: 'inner', type: 'repeat' as const, count: 2, body: [] }
+    const outer = alternative
+      ? { id: 'outer', type: 'if' as const, condition: 'blockedAhead' as const, body: [], else: [inner] }
+      : { id: 'outer', type: 'repeat' as const, count: 2, body: [inner] }
+    editor.configureDocument({ main: inFunction ? [] : [outer], functions: inFunction ? [{ id: 'star', icon: 'star', body: [outer] }] : [] }, () => {}, false)
+    if (inFunction) editor.chooseFunction('star')
+    editor.select('outer'); editor.toggleTarget(alternative)
+    editor.select('inner'); editor.toggleTarget()
+    editor.select('inner')
+    expect(editor.getSnapshot().targetId).toBeNull()
+    expect(editor.targetElse).toBe(false)
+    editor.select('inner'); editor.toggleTarget(); editor.toggleTarget()
+    expect(editor.getSnapshot().targetId).toBeNull()
+    expect(editor.addingToFunction).toBe(inFunction)
+    editor.add('turnLeft')
+    expect((inFunction ? editor.functions[0].body : editor.program).map(block => block.type)).toEqual([outer.type, 'turnLeft'])
+    expect(inFunction ? editor.program : editor.functions).toEqual([])
+  }
+})

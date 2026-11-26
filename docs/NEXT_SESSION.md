@@ -18,6 +18,7 @@
 - **3단원(조건 반복 while)**: `while [앞 열림]`, 끝나지 않는 반복 안내, u3-1~u3-3 (v1.3.0)
 - **4단원(함수)**: 그림 카드 함수(별·달), 호출, 재귀 금지, 좁은 화면 main/함수 탭, u4-1~u4-3 (v1.4.0)
 - **5단원(변수)**: 상자 A, set·change·repeat A, 맵별 시작 값, u5-1~u5-3 (v1.5.0)
+- **7단원(매개변수)**: 함수 입력 ◆, `★(2)`·`★(A)` 값 복사, u7-1~u7-3 (v1.7.0)
 - **6단원(논리)**: 앞·왼·오른 막힘 센서, not/and/or(두 조건까지), 조건 편집 줄, 항별 결과 표시, u6-1~u6-4, 진리표 예측 (v1.6.0, 옆 센서 방식은 사용자 결정 2026-11-26)
 - **6단원(논리 not/and/or) [잠정]**: 원자 앞 열림·앞 막힘·A=0, 연산자 하나, 원자별 결과 표시, u6-1~u6-3, 네 조합 예측 (T51·T52, 2026-11-26)
 - **영어**: 전체 문구·안내 페이지, 언어 선택 유지. 개념어(`repeat`, `if`)는 영어 그대로(사용자 결정 2026-11-25)
@@ -30,22 +31,22 @@
 
 | 항목 | 결과 |
 |---|---|
-| `npm run verify` | 통과(테스트 292개) |
-| `npm run e2e` | 298개 통과·4개 건너뜀·3개 실패(a11y 키보드 desktop, 전체 실행 부하 — 단독 3회 반복 45개 통과, T62) |
+| `npm run verify` | 통과(테스트 312개) |
+| `npm run e2e` | 340개 통과·4개 건너뜀 |
 | `npm run e2e:prod` | 4개 통과 |
 | GitHub Actions | 확인 못 함(`gh` 없음) |
-| 알려진 제한 | 실제 모바일 기기·사파리·파이어폭스 미검증, 전체 E2E 부하 간헐 실패(T62) |
+| 알려진 제한 | 실제 모바일 기기·사파리·파이어폭스 미검증, 전체 E2E 부하 간헐 실패가 가끔 있음(T62) |
 
 ## 병합·태그
 
-- 태그 `v0.1.0`~`v1.5.1`과 `v1.6.0` 원격에 있음. 로컬 develop·master·release/1.6.0은 v1.6.0까지 준비
-- **develop·master push는 사용자가 실행**(`.claude/settings.json`이 AI 금지). 원격 develop·master는 아직 옛 상태. 명령: `git push origin develop master release/1.0.0 release/1.1.0 release/1.2.0 release/1.3.0 release/1.3.1 release/1.4.0 release/1.4.1 release/1.5.0 release/1.5.1 release/1.6.0`
+- 태그 `v0.1.0`~`v1.7.0` 원격에 있음. 로컬 develop·master·release/1.7.0은 v1.7.0까지 준비
+- **develop·master push는 사용자가 실행**(`.claude/settings.json`이 AI 금지). 원격 develop·master는 아직 옛 상태. 명령: `git push origin develop master release/1.0.0 release/1.1.0 release/1.2.0 release/1.3.0 release/1.3.1 release/1.4.0 release/1.4.1 release/1.5.0 release/1.5.1 release/1.6.0 release/1.7.0`
 - 두 PC가 같은 T51을 동시에 진행한 일이 있었음(이 PC 대안은 `feature/T51-logic-alt`에 보존, 사용하지 않음). **시작할 때 반드시 `git fetch origin --prune` 후 원격 브랜치·이 파일을 확인**
 
 ## 다음 작업
 
-1. **T60 7단원 매개변수**: 지시서 `docs/handoff/T60.md`, 설계 `docs/design/unit7-parameters.md`(GPT 기획 → Claude 확정). Codex 구현 → Claude E2E·스크린샷 QC → GPT 교차 검토 → v1.7.0
-2. 이어서 반환값 → 이벤트 → 리스트(ROADMAP 라운드 3, T63~)
-3. T62(E2E 부하 간헐 실패) 제안
-4. 사용자와 함께 논의: 연령 구분, 별 기준, 실제 배포 시점(라즈베리파이), 블로그 원고(`docs/blog/`, 발행 전)
-- 작업 방식(사용자, 2026-11-26): 12월 초까지 GPT(Codex) 최대 활용, Claude는 지시·QC·기록. 교차 검증이 필요하면 GPT 적극 사용
+1. **T63 8단원 반환값 QC**: 구현은 폴더 `../Lealnspire-T63`(브랜치 `feature/T63-returns`, Codex B, verify 320개 보고)에 커밋 전 상태로 있음. v1.7.0(T66) 위로 병합 → Claude E2E·스크린샷 QC → GPT 교차 검토 → v1.8.0
+2. 이벤트 → 리스트·탐색 → 종합(ROADMAP 라운드 3, T67~). 기획은 GPT 읽기 전용, 구현은 Codex 두 개 병렬(worktree)
+3. 제안: T62(E2E 부하), T64(시안 대비 다듬기 — `docs/design/qc/compare-*.png`), T65(지도 렌더러 PixiJS, 승인 필요)
+4. 사용자와 함께 논의: 연령 구분, 별 기준, 실제 배포 시점(라즈베리파이), 블로그 원고(`docs/blog/`)
+- 작업 방식(사용자, 2026-11-26): 12월 초까지 GPT(Codex) 최대 활용, GPT 두 스레드 병렬, Claude는 지시·QC·기록

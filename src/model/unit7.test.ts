@@ -51,7 +51,7 @@ it('rejects invalid parameter contexts and isolates corrupt stage code while pre
     doc => { (doc.main[0] as Extract<Block, { type: 'call' }>).arg = { kind: 'number', value: -1 } },
     doc => { (doc.main[0] as Extract<Block, { type: 'call' }>).arg = { kind: 'number', value: 0.5 } },
     doc => { doc.main.push({ id: 'illegal', type: 'repeat', countParam: true, body: [] }) },
-    doc => { delete doc.functions[0].param },
+    doc => { doc.main = []; delete doc.functions[0].param },
     doc => { doc.functions[0].body.push({ id: 'nested-call', type: 'call', fn: 'star', arg: { kind: 'A' } }) },
     doc => { (doc.main[0] as Extract<Block, { type: 'call' }>).fn = 'unknown' },
     doc => { (doc.functions[0].body[0] as Extract<Block, { type: 'repeat' }>).countVariable = 'A' },
@@ -101,11 +101,23 @@ it('cleans only the selected input and its nested call arguments, supports undo 
   game.editor.undo()
   expect(game.getSnapshot().doc).toEqual(solution())
   game.editor.chooseFunction('star'); game.editor.select('repeat')
+  const beforeSource = structuredClone(game.getSnapshot().doc)
   game.editor.toggleRepeatSource(); expect(game.editor.selectedBlock).toMatchObject({ count: 3 })
+  game.editor.undo()
+  expect(game.getSnapshot().doc).toEqual(beforeSource)
+  game.editor.chooseFunction('star'); game.editor.select('repeat')
+  game.editor.toggleRepeatSource()
   game.editor.toggleRepeatSource(); expect(game.editor.selectedBlock).toMatchObject({ countVariable: 'A' })
   game.editor.toggleRepeatSource(); expect(game.editor.selectedBlock).toMatchObject({ countParam: true })
-  game.editor.chooseFunction(); game.editor.select('call-0'); game.editor.setCallArgument({ kind: 'number', value: 20 })
+  game.editor.chooseFunction(); game.editor.select('call-0')
+  const beforeArgument = structuredClone(game.getSnapshot().doc)
+  game.editor.setCallArgument({ kind: 'number', value: 20 })
   expect(game.getSnapshot().doc.main[0]).toMatchObject({ arg: { kind: 'number', value: 20 } })
+  game.editor.undo()
+  expect(game.getSnapshot().doc).toEqual(beforeArgument)
+  game.editor.chooseFunction(); game.editor.select('call-0'); game.editor.setCallArgument({ kind: 'A' })
+  game.editor.undo()
+  expect(game.getSnapshot().doc).toEqual(beforeArgument)
   game.editor.toggleParameter('star'); game.editor.toggleParameter('star')
   expect(game.getSnapshot().doc.main[0]).toMatchObject({ arg: { kind: 'number', value: 2 } })
   game.dispose()
@@ -195,3 +207,60 @@ for (const stage of unit7Stages) it(`${stage.id}: exhausts parameter-free docume
   expect(work).toBeLessThan(1_000_000)
   expect(definitions).toBeGreaterThan(0)
 }, 120000)
+
+
+it('T66: disabling input cleans nested diamond repeats and else calls, restoring retained numbers', () => {
+  const doc: ProgramDocument = {
+    main: [{ id: 'branch', type: 'if', condition: 'blockedAhead', body: [], else: [{ id: 'c', type: 'call', fn: 'star', arg: { kind: 'A' } }] }],
+    functions: [{ id: 'star', icon: 'star', param: true, body: [{ id: 'outer', type: 'repeat', count: 7, countParam: true, body: [{ id: 'if', type: 'if', condition: 'blockedAhead', body: [{ id: 'inner', type: 'repeat', countParam: true, body: [] }], else: [{ id: 'else-repeat', type: 'repeat', count: 9, countParam: true, body: [] }] }] }] }],
+  }
+  const expected = structuredClone(doc)
+  delete expected.functions[0].param
+  const outer = expected.functions[0].body[0] as Extract<Block, { type: 'repeat' }>
+  delete outer.countParam
+  const branch = outer.body[0] as Extract<Block, { type: 'if' }>
+  for (const block of [...branch.body, ...branch.else!]) if (block.type === 'repeat') { delete block.countParam; block.count ??= 3 }
+  const main = expected.main[0] as Extract<Block, { type: 'if' }>
+  if (main.else![0].type === 'call') delete main.else![0].arg
+  expect(new FunctionProgram(doc).setParameter('star', false).toDocument()).toEqual(expected)
+  expect(doc.functions[0].param).toBe(true)
+})
+
+it('T66: non-params stages independently reject input, argument and diamond fields', () => {
+  const plain: ProgramDocument = { main: [{ id: 'c', type: 'call', fn: 'star' }], functions: [{ id: 'star', icon: 'star', body: [] }] }
+  const cases = [
+    { main: [], functions: [{ id: 'star', icon: 'star', param: true, body: [] }] },
+    { ...plain, main: [{ ...plain.main[0], arg: { kind: 'A' } }] },
+    { main: [{ id: 'r', type: 'repeat', count: 3, countParam: true, body: [] }], functions: [] },
+  ]
+  for (const stage of allStages.filter(stage => !stage.params)) for (const lastProgram of cases) {
+    const raw = JSON.stringify({ version: 2, stages: { [stage.id]: { completed: true, bestStars: 2, lastProgram } } })
+    const store = new ProgressRepository({ getItem: key => key === progressV2Key ? raw : null, setItem: () => {} })
+    expect(store.getDocument(stage)).toEqual({ main: [], functions: [] })
+    expect(store.getProgress().stages[stage.id]).toMatchObject({ completed: true, bestStars: 2 })
+  }
+})
+
+it('T66: branch checks belong to the current invocation of a repeated call block', () => {
+  const stage = { ...unit7Stages[0], variants: undefined, grid: ['S...G'] }
+  const game = new GameController(stage, new ProgressRepository())
+  game.edit({ main: [{ id: 'repeat-call', type: 'repeat', count: 2, body: [{ id: 'c', type: 'call', fn: 'star', arg: { kind: 'number', value: 2 } }] }], functions: [{ id: 'star', icon: 'star', param: true, body: [{ id: 'if', type: 'if', condition: 'blockedAhead', body: [], else: [{ id: 'f', type: 'forward' }] }] }] })
+  const observed: number[] = []
+  const checks: number[] = []
+  for (let step = 0; step < 50 && !game.finished; step++) {
+    game.step()
+    const frame = game.frame
+    if (frame?.check) {
+      checks.push(frame.call!.serial)
+      expect(game.branchChecks).toEqual([frame.check])
+    }
+    if (frame?.event === 'move') {
+      observed.push(frame.call!.serial)
+      expect(game.branchChecks).toEqual([expect.objectContaining({ blockId: 'if', result: false })])
+    }
+    if (!frame?.call) expect(game.branchChecks).toEqual([])
+  }
+  expect(checks).toEqual([1, 2])
+  expect(observed).toEqual([1, 2])
+  game.dispose()
+})

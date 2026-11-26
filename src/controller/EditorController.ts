@@ -98,6 +98,7 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   select = (id: string) => {
     if (!this.prepareEdit()) return
     const selectedId = this.state.selectedId === id ? null : id
+    if (!selectedId) { this.targetReturns = []; this.targetElse = false }
     this.update({ ...this.state, selectedId, targetId: selectedId ? this.state.targetId : null })
   }
   reveal = (id: string | null, fn?: string) => {
