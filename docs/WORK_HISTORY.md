@@ -1,5 +1,13 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-26 — T58 E2E 간헐 실패 안정화, 블로그 원고 초안 (구현·원고 Codex, QC Claude)
+
+- T58: `e2e/function-tabs.e2e.ts`에서 탭 전환·선택 직후 다음 조작 전에 상태 기반 대기 추가(`aria-pressed`, 버튼 표시·활성). 고정 대기·재시도·타임아웃 연장·검사 삭제 없음. 원인 실패 원문은 남지 않아 '클릭 직후 다음 요소 조작' 경쟁 조건으로 추정(확정 못 함)
+- Codex 샌드박스는 로컬 포트 listen이 막혀 E2E를 못 돌림 → 반복 검증은 Claude가 실행
+- `scripts/codex-run.sh`: 같은 초에 두 작업을 시작하면 보고·로그 파일명이 겹쳐 T58 보고가 블로그 보고에 덮어써짐 → 파일명에 PID 추가
+- 블로그: `docs/blog/` 6편 초안과 README(발행 전 확인 목록). 발행·외부 전송 없음. Claude가 민감정보 패턴과 수치(220개, 215/4/1, 1.04:1, 8+2)를 기록과 대조
+- 검증: verify 통과, `function-tabs.e2e.ts --repeat-each=20 --workers=3` 480개 통과. 전체 e2e는 이 변경 뒤 다시 돌리지 않음(바뀐 파일이 이 테스트 하나)
+
 ## 2026-11-26 — 원격 PC 동기화와 setup 보강 (구현 Codex, QC·기록 Claude)
 
 - 원격 PC(WSL)의 작업 폴더가 11-20 상태(`claude/blissful-keller-3yrx8x`)에 머물러 있어 최신 `feature/T50-variables-stabilize`(v1.5.1)로 전환하고 `scripts/setup.sh` 실행

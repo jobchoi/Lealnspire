@@ -34,7 +34,7 @@ row() { printf '| %s | %s | %s | %s | %s | %s |\n' "$(date '+%m-%d %H:%M')" "$1"
 CODEX="${CODEX_BIN:-$(command -v codex || ls -d "$HOME"/.vscode-server/extensions/openai.chatgpt-*/bin/linux-x86_64/codex 2>/dev/null | tail -1)}"
 [ -x "$CODEX" ] || { echo "codex 실행 파일을 찾지 못했습니다(CODEX_BIN으로 지정)"; exit 1; }
 
-STAMP="$(date '+%Y%m%d-%H%M%S')"
+STAMP="$(date '+%Y%m%d-%H%M%S')-$$"  # 같은 초에 여러 작업을 시작해도 보고 파일이 겹치지 않게 PID를 붙임
 LOG="$LOGS/$STAMP-$PROJ.log"; OUT="$LOGS/$STAMP-$PROJ.md"
 
 PROGRESS_RULE="
