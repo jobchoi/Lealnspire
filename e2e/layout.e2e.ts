@@ -157,3 +157,32 @@ for (const world of ['크레용 스케치북', '기차 마을']) {
     })
   }
 }
+
+/** T64 2차: 스케치북 데스크톱 — 팔레트 원 버튼이 블록 수 표시·안내 문장과 겹치지 않는다(단원마다 팔레트 개수가 다름) */
+import { allStages } from '../src/model/stages'
+test('@layout 스케치북 1280: 모든 단원 첫 스테이지에서 팔레트가 블록 수 표시와 겹치지 않음', async ({ page }) => {
+  test.setTimeout(180_000)
+  await page.setViewportSize({ width: 1280, height: 720 })
+  const g = new Game(page)
+  await g.fresh()
+  await page.evaluate(ids => localStorage.setItem('lealnspire.progress.v2', JSON.stringify({ version: 2, stages: Object.fromEntries(ids.map(id => [id, { completed: true, bestStars: 3 }])) })), allStages.map(s => s.id))
+  const firsts = ['1', 'u2-1', 'u3-1', 'u4-1', 'u5-1', 'u6-1', 'u7-1', 'u8-1', 'u9-1', 'u10-1', 'u11-1', 'u12-1', 'u12-2', 'u12-3']
+  const problems: string[] = []
+  for (const id of firsts) {
+    await page.goto('/')
+    await g.press(g.button('스테이지 목록'))
+    await g.press(page.locator('.stage-card').nth(allStages.findIndex(s => s.id === id)))
+    const sketch = page.getByRole('button', { name: '크레용 스케치북 월드로 바꾸기' })
+    if (await sketch.count()) await g.press(sketch)
+    const texts = await page.locator('.block-budget p').all()
+    for (const button of await page.locator('.palette button').all()) {
+      const a = (await button.boundingBox())!
+      for (const text of texts) {
+        if (!(await text.isVisible())) continue
+        const b = (await text.boundingBox())!
+        if (Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x) > 2 && Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y) > 2) problems.push(`${id}: ${await button.getAttribute('aria-label')}`)
+      }
+    }
+  }
+  expect(problems, '팔레트가 블록 수 표시와 겹치는 스테이지').toEqual([])
+})

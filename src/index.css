@@ -1129,3 +1129,7 @@ button small { display: block; font-size: .75rem; }
 
 /* T64 2차(Claude): 빈 작업 공간 안내가 격자 칸 하나에 갇혀 글자 단위로 줄바꿈되던 문제 — 모든 단원·월드에서 한 줄 전체 사용 */
 .play-page .workspace > p { grid-column:1 / -1; flex:1 0 100%; margin:4px 0; overflow-wrap:normal; word-break:keep-all; }
+/* T64 2차(Claude): 상자 A 단원(변수 줄이 있는 화면)의 스케치북 데스크톱 — 원 버튼(94px)이 64px 팔레트 줄을 넘쳐 블록 수 표시를 덮지 않게 */
+@media (min-width:701px) {
+ .play-page.variables-page.theme-sketchbook .palette-row .palette button { width:64px; height:64px; min-width:44px; min-height:44px; aspect-ratio:1; align-self:center; }
+}
