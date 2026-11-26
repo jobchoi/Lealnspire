@@ -1113,6 +1113,7 @@ button small { display: block; font-size: .75rem; }
  .play-page.conditions-page.synthesis-path-page .palette-row .palette button { height:44px; }
  .play-page.conditions-page.synthesis-path-page .palette-row { gap:2px; }
  .synthesis-path-page .undo-button { min-width:44px; width:44px; padding:0; }
+}
 /* T70 QC(Claude): 좁은 화면에서 리스트 칸 상자가 작업 공간을 밀어내지 않게 — 칸을 낮게, 표시 줄을 압축 */
 @media (max-width:700px) {
  .search-page .list-cells li { min-height:0; max-width:none; }

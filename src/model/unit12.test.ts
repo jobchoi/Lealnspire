@@ -205,3 +205,26 @@ it('saves only after both synthesis maps finish and clears the course award when
   repo.clear()
   expect(courseCompleted(repo.getProgress())).toBe(false)
 })
+
+// T71 GPT 검토 권장(Claude 추가): 완주 대상 45개를 단원 배열로 독립 계산해 단언하고, 12단원에서 허용한 repeat A 저장 왕복을 직접 확인
+import * as unitStages from './stages'
+it('counts exactly the 45 regular puzzles for course completion, excluding bonus stages', () => {
+  const regular = [unitStages.stages, unitStages.unit2Stages, unitStages.unit3Stages, unitStages.unit4Stages, unitStages.unit5Stages, unitStages.unit6Stages, unitStages.unit7Stages, unitStages.unit8Stages, unitStages.unit9Stages, unitStages.unit10Stages, unitStages.unit11Stages, unitStages.unit12Stages].flat()
+  expect(regular).toHaveLength(45)
+  expect(regular.some(stage => bonusStages.includes(stage))).toBe(false)
+  for (const missing of regular) {
+    const repo = new ProgressRepository()
+    for (const stage of regular) if (stage !== missing) repo.completeStage(stage.id, 1, stage.solution)
+    expect(courseCompleted(repo.getProgress()), `${missing.id} 없이 완주로 세면 안 됨`).toBe(false)
+  }
+})
+it('round-trips repeat A where unit 12 allows it (u12-2 params, u12-3 lists)', () => {
+  for (const stage of [unit12Stages[1], unit12Stages[2]]) {
+    const program: Program = [{ id: 'ra', type: 'repeat', countVariable: 'A', body: [{ id: 'f', type: 'forward' }] }]
+    const data = new Map<string, string>()
+    const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => { data.set(key, value) }, removeItem: (key: string) => { data.delete(key) } }
+    new ProgressRepository(storage).saveProgram(stage.id, { main: program, functions: [] })
+    const restored = new ProgressRepository(storage).getProgress().stages[stage.id]?.lastProgram
+    expect(JSON.stringify(restored), stage.id).toContain('"countVariable":"A"')
+  }
+})
