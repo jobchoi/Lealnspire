@@ -388,7 +388,7 @@
     "check": "답 확인",
     "blockedLeft": "왼쪽이 막힘",
     "blockedRight": "오른쪽이 막힘",
-    "matchesTarget": "▣가 🎯와 같으면"
+    "matchesTarget": "▣가 목표 값과 같으면"
   },
   "u61Title": "not: 반대로 바꾸기",
   "u61Goal": "미리 놓인 코드를 고쳐 두 맵 모두 도착해요.",
@@ -540,11 +540,12 @@
     "rangeShort": "번호 {index} 없음 / 길이 {length}"
   },
   "search": {
-    "condition": "▣가 🎯와 같으면",
+    "condition": "▣가 목표 값과 같으면",
     "front": "앞에서부터",
     "back": "뒤에서부터",
     "direction": "순회 방향 바꾸기",
     "count": "비교 {count}회 / 상한 {limit}회",
+    "mismatch": "번호 {index}: 목표와 달라요",
     "found": "번호 {index}에서 찾았어요.",
     "limit": "찾았어요! 비교를 {limit}회 이하로 줄여 보세요.",
     "reflect": "같은 칸을 찾았어요. 비교 횟수도 같았나요?",

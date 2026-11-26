@@ -388,7 +388,7 @@
     "check": "Check answers",
     "blockedLeft": "Blocked on the left",
     "blockedRight": "Blocked on the right",
-    "matchesTarget": "if ▣ equals 🎯"
+    "matchesTarget": "if ▣ equals the target value"
   },
   "u61Title": "not: Flip It",
   "u61Goal": "Fix the code that's already there so the robot reaches the star on both maps.",
@@ -540,11 +540,12 @@
     "rangeShort": "No index {index} / length {length}"
   },
   "search": {
-    "condition": "if ▣ equals 🎯",
+    "condition": "if ▣ equals the target value",
     "front": "from the front",
     "back": "from the back",
     "direction": "Change traversal direction",
     "count": "Comparisons: {count} / limit: {limit}",
+    "mismatch": "Index {index}: not the target",
     "found": "Found it at index {index}.",
     "limit": "Found it! Try using at most {limit} comparisons.",
     "reflect": "You found the same element. Was the number of comparisons the same?",
