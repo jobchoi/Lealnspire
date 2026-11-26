@@ -448,7 +448,7 @@
   "returns": {
     "tile": "Step {order}: return {value}",
     "ahead": "cells ahead",
-    "received": "The star function returned {value}.",
+    "received": {"star": "The star function returned {value}.", "moon": "The moon function returned {value}."},
     "skipped": "Not run this call",
     "sourceShort": "↩ Value",
     "repeat": {

@@ -1,5 +1,13 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-26 — T68 8단원 안정화, v1.8.0 (검토 GPT, 구현·QC Claude)
+
+- GPT 읽기 전용 교차 검토(T63-gpt-review.md): 필수 1 — 달 함수 반환도 "별 함수"로 표시·낭독. 권장 — 증명 전제(센서 없는 팔레트·같은 A·출발 방향)를 테스트로 고정, return·센서 예산 경계, T64를 1000×600·긴 영어 제목에서 확인
+- Claude 구현: 반환 표시를 함수 아이콘(SVG)·문구 키(별/달)로, unit8 전제·예산 테스트, `e2e/desktop-header.e2e.ts`(1000×600·1280×720 × ko/en, 긴 제목 4개 스테이지)
+- 10단원 기획: Claude 초안 → GPT 독립 검증이 **맵별 시작 A 우회**(A=2/4면 `repeat A`로 풀림)를 찾아 내 초안의 근거를 반박 → 모든 맵 A=0으로 확정(unit10-lists.md 5절)
+- 9단원(T67): Codex가 한도 뒤 재개해 완료(verify 333, 정답 6/6, on 없는 문법 고유 변환 5·성공 0) — Claude QC 대기. 10단원(T69)은 새 작업 폴더에서 Codex 구현 시작
+- 검증: verify 326, e2e 385 통과·4 건너뜀, e2e:prod 4. develop·master·release/1.8.0·태그 Claude가 직접 push(사용자 허용)
+
 ## 2026-11-26 — T63 8단원 반환값 QC 완료, T64 시안 대비 다듬기 1차 (Claude 주도 — 사용자 지시)
 
 - 사용자 결정(2026-11-26 밤): Claude 주간 사용량 리셋(다음 날 오전 9시) 전까지 **Claude가 메인으로 구현**, GPT는 일일 한도 리셋(23:36) 뒤 보조. develop·master·release·태그 push를 Claude에 허용(`.claude/settings.json`, CLAUDE.md 5·7절)

@@ -448,7 +448,7 @@
   "returns": {
     "tile": "{order}번 값 돌려주기: {value}",
     "ahead": "앞 칸 수",
-    "received": "별 함수가 {value}를 돌려줬어요.",
+    "received": {"star": "별 함수가 {value}를 돌려줬어요.", "moon": "달 함수가 {value}를 돌려줬어요."},
     "skipped": "이번 호출에서 실행 안 함",
     "sourceShort": "↩ 값",
     "repeat": {
