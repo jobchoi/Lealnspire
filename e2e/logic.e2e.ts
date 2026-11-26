@@ -1,27 +1,27 @@
 import { expect, Game, test } from './helpers'
 import { unit6Stages } from '../src/model/stages'
 
-const completed = ['1','2','3','4','5','6','7','8', ...[2,3,4,5].flatMap(n => Array.from({ length: n === 2 ? 6 : 3 }, (_, i) => `u${n}-${i + 1}`)), 'u6-1', 'u6-2']
+const completed = ['1','2','3','4','5','6','7','8', ...[2,3,4,5].flatMap(n => Array.from({ length: n === 2 ? 6 : 3 }, (_, i) => `u${n}-${i + 1}`)), 'u6-1', 'u6-2', 'u6-3']
 async function open(page: import('@playwright/test').Page, name: string, replay = false) {
   const game = new Game(page)
   await game.fresh()
-  await page.evaluate(ids => localStorage.setItem('lealnspire.progress.v2', JSON.stringify({ version: 2, stages: Object.fromEntries(ids.map(id => [id, { completed: true, bestStars: 3, lastProgram: { main: [], functions: [] } }])) })), completed)
+  await page.evaluate(({ ids, initial }) => localStorage.setItem('lealnspire.progress.v2', JSON.stringify({ version: 2, stages: Object.fromEntries(ids.map(id => [id, { completed: true, bestStars: 3, lastProgram: { main: id === 'u6-1' ? initial : [], functions: [] } }])) })), { ids: completed, initial: unit6Stages[0].initialProgram! })
   if (replay) await page.evaluate(program => {
     const progress = JSON.parse(localStorage.getItem('lealnspire.progress.v2')!)
-    progress.stages['u6-3'] = { completed: true, bestStars: 3, lastProgram: { main: program, functions: [] } }
+    progress.stages['u6-4'] = { completed: true, bestStars: 3, lastProgram: { main: program, functions: [] } }
     localStorage.setItem('lealnspire.progress.v2', JSON.stringify(progress))
-  }, unit6Stages[2].initialProgram!)
+  }, unit6Stages[3].initialProgram!)
   await page.reload()
   await game.press(game.button('스테이지 목록'))
   await game.press(page.locator('.stage-card', { hasText: name }))
   return game
 }
-test('u6-3 조건을 고치고 검사 결과와 성공을 확인한다', async ({ page }) => {
-  const game = await open(page, '논리 퍼즐 3')
+test('u6-4 조건을 고치고 검사 결과와 성공을 확인한다', async ({ page }) => {
+  const game = await open(page, 'and일까, or일까')
   await game.select('1')
-  await page.getByLabel('조건 조합').selectOption('and')
+  await page.getByLabel('조건 조합').selectOption('or')
   await game.press(game.button('한 단계'))
-  await expect(page.locator('.logic-results')).toContainText('and')
+  await expect(page.locator('.logic-results')).toContainText('or')
   await expect(page.locator('.logic-results')).toContainText('결과')
   await game.press(game.button('처음으로'))
   await game.speed('빠르게')
@@ -29,9 +29,9 @@ test('u6-3 조건을 고치고 검사 결과와 성공을 확인한다', async (
   expect(await game.runToEnd()).toContain('성공')
 })
 test('선택 예측의 네 조합을 확인하고 다시 도전한다', async ({ page }) => {
-  const game = await open(page, '논리 퍼즐 1')
+  const game = await open(page, 'not: 반대로 바꾸기')
   await game.press(game.button('스테이지 목록'))
-  await game.press(page.locator('li', { has: page.locator('.stage-card', { hasText: '논리 퍼즐 1' }) }).locator('.prediction-entry'))
+  await game.press(page.locator('li', { has: page.locator('.stage-card', { hasText: 'not: 반대로 바꾸기' }) }).locator('.prediction-entry'))
   for (const select of await page.locator('.logic-prediction select').all()) await select.selectOption('true')
   await game.press(game.button('답 확인'))
   await expect(page.locator('.logic-prediction')).toContainText('✕')
@@ -39,32 +39,23 @@ test('선택 예측의 네 조합을 확인하고 다시 도전한다', async ({
 })
 test('@layout 영어와 좁은 화면에서 조건 편집을 표시한다', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 })
-  const game = await open(page, '논리 퍼즐 3')
+  const game = await open(page, 'and일까, or일까')
   await game.select('1')
   await expect(page.getByLabel('조건 조합')).toBeVisible()
   await page.screenshot({ path: 'e2e-results/screens/logic-narrow.png' })
 })
-test('u6-1에서 조건과 두 갈래를 만들어 모든 맵을 통과한다', async ({ page }) => {
-  const game = await open(page, '논리 퍼즐 1')
-  await game.press(page.locator('.palette').getByRole('button', { name: '앞이 막혔으면' }))
+test('u6-1에서 not으로 초기 while을 고쳐 두 맵을 통과한다', async ({ page }) => {
+  const game = await open(page, 'not: 반대로 바꾸기')
   await game.select('1')
-  await page.getByLabel('조건 조합').selectOption('and')
-  await page.getByLabel('첫 조건').selectOption('clearAhead')
-  await page.getByLabel('둘째 조건').selectOption('aIsZero')
-  await game.press(game.action(/추가 대상으로 선택$|안에 넣기$/))
-  await game.add('F')
-  await game.select('1')
-  await game.press(page.getByRole('button', { name: 'else 추가' }))
-  await game.press(game.action(/else 안에 넣기$/))
-  await game.add('L'); await game.add('F')
+  await page.getByLabel('첫 조건').locator('..').locator('..').getByRole('checkbox').check()
   await game.speed('빠르게')
   expect(await game.runToEnd()).toContain('성공')
 })
 test('영어 조건 이름을 표시한다', async ({ page }) => {
-  await open(page, '논리 퍼즐 3')
+  await open(page, 'and일까, or일까')
   await page.goto('/?lang=en')
   await page.getByRole('button', { name: 'Stages' }).click()
-  await page.locator('.stage-card', { hasText: 'Logic puzzle 3' }).click()
+  await page.locator('.stage-card', { hasText: 'and or or?' }).click()
   await page.locator('.workspace [data-block-id]').first().click()
   await expect(page.getByLabel('Condition operator')).toBeVisible()
 })
@@ -74,7 +65,7 @@ for (const world of worlds) {
   for (const viewport of [{ width: 1280, height: 720 }, { width: 375, height: 667 }, { width: 360, height: 560 }]) {
     test(`@layout ${world} ${viewport.width} 조건 타일 경계`, async ({ page }) => {
       await page.setViewportSize(viewport)
-      const game = await open(page, '논리 퍼즐 3', true)
+      const game = await open(page, 'and일까, or일까', true)
       await game.press(page.getByRole('button', { name: `${world} 월드로 바꾸기` }))
       const tile = game.tile('1')
       const label = tile.locator('.logic-condition')
@@ -90,11 +81,117 @@ for (const world of worlds) {
     })
   }
 }
-test('검사 결과에 or와 not 반전 전후를 표시한다', async ({ page }) => {
-  const game = await open(page, '논리 퍼즐 3')
+test('검사 결과에 and와 not 반전 전후를 표시한다', async ({ page }) => {
+  const game = await open(page, 'and일까, or일까')
   await game.select('1')
   await page.getByLabel('첫 조건').locator('..').locator('..').getByRole('checkbox').check()
   await game.press(game.button('한 단계'))
-  await expect(page.locator('.logic-results')).toContainText('or')
-  await expect(page.locator('.logic-results')).toContainText(/앞이 열림:.*→ not:/)
+  await expect(page.locator('.logic-results')).toContainText('and')
+  await expect(page.locator('.logic-results')).toContainText(/왼쪽이 막힘:.*→ not:/)
 })
+
+/** T59 사용자 시나리오: 처음부터 조건을 조립. 앞 퍼즐(u6-2)의 규칙을 그대로 쓰면 u6-3 1번 맵에서 실패하고, and로 둘째 조건을 더하면 성공 */
+const ifPalette = (page: import('@playwright/test').Page) => page.locator('.palette').getByRole('button', { name: '앞이 막혔으면', exact: true })
+async function buildSideRule(game: Game, page: import('@playwright/test').Page) {
+  await game.add('N'); await game.select('1')
+  for (let c = 3; c < 6; c++) await game.press(game.action(/늘리기$/))
+  await game.press(game.action(/추가 대상으로 선택$|안에 넣기$/))
+  await game.press(ifPalette(page)); await game.add('F')
+  await game.press(game.action(/선택 해제$|넣기 해제$/))
+  await game.select('1.1')
+  await game.press(game.action(/(?<!else )안에 넣기$|추가 대상으로 선택$/)); await game.add('L'); await game.press(game.action(/선택 해제$|넣기 해제$/))
+  await game.select('1.1')
+  await page.getByLabel('첫 조건').selectOption('blockedLeft')
+  await page.getByLabel('첫 조건').locator('..').locator('..').getByRole('checkbox').first().check()
+}
+test('u6-2: 옆 센서 조건을 처음부터 조립해 두 맵을 통과한다', async ({ page }) => {
+  const game = await open(page, '옆을 보는 로봇')
+  await buildSideRule(game, page)
+  expect(await game.blockCount(), 'repeat, if, 왼쪽, 앞으로 — 조건은 블록 수에 안 들어감').toBe(4)
+  await game.speed('빠르게')
+  expect(await game.runToEnd()).toContain('성공')
+})
+test('u6-3: 왼쪽만 보는 규칙은 막다른 갈래에서 실패하고, and로 오른쪽을 더하면 성공한다', async ({ page }) => {
+  const game = await open(page, '양쪽이 다 열렸을 때')
+  await buildSideRule(game, page)
+  await game.speed('빠르게')
+  const fail = await game.runToEnd()
+  expect(fail).not.toContain('성공')
+  await game.press(game.dialog.getByRole('button', { name: /고치기/ }))
+  await game.select('1.1')
+  await page.getByLabel('조건 조합').selectOption('and')
+  await page.getByLabel('둘째 조건').selectOption('blockedRight')
+  const right = page.getByLabel('둘째 조건').locator('..').locator('..').getByRole('checkbox').last()
+  if (!(await right.isChecked())) await right.check()
+  expect(await game.blockCount()).toBe(4)
+  await page.screenshot({ path: 'e2e-results/screens/logic-u63-and.png' })
+  expect(await game.runToEnd()).toContain('성공')
+})
+test('u6-3 한 단계: 갈림길 검사에서 두 조건 결과와 최종 결과가 함께 보인다', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 })
+  const game = await open(page, '양쪽이 다 열렸을 때')
+  await buildSideRule(game, page)
+  await game.select('1.1')
+  await page.getByLabel('조건 조합').selectOption('and')
+  await page.getByLabel('둘째 조건').selectOption('blockedRight')
+  await game.press(game.button('한 단계'))
+  await expect(page.locator('.logic-results')).toContainText('and')
+  await expect(page.locator('.logic-results')).toContainText('결과')
+  await page.screenshot({ path: 'e2e-results/screens/logic-u63-step-375.png' })
+})
+
+/** T59 QC: and 조건 편집 줄(두 조건 + not)을 펼친 상태에서 세 월드 × 세 화면 크기 배치 */
+for (const world of worlds) {
+  for (const viewport of [{ width: 1280, height: 720 }, { width: 375, height: 667 }, { width: 360, height: 560 }]) {
+    test(`@layout ${world} ${viewport.width} and 조건 편집 줄이 잘리지 않는다`, async ({ page }) => {
+      await page.setViewportSize(viewport)
+      const game = await open(page, '양쪽이 다 열렸을 때')
+      await game.press(page.getByRole('button', { name: `${world} 월드로 바꾸기` }))
+      await buildSideRule(game, page)
+      await game.select('1.1')
+      await page.getByLabel('조건 조합').selectOption('and')
+      const editor = page.locator('.logic-editor')
+      await editor.scrollIntoViewIfNeeded()
+      await page.screenshot({ path: `e2e-results/screens/logic-editor-${worlds.indexOf(world)}-${viewport.width}.png` })
+      // 조건 편집 줄과 작업 막대의 모든 조작: 화면 안(좌우), 44px 이상, 다른 요소(아래 실행 막대 등)에 가리지 않음, 글자 단위 줄바꿈 없음
+      const controls = [...await editor.locator('select, button, input').all(), ...await page.locator('.tile-toolbar button').all()]
+      for (const control of controls) {
+        await control.scrollIntoViewIfNeeded()
+        const box = (await control.boundingBox())!
+        const name = (await control.getAttribute('aria-label')) ?? (await control.evaluate(e => e.tagName))
+        expect(box.x, `${name}: 왼쪽 잘림`).toBeGreaterThanOrEqual(0)
+        expect(box.x + box.width, `${name}: 오른쪽 잘림`).toBeLessThanOrEqual(viewport.width)
+        const target = await control.evaluate(e => e.closest('label') ?? e)
+        const tall = await control.evaluate(e => (e.closest('label') ?? e).getBoundingClientRect().height)
+        expect(tall, `${name}: 누르기 쉬운 높이(44px)`).toBeGreaterThanOrEqual(44)
+        expect(await control.evaluate(e => { const r = e.getBoundingClientRect(); const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return !!hit && ((e.closest('label') ?? e).contains(hit) || hit.contains(e)) }), `${name}: 다른 요소에 가림`).toBe(true)
+        void target
+      }
+      for (const label of await editor.locator('label').all()) {
+        const [height, font] = await label.evaluate(e => [e.getBoundingClientRect().height, parseFloat(getComputedStyle(e).fontSize)])
+        expect(height, '라벨 글자가 여러 줄로 쪼개지지 않음').toBeLessThan(Math.max(48, font * 3.2))
+      }
+      // 맵 카드(1/2, 2/2)·팔레트 버튼·블록 수 표시는 다른 요소에 가리지 않는다(가운데 점 기준)
+      const uncovered = (l: import('@playwright/test').Locator) => l.evaluate(e => { e.scrollIntoView({ block: 'nearest' }); const r = e.getBoundingClientRect(); const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return !!hit && (e.contains(hit) || hit.contains(e)) })
+      for (const card of await page.locator('.variant-cards button').all()) expect(await uncovered(card), '맵 카드가 가려짐').toBe(true)
+      for (const button of await page.locator('.palette button').all()) expect(await uncovered(button), `팔레트 ${await button.getAttribute('aria-label')} 버튼이 가려짐`).toBe(true)
+      // 팔레트 버튼(넘쳐 커진 원 포함)이 블록 수 표시·안내 문장과 겹치지 않는다
+      const texts = await page.locator('.block-budget p, .block-budget + p, .editor > p').all()
+      for (const button of await page.locator('.palette button').all()) {
+        const a = (await button.boundingBox())!
+        for (const text of texts) {
+          if (!(await text.isVisible())) continue
+          const b = (await text.boundingBox())!
+          const overlap = Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x) > 2 && Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y) > 2
+          expect(overlap, `팔레트 ${await button.getAttribute('aria-label')} 버튼이 "${(await text.innerText()).slice(0, 12)}" 문장과 겹침`).toBe(false)
+        }
+      }
+      const buttons = await Promise.all((await page.locator('.palette button').all()).map(async b => ({ name: await b.getAttribute('aria-label'), box: (await b.boundingBox())! })))
+      for (const [i, a] of buttons.entries()) for (const c of buttons.slice(i + 1)) {
+        const overlap = Math.min(a.box.x + a.box.width, c.box.x + c.box.width) - Math.max(a.box.x, c.box.x) > 2 && Math.min(a.box.y + a.box.height, c.box.y + c.box.height) - Math.max(a.box.y, c.box.y) > 2
+        expect(overlap, `팔레트 ${a.name}·${c.name} 버튼이 겹침`).toBe(false)
+      }
+      await game.noHorizontalScroll()
+    })
+  }
+}
