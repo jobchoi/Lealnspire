@@ -3,6 +3,7 @@ import { Observable } from './Observable'
 import { MAX_PROGRAM_BLOCKS, normalizeLogicProgram, normalizeLogicCondition, FunctionProgram, Program as ProgramModel } from '../model/program'
 import type { Block, Program, ProgramDocument, FunctionDef, Condition } from '../model/types'
 export class EditorController extends Observable<{ selectedId: string | null; targetId: string | null; addedId: string | null }> {
+  returnsEnabled = false
   paramsEnabled = false
   logicEnabled = false
   functionId: string | undefined
@@ -57,7 +58,8 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
     this.beforeEdit()
     return true
   }
-  configure(program: Program, onChange: (program: Program) => void, locked: boolean, maxBlocks?: number, logicEnabled = this.logicEnabled, paramsEnabled = this.paramsEnabled) {
+  configure(program: Program, onChange: (program: Program) => void, locked: boolean, maxBlocks?: number, logicEnabled = this.logicEnabled, paramsEnabled = this.paramsEnabled, returnsEnabled = this.returnsEnabled) {
+    this.returnsEnabled = returnsEnabled
     this.paramsEnabled = paramsEnabled
     this.logicEnabled = logicEnabled
     this.program = this.logicEnabled ? normalizeLogicProgram(program) : program; this.onChange = onChange; this.locked = locked; this.maxBlocks = maxBlocks
@@ -145,6 +147,7 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   }
   add = (type: Block['type'], fn = this.functions[0]?.id) => {
     if (this.locked || this.atLimit || !this.prepareEdit()) return
+    if (type === 'return' && (!this.returnsEnabled || !this.addingToFunction)) return
     if (type === 'call' && this.addingToFunction) return
     const block = new FunctionProgram(this.doc).create(type, fn)
     if (this.logicEnabled && (block.type === 'if' || block.type === 'while')) {
@@ -166,7 +169,24 @@ export class EditorController extends Observable<{ selectedId: string | null; ta
   toggleElse = () => { if (this.selectedPath && this.selectedBlock?.type === 'if' && this.prepareEdit()) { this.targetElse = false; this.change(ProgramModel.setElse(this.editProgram, this.selectedPath, !this.selectedBlock.else)) } }
   setVariableValue = (value: number) => { if (this.selectedPath && this.selectedBlock?.type === 'set' && this.prepareEdit()) this.change(ProgramModel.setVariableValue(this.editProgram, this.selectedPath, value)) }
   toggleChange = () => { if (this.selectedPath && this.selectedBlock?.type === 'change' && this.prepareEdit()) this.change(ProgramModel.toggleChange(this.editProgram, this.selectedPath)) }
-  toggleRepeatSource = () => { if (this.selectedPath && this.selectedBlock?.type === 'repeat' && this.prepareEdit()) this.change(ProgramModel.setRepeatSource(this.editProgram, this.selectedPath, this.selectedBlock.countParam ? 'number' : this.selectedBlock.countVariable ? this.paramsEnabled && this.functions.find(fn => fn.id === this.functionId)?.param ? 'param' : 'number' : 'A')) }
+  setReturnValue = (value: import('../model/types').ReturnValue) => {
+    if (!this.returnsEnabled || !this.functionId || value.kind === 'param' && !this.functions.find(fn => fn.id === this.functionId)?.param) return
+    if (this.selectedPath && this.selectedBlock?.type === 'return' && this.prepareEdit()) this.change(ProgramModel.setReturnValue(this.editProgram, this.selectedPath, value))
+  }
+  toggleRepeatSource = () => {
+    if (!this.selectedPath || this.selectedBlock?.type !== 'repeat' || !this.prepareEdit()) return
+    const block = this.selectedBlock
+    const canParam = this.paramsEnabled && this.functions.find(fn => fn.id === this.functionId)?.param
+    const calls = this.returnsEnabled && !this.functionId ? this.functions : []
+    const firstCall = calls[0]
+    const source = block.countCall ? calls[calls.findIndex(fn => fn.id === block.countCall!.fn) + 1] : undefined
+    const nextCall = (fn: FunctionDef): import('../model/types').ValueCall => ({ fn: fn.id, ...(fn.param ? { arg: { kind: 'A' as const } } : {}) })
+    const next = block.countCall ? source ? nextCall(source) : 'number' : block.countParam ? firstCall ? nextCall(firstCall) : 'number' : block.countVariable ? canParam ? 'param' : firstCall ? nextCall(firstCall) : 'number' : 'A'
+    this.change(ProgramModel.setRepeatSource(this.editProgram, this.selectedPath, next))
+  }
+  setValueCallArgument = (arg: import('../model/types').CallArgument) => {
+    if (this.returnsEnabled && this.selectedPath && this.selectedBlock?.type === 'repeat' && this.selectedBlock.countCall && this.prepareEdit()) this.change(ProgramModel.setRepeatSource(this.editProgram, this.selectedPath, { ...this.selectedBlock.countCall, arg }))
+  }
   setCondition = (condition: Condition) => {
     if (!this.selectedPath || !this.prepareEdit()) return
     const next = structuredClone(this.editProgram)

@@ -230,3 +230,45 @@ it('QC4: selecting a newly added function repeat preserves its return location',
   editor.add('turnRight')
   expect(editor.program).toMatchObject([{ type: 'turnRight' }])
 })
+
+it('edits return values and value-call inputs through the toolbar, restricts return insertion to functions', () => {
+  const controller = new EditorController()
+  let document: ProgramDocument = { main: [{ id: 'repeat', type: 'repeat', count: 3, body: [] }], functions: [{ id: 'star', icon: 'star', param: true, body: [{ id: 'ret', type: 'return', value: { kind: 'ahead' } }] }] }
+  let tree: Node[] = []
+  const render = () => {
+    controller.configureDocument(document, next => { document = next }, false)
+    hooks.cursor = 0
+    tree = nodes(Editor({ program: document.main, onChange: main => { document = { ...document, main } }, controller, functionsEnabled: true, variablesEnabled: true, paramsEnabled: true, returnsEnabled: true, palette: ['forward', 'repeat', 'return', 'call'] }))
+  }
+  const click = (label: string) => {
+    const button = tree.find(node => node.type === 'button' && node.props['aria-label'] === label)
+    expect(button).toBeDefined()
+    expect(button!.props.disabled).toBeFalsy()
+    ;(button!.props.onClick as () => void)(); render()
+  }
+  render()
+  expect(tree.find(node => node.type === 'button' && node.props['aria-label'] === '값 돌려주기 (return)')?.props.disabled).toBe(true)
+  controller.selectFunctionBlock(undefined, 'repeat'); render()
+  click('반복 횟수 원천 바꾸기'); click('반복 횟수 원천 바꾸기')
+  expect(document.main[0]).toMatchObject({ countCall: { fn: 'star', arg: { kind: 'A' } } })
+  const numericArg = tree.find(node => node.type === 'button' && node.props.children === '숫자로')!
+  expect(numericArg).toBeDefined()
+  ;(numericArg.props.onClick as () => void)(); render()
+  expect(document.main[0]).toMatchObject({ countCall: { arg: { kind: 'number', value: 1 } } })
+  click('1번 N번 반복 값 늘리기')
+  expect(document.main[0]).toMatchObject({ countCall: { arg: { kind: 'number', value: 2 } } })
+  click('반복 횟수 원천 바꾸기')
+  expect(document.main[0]).not.toHaveProperty('countCall')
+  controller.chooseFunction('star'); controller.select('ret'); render()
+  click('반환값 원천 바꾸기')
+  expect(document.functions[0].body[0]).toMatchObject({ value: { kind: 'number', value: 0 } })
+  click('1번 값 돌려주기 (return) 값 늘리기')
+  click('반환값 원천 바꾸기')
+  expect(document.functions[0].body[0]).toMatchObject({ value: { kind: 'A' } })
+  click('반환값 원천 바꾸기')
+  expect(document.functions[0].body[0]).toMatchObject({ value: { kind: 'param' } })
+  click('반환값 원천 바꾸기')
+  expect(document.functions[0].body[0]).toMatchObject({ value: { kind: 'ahead' } })
+  click('값 돌려주기 (return)')
+  expect(document.functions[0].body).toHaveLength(2)
+})

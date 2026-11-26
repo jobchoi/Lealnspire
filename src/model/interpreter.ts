@@ -1,7 +1,7 @@
 import { programDocument } from './types'
 import { validCondition, validDocument } from './program'
 import { cellKey, parseGrid } from './grid'
-import type { Block, Condition, ConditionAtom, Dir, Frame, ProgramInput, RunResult, RunAllResult, Stage } from './types'
+import type { Block, Condition, ConditionAtom, Dir, Frame, ProgramInput, RunResult, RunAllResult, Stage, ValueCall, ReturnTrace } from './types'
 
 const directions: Dir[] = ['N', 'E', 'S', 'W']
 const offsets = { N: [0, -1], E: [1, 0], S: [0, 1], W: [-1, 0] } as const
@@ -46,12 +46,41 @@ export class Interpreter {
       }
       return { blockId, condition: structuredClone(condition), result: evaluate(condition, []), atoms }
     }
-    function execute(blocks: Block[], loops: NonNullable<Frame['loops']> = []): boolean {
+    type Signal = { kind: 'continue' } | { kind: 'return'; value: number } | { kind: 'stop' }
+    const continuing: Signal = { kind: 'continue' }
+    const stop: Signal = { kind: 'stop' }
+    let valueRepeatId: string | undefined
+    function ahead(): number {
+      const [dx, dy] = offsets[dir]
+      let count = 0
+      while (count < 20) {
+        const next = { x: pos.x + dx * (count + 1), y: pos.y + dy * (count + 1) }
+        if (next.x < 0 || next.y < 0 || next.x >= grid.width || next.y >= grid.height || grid.walls.has(cellKey(next))) break
+        count++
+      }
+      return count
+    }
+    function invoke(value: ValueCall, id: string, loops: NonNullable<Frame['loops']>, repeatId?: string): Signal {
+      const definition = doc.functions.find(fn => fn.id === value.fn)
+      if (call || !definition) throw new Error('Invalid function call')
+      if (stage.returns) {
+        if (steps === 1000) { result = 'stepLimit'; return stop }
+        steps++
+      }
+      call = { callId: id, fn: value.fn, serial: ++serial, ...(definition.param ? { arg: value.arg?.kind === 'A' ? a : value.arg?.value } : {}) }
+      valueRepeatId = repeatId
+      if (stage.returns) frames.push({ variables: { A: a }, call: { ...call }, pos: { ...pos }, dir, activeBlockId: id, ...(loops.length ? { loops: structuredClone(loops) } : {}) })
+      const signal = execute(definition.body, loops)
+      call = undefined
+      valueRepeatId = undefined
+      return signal
+    }
+    function execute(blocks: Block[], loops: NonNullable<Frame['loops']> = []): Signal {
       for (const block of blocks) {
         switch (block.type) {
         case 'set':
         case 'change': {
-          if (steps === 1000) { result = 'stepLimit'; return true }
+          if (steps === 1000) { result = 'stepLimit'; return stop }
           steps++
           if (block.variable !== 'A' || block.type === 'change' && block.by !== 1 && block.by !== -1) throw new Error('Invalid variable block')
           const from = a
@@ -59,72 +88,96 @@ export class Interpreter {
           const valid = Number.isInteger(to) && to >= 0 && to <= 20
           if (valid) a = to
           frames.push({ variables: { A: a }, variableChange: { variable: 'A', from, to }, ...(call ? { call: { ...call } } : {}), pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}) })
-          if (!valid) { result = 'variableRange'; return true }
+          if (!valid) { result = 'variableRange'; return stop }
           break
         }
+        case 'return': {
+          if (!call) throw new Error('Return outside function')
+          const cost = block.value.kind === 'ahead' ? 2 : 1
+          if (steps + cost > 1000) { result = 'stepLimit'; return stop }
+          steps += cost
+          const value = block.value.kind === 'number' ? block.value.value : block.value.kind === 'A' ? a : block.value.kind === 'param' ? call.arg! : ahead()
+          const ids = (items: Block[]): string[] => items.flatMap(item => [item.id, ...('body' in item ? ids(item.body) : []), ...(item.type === 'if' ? ids(item.else ?? []) : [])])
+          // The remaining execution path is skipped, including enclosing loop iterations.
+          const definition = doc.functions.find(fn => fn.id === call!.fn)!
+          const all = ids(definition.body)
+          const returned: ReturnTrace = { ...call, blockId: block.id, value, ...(valueRepeatId ? { repeatId: valueRepeatId } : {}), skippedIds: all.slice(all.indexOf(block.id) + 1) }
+          frames.push({ variables: { A: a }, call: { ...call }, returned, ...(block.value.kind === 'ahead' ? { sensorAhead: value } : {}), pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: structuredClone(loops) } : {}) })
+          return { kind: 'return', value }
+        }
         case 'call': {
-          const definition = doc.functions.find(fn => fn.id === block.fn)!
-          if (call || !definition) throw new Error('Invalid function call')
-          call = { callId: block.id, fn: block.fn, serial: ++serial, ...(definition.param ? { arg: block.arg?.kind === 'A' ? a : block.arg?.value } : {}) }
-          const stopped = execute(definition.body, loops)
-          call = undefined
-          if (stopped) return true
+          const signal = invoke(block, block.id, loops)
+          if (signal.kind === 'stop') return signal
           break
         }
         case 'repeat': {
-          const count = block.countParam ? (call?.arg ?? NaN) : block.countVariable === 'A' ? a : (block.count ?? NaN)
+          let returnedCount: number | undefined
+          if (block.countCall) {
+            const signal = invoke(block.countCall, block.id, loops, block.id)
+            if (signal.kind === 'stop') return signal
+            if (signal.kind !== 'return') {
+              result = 'missingReturn'
+              frames.push({ variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: structuredClone(loops) } : {}) })
+              return stop
+            }
+            returnedCount = signal.value
+          }
+          const count = block.countCall ? returnedCount! : block.countParam ? (call?.arg ?? NaN) : block.countVariable === 'A' ? a : (block.count ?? NaN)
           if (block.countVariable !== undefined && block.countVariable !== 'A') throw new Error('Unknown variable')
-          if (!Number.isInteger(count) || count < 0 || count > 20 || !block.countVariable && !block.countParam && (count < 2 || count > 10)) throw new Error('Invalid repeat count')
+          if (!Number.isInteger(count) || count < 0 || count > 20 || !block.countCall && !block.countVariable && !block.countParam && (count < 2 || count > 10)) throw new Error('Invalid repeat count')
           for (let i = 0; i < count; i++) {
             // Bound interpreter work even when the body produces no frames.
-            if (repeatEntries === 1000) { result = 'stepLimit'; return true }
+            if (repeatEntries === 1000) { result = 'stepLimit'; return stop }
             repeatEntries++
-            if (execute(block.body, [...loops, { blockId: block.id, iteration: i + 1, count }])) return true
+            const signal = execute(block.body, [...loops, { blockId: block.id, iteration: i + 1, count }])
+            if (signal.kind !== 'continue') return signal
           }
           break
         }
         case 'while': {
           let iteration = 1
           for (;;) {
-            if (steps === 1000) { result = 'stepLimit'; whileLimitBlockId = block.id; whileLimitCall = call ? { ...call } : undefined; return true }
+            if (steps === 1000) { result = 'stepLimit'; whileLimitBlockId = block.id; whileLimitCall = call ? { ...call } : undefined; return stop }
             steps++
             const checked = check(block.condition, block.id)
             const currentLoops = [...loops, { blockId: block.id, iteration }]
             frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, loops: currentLoops, event: 'check', check: checked })
             if (!checked.result) break
-            if (execute(block.body, currentLoops)) {
+            const signal = execute(block.body, currentLoops)
+            if (signal.kind !== 'continue') {
               if (result === 'stepLimit' && !whileLimitBlockId) { whileLimitBlockId = block.id; whileLimitCall = call ? { ...call } : undefined }
-              return true
+              return signal
             }
             iteration++
           }
           break
         }
         case 'if': {
-          if (steps === 1000) { result = 'stepLimit'; return true }
+          if (steps === 1000) { result = 'stepLimit'; return stop }
           steps++
           const checked = check(block.condition, block.id)
           frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'check', check: checked })
-          if (execute(checked.result ? block.body : block.else ?? [], loops)) return true
+          const signal = execute(checked.result ? block.body : block.else ?? [], loops)
+          if (signal.kind !== 'continue') return signal
           break
         }
         case 'forward': {
-          if (steps === 1000) { result = 'stepLimit'; return true }
+          if (steps === 1000) { result = 'stepLimit'; return stop }
           steps++
           const [dx, dy] = offsets[dir]
           const next = { x: pos.x + dx, y: pos.y + dy }
           if (blockedAhead()) {
-            frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'bump' }); result = 'collision'; return true
+            frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'bump' }); result = 'collision'; return stop
           }
           pos = next
           const goal = cellKey(pos) === cellKey(grid.goal)
           frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: goal ? 'goal' : 'move' })
-          if (goal) { result = 'success'; return true }
+          if (goal) { result = 'success'; return stop }
           break
         }
         case 'turnLeft':
         case 'turnRight': {
-          if (steps === 1000) { result = 'stepLimit'; return true }
+          if (steps === 1000) { result = 'stepLimit'; return stop }
           steps++
           dir = directions[(directions.indexOf(dir) + (block.type === 'turnRight' ? 1 : 3)) % 4]
           frames.push({ ...(call ? { call: { ...call } } : {}), variables: { A: a }, pos: { ...pos }, dir, activeBlockId: block.id, ...(loops.length ? { loops: loops.map(loop => ({ ...loop })) } : {}), event: 'turn' })
@@ -136,7 +189,7 @@ export class Interpreter {
         }
         }
       }
-      return false
+      return continuing
     }
     execute(doc.main)
     return { frames, result, ...(whileLimitCall ? { whileLimitCall } : {}), ...(whileLimitBlockId ? { whileLimitBlockId } : {}) }

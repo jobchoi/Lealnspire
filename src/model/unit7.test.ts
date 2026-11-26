@@ -128,7 +128,7 @@ it('unlocks after unit 6, continues sequentially, saves three stars and returns 
   }
   expect(isLastStage(index + 2)).toBe(true)
   expect(app.getSnapshot()).toEqual({ page: 'list' })
-  expect(app.continueIndex).toBeUndefined()
+  expect(allStages[app.continueIndex!].id).toBe('u8-1')
 })
 
 // Each map's A is immutable in this grammar. State includes its map-specific A

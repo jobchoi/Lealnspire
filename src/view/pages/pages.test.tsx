@@ -8,7 +8,7 @@ import { HomePage, RecordDialog } from './HomePage'
 import { StageSelectPage } from './StageSelectPage'
 import { PlayPage } from './PlayPage'
 import { createProgressStore } from '../../model/ProgressRepository'
-import { stages, bonusStages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, isLastStage } from '../../model/stages'
+import { stages, bonusStages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, isLastStage } from '../../model/stages'
 import { t, i18n } from '../../i18n/I18n'
 
 const noop = () => {}
@@ -22,7 +22,7 @@ describe('화면 렌더링', () => {
     expect(home()).toContain(t('continue'))
     for (const stage of stages) store.completeStage(stage.id, 3, [])
     expect(home()).toContain(t('continue'))
-    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages]) store.completeStage(stage.id, 3, [])
+    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages]) store.completeStage(stage.id, 3, [])
     expect(home()).not.toContain(t('continue'))
   })
   it('정규 8개와 보너스 2개 카드, 잠김, 최고 별을 표시하고 이전 완료 시 다음 카드가 열린다', () => {
@@ -370,4 +370,31 @@ it('renders parameter inputs, copied values and completion in both locales and a
       expect(result).toContain(t('unit7Congratulations'))
     }
   } finally { i18n.locale = 'ko' }
+})
+
+it('renders unit 8 return transfer, sensor observation, skipped blocks and completion in ko/en across all worlds', () => {
+  const original = i18n.locale
+  try {
+    for (const locale of ['ko', 'en']) {
+      i18n.locale = locale
+      const store = createProgressStore()
+      expect(renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)).toContain(t('unit8'))
+      for (const world of ['sketchbook', 'train', 'handheld'] as const) {
+        const stage = { ...unit8Stages[2], world }
+        const game = new GameController(stage, store)
+        game.edit({ main: stage.solution, functions: stage.solutionFunctions! })
+        while (!game.frame?.returned) game.step()
+        const html = renderToString(<PlayPage stage={stage} progressStore={store} controller={game} onList={noop} onNext={noop} lastStage />)
+        expect(html).toContain('return-socket')
+        expect(html).toContain('return-transfer')
+        expect(html).toContain(t('returns.ahead'))
+        expect(html).toContain(t('returns.skipped'))
+        expect(html).toContain('return-skipped')
+        expect(html).toContain('ahead-observation')
+        while (!game.finished) game.step()
+        expect(renderToString(<PlayPage stage={stage} progressStore={store} controller={game} onList={noop} onNext={noop} lastStage />)).toContain(t('unit8Congratulations'))
+        game.dispose()
+      }
+    }
+  } finally { i18n.locale = original }
 })

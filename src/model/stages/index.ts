@@ -136,5 +136,20 @@ export const unit7Stages: Stage[] = [
   parameterPuzzle(2, 'train', [['G...', '###.', '#S..'], ['G...', '###.', '###.', '###.', '#S..']], [2, 'A', 3]),
   parameterPuzzle(3, 'handheld', [['G..', '##.', '##.', 'S..'], ['G....', '####.', '####.', 'S....']], ['A', 3, 'A']),
 ]
-export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages]
-export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)
+// T63 [제안·잠정]: return is the only map-dependent value source.
+const returnPuzzle = (number: number, world: Stage['world'], variants: string[][], budget: number): Stage => {
+  const fn = 'star'
+  const result: Block = { id: 'return', type: 'return', value: { kind: 'ahead' } }
+  const valueRepeat: Block = { id: 'value-repeat', type: 'repeat', countCall: { fn, ...(number === 2 ? { arg: { kind: 'A' as const } } : {}) }, count: 3, body: [{ id: 'forward', type: 'forward' }] }
+  const main: Program = number === 3 ? [{ id: 'outer', type: 'repeat', count: 2, body: [valueRepeat, { id: 'left', type: 'turnLeft' }] }] : [valueRepeat, { id: 'turn', type: number === 2 ? 'turnRight' : 'turnLeft' }, { id: 'finish', type: 'forward' }]
+  const body: Program = number === 2 ? [{ id: 'input-repeat', type: 'repeat', countParam: true, body: [{ id: 'input-left', type: 'turnLeft' }] }, result] : number === 3 ? [result, { id: 'right', type: 'turnRight' }] : [result]
+  const functions = [{ id: fn, icon: 'star' as const, ...(number === 2 ? { param: true as const } : {}), body }]
+  return { id: `u8-${number}`, world, returns: true, params: true, title: `u8${number}Title`, goal: `u8${number}Goal`, hints: { keys: [`u8${number}Hint1`, `u8${number}Hint2`], highlight: number === 1 ? 'path' : 'start' }, grid: variants[0], variants, variantVariables: [{ A: 1 }, { A: 1 }], startDir: 'E', maxBlocks: budget, starBlocks: budget, palette: ['forward', 'turnLeft', 'turnRight', 'repeat', 'call', 'set', 'change', 'return'], solution: main, solutionFunctions: functions, ...(number === 3 ? { initialProgram: structuredClone(main), initialFunctions: [{ ...functions[0], body: [body[1], body[0]] }] } : {}) }
+}
+export const unit8Stages: Stage[] = [
+  returnPuzzle(1, 'sketchbook', [['##G', 'S..'], ['####G', 'S....']], 6),
+  returnPuzzle(2, 'train', [['.G', '.#', 'S#'], ['.G', '.#', '.#', '.#', 'S#']], 8),
+  returnPuzzle(3, 'handheld', [['##G', '##.', 'S..'], ['####G', '####.', '####.', 'S....']], 7),
+]
+export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages]
+export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)

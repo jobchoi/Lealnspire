@@ -25,6 +25,7 @@ export class GameController extends Observable<State> {
     this.editor.program = this.state.program
     this.editor.functions = structuredClone(this.state.doc.functions)
     this.editor.onChange = this.edit
+    this.editor.returnsEnabled = stage.returns === true
     this.editor.paramsEnabled = stage.params === true
     this.editor.logicEnabled = stage.id.startsWith('u6-')
     this.editor.maxBlocks = stage.maxBlocks
@@ -36,6 +37,12 @@ export class GameController extends Observable<State> {
     return failure && (failure.variant ?? 0) === this.variant ? failure : null
   }
   get frame() { return this.state.execution?.frames[this.state.index] }
+  get returned() {
+    const frames = this.state.execution?.frames.slice(0, this.state.index + 1) ?? []
+    const returned = frames.findLast(frame => frame.returned)?.returned
+    if (!returned || this.frame?.call && this.frame.call.serial !== returned.serial) return undefined
+    return returned
+  }
   get branchChecks() {
     const active = this.frame?.activeBlockId
     const blocks = this.frame?.call ? this.state.doc.functions.find(fn => fn.id === this.frame?.call?.fn)?.body ?? [] : this.state.program
