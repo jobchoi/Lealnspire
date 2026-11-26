@@ -565,5 +565,24 @@
   "u113Title": "From the Back?",
   "u113Goal": "Fix the code that's already there. 🎯 is near the end.",
   "u113Hint1": "How many comparisons from the front?",
-  "u113Hint2": "What happens to the count if you change the direction?"
+  "u113Hint2": "What happens to the count if you change the direction?",
+  "unit12": "Unit 12: Choose Your Tools",
+  "unit12Congratulations": "Unit 12 complete! You chose the tools to solve the puzzles!",
+  "synthesis": {
+    "reflect": "Which tools helped you?",
+    "complete": "You completed every unit! Try your tools on a new challenge.",
+    "review": "Sequence · Loops · Conditions · Functions · Values · Lists"
+  },
+  "u121Title": "The Bending Path",
+  "u121Goal": "Reach the goal on both maps with the same code.",
+  "u121Hint1": "What changes between the two maps?",
+  "u121Hint2": "Where can you find out what changes?",
+  "u122Title": "Different Distances, Same Moves",
+  "u122Goal": "Reach the goal on both maps with the same code.",
+  "u122Hint1": "What changes between the two maps?",
+  "u122Hint2": "You can build a shape once and pass a different value each time you call it.",
+  "u123Title": "Value or Count?",
+  "u123Goal": "Reach the goal on both maps with the same code.",
+  "u123Hint1": "What changes between the two maps?",
+  "u123Hint2": "A list tells you more than its values."
 }

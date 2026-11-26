@@ -193,5 +193,33 @@ export const unit11Stages: Stage[] = [
   palette: ['forward', 'forEach', 'if', 'breakForEach'], solution: searchProgram(index === 2 ? 'back' : 'front', index !== 0),
   ...(index === 1 ? { initialProgram: searchProgram('front', false) } : index === 2 ? { initialProgram: searchProgram('front') } : {}),
 }))
-export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages, ...unit9Stages, ...unit10Stages, ...unit11Stages]
-export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, unit10Stages, unit11Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)
+export const unit12Stages: Stage[] = [
+  {
+    id: 'u12-1', world: 'sketchbook', title: 'u121Title', goal: 'u121Goal',
+    hints: { keys: ['u121Hint1', 'u121Hint2'], highlight: 'walls' },
+    grid: ['S...', '###.', '#G..'], variants: [['S...', '###.', '#G..'], ['S.##', '#.##', '#.##', '#.##', 'G.##']],
+    variantVariables: [{ A: 0 }, { A: 0 }], startDir: 'E', maxBlocks: 4, starBlocks: 4,
+    palette: ['forward', 'turnLeft', 'turnRight', 'repeat', 'if', 'while'],
+    solution: [{ id: 'repeat', type: 'repeat', count: 7, body: [{ id: 'if', type: 'if', condition: 'blockedAhead', body: [{ id: 'right', type: 'turnRight' }] }, { id: 'forward', type: 'forward' }] }],
+  },
+  {
+    id: 'u12-2', world: 'train', title: 'u122Title', goal: 'u122Goal',
+    hints: { keys: ['u122Hint1', 'u122Hint2'], highlight: 'path' },
+    grid: ['G...', '###.', 'S...'], variants: [['G...', '###.', 'S...'], ['G.....', '#####.', 'S.....']],
+    variantVariables: [{ A: 3 }, { A: 5 }], params: true, startDir: 'E', maxBlocks: 6, starBlocks: 6,
+    palette: ['forward', 'turnLeft', 'turnRight', 'repeat', 'call'],
+    solution: [3, 2, 3].map((_, i) => ({ id: `call-${i}`, type: 'call', fn: 'star', arg: i === 1 ? { kind: 'number', value: 2 } : { kind: 'A' } })),
+    solutionFunctions: [{ id: 'star', icon: 'star', param: true, body: [{ id: 'repeat', type: 'repeat', countParam: true, body: [{ id: 'forward', type: 'forward' }] }, { id: 'left', type: 'turnLeft' }] }],
+  },
+  {
+    id: 'u12-3', world: 'handheld', title: 'u123Title', goal: 'u123Goal',
+    hints: { keys: ['u123Hint1', 'u123Hint2'], highlight: 'goal' },
+    grid: ['###G###', 'S......'], variants: [['###G###', 'S......'], ['#####G#', 'S......']],
+    variantVariables: [{ A: 0 }, { A: 0 }], lists: [[9, 0, 8], [1, 9, 0, 8, 2]], startDir: 'E', maxBlocks: 4, starBlocks: 4,
+    palette: ['forward', 'turnLeft', 'turnRight', 'repeat', 'forEach', 'if'],
+    solution: [{ id: 'repeat', type: 'repeat', countSource: 'listLength', body: [{ id: 'forward', type: 'forward' }] }, { id: 'left', type: 'turnLeft' }, { id: 'goal', type: 'forward' }],
+  },
+]
+
+export const allStages = [...stages, ...bonusStages, ...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages, ...unit9Stages, ...unit10Stages, ...unit11Stages, ...unit12Stages]
+export const isLastStage = (index: number) => [stages, bonusStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, unit10Stages, unit11Stages, unit12Stages].some((_, group, groups) => index === groups.slice(0, group + 1).reduce((total, entries) => total + entries.length, 0) - 1)

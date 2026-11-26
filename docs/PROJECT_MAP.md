@@ -305,3 +305,10 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - `model/stages/index.ts`: unit11Stages u11-1~3(각 두 리스트·SG 맵·A=0). 10단원 이후 순차 개방, u11-3 후 목록으로 이동한다.
 - `model/unit11.test.ts`, `model/unit12345678910-run.fixture.json`: 6맵 정답 비교 횟수·초기 상한 초과·전체 코드 트리 열거·저장 격리·중첩 종료·단계 예산·개방·편집·저장과 1~10단원 41스테이지/69맵 전체 프레임 회귀. 지정 방향·양방향 두 문법의 증명 수치는 `design/unit11-search.md` 구현 기록 참고.
 - PlayPage·Editor·BlockTiles·Symbols·index.css는 lists-page 안의 search-page에 목표 SVG·일치/불일치·비교 횟수·찾은 번호·미확인 칸·순회 방향을 표시한다. ko/en×세 월드의 렌더링과 실제 편집 이벤트 회귀를 기존 페이지·편집 테스트에 추가했다.
+
+### T71 12단원 종합 [제안·잠정]
+
+- `model/stages/index.ts`: unit12Stages u12-1~3, 11단원 이후 순차 개방. 새 문법 없이 판단·매개변수·리스트 도구를 조합한다.
+- `model/unit12.test.ts`, `model/unit1234567891011-run.fixture.json`: 정답·인정 풀이, 우회 탐색, 저장 왕복·손상 격리, 전체 완주 계약과 1~11단원 44스테이지/75맵 전체 프레임 회귀.
+- `controller/flow.ts`: courseCompleted는 1~12단원 정규 퍼즐 전체 완료를 검사하며 보너스·예측을 제외한다.
+- `view/components/CourseCompletion.tsx`: 목록·성공 결과에 공유하는 SVG 월드 기호·전체 완주 문구. 동작 줄이기는 CSS로 정지한다. PlayPage·ResultModal·StageSelectPage는 기능 플래그보다 12단원 표시를 우선한다.

@@ -1093,3 +1093,24 @@ button small { display: block; font-size: .75rem; }
  .play-page.search-page .map-panel .art-board,.play-page.search-page .map-panel .train-island,.play-page.search-page.theme-handheld .map-panel .board.art-board { max-height:74px; }
 }
 @media (prefers-reduced-motion:reduce) { .search-page .search-mark { animation:none; transition:none; } }
+
+.course-completion { color: #17354a; background: #f0faf4; border: 2px solid #286247; border-radius: 12px; padding: 10px; text-align: center; }
+.course-completion p { margin: 6px 0 0; }
+.course-worlds { display: flex; justify-content: center; gap: 12px; color: #286247; }
+.course-worlds span { display: inline-flex; width: 32px; height: 32px; animation: course-gather 700ms ease-out both; }
+.course-worlds span:first-child { --course-offset: -40px; }
+.course-worlds span:last-child { --course-offset: 40px; }
+.course-worlds svg { width: 100%; height: 100%; }
+@keyframes course-gather { from { transform: translateX(var(--course-offset, 0)) scale(.7); opacity: 0; } to { transform: translateX(0) scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .course-worlds span { animation: none; } }
+
+/* Six synthesis tools stay on one row in every world. */
+.play-page.conditions-page.synthesis-path-page .palette-row .palette { display:grid; flex:1; min-width:0; width:auto; height:52px; grid-template-columns:repeat(6,minmax(44px,1fr)); grid-template-rows:52px; gap:2px; padding:0; margin:0; }
+.play-page.conditions-page.synthesis-path-page .palette-row .palette button { grid-column:auto; grid-row:auto; width:100%; height:52px; min-width:44px; min-height:44px; aspect-ratio:auto; transform:none; border-radius:8px; padding:0; box-shadow:none; }
+.play-page.conditions-page.synthesis-path-page .palette::before,.play-page.conditions-page.synthesis-path-page .palette::after { display:none; }
+@media(max-width:700px) {
+ .play-page.conditions-page.synthesis-path-page .palette-row .palette { height:44px; grid-template-rows:44px; }
+ .play-page.conditions-page.synthesis-path-page .palette-row .palette button { height:44px; }
+ .play-page.conditions-page.synthesis-path-page .palette-row { gap:2px; }
+ .synthesis-path-page .undo-button { min-width:44px; width:44px; padding:0; }
+}

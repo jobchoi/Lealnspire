@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { allStages, unit11Stages } from './stages'
+import { allStages, unit11Stages, unit12Stages } from './stages'
 import { failurePoint, run, runAll } from './interpreter'
 import { countBlocks, validDocument } from './program'
 import baseline from './unit12345678910-run.fixture.json'
@@ -188,5 +188,5 @@ it('opens after unit10, edits direction with undo, enforces insertion scope, and
     game.selectVariant(1); expect(game.frame?.search).toBeUndefined()
     game.dispose()
   }
-  expect(continueStageIndex(repo.getProgress())).toBeUndefined()
+  expect(continueStageIndex(repo.getProgress())).toBe(allStages.indexOf(unit12Stages[0]))
 })

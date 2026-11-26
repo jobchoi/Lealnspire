@@ -8,7 +8,7 @@ import { HomePage, RecordDialog } from './HomePage'
 import { StageSelectPage } from './StageSelectPage'
 import { PlayPage } from './PlayPage'
 import { createProgressStore } from '../../model/ProgressRepository'
-import { stages, bonusStages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, unit10Stages, unit11Stages, isLastStage } from '../../model/stages'
+import { stages, bonusStages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, unit10Stages, unit11Stages, unit12Stages, isLastStage } from '../../model/stages'
 import { t, i18n } from '../../i18n/I18n'
 
 const noop = () => {}
@@ -22,7 +22,7 @@ describe('화면 렌더링', () => {
     expect(home()).toContain(t('continue'))
     for (const stage of stages) store.completeStage(stage.id, 3, [])
     expect(home()).toContain(t('continue'))
-    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages, ...unit9Stages, ...unit10Stages, ...unit11Stages]) store.completeStage(stage.id, 3, [])
+    for (const stage of [...unit2Stages, ...unit3Stages, ...unit4Stages, ...unit5Stages, ...unit6Stages, ...unit7Stages, ...unit8Stages, ...unit9Stages, ...unit10Stages, ...unit11Stages, ...unit12Stages]) store.completeStage(stage.id, 3, [])
     expect(home()).not.toContain(t('continue'))
   })
   it('정규 8개와 보너스 2개 카드, 잠김, 최고 별을 표시하고 이전 완료 시 다음 카드가 열린다', () => {
@@ -518,4 +518,27 @@ it('renders search comparison, found/unseen cells, repair cause and completion i
       expect(renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)).toContain(t('unit11'))
     }
   } finally { i18n.locale = 'ko' }
+})
+
+it('renders synthesis as unit12 in both locales and every world, with course completion only after all regular puzzles', () => {
+  const store = createProgressStore()
+  for (const locale of ['ko', 'en'] as const) {
+    i18n.locale = locale
+    for (const stage of unit12Stages) for (const world of ['sketchbook', 'train', 'handheld'] as const) {
+      const rendered = renderToString(<PlayPage stage={{ ...stage, world }} progressStore={store} onList={noop} onNext={noop} lastStage={stage.id === 'u12-3'} />)
+      expect(rendered).toContain(`aria-label="${t('unit12')}"`)
+      expect(rendered).not.toContain('course-completion')
+    }
+    for (const stage of allStages.filter(s => stages.includes(s) || s.variants)) store.completeStage(stage.id, 3, [])
+    expect(renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)).toContain(t('synthesis.complete'))
+    const stage = unit12Stages[2], game = new GameController(stage, store)
+    game.edit(stage.solution)
+    while (!game.finished) game.step()
+    const rendered = renderToString(<PlayPage stage={stage} controller={game} progressStore={store} onList={noop} onNext={noop} lastStage />)
+    expect(rendered).toContain(t('unit12Congratulations'))
+    expect(rendered).toContain(t('synthesis.complete'))
+    game.dispose()
+    store.clear()
+  }
+  i18n.locale = 'ko'
 })
