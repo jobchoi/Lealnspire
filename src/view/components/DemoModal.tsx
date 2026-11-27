@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
-import { DemoController, demoStage } from '../../controller/DemoController'
+import { DemoController, type DemoId } from '../../controller/DemoController'
 import { useController } from '../hooks/useController'
 import { Board } from './Board'
 import { BlockTiles } from './BlockTiles'
 import type { Theme } from '../theme/defaultTheme'
 import { Symbol } from '../theme/Symbols'
+import glossary from '../../i18n/glossary.json'
 import { t } from '../../i18n/I18n'
 import './DemoModal.css'
 
 export function DemoHand() { return <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 17V5a2 2 0 0 1 4 0v9-3a2 2 0 0 1 4 0v3-1a2 2 0 0 1 4 0v2a2 2 0 0 1 4 0v7c0 5-3 8-8 8-4 0-6-3-9-6l-5-6a2 2 0 0 1 3-3l3 3Z" /></svg> }
-export function DemoModal({ theme, onClose, onSeen }: { theme: Theme; onClose: () => void; onSeen: () => void }) {
-  const [controller] = useState(() => new DemoController(onSeen))
+export function DemoModal({ theme, onClose, onSeen, demoId = 'add-run' }: { demoId?: DemoId; theme: Theme; onClose: () => void; onSeen: () => void }) {
+  const [controller] = useState(() => new DemoController(onSeen, undefined, demoId))
+  const scene = controller.scene
   const { cut, paused } = useController(controller)
   const [reduced, setReduced] = useState(false)
   const dialog = useRef<HTMLDivElement>(null)
@@ -44,12 +46,14 @@ export function DemoModal({ theme, onClose, onSeen }: { theme: Theme; onClose: (
   }}>
     <h2 id="demo-title">{t('demo.title')}</h2>
     <div className="demo-scene" aria-hidden="true" inert>
-      <Board stage={demoStage} theme={theme} position={controller.frame.pos} direction={controller.frame.dir} />
-      <div className={`demo-palette ${cut === 0 ? 'demo-pressed' : ''}`}><span className={`block-tile ${theme.blockClass('forward')}`}>{theme.blockSymbol('forward')}</span>{cut === 0 && <DemoHand />}</div>
-      <div className="demo-workspace"><BlockTiles theme={theme} program={controller.program} selectedId={null} targetId={null} activeBlockId={cut === 3 ? controller.program[0]?.id : null} locked onSelect={() => {}} /></div>
+      <Board stage={scene.stage} theme={theme} position={scene.frame.pos} direction={scene.frame.dir} check={scene.frame.check} events={scene.frame.events} />
+      <div className={`demo-palette ${cut === 0 ? 'demo-pressed' : ''}`}><span className={`block-tile ${theme.blockClass(scene.palette)}`}>{theme.blockSymbol(scene.palette)}</span>{cut === 0 && <DemoHand />}</div>
+      <div className="demo-workspace">{cut === 1 && scene.targetId && <span className="demo-target-cue"><DemoHand />→ {scene.targetElse ? glossary.else.keyword : '[ ]'}</span>}<BlockTiles theme={theme} program={controller.program} functions={scene.doc.functions} selectedId={scene.selectedId} targetId={scene.targetId} targetElse={scene.targetElse} activeBlockId={scene.run ? scene.frame.activeBlockId : null} check={scene.frame.check} loops={scene.frame.loops} call={scene.frame.call} returned={scene.frame.returned} locked onSelect={() => {}} />{scene.doc.functions.map(fn => <div className="demo-function" key={fn.id}><span>★{fn.param ? '(◆)' : '()'}</span><BlockTiles theme={theme} program={fn.body} functions={scene.doc.functions} selectedId={scene.selectedId} targetId={scene.targetId} activeBlockId={scene.run ? scene.frame.activeBlockId : null} returned={scene.frame.returned} loops={scene.frame.loops} locked onSelect={() => {}} /></div>)}</div>
+      {scene.stage.lists && <ol className="demo-list">{scene.stage.lists[0].map((value, index) => <li key={index} className={`${scene.frame.list?.current?.index === index ? 'demo-pressed' : ''} ${scene.frame.search?.stopped?.remaining.includes(index) ? 'demo-unchecked' : ''}`}><small>#{index + 1}</small><strong>{value}</strong><span>{scene.frame.search?.comparison?.index === index ? scene.frame.search.comparison.match ? '✓' : '✕' : scene.frame.search?.stopped?.remaining.includes(index) ? '?' : scene.frame.list?.current?.index === index ? '▣' : ''}</span></li>)}</ol>}
+      {scene.cue && <strong className="demo-cue">{scene.cue}</strong>}
       <div className={`demo-run ${cut === 2 ? 'demo-pressed' : ''}`}><Symbol name="run" />{cut === 2 && <DemoHand />}</div>
     </div>
-    <p role="status" aria-live="polite" aria-atomic="true">{t(`demo.cut${cut}`)}</p>
+    <p role="status" aria-live="polite" aria-atomic="true">{t(demoId === 'add-run' ? `demo.cut${cut}` : `demo.scenes.${demoId}.${cut}`)}</p>
     <span aria-hidden="true">{cut + 1} / 4</span>
     <div className="demo-controls">
       {reduced ? <><button disabled={cut === 0} onClick={controller.back}>{t('demo.back')}</button><button disabled={cut === 3} onClick={controller.next}>{t('demo.next')}</button></> : <button disabled={cut === 3} onClick={controller.pause}>{t(paused ? 'demo.resume' : 'demo.pause')}</button>}

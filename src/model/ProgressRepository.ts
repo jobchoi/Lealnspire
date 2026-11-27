@@ -9,6 +9,7 @@ export type ProgressStorage = { getItem(key: string): string | null; setItem(key
 export const progressKey = 'lealnspire.progress'
 export const progressV2Key = 'lealnspire.progress.v2'
 export type ProgressV2 = { version: 2; stages: Record<string, Omit<StageProgress, 'lastProgram'> & { lastProgram: ProgramDocument }> }
+export const demoIds = ['add-run', 'rotation', 'repeat', 'condition', 'else', 'while', 'function', 'variable', 'logic', 'parameter', 'return', 'event', 'list', 'search']
 export const settingsKey = 'lealnspire.settings'
 const empty = (): Progress => ({ version: 1, stages: {} })
 const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T
@@ -94,7 +95,7 @@ function makeStore(storage?: ProgressStorage) {
   try {
     const settings: unknown = JSON.parse(storage?.getItem(settingsKey) ?? 'null')
     if (record(settings) && (settings.version === 1 || settings.version === 2) && (settings.lang === 'ko' || settings.lang === 'en')) language = settings.lang
-    if (record(settings) && settings.version === 2 && Array.isArray(settings.seenDemos) && settings.seenDemos.every(id => id === 'add-run')) seenDemos = [...new Set(settings.seenDemos)]
+    if (record(settings) && settings.version === 2 && Array.isArray(settings.seenDemos) && settings.seenDemos.every(id => demoIds.includes(id))) seenDemos = [...new Set(settings.seenDemos)]
     if (record(settings) && (settings.version === 1 || settings.version === 2) && ('lang' in settings || 'seenDemos' in settings)) persistSettings()
   } catch { /* Invalid or unavailable settings use the default language. */ }
   function persistSettings() {
@@ -125,7 +126,7 @@ function makeStore(storage?: ProgressStorage) {
   }
   return {
     getSeenDemos: () => [...seenDemos],
-    markDemoSeen(id: string) { if (id !== 'add-run') return; seenDemos = [...new Set([...seenDemos, id])]; persistSettings() },
+    markDemoSeen(id: string) { if (!demoIds.includes(id)) return; seenDemos = [...new Set([...seenDemos, id])]; persistSettings() },
     resetDemos() { seenDemos = []; persistSettings() },
     getLanguage: () => language,
     saveLanguage(lang: 'ko' | 'en') {

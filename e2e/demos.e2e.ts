@@ -97,3 +97,36 @@ for (const viewport of [{ width: 375, height: 667 }, { width: 360, height: 560 }
     await g.noHorizontalScroll()
   })
 }
+
+/** T73-2: 개념 시범 14종 — 각 진입 스테이지에서 버튼이 보이고, 4컷 끝까지 가며, 창이 화면 안·이모지 없음 */
+import { allStages } from '../src/model/stages'
+const entries: [string, string][] = [['1', 'add-run'], ['2', 'rotation'], ['5', 'repeat'], ['u2-1', 'condition'], ['u2-5', 'else'], ['u3-1', 'while'], ['u4-1', 'function'], ['u5-1', 'variable'], ['u6-1', 'logic'], ['u7-1', 'parameter'], ['u8-1', 'return'], ['u9-1', 'event'], ['u10-1', 'list'], ['u11-2', 'search']]
+for (const viewport of [{ width: 1280, height: 720 }, { width: 375, height: 667 }]) {
+  test(`${viewport.width}: 개념 시범 14종이 진입 스테이지에서 열리고 끝까지 재생된다`, async ({ page }) => {
+    test.setTimeout(300_000)
+    await page.setViewportSize(viewport)
+    await page.emulateMedia({ reducedMotion: 'reduce' }) // 이전/다음으로 빠르게 넘김
+    const g = new Game(page)
+    await g.fresh()
+    const problems: string[] = []
+    for (const [id, demo] of entries) {
+      const index = allStages.findIndex(s => s.id === id)
+      // 앞 스테이지는 모두 완료, 진입 스테이지는 아직(코드 없음)
+      await page.evaluate(ids => localStorage.setItem('lealnspire.progress.v2', JSON.stringify({ version: 2, stages: Object.fromEntries(ids.map(sid => [sid, { completed: true, bestStars: 3 }])) })), allStages.slice(0, index).map(s => s.id))
+      await page.goto('/')
+      await g.press(g.button('스테이지 목록'))
+      await g.press(page.locator('.stage-card').nth(index))
+      if (!(await trigger(page).count())) { problems.push(`${id}(${demo}): 시범 버튼 없음`); continue }
+      await g.press(trigger(page))
+      const dialog = page.getByRole('dialog')
+      for (let i = 0; i < 3; i++) await g.press(dialog.getByRole('button', { name: '다음' }))
+      await expect(dialog.getByText('4 / 4')).toBeVisible()
+      const d = (await dialog.boundingBox())!
+      if (d.x < 0 || d.y < 0 || d.x + d.width > viewport.width || d.y + d.height > viewport.height) problems.push(`${id}: 창이 화면 밖`)
+      if (/[\u{1F300}-\u{1FAFF}]/u.test(await dialog.innerText())) problems.push(`${id}: 이모지 문자`)
+      await page.screenshot({ path: `e2e-results/screens/demo-${demo}-${viewport.width}.png` })
+      await g.press(dialog.getByRole('button', { name: '닫기' }))
+    }
+    expect(problems).toEqual([])
+  })
+}
