@@ -14,7 +14,7 @@
     "variables": "box A"
   },
   "stepLimitNotice": "Too many execution steps (1000 steps). Try fewer repetitions or blocks.",
-  "targetWhile": "Adding to: end of the while block {order}",
+  "targetWhile": "Block {order}: adding to the end of the while body",
   "undo": "Undo",
   "fix": "Fix",
   "failureBlock": "Block where it went wrong",
@@ -96,7 +96,7 @@
     "return": "Return a value (return)",
     "on": "Run when a signal comes (on)",
     "forEach": "list",
-    "breakForEach": "stop this traversal"
+    "breakForEach": "stop this list loop"
   },
   "tools": "Block tools",
   "chooseTile": "Tap a block to select it.",
@@ -117,8 +117,8 @@
   "times": "times",
   "bestStars": "Best: {count} stars",
   "stars": "{count} stars",
-  "target": "Adding to: end of repeat block {order}",
-  "targetIf": "Adding to: end of the if block {order}",
+  "target": "Block {order}: adding to the end of the repeat body",
+  "targetIf": "Block {order}: adding to the end of the if body",
   "total": "Blocks {count} / {max}",
   "totalUnlimited": "Blocks {count}",
   "action": "Block {order} {name}: {action}",
@@ -163,7 +163,7 @@
       "return": "return",
       "on": "Run when a signal comes (on)",
       "forEach": "list",
-      "breakForEach": "stop this traversal"
+      "breakForEach": "stop this list loop"
     },
     "train": {
       "name": "Train Town",
@@ -177,7 +177,7 @@
       "return": "return",
       "on": "Run when a signal comes (on)",
       "forEach": "list",
-      "breakForEach": "stop this traversal"
+      "breakForEach": "stop this list loop"
     },
     "handheld": {
       "name": "Pocket Console",
@@ -191,7 +191,7 @@
       "return": "return",
       "on": "Run when a signal comes (on)",
       "forEach": "list",
-      "breakForEach": "stop this traversal"
+      "breakForEach": "stop this list loop"
     }
   },
   "stage1Hint1": "Count the cells between the robot and the star.",
@@ -277,7 +277,7 @@
   "addElse": "Add else",
   "removeElse": "Remove else",
   "selectElse": "Put inside else",
-  "targetElse": "Add inside else of {order}",
+  "targetElse": "Block {order}: add inside else",
   "u25Title": "Blocked or Clear",
   "u25Goal": "Turn when blocked, move when clear — the same code for both maps.",
   "u25Hint1": "On map 1, what is in front of the robot at the start?",
@@ -289,7 +289,7 @@
   "unit3": "Unit 3: Loops with Conditions (while)",
   "unit3Congratulations": "Unit 3 complete!",
   "whileName": "while the path ahead is clear",
-  "whileIteration": "Iteration {iteration}",
+  "whileIteration": "Round {iteration}",
   "recheck": "Check again",
   "whileContinue": "The path ahead is clear → continue",
   "whileStop": "The path ahead is blocked → stop",
@@ -447,8 +447,8 @@
       "moon": "Moon function takes no value"
     },
     "call": {
-      "star": "Step {order}: call the star function with {value}",
-      "moon": "Step {order}: call the moon function with {value}"
+      "star": "Block {order}: call the star function with {value}",
+      "moon": "Block {order}: call the moon function with {value}"
     },
     "passed": {
       "star": "Passed {value} to the star function. Box A is still {a}.",
@@ -474,7 +474,7 @@
   "u83Hint1": "Run it. Which way is the robot facing when the function counts?",
   "u83Hint2": "Will the block after return run?",
   "returns": {
-    "tile": "Step {order}: return {value}",
+    "tile": "Block {order}: return {value}",
     "ahead": "cells ahead",
     "received": {
       "star": "The star function returned {value}.",
@@ -483,8 +483,8 @@
     "skipped": "Skipped this call",
     "sourceShort": "↩ Value",
     "repeat": {
-      "star": "Step {order}: repeat as many times as the star function returns",
-      "moon": "Step {order}: repeat as many times as the moon function returns"
+      "star": "Block {order}: repeat using the number returned by the star function",
+      "moon": "Block {order}: repeat using the number returned by the moon function"
     },
     "source": "Change return value source",
     "repeatSource": "Change repeat count source",
@@ -505,7 +505,7 @@
   "u93Hint1": "Run it. Which handler runs for the first signal ◇?",
   "u93Hint2": "What connects an arriving signal to the handler that runs?",
   "events": {
-    "tile": "Step {order}: when signal {signal} comes",
+    "tile": "Block {order}: when signal {signal} arrives",
     "diamond": "diamond signal",
     "circle": "circle signal",
     "triangle": "triangle signal",
@@ -516,7 +516,7 @@
     "queue": "Waiting signals",
     "upcoming": "Signals to come",
     "notice": "on cards don't run in the order you place them. They run when their signal comes.",
-    "target": "Adding inside handler {order}",
+    "target": "Block {order}: adding inside the handler",
     "running": "Running handler",
     "end": "The handler finished.",
     "idle": "Waiting",
@@ -539,10 +539,10 @@
   "u103Hint1": "How do the values and the number of cells differ between the two lists?",
   "u103Hint2": "Is the length the same as the last index?",
   "lists": {
-    "tile": "Step {order}: for each value in the list",
+    "tile": "Block {order}: use each list value in order",
     "current": "the current value",
     "source": "Change the repeat value source",
-    "target": "Add inside list step {order}",
+    "target": "Block {order}: add inside the list body",
     "index": "Index {index}",
     "value": "Value {value}",
     "length": "length {length}",
@@ -550,9 +550,9 @@
     "atPointer": "◆ L[A]: index {index}, value {value}",
     "range": "There is no element at index {index}. This list has length {length}.",
     "repeat": {
-      "current": "Step {order}: repeat as many times as the current value",
-      "listAtA": "Step {order}: repeat as many times as the list value at index A",
-      "listLength": "Step {order}: repeat as many times as the list length"
+      "current": "Block {order}: repeat using the current list value",
+      "listAtA": "Block {order}: repeat using the list value at index A",
+      "listLength": "Block {order}: repeat using the list length"
     },
     "rangeShort": "No index {index} / length {length}"
   },
@@ -560,7 +560,7 @@
     "condition": "if ▣ equals the target value",
     "front": "from the front",
     "back": "from the back",
-    "direction": "Change traversal direction",
+    "direction": "Change search direction",
     "count": "Comparisons: {count} / limit: {limit}",
     "mismatch": "Index {index}: not the target",
     "found": "Found it at index {index}.",
@@ -619,7 +619,7 @@
     "confirm": "Start the demos over?",
     "cut0": "Pressed the forward block",
     "cut1": "A block appeared in the workspace",
-    "cut2": "Pressed play",
+    "cut2": "Pressed Run",
     "cut3": "The robot moved one square",
     "scenes": {
       "rotation": {
@@ -679,7 +679,7 @@
         "0": "Select if to edit its condition.",
         "1": "Choose left to check the wall on that side.",
         "2": "Turn on not to change false to true.",
-        "3": "Choosing and or or shows two condition slots.",
+        "3": "Choose \"and\" or \"or\" to show two condition slots.",
         "alt2": "The left side is open. Negating the false left-blocked check makes it true.",
         "alt3": "The two checks ask whether the left side and the path ahead are blocked. Both are open, so both checks and their combined and result are false."
       },
@@ -721,7 +721,7 @@
         "alt0": "The list holds 2 followed by 3.",
         "alt1": "The inner repeat uses the current list value as its count. The list holds 2 and 3.",
         "alt2": "The current element is at index 0 and its value is 2.",
-        "alt3": "The current element moved to index 1 and its value is 3."
+        "alt3": "The loop is now at index 1. The current value is 3."
       },
       "search": {
         "0": "Choose the comparison body as the place to add blocks.",
