@@ -34,9 +34,9 @@ test('u6-4 조건을 고치고 검사 결과와 성공을 확인한다', async (
   expect(await game.runToEnd()).toContain('성공')
 })
 test('선택 예측: 진리표 8칸을 맞게 고르면 모두 ✓, 다시 고르기는 답을 비운다', async ({ page }) => {
-  const game = await open(page, 'not: 반대로 바꾸기')
+  const game = await open(page, 'not으로 반대로 바꾸기')
   await game.press(game.button('스테이지 목록'))
-  await game.press(page.locator('li', { has: page.locator('.stage-card', { hasText: 'not: 반대로 바꾸기' }) }).locator('.prediction-entry'))
+  await game.press(page.locator('li', { has: page.locator('.stage-card', { hasText: 'not으로 반대로 바꾸기' }) }).locator('.prediction-entry'))
   const selects = page.locator('.logic-prediction select')
   await expect(selects).toHaveCount(8)
   // 행: (참,참) (참,거짓) (거짓,참) (거짓,거짓), 열: and, or
@@ -67,7 +67,7 @@ test('@layout 영어와 좁은 화면에서 조건 편집을 표시한다', asyn
   await page.screenshot({ path: 'e2e-results/screens/logic-narrow.png' })
 })
 test('u6-1에서 not으로 초기 while을 고쳐 두 맵을 통과한다', async ({ page }) => {
-  const game = await open(page, 'not: 반대로 바꾸기')
+  const game = await open(page, 'not으로 반대로 바꾸기')
   await game.select('1')
   await setNot(page, '첫 조건', true)
   await game.speed('빠르게')
