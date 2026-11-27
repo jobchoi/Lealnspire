@@ -596,22 +596,92 @@ it('T74 renders both focus steps for all stages without changing editor or progr
   } finally { i18n.locale = 'ko' }
 })
 
-it('T74 preserves the selected function tab, block and playback when hints change', () => {
-  const stage = unit7Stages[2], store = createProgressStore()
-  const controller = new GameController(stage, store)
-  const fn = controller.getSnapshot().doc.functions[0]
-  controller.editor.chooseFunction(fn.id)
-  controller.editor.select(fn.body[0].id)
-  const doc = structuredClone(controller.getSnapshot().doc), editor = controller.editor.getSnapshot()
-  const frame = controller.frame, progress = store.getProgress()
-  for (const change of [controller.toggleHint, controller.nextHint, controller.toggleHint]) {
-    change()
-    renderToString(<PlayPage stage={stage} progressStore={store} controller={controller} onList={noop} onNext={noop} lastStage={false} />)
-    expect(controller.getSnapshot().doc).toEqual(doc)
-    expect(controller.editor.functionId).toBe(fn.id)
-    expect(controller.editor.getSnapshot()).toEqual(editor)
-    expect(controller.frame).toEqual(frame)
-    expect(store.getProgress()).toEqual(progress)
+it('T77 highlights every function body for workspace hints and preserves editing and playback', () => {
+  for (const stage of [...unit4Stages, ...unit7Stages]) {
+    const store = createProgressStore()
+    const controller = new GameController(stage, store)
+    controller.edit({ main: stage.solution, functions: stage.solutionFunctions! })
+    const fn = controller.getSnapshot().doc.functions[0]
+    controller.editor.chooseFunction(fn.id)
+    controller.editor.select(fn.body[0].id)
+    const doc = structuredClone(controller.getSnapshot().doc), editor = controller.editor.getSnapshot()
+    const frame = controller.frame, progress = store.getProgress()
+    for (const [index, change] of [controller.toggleHint, controller.nextHint, controller.toggleHint].entries()) {
+      change()
+      const html = renderToString(<PlayPage stage={stage} progressStore={store} controller={controller} onList={noop} onNext={noop} lastStage={false} />)
+      const focus = stage.hints.focus[index === 1 ? 1 : 0]
+      const workspace = index !== 2 && [focus.primary, focus.secondary].some(target => target?.kind === 'workspace')
+      const bodies = html.match(/<div class="function-body workspace"[^>]*>/g) ?? []
+      expect(bodies).toHaveLength(doc.functions.length)
+      for (const body of bodies) expect(body.includes('data-hint-focus="workspace"')).toBe(workspace)
+      expect(controller.getSnapshot().doc).toEqual(doc)
+      expect(controller.editor.functionId).toBe(fn.id)
+      expect(controller.editor.getSnapshot()).toEqual(editor)
+      expect(controller.frame).toEqual(frame)
+      expect(store.getProgress()).toEqual(progress)
+    }
+    controller.dispose()
   }
-  controller.dispose()
+})
+
+it('shows a dismissible save warning once per repository and keeps successful progress in memory', () => {
+  for (const locale of ['ko', 'en']) {
+    const previous = i18n.locale
+    i18n.locale = locale
+    try {
+      // Cover both edit-time failure and a store that fails only on completion.
+      for (const failOnCompletion of [false, true]) {
+        let fail = !failOnCompletion
+        const store = createProgressStore({ getItem: () => null, setItem: () => { if (fail) throw new Error('quota') } })
+        const game = new GameController(stages[0], store)
+        const page = () => renderToString(<PlayPage stage={stages[0]} progressStore={store} controller={game} onList={noop} onNext={noop} lastStage={false} />).replaceAll('<!-- -->', '')
+        expect(page()).not.toContain(t('saveNotice.failed'))
+        game.edit(stages[0].solution)
+        expect(game.getSnapshot().saveNotice).toBe(!failOnCompletion)
+        fail = true
+        while (!game.finished) game.step()
+        expect(game.result).toBe('success')
+        expect(store.persistent).toBe(false)
+        expect(page()).toContain(t('saveNotice.failed').replaceAll("'", '&#x27;'))
+        expect(page()).toContain(t('saveNotice.result'))
+        expect(page()).toContain('class="save-notice" role="status"')
+        expect(page()).toContain(`aria-label="${t('close')}"`)
+        expect(store.getProgress().stages['1']).toMatchObject({ completed: true, bestStars: 3, lastProgram: stages[0].solution })
+        game.dismissSaveNotice()
+        expect(page()).not.toContain(t('saveNotice.failed').replaceAll("'", '&#x27;'))
+        expect(page()).toContain(t('saveNotice.result'))
+        game.reset()
+        game.edit(stages[0].solution)
+        while (!game.finished) game.step()
+        expect(game.result).toBe('success')
+        expect(game.getSnapshot().saveNotice).toBe(false)
+        const next = new GameController(stages[1], store)
+        expect(next.getSnapshot().saveNotice).toBe(false)
+        expect(store.getProgram(stages[0])).toEqual(stages[0].solution)
+        next.dispose()
+        game.dispose()
+      }
+    } finally { i18n.locale = previous }
+  }
+})
+
+it('omits save warnings with working storage and warns only once when storage starts unavailable', () => {
+  const persistent = createProgressStore({ getItem: () => null, setItem: noop })
+  const game = new GameController(stages[0], persistent)
+  game.edit(stages[0].solution)
+  while (!game.finished) game.step()
+  const html = renderToString(<PlayPage stage={stages[0]} progressStore={persistent} controller={game} onList={noop} onNext={noop} lastStage={false} />)
+  expect(html).not.toContain(t('saveNotice.failed'))
+  expect(html).not.toContain(t('saveNotice.result'))
+  expect(persistent.persistent).toBe(true)
+  game.dispose()
+  for (const store of [createProgressStore(), createProgressStore({ getItem: () => { throw new Error('blocked') }, setItem: noop })]) {
+    const first = new GameController(stages[0], store)
+    expect(first.getSnapshot().saveNotice).toBe(true)
+    first.dismissSaveNotice()
+    first.reset()
+    expect(first.getSnapshot().saveNotice).toBe(false)
+    expect(new GameController(stages[1], store).getSnapshot().saveNotice).toBe(false)
+    first.dispose()
+  }
 })

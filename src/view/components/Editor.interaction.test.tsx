@@ -18,6 +18,10 @@ vi.mock('react', async importOriginal => ({
 }))
 import { Editor } from './Editor'
 import { BlockTiles } from './BlockTiles'
+import { GameController } from '../../controller/GameController'
+import { ProgressRepository } from '../../model/ProgressRepository'
+import { unit4Stages, unit7Stages } from '../../model/stages'
+import { t } from '../../i18n/I18n'
 
 type Node = ReactElement<Record<string, unknown>>
 function nodes(value: unknown): Node[] {
@@ -40,6 +44,41 @@ function setup(initial: Program, locked = false) {
   }
 }
 beforeEach(() => { hooks.values = []; hooks.cursor = 0 })
+it('T77 keeps a manually chosen tab and selection when workspace hints open and close', () => {
+  for (const stage of [unit4Stages[0], unit7Stages[0]]) {
+    hooks.values = []
+    const game = new GameController(stage, new ProgressRepository())
+    game.edit({ main: stage.solution, functions: stage.solutionFunctions! })
+    const controller = game.editor
+    const fn = game.getSnapshot().doc.functions[0]
+    controller.selectFunctionBlock(fn.id, fn.body[0].id)
+    const doc = structuredClone(game.getSnapshot().doc)
+    const selected = controller.getSnapshot()
+    const render = () => {
+      const focus = stage.hints.focus[game.getSnapshot().hintStep === 2 ? 1 : 0]
+      const hintWorkspace = game.getSnapshot().hintStep > 0 && [focus.primary, focus.secondary].some(target => target?.kind === 'workspace')
+      const draw = () => {
+        hooks.cursor = 0
+        return nodes(Editor({ program: game.getSnapshot().program, onChange: game.edit, controller, functionsEnabled: true, paramsEnabled: !!stage.params, hintWorkspace }))
+      }
+      draw()
+      return draw()
+    }
+    for (const tab of [undefined, fn.id]) {
+      let tree = render()
+      const button = tree.find(node => node.type === 'button' && node.props.children === t(tab ? `functions.show.${fn.icon}` : 'functions.showMain'))!
+      ;(button.props.onClick as () => void)()
+      for (const change of [game.toggleHint, game.nextHint, game.toggleHint]) {
+        change()
+        tree = render()
+        expect(tree.find(node => node.props.className === 'program-panels')!.props['data-panel']).toBe(tab ? 'body' : 'main')
+        expect(controller.getSnapshot()).toEqual(selected)
+        expect(game.getSnapshot().doc).toEqual(doc)
+      }
+    }
+    game.dispose()
+  }
+})
 it('타일 재선택·빈 곳·삭제로 선택을 해제하며 앞/뒤 이동 후 선택을 유지한다', () => {
   const ui = setup([{ id: 'a', type: 'forward' }, { id: 'b', type: 'turnLeft' }])
   ui.select('b')

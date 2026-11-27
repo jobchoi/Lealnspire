@@ -1,4 +1,8 @@
 {
+  "saveNotice": {
+    "failed": "Your progress couldn't be saved. You can keep playing, but this progress may be lost when you close the page.",
+    "result": "This progress was not saved on this device."
+  },
   "hintLookAt": "Look at: {target}",
   "hintTargets": {"map": "map", "palette": "block palette", "workspace": "workspace", "list": "list", "search": "comparisons", "signals": "signals", "variables": "box A"},
   "stepLimitNotice": "Too many execution steps (1000 steps). Try fewer repetitions or blocks.",

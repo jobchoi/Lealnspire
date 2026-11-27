@@ -100,3 +100,24 @@ for (const viewport of [{ width: 375, height: 667 }, { width: 360, height: 560 }
     }
   })
 }
+
+test('T77 좁은 화면(375): 함수 탭을 열어도 지금 보이는 함수 몸체가 작업 공간 힌트로 강조되고, 탭·코드는 그대로', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 })
+  const g = new Game(page)
+  await g.fresh()
+  await openStage(page, g, 'u4-3') // 미리 놓인 별 함수가 있는 고치기 퍼즐, 힌트 1·2 모두 작업 공간
+  const before = await g.blockCount()
+  await g.press(g.button('별 함수 보기'))
+  await g.press(g.button('힌트'))
+  await expect(hint(page)).toContainText('볼 곳: 작업 공간')
+  const body = page.locator('.function-body:visible')
+  await expect(body).toHaveCount(1)
+  await expect(body).toHaveAttribute('data-hint-focus', 'workspace')
+  await expect(g.button('별 함수 보기'), '탭이 바뀌지 않음').toHaveAttribute('aria-pressed', 'true')
+  await page.screenshot({ path: 'e2e-results/screens/hint-focus-function-tab-375.png' })
+  await g.press(g.button('main 보기'))
+  await expect(page.locator('.workspace-shell')).toHaveAttribute('data-hint-focus', 'workspace')
+  expect(await g.blockCount(), '코드 그대로').toBe(before)
+  await g.press(g.button('힌트 닫기'))
+  await expect(focused(page)).toHaveCount(0)
+})

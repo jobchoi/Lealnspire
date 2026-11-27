@@ -1158,3 +1158,17 @@ button small { display: block; font-size: .75rem; }
   border-radius: 8px;
 }
 .hint-target-label { display: block; font-size: 12px; line-height: 1.25; }
+
+.save-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-block: 8px;
+  border: 2px solid currentColor;
+  border-radius: 12px;
+  background: #fff8df;
+  color: #493b23;
+}
+.save-notice p { margin: 0; flex: 1; }
+.save-notice button { flex-shrink: 0; min-width: 44px; min-height: 44px; }
