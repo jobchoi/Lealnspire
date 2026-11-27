@@ -69,9 +69,11 @@ it('cleans up close/navigation timers, pauses, replays and supports manual cuts'
   demo.next(); demo.next(); demo.next(); expect(complete).toHaveBeenCalledTimes(1)
   expect(vi.getTimerCount()).toBe(0)
 })
-it('offers only before the first edit on stage 1, outside playback and results', () => {
+it('offers demos after edits and revisits, outside playback and results', () => {
   expect(canOfferDemo('1', false, false, false)).toBe(true)
-  for (const args of [['3', false, false, false], ['1', true, false, false], ['1', false, true, false], ['1', false, false, true]] as const) expect(canOfferDemo(args[0], args[1], args[2], args[3])).toBe(false)
+  expect(canOfferDemo('1', true, false, false)).toBe(true)
+  expect(canOfferDemo('1', true, false, false, true), 'completed stage hides the demo button').toBe(false)
+  for (const args of [['3', false, false, false], ['1', false, true, false], ['1', false, false, true]] as const) expect(canOfferDemo(args[0], args[1], args[2], args[3])).toBe(false)
 })
 
 // Ignore generated IDs so a copied solution cannot pass by merely renaming its blocks.
@@ -88,7 +90,8 @@ it('keeps every cut separate from entry maps and solutions, with exactly the des
     const entry = allStages.find(stage => stage.id === stageId)!
     expect(entry, stageId).toBeDefined()
     expect(canOfferDemo(stageId, false, false, false)).toBe(true)
-    for (const flags of [[true, false, false], [false, true, false], [false, false, true]]) expect(canOfferDemo(stageId, flags[0], flags[1], flags[2])).toBe(false)
+    expect(canOfferDemo(stageId, true, false, false)).toBe(true)
+    for (const flags of [[false, true, false], [false, false, true]]) expect(canOfferDemo(stageId, flags[0], flags[1], flags[2])).toBe(false)
     for (let cut = 0; cut < 4; cut++) {
       const scene = demoScene(id, cut)
       for (const grid of entry.variants ?? [entry.grid]) expect(scene.stage.grid, `${id}/${cut} map`).not.toEqual(grid)
@@ -103,6 +106,10 @@ it('keeps real code, functions, selection, variants, stars and raw progress unch
   for (const [id, stageId] of demoEntries) {
     const storage = memory(), repository = new ProgressRepository(storage)
     const game = new GameController(allStages.find(stage => stage.id === stageId)!, repository)
+    game.editor.add('repeat')
+    const block = game.editor.program.at(-1)!
+    game.editor.select(block.id); game.editor.toggleTarget()
+    const editorBefore = structuredClone(game.editor.getSnapshot())
     const before = structuredClone(game.getSnapshot()), progress = repository.getProgress()
     const raw = [storage.getItem(progressKey), storage.getItem(progressV2Key)]
     const complete = vi.fn(() => repository.markDemoSeen(id))
@@ -111,6 +118,9 @@ it('keeps real code, functions, selection, variants, stars and raw progress unch
     for (let cut = 0; cut < 4; cut++) { expect(demo.getSnapshot().cut).toBe(cut); expect(demo.scene.frame).toBeDefined(); vi.advanceTimersByTime(2400) }
     expect(complete).toHaveBeenCalledTimes(1)
     expect(game.getSnapshot()).toEqual(before)
+    expect(game.editor.getSnapshot()).toEqual(editorBefore)
+    demo.dispose()
+    expect(game.editor.getSnapshot()).toEqual(editorBefore)
     expect(repository.getProgress()).toEqual(progress)
     expect([storage.getItem(progressKey), storage.getItem(progressV2Key)]).toEqual(raw)
     expect(new ProgressRepository(storage).getSeenDemos()).toEqual([id])
@@ -152,4 +162,23 @@ it('list and search demos count indexes from 0 like the interpreter (cue matches
   const search = demoScene('search', 2)
   expect(search.frame.search?.foundIndex).toBe(2)
   expect(search.cue).toContain(`#${search.frame.search?.foundIndex} ✓`)
+})
+
+it('manual next and back stop automatic playback, including boundary clicks', () => {
+  vi.useFakeTimers()
+  const demo = new DemoController(() => {})
+  demo.restart(); demo.next()
+  expect(demo.getSnapshot()).toEqual({ cut: 1, paused: true })
+  expect(vi.getTimerCount()).toBe(0)
+  vi.advanceTimersByTime(12000)
+  expect(demo.getSnapshot().cut).toBe(1)
+  demo.pause(); demo.back()
+  expect(demo.getSnapshot()).toEqual({ cut: 0, paused: true })
+  expect(vi.getTimerCount()).toBe(0)
+  demo.pause(); demo.back()
+  expect(demo.getSnapshot()).toEqual({ cut: 0, paused: true })
+  expect(vi.getTimerCount()).toBe(0)
+  demo.next(); demo.next(); demo.next(); demo.next()
+  expect(demo.getSnapshot()).toEqual({ cut: 3, paused: true })
+  demo.dispose()
 })

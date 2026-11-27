@@ -6,7 +6,7 @@ import { BlockTiles } from './BlockTiles'
 import type { Theme } from '../theme/defaultTheme'
 import { Symbol } from '../theme/Symbols'
 import glossary from '../../i18n/glossary.json'
-import { t } from '../../i18n/I18n'
+import { i18n, t } from '../../i18n/I18n'
 import './DemoModal.css'
 
 export function DemoHand() { return <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 17V5a2 2 0 0 1 4 0v9-3a2 2 0 0 1 4 0v3-1a2 2 0 0 1 4 0v2a2 2 0 0 1 4 0v7c0 5-3 8-8 8-4 0-6-3-9-6l-5-6a2 2 0 0 1 3-3l3 3Z" /></svg> }
@@ -14,6 +14,8 @@ export function DemoModal({ theme, onClose, onSeen, demoId = 'add-run' }: { demo
   const [controller] = useState(() => new DemoController(onSeen, undefined, demoId))
   const scene = controller.scene
   const { cut, paused } = useController(controller)
+  const altKey = `demo.scenes.${demoId}.alt${cut}`
+  const alt = i18n.t(altKey)
   const [reduced, setReduced] = useState(false)
   const dialog = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -53,10 +55,11 @@ export function DemoModal({ theme, onClose, onSeen, demoId = 'add-run' }: { demo
       {scene.cue && <strong className="demo-cue">{scene.cue}</strong>}
       <div className={`demo-run ${cut === 2 ? 'demo-pressed' : ''}`}><Symbol name="run" />{cut === 2 && <DemoHand />}</div>
     </div>
-    <p role="status" aria-live="polite" aria-atomic="true">{t(demoId === 'add-run' ? `demo.cut${cut}` : `demo.scenes.${demoId}.${cut}`)}</p>
+    <p role="status" aria-live="polite" aria-atomic="true">{t(demoId === 'add-run' ? `demo.cut${cut}` : `demo.scenes.${demoId}.${cut}`)}{alt !== altKey && <span className="demo-scene-alt"> {alt}</span>}</p>
     <span aria-hidden="true">{cut + 1} / 4</span>
     <div className="demo-controls">
-      {reduced ? <><button disabled={cut === 0} onClick={controller.back}>{t('demo.back')}</button><button disabled={cut === 3} onClick={controller.next}>{t('demo.next')}</button></> : <button disabled={cut === 3} onClick={controller.pause}>{t(paused ? 'demo.resume' : 'demo.pause')}</button>}
+      <button disabled={cut === 0} onClick={controller.back}>{t('demo.back')}</button><button disabled={cut === 3} onClick={controller.next}>{t('demo.next')}</button>
+      {!reduced && <button disabled={cut === 3} onClick={controller.pause}>{t(paused ? 'demo.resume' : 'demo.pause')}</button>}
       <button onClick={() => controller.restart(reduced)}>{t('demo.again')}</button>
       <button onClick={() => { onSeen(); onClose() }}>{t('demo.skip')}</button>
       <button onClick={onClose}>{t('close')}</button>

@@ -1,4 +1,5 @@
 import { expect, Game, test } from './helpers'
+import { allStages } from '../src/model/stages'
 
 /** T73-1: 첫 사용 시범 — 요청할 때만 열리고, 정답이 아닌 예시 장면으로 조작만 보여 주며, 진행은 그대로 */
 const trigger = (page: import('@playwright/test').Page) => page.getByRole('button', { name: '어떻게 하는지 보기' })
@@ -68,12 +69,51 @@ test('동작 줄이기: 자동으로 넘어가지 않고 이전/다음으로 넘
   await expect(dialog.getByText('로봇이 한 칸 움직였어요')).toBeVisible()
 })
 
-test('첫 블록을 놓으면 시범 버튼이 사라지고(정답 풀이 중 방해 안 함), 다른 스테이지에는 없다', async ({ page }) => {
+test('T79: 첫 블록을 놓아도 시범 버튼은 강조 없이 남고(막혔을 때 다시 볼 수 있음), 열어도 놓은 블록은 그대로', async ({ page }) => {
   const g = new Game(page)
   await g.fresh()
   await g.start()
   await g.add('F')
-  await expect(trigger(page)).toHaveCount(0)
+  await expect(trigger(page)).toBeVisible()
+  await expect(trigger(page), '편집 뒤에는 강조 없음').not.toHaveClass(/demo-suggested/)
+  await g.press(trigger(page))
+  await g.press(page.getByRole('dialog').getByRole('button', { name: '닫기' }))
+  expect(await g.blockCount(), '시범을 봐도 놓은 블록 그대로').toBe(1)
+  // 실행 중·결과 창에서는 숨김
+  await g.add('F')
+  await g.speed('빠르게')
+  await g.runToEnd()
+  await expect(trigger(page), '결과 창에서는 없음').toHaveCount(0)
+})
+
+test('T79: 자동 재생 중에도 이전/다음으로 되짚을 수 있고, 누르면 자동 재생이 멈춘다', async ({ page }) => {
+  const g = new Game(page)
+  await g.fresh()
+  await g.start()
+  await g.press(trigger(page))
+  const dialog = page.getByRole('dialog')
+  await expect(dialog.getByRole('button', { name: '이전' })).toBeVisible()
+  await g.press(dialog.getByRole('button', { name: '다음' }))
+  await expect(dialog.getByText('2 / 4')).toBeVisible()
+  await page.waitForTimeout(3500)
+  await expect(dialog.getByText('2 / 4'), '다음을 누른 뒤에는 자동으로 넘어가지 않음').toBeVisible()
+  await g.press(dialog.getByRole('button', { name: '이전' }))
+  await expect(dialog.getByText('1 / 4')).toBeVisible()
+})
+
+test('T79: 정보가 담긴 컷은 장면을 말로 풀어 낭독한다(탐색 — 번호 2에서 찾고 0·1은 보지 않음)', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  const g = new Game(page)
+  await g.fresh()
+  const index = allStages.findIndex(s => s.id === 'u11-2')
+  await page.evaluate(ids => localStorage.setItem('lealnspire.progress.v2', JSON.stringify({ version: 2, stages: Object.fromEntries(ids.map(sid => [sid, { completed: true, bestStars: 3 }])) })), allStages.slice(0, index).map(s => s.id))
+  await page.goto('/')
+  await g.press(g.button('스테이지 목록'))
+  await g.press(page.locator('.stage-card').nth(index))
+  await g.press(trigger(page))
+  const dialog = page.getByRole('dialog')
+  for (let i = 0; i < 2; i++) await g.press(dialog.getByRole('button', { name: '다음' }))
+  await expect(dialog).toContainText('번호 2에서 찾았고 번호 0과 1은 보지 않았어요')
 })
 
 for (const viewport of [{ width: 375, height: 667 }, { width: 360, height: 560 }, { width: 1280, height: 720 }]) {
@@ -99,7 +139,6 @@ for (const viewport of [{ width: 375, height: 667 }, { width: 360, height: 560 }
 }
 
 /** T73-2: 개념 시범 14종 — 각 진입 스테이지에서 버튼이 보이고, 4컷 끝까지 가며, 창이 화면 안·이모지 없음 */
-import { allStages } from '../src/model/stages'
 const entries: [string, string][] = [['1', 'add-run'], ['2', 'rotation'], ['5', 'repeat'], ['u2-1', 'condition'], ['u2-5', 'else'], ['u3-1', 'while'], ['u4-1', 'function'], ['u5-1', 'variable'], ['u6-1', 'logic'], ['u7-1', 'parameter'], ['u8-1', 'return'], ['u9-1', 'event'], ['u10-1', 'list'], ['u11-2', 'search']]
 for (const viewport of [{ width: 1280, height: 720 }, { width: 375, height: 667 }]) {
   test(`${viewport.width}: 개념 시범 14종이 진입 스테이지에서 열리고 끝까지 재생된다`, async ({ page }) => {
@@ -130,3 +169,15 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 375, height: 667 
     expect(problems).toEqual([])
   })
 }
+
+test('@layout 360: 깬 스테이지에는 시범 버튼이 없다(다음 스테이지 버튼과 겹쳐 작업 공간을 줄이지 않게 — 작업 공간 높이는 layout.e2e.ts가 검사)', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 560 })
+  const g = new Game(page)
+  await g.fresh()
+  await g.start()
+  await g.build('F F')
+  await g.speed('빠르게')
+  await g.runToEnd()
+  await g.press(g.dialog.getByRole('button', { name: '닫기' }))
+  await expect(trigger(page)).toHaveCount(0)
+})

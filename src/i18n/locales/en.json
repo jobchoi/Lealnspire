@@ -4,7 +4,15 @@
     "result": "This progress was not saved on this device."
   },
   "hintLookAt": "Look at: {target}",
-  "hintTargets": {"map": "map", "palette": "block palette", "workspace": "workspace", "list": "list", "search": "comparisons", "signals": "signals", "variables": "box A"},
+  "hintTargets": {
+    "map": "map",
+    "palette": "block palette",
+    "workspace": "workspace",
+    "list": "list",
+    "search": "comparisons",
+    "signals": "signals",
+    "variables": "box A"
+  },
   "stepLimitNotice": "Too many execution steps (1000 steps). Try fewer repetitions or blocks.",
   "targetWhile": "Adding to: end of the while block {order}",
   "undo": "Undo",
@@ -629,19 +637,26 @@
         "0": "Put a turn inside if.",
         "1": "The sensor checks the square ahead.",
         "2": "A wall ahead makes the turn inside if run.",
-        "3": "With an open square ahead, if skips its body."
+        "3": "With an open square ahead, if skips its body.",
+        "alt1": "There is a wall ahead of the robot. The blocked-ahead check is true.",
+        "alt2": "The path ahead was blocked, so the right turn inside if ran.",
+        "alt3": "The path ahead is open, so the check is false and the turn inside if was skipped."
       },
       "else": {
         "0": "Select if and add else.",
         "1": "Choose else as the place to add blocks.",
         "2": "A turn goes inside else.",
-        "3": "With an open square ahead, only else runs."
+        "3": "With an open square ahead, only else runs.",
+        "alt3": "The path ahead is open, so the check is false. Only the left turn in else ran."
       },
       "while": {
         "0": "Put forward inside while.",
         "1": "The path is clear, so move one square.",
         "2": "Check ahead again before moving.",
-        "3": "A wall stops while without entering its body."
+        "3": "A wall stops while without entering its body.",
+        "alt1": "The path ahead was clear, so the check was true and the robot moved one square.",
+        "alt2": "The path ahead is still clear on the next check, so the result is true.",
+        "alt3": "There is now a wall ahead, so the check is false. The loop stopped without entering its body."
       },
       "function": {
         "0": "Create a function and open its star card.",
@@ -653,43 +668,69 @@
         "0": "Box A holds 3.",
         "1": "Choose A as the repeat count source.",
         "2": "The value 3 passes from A to repeat.",
-        "3": "Turn as many times as A says."
+        "3": "Turn as many times as A says.",
+        "alt0": "Box A holds 3.",
+        "alt1": "The value 3 in box A is selected as the repeat count.",
+        "alt2": "Box A holds 3, and the repeat count is also 3.",
+        "alt3": "The right turn ran three times, using the value 3 in box A."
       },
       "logic": {
         "0": "Select if to edit its condition.",
         "1": "Choose left to check the wall on that side.",
         "2": "Turn on not to change false to true.",
-        "3": "Choosing and or or shows two condition slots."
+        "3": "Choosing and or or shows two condition slots.",
+        "alt2": "The left side is open. Negating the false left-blocked check makes it true.",
+        "alt3": "The two checks ask whether the left side and the path ahead are blocked. Both are open, so both checks and their combined and result are false."
       },
       "parameter": {
         "0": "Enable the star function input ◆.",
         "1": "Use ◆ for the repeat count inside the function.",
         "2": "Choose 2 as the number to send in the call.",
-        "3": "Copy 2 into ◆ while A stays 4."
+        "3": "Copy 2 into ◆ while A stays 4.",
+        "alt0": "The star function has an input for a number.",
+        "alt1": "The repeat count inside the star function uses its input number.",
+        "alt2": "The number to send to the star function is 2. Box A holds 4.",
+        "alt3": "The star function received input 2 and repeated twice. Box A still holds 4."
       },
       "return": {
         "0": "Add return inside the function and choose 2.",
         "1": "Use the function result for the main repeat count.",
         "2": "The function sends 2 back with return.",
-        "3": "Skip the turn after return and continue main."
+        "3": "Skip the turn after return and continue main.",
+        "alt0": "The value for the star function to return is 2.",
+        "alt1": "The repeat count in main uses the value returned by the star function.",
+        "alt2": "The star function returned 2. The right turn after return is skipped.",
+        "alt3": "Main used the returned value 2 to move forward twice. The turn after return in the function did not run."
       },
       "event": {
         "0": "Create an on handler for the diamond signal.",
         "1": "Put a turn inside on.",
         "2": "The diamond signal arrives and waits in the queue.",
-        "3": "Run the connected on body, then finish."
+        "3": "Run the connected on body, then finish.",
+        "alt0": "A handler is connected to the diamond signal.",
+        "alt1": "The diamond signal handler contains a right turn.",
+        "alt2": "The diamond signal arrived and entered the queue. It is connected to the diamond handler.",
+        "alt3": "The right turn in the handler connected to the diamond signal ran, then finished."
       },
       "list": {
         "0": "Add a list loop and choose its body.",
         "1": "Use the current value ▣ for the inner repeat count.",
         "2": "The first element has index 0 and value ▣ of 2.",
-        "3": "The next element has index 1 and value ▣ of 3."
+        "3": "The next element has index 1 and value ▣ of 3.",
+        "alt0": "The list holds 2 followed by 3.",
+        "alt1": "The inner repeat uses the current list value as its count. The list holds 2 and 3.",
+        "alt2": "The current element is at index 0 and its value is 2.",
+        "alt3": "The current element moved to index 1 and its value is 3."
       },
       "search": {
         "0": "Choose the comparison body as the place to add blocks.",
         "1": "Put a stop block inside the condition.",
         "2": "The value matches target 8, so stop the list loop.",
-        "3": "Leave the remaining slots unchecked and run the next action."
+        "3": "Leave the remaining slots unchecked and run the next action.",
+        "alt0": "The list holds 5, 2, and 8, and the target is 8. Search starts from the end.",
+        "alt1": "A stop block is placed to stop the loop when the current value matches target 8.",
+        "alt2": "The target is 8. It was found at index 2; indexes 0 and 1 were not checked.",
+        "alt3": "Target 8 was found at index 2 and the loop stopped. Indexes 0 and 1 were not checked, and the forward action after the loop ran."
       }
     }
   }
