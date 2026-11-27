@@ -142,3 +142,14 @@ it('shows the concept through interpreter traces, not just captions', () => {
   expect(demoScene('search', 2).frame.search?.stopped?.remaining).toEqual([1, 0])
   expect(demoScene('search', 3).frame.pos).toEqual({ x: 1, y: 0 })
 })
+it('list and search demos count indexes from 0 like the interpreter (cue matches the frame index)', () => {
+  for (const cut of [2, 3]) {
+    const scene = demoScene('list', cut)
+    const index = scene.frame.list?.current?.index
+    expect(index).toBe(cut - 2)
+    expect(scene.cue).toContain(`#${index}`)
+  }
+  const search = demoScene('search', 2)
+  expect(search.frame.search?.foundIndex).toBe(2)
+  expect(search.cue).toContain(`#${search.frame.search?.foundIndex} ✓`)
+})

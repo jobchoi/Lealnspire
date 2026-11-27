@@ -1149,3 +1149,12 @@ button small { display: block; font-size: .75rem; }
 .home-completion > span { display: inline-flex; gap: 6px; }
 .home-completion svg { width: 32px; height: 32px; }
 .play-page .stage-controls button.demo-trigger { min-width:48px; min-height:48px; height:auto; }
+
+/* Hint decoration belongs to regions, leaving tile execution/selection/error states intact. */
+.play-page [data-hint-focus] {
+  outline: 3px dashed #795000;
+  outline-offset: -3px;
+  background-color: #fff3cf;
+  border-radius: 8px;
+}
+.hint-target-label { display: block; font-size: 12px; line-height: 1.25; }

@@ -1,3 +1,6 @@
+export type HintTarget = { kind: 'map'; area: HintHighlight } | { kind: 'palette' | 'workspace' | 'list' | 'search' | 'signals' | 'variables' }
+export type HintFocus = { primary: HintTarget; secondary?: HintTarget }
+
 export type HintHighlight = 'path' | 'walls' | 'start' | 'goal'
 export type Dir = 'N' | 'E' | 'S' | 'W'
 export type Variable = 'A' | 'B'
@@ -30,7 +33,7 @@ export type ProgramDocument = { main: Program; functions: FunctionDef[] }
 export type ProgramInput = Program | ProgramDocument
 export const programDocument = (input: ProgramInput): ProgramDocument => Array.isArray(input) ? { main: input, functions: [] } : input
 export type Stage = {
-  id: string; world: 'sketchbook' | 'train' | 'handheld'; title: string; goal: string; hints: { keys: [string, string]; highlight: HintHighlight }
+  id: string; world: 'sketchbook' | 'train' | 'handheld'; title: string; goal: string; hints: { keys: [string, string]; focus: [HintFocus, HintFocus] }
   grid: string[]; variants?: string[][]; variantVariables?: { A: number }[]; startDir: Dir; maxBlocks?: number; starBlocks: number
   search?: { target: number; maxComparisons: number }; lists?: number[][]; events?: true; signals?: string[][]; returns?: true; params?: true; palette?: BlockType[]
   initialFunctions?: FunctionDef[]; solutionFunctions?: FunctionDef[]

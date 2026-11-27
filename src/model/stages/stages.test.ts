@@ -197,3 +197,47 @@ it('introduces every regular prefilled puzzle as fixing existing code in both la
     expect(new I18n('en').t(stage.goal), stage.id).toMatch(/^Fix (?:the code that's already there|one command in the code that's already there)/)
   }
 })
+
+it('T74 provides two valid focus steps and translated keys for all 47 stages', () => {
+  expect(allStages).toHaveLength(47)
+  const ko = new I18n('ko'), en = new I18n('en')
+  for (const stage of allStages) {
+    expect(stage.hints.keys).toHaveLength(2)
+    expect(stage.hints.focus).toHaveLength(2)
+    for (const key of stage.hints.keys) {
+      expect(ko.t(key)).not.toBe(key)
+      expect(en.t(key)).not.toBe(key)
+    }
+    for (const focus of stage.hints.focus) for (const target of [focus.primary, ...(focus.secondary ? [focus.secondary] : [])]) {
+      expect(['map', 'palette', 'workspace', 'list', 'search', 'signals', 'variables']).toContain(target.kind)
+      if (target.kind === 'map') expect(['path', 'walls', 'start', 'goal']).toContain(target.area)
+      if (target.kind === 'list') expect(stage.lists).toBeDefined()
+      if (target.kind === 'search') expect(stage.search).toBeDefined()
+      if (target.kind === 'signals') expect(stage.signals).toBeDefined()
+      if (target.kind === 'variables') expect(stage.variantVariables).toBeDefined()
+    }
+  }
+})
+
+it('T74 matches the approved stage allocation table exactly', () => {
+  const groups: [string, string, string][] = [
+    ['1', 'map:path', 'palette'], ['2', 'map:walls', 'map:path'],
+    ['3 4 5 6 7 b1 b2 u3-2 u4-1 u4-2 u5-2 u6-3 u7-1 u7-2 u8-1 u12-2', 'map:path', 'workspace'],
+    ['8', 'map:goal', 'workspace'],
+    ['u2-1 u2-2 u2-3 u2-6 u6-2 u6-4 u12-1', 'map:walls', 'workspace'],
+    ['u2-4 u4-3 u6-1 u7-3 u8-2 u8-3', 'workspace', 'workspace'],
+    ['u2-5 u3-3', 'map:start', 'workspace'], ['u3-1', 'map:walls', 'palette'],
+    ['u5-1', 'variables+map:goal', 'workspace'], ['u5-3', 'variables', 'workspace'],
+    ['u9-1', 'signals+map:path', 'workspace'], ['u9-2', 'signals', 'signals'],
+    ['u9-3', 'signals+workspace', 'workspace'], ['u10-1', 'list+map:path', 'list'],
+    ['u10-2 u10-3', 'list', 'list'], ['u11-1', 'search', 'search'],
+    ['u11-2 u11-3', 'search', 'workspace'], ['u12-3', 'list+map:goal', 'list'],
+  ]
+  const seen: string[] = []
+  for (const [ids, first, second] of groups) for (const id of ids.split(' ')) {
+    const stage = allStages.find(stage => stage.id === id)!
+    expect(stage.hints.focus.map(focus => [focus.primary, ...(focus.secondary ? [focus.secondary] : [])].map(target => target.kind === 'map' ? `map:${target.area}` : target.kind).join('+'))).toEqual([first, second])
+    seen.push(id)
+  }
+  expect(seen.sort()).toEqual(allStages.map(stage => stage.id).sort())
+})

@@ -94,7 +94,7 @@ View는 포커스, 모달 키보드, 타일 스크롤과 CSS를 담당합니다.
 | FunctionDef / ProgramDocument | 함수 id·icon(star/moon)·body / main 배열 + functions 정의 목록 |
 | Program (types.ts) | 직렬화 가능한 Block[]; 저장 형식 유지 |
 | Program (program.ts 클래스) | 트리를 복사하여 소유하고 새 객체로 편집; toBlocks로 복사 반환 |
-| Stage | id, world, title/goal 문구 키, hints(2단계 키·강조), grid, variants?, startDir, maxBlocks?, starBlocks, initialProgram?/initialFunctions?, solution/solutionFunctions?, palette?: BlockType[] |
+| Stage | id, world, title/goal 문구 키, hints(2단계 키·단계별 볼 곳 focus — T74), grid, variants?, startDir, maxBlocks?, starBlocks, initialProgram?/initialFunctions?, solution/solutionFunctions?, palette?: BlockType[] |
 | Frame | pos, dir, activeBlockId, event(move/turn/bump/goal/check)?, check?, loops?, call?: { callId, fn }(함수 몸체 실행의 호출 문맥) |
 | RunResult | frames + success/collision/unfinished/stepLimit; RunAllResult는 results/result/failedVariant |
 | Progress | version:1, stages: { [id]: { completed, bestStars, lastProgram } } |
@@ -174,6 +174,7 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 | `layout.e2e.ts` | 세 월드 + 본래 스테이지 4·8 × 3개 화면 크기 배치, 44px, 글자 잘림·쪼개짐 |
 | `fix.e2e.ts` | T15 실패 지점 고치기, T22 닫은 뒤 바로 편집 |
 | `hint.e2e.ts` | T16 2단계 힌트, 모든 힌트가 정답 순서를 말하지 않음 |
+| `hint-focus.e2e.ts` | T74 단계별 볼 곳 강조(리스트·비교·신호·상자 A·작업 공간·블록 상자), 힌트가 코드를 안 바꿈, 키보드, 화면 3크기 |
 | `loop.e2e.ts` | T18 반복 회차(중첩 포함) |
 | `undo.e2e.ts` | T19 되돌리기 1회 |
 | `privacy.e2e.ts` | T20 기록 안내·삭제(다른 키 보존) |

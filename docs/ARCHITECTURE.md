@@ -78,7 +78,7 @@ type Program = Block[] // 이전 배열 API 호환
 type Stage = {
   id: string; world: 'sketchbook' | 'train' | 'handheld'
   title: string; goal: string // i18n 키
-  hints: { keys: [string, string]; highlight: 'path' | 'walls' | 'start' | 'goal' }
+  hints: { keys: [string, string]; focus: [HintFocus, HintFocus] } // T74: 단계별 볼 곳. HintTarget = {kind:'map', area:'path'|'walls'|'start'|'goal'} | {kind:'palette'|'workspace'|'list'|'search'|'signals'|'variables'}, HintFocus = {primary, secondary?}. 화면은 해당 영역에 data-hint-focus(점선 테두리) + '볼 곳' 안내. 저장 형식 무관
   grid: string[]            // 예: ["#####", "#S.G#"]  S: 출발, G: 도착, #: 벽
   variants?: string[][]    // 없으면 [grid], 같은 코드로 모두 성공해야 통과
   startDir: 'N' | 'E' | 'S' | 'W'
