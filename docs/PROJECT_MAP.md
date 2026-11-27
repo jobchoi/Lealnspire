@@ -312,3 +312,9 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - `model/unit12.test.ts`, `model/unit1234567891011-run.fixture.json`: 정답·인정 풀이, 우회 탐색, 저장 왕복·손상 격리, 전체 완주 계약과 1~11단원 44스테이지/75맵 전체 프레임 회귀.
 - `controller/flow.ts`: courseCompleted는 1~12단원 정규 퍼즐 전체 완료를 검사하며 보너스·예측을 제외한다.
 - `view/components/CourseCompletion.tsx`: 목록·성공 결과에 공유하는 SVG 월드 기호·전체 완주 문구. 동작 줄이기는 CSS로 정지한다. PlayPage·ResultModal·StageSelectPage는 기능 플래그보다 12단원 표시를 우선한다.
+
+### T73-1 첫 사용 시범 기반 [제안·잠정]
+
+- `controller/DemoController.ts`, `DemoController.test.ts`: 정규 목록 밖 2×2 예시 맵, EditorController·Interpreter를 이용한 격리된 4컷 재생, 주입 타이머·수동 컷·정리·진행 불변 검사.
+- `view/components/DemoModal.tsx`, `DemoModal.css`, `DemoModal.test.tsx`: 기존 Board·BlockTiles 재사용, 장식 손·재생 제어·모달 포커스·배경 inert·동작 줄이기·ko/en×세 월드 렌더링.
+- ProgressRepository는 설정만 v2(lang/seenDemos)로 이행한다. PlayPage는 1번 첫 편집 전 요청 버튼, HomePage는 확인 후 시범 기록 초기화를 제공한다. E2E·브라우저 QC는 Claude 담당이며 환경 제한은 설계 구현 기록 참조.

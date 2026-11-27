@@ -89,11 +89,18 @@ export function isUnlocked(progress: Progress, stageIndex: number): boolean {
 
 function makeStore(storage?: ProgressStorage) {
   const deletionStorage = storage
+  let seenDemos: string[] = []
   let language: 'ko' | 'en' | undefined
   try {
     const settings: unknown = JSON.parse(storage?.getItem(settingsKey) ?? 'null')
-    if (record(settings) && settings.version === 1 && (settings.lang === 'ko' || settings.lang === 'en')) language = settings.lang
+    if (record(settings) && (settings.version === 1 || settings.version === 2) && (settings.lang === 'ko' || settings.lang === 'en')) language = settings.lang
+    if (record(settings) && settings.version === 2 && Array.isArray(settings.seenDemos) && settings.seenDemos.every(id => id === 'add-run')) seenDemos = [...new Set(settings.seenDemos)]
+    if (record(settings) && (settings.version === 1 || settings.version === 2) && ('lang' in settings || 'seenDemos' in settings)) persistSettings()
   } catch { /* Invalid or unavailable settings use the default language. */ }
+  function persistSettings() {
+    try { storage?.setItem(settingsKey, JSON.stringify({ version: 2, ...(language ? { lang: language } : {}), seenDemos })) }
+    catch { /* Settings remain available for this session. */ }
+  }
   let progress = empty()
   try {
     const current = readJSON(storage?.getItem(progressV2Key) ?? null)
@@ -117,11 +124,13 @@ function makeStore(storage?: ProgressStorage) {
     }
   }
   return {
+    getSeenDemos: () => [...seenDemos],
+    markDemoSeen(id: string) { if (id !== 'add-run') return; seenDemos = [...new Set([...seenDemos, id])]; persistSettings() },
+    resetDemos() { seenDemos = []; persistSettings() },
     getLanguage: () => language,
     saveLanguage(lang: 'ko' | 'en') {
       language = lang
-      try { storage?.setItem(settingsKey, JSON.stringify({ version: 1, lang })) }
-      catch { /* Keep the selection in memory when settings cannot be saved. */ }
+      persistSettings()
     },
     get persistent() { return storage !== undefined },
     clear() {
@@ -162,6 +171,9 @@ export class ProgressRepository {
   private store: ReturnType<typeof makeStore>
   constructor(storage?: ProgressStorage) { this.store = makeStore(storage) }
   get persistent() { return this.store.persistent }
+  getSeenDemos = () => this.store.getSeenDemos()
+  markDemoSeen = (id: string) => this.store.markDemoSeen(id)
+  resetDemos = () => this.store.resetDemos()
   getLanguage = () => this.store.getLanguage()
   saveLanguage = (lang: 'ko' | 'en') => this.store.saveLanguage(lang)
   clear = () => this.store.clear()

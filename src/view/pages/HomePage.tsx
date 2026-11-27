@@ -5,8 +5,9 @@ import type { Progress } from '../../model/ProgressRepository'
 import { t, i18n, languageControl, type Locale } from '../../i18n/I18n'
 import { continueStageIndex, courseCompleted } from '../../controller/flow'
 
-type Props = { locale?: Locale; onLanguageChange?: () => void; progress: Progress; onStart: () => void; onContinue: (index: number) => void; onList: () => void; persistent?: boolean; onClear?: () => boolean }
-export function HomePage({ progress, onStart, onContinue, onList, persistent = false, onClear, locale = 'ko', onLanguageChange }: Props) {
+type Props = { onResetDemos?: () => void; locale?: Locale; onLanguageChange?: () => void; progress: Progress; onStart: () => void; onContinue: (index: number) => void; onList: () => void; persistent?: boolean; onClear?: () => boolean }
+export function HomePage({ progress, onStart, onContinue, onList, persistent = false, onClear, locale = 'ko', onLanguageChange, onResetDemos }: Props) {
+  const [resetDemo, setResetDemo] = useState(false)
   const [info, setInfo] = useState(false)
   const [confirm, setConfirm] = useState(false)
   const [clearFailed, setClearFailed] = useState(false)
@@ -20,6 +21,8 @@ export function HomePage({ progress, onStart, onContinue, onList, persistent = f
       <span lang={locale === 'ko' ? 'en' : 'ko'}>{languageControl.names[locale === 'ko' ? 'en' : 'ko']}</span>
     </button>
     </div>
+    {onResetDemos && <button type="button" onClick={() => setResetDemo(true)}>{t('demo.reset')}</button>}
+    {resetDemo && <RecordDialog demoReset confirm onClose={() => setResetDemo(false)} onConfirm={() => {}} onCancel={() => setResetDemo(false)} onClear={() => { onResetDemos?.(); setResetDemo(false) }} />}
     {info && <RecordDialog clearFailed={clearFailed} confirm={confirm} notice={clearFailed ? t('privacy.clearFailed') : notice ?? (!persistent ? t('privacy.unavailable') : undefined)} onClose={() => setInfo(false)} onConfirm={() => setConfirm(true)} onCancel={() => setConfirm(false)} onClear={() => {
       const cleared = onClear?.() ?? false
       setConfirm(false)
@@ -40,8 +43,8 @@ export function HomePage({ progress, onStart, onContinue, onList, persistent = f
 }
 
 
-type DialogProps = { clearFailed?: boolean; confirm: boolean; notice?: string; onClose: () => void; onConfirm: () => void; onCancel: () => void; onClear: () => void }
-export function RecordDialog({ clearFailed, confirm, notice, onClose, onConfirm, onCancel, onClear }: DialogProps) {
+type DialogProps = { demoReset?: boolean; clearFailed?: boolean; confirm: boolean; notice?: string; onClose: () => void; onConfirm: () => void; onCancel: () => void; onClear: () => void }
+export function RecordDialog({ demoReset, clearFailed, confirm, notice, onClose, onConfirm, onCancel, onClear }: DialogProps) {
   const dialog = useRef<HTMLDivElement>(null)
   const cancel = useRef<HTMLButtonElement>(null)
   const erase = useRef<HTMLButtonElement>(null)
@@ -69,11 +72,11 @@ export function RecordDialog({ clearFailed, confirm, notice, onClose, onConfirm,
       }
     }
   }}>
-    <h2 id="privacy-title">{t('privacy.title')}</h2>
+    <h2 id="privacy-title">{t(demoReset ? 'demo.reset' : 'privacy.title')}</h2>
     {confirm ? <>
-      <p>{t('privacy.confirm')}</p>
+      <p>{t(demoReset ? 'demo.confirm' : 'privacy.confirm')}</p>
       <div className="playback-controls">
-        <button type="button" onClick={onClear}>{t('privacy.erase')}</button>
+        <button type="button" onClick={onClear}>{t(demoReset ? 'demo.reset' : 'privacy.erase')}</button>
         <button ref={cancel} type="button" onClick={onCancel}>{t('privacy.cancel')}</button>
       </div>
     </> : <>

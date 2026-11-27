@@ -81,3 +81,12 @@
 주요 위험은 **시범 버튼을 발견하지 못함**, 4컷에 개념을 과도하게 넣음, 시범 코드의 실제 풀이 복제, 저장 부작용이다. 첫 관찰은 1단원 5번과 2·4·7·10단원 진입에 집중한다. 종단간 검증 통과와 아동의 이해 확인은 별도로 판단한다.
 
 파일 수정·서버 실행·테스트 실행은 하지 않았다. 이 설계의 실행·화면 검증은 **미검증**이며, 현재 T72 작업 트리를 기준으로 작성했다.
+## T73-1 구현 기록 (Codex, 2026-11-27) [제안·잠정]
+
+첫 추가→실행 시범만 구현했다. 정규 스테이지와 다른 `S./#G` 예시에서 앞으로 한 칸만 이동하며 정답·완료를 보여 주지 않는다. 전용 EditorController로 블록을 만들고 Interpreter 프레임을 기존 Board·BlockTiles로 표시한다. 4컷×2400ms(첫→마지막 전환 7.2초) 후 정지한다. 마지막 컷·건너뛰기는 설정에 기록하고 단순 닫기·이탈은 기록하지 않는다. 본 시범은 버튼의 강조만 제거하며 첫 편집 전 다시 볼 수 있다. 홈에서는 확인 후 본 목록 전체를 초기화한다(현재 시범 하나).
+
+설정 v1 언어를 v2로 보존 이행하고 손상 목록을 비우며 언어 변경과 본 목록 저장을 합친다. 진행 저장 형식은 변경하지 않았다. 테스트는 시범 전후 실제 GameController snapshot·Progress·두 진행 키 원문을 비교한다. 타이머 중복·일시정지·수동 이동·dispose·Strict Mode 재설정을 검사한다.
+
+Context7 도구가 없어 React 19.3 공식 useEffect 문서(https://react.dev/reference/react/useEffect)의 정리·Strict Mode 동작을 참고했다. Playwright MCP 없음. 개발 서버는 listen EPERM(127.0.0.1:5173), 설치된 Chromium도 sandbox_host_linux.cc shutdown Operation not permitted로 실행 불가. npm run e2e는 webServer 시작 실패. 브라우저 상호작용·작은 화면·콘솔·스크린샷 육안 확인·화면 낭독기 검증은 미검증이며 Claude QC가 필요하다. E2E 파일은 지시서대로 수정하지 않았다.
+
+최종 검증: `npm run verify` 3회 연속 통과(lint·387개 테스트·TypeScript/Vite build). `git diff --check` 통과. 브라우저·E2E는 위 환경 제한으로 미검증이므로 완료 승인 전 Claude QC가 필요하다.

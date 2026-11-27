@@ -14,6 +14,7 @@ const stepLimitPreviewFrames = 12
 const scheduler: Scheduler = { set: (callback, delay) => setTimeout(callback, delay), clear: handle => clearTimeout(handle as ReturnType<typeof setTimeout>) }
 type State = { variant: number; all: RunAllResult | null; undoProgram: ProgramDocument | null; doc: ProgramDocument; program: Program; execution: RunResult | null; index: number; playing: boolean; dismissed: boolean; speed: keyof typeof playbackSpeeds; hintStep: 0 | 1 | 2; failure: ReturnType<typeof failurePoint> }
 export class GameController extends Observable<State> {
+  hasEdited = false
   readonly editor = new EditorController(() => { if (this.finished) this.reset() }, { undo: () => this.undo(), available: () => this.canUndo })
   readonly stage: Stage
   readonly repository: ProgressRepository
@@ -120,6 +121,7 @@ export class GameController extends Observable<State> {
   }
   edit = (input: ProgramInput) => {
     if (this.locked) return
+    this.hasEdited = true
     const doc = structuredClone(Array.isArray(input) ? { main: input, functions: this.state.doc.functions } : programDocument(input))
     new FunctionProgram(doc)
     this.repository.saveProgram(this.stage.id, doc)

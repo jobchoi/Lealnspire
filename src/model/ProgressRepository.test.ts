@@ -152,7 +152,7 @@ describe('language settings', () => {
     const store = createProgressStore(storage)
     store.saveLanguage('en')
     store.completeStage(stages[0].id, 3, program)
-    expect(JSON.parse(storage.getItem(settingsKey)!)).toEqual({ version: 1, lang: 'en' })
+    expect(JSON.parse(storage.getItem(settingsKey)!)).toEqual({ version: 2, lang: 'en', seenDemos: [] })
     expect(createProgressStore(storage).getLanguage()).toBe('en')
     expect(store.clear()).toBe(true)
     const restored = createProgressStore(storage)
@@ -162,7 +162,7 @@ describe('language settings', () => {
     expect(createProgressStore(storage).getLanguage()).toBe('ko')
   })
   it('ignores invalid settings without losing valid progress', () => {
-    for (const raw of ['{', 'null', '[]', '{"version":2,"lang":"en"}', '{"version":1,"lang":"fr"}']) {
+    for (const raw of ['{', 'null', '[]', '{"version":3,"lang":"en"}', '{"version":1,"lang":"fr"}']) {
       const storage = fakeStorage(serialize())
       storage.setItem(settingsKey, raw)
       const store = createProgressStore(storage)

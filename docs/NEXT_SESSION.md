@@ -2,7 +2,7 @@
 
 > 이 파일은 작업이 끝날 때마다 덮어씁니다. 작업 목록은 [TASKS.md](TASKS.md), 과거 기록은 [WORK_HISTORY.md](WORK_HISTORY.md)에 있습니다.
 
-마지막 갱신: 2026-11-27 · 기준 줄기 브랜치 `feature/T60-parameters`(develop·master와 같음) · 버전 **v1.13.0**
+마지막 갱신: 2026-11-27 · 기준 줄기 브랜치 `feature/T60-parameters`(develop·master와 같음) · 버전 **v1.14.0**
 
 ## 시작하는 법
 
@@ -31,12 +31,12 @@
 
 ## 병합·태그
 
-- 태그 `v0.1.0`~`v1.13.0` 원격. develop·master·release/1.13.0 원격 반영(Claude push)
+- 태그 `v0.1.0`~`v1.14.0` 원격. develop·master·release/1.14.0 원격 반영(Claude push)
 - 작업 폴더: `Lealnspire`(기준), `Lealnspire-review`(v1.12.3 사본, UI/UX 리뷰용 — `npx vite --port 5180`). 병합 끝난 작업 폴더는 2026-11-27 정리. 다음 작업부터 develop에서 `feature/<ID>-<이름>` 새 브랜치로(기준 폴더의 `feature/T60-parameters`는 develop과 같은 옛 이름)
 
 ## 다음 작업
 
-1. **T73 첫 사용 시범**(설계 `docs/design/onboarding-demos.md`, T73-1 기반부터 Codex)
+1. **T73 첫 사용 시범**: T73-1 완료(v1.14.0). 다음 T73-2 나머지 개념 장면(지시서 `docs/handoff/T73-2.md`) → T73-3 통합 검증. 단위 테스트 1회 간헐 실패(재현 못 함) 관찰 중
 2. 실제 기기 확인(휴대폰·태블릿, 사파리·파이어폭스) — 사용자와 일정 상의
 3. 제안: T65(지도 렌더러 PixiJS, 승인 필요), 새 Claude 채팅으로 UI/UX 리뷰(사용자 아이디어, `~/project/Lealnspire-review`)
 4. 사용자와 함께 논의: 연령 구분, 별 기준, 실제 배포 시점(라즈베리파이), 블로그 원고(`docs/blog/`)

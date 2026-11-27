@@ -590,5 +590,21 @@
   "u123Hint1": "What changes between the two maps?",
   "u123Hint2": "A list tells you more than its values.",
   "nextUnitOpened": "Next unit is open: {unit}",
-  "nextUnit": "Next unit"
+  "nextUnit": "Next unit",
+  "demo": {
+    "button": "See how it works",
+    "title": "Here’s how",
+    "skip": "Skip",
+    "again": "Watch again",
+    "pause": "Pause",
+    "resume": "Resume",
+    "back": "Back",
+    "next": "Next",
+    "reset": "Show demos again",
+    "confirm": "Start the demos over?",
+    "cut0": "Pressed the forward block",
+    "cut1": "A block appeared in the workspace",
+    "cut2": "Pressed play",
+    "cut3": "The robot moved one square"
+  }
 }

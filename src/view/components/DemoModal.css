@@ -1,0 +1,12 @@
+.demo-trigger { min-width: 48px; min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 3px; }
+.demo-trigger.demo-suggested { outline: 3px solid #986000; outline-offset: 2px; }
+.demo-modal { width: min(440px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow: auto; padding: 16px; }
+.demo-modal h2, .demo-modal p { margin: 8px 0; }
+.demo-scene { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center; }
+.demo-scene .board { width: 150px; max-width: 100%; height: 125px; min-height: 0; margin: auto; }
+.demo-palette, .demo-run { display: flex; align-items: center; justify-content: center; min-height: 56px; border: 2px solid #45536b; border-radius: 8px; }
+.demo-run > svg { width: 32px; height: 32px; }
+.demo-pressed { outline: 3px solid #986000; outline-offset: 2px; }
+.demo-workspace { min-height: 75px; border: 2px dashed #45536b; padding: 6px; }
+.demo-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 10px; }
+.demo-controls button { min-height: 48px; min-width: 48px; }

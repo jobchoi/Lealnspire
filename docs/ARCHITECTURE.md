@@ -298,3 +298,9 @@ ProgressRepository는 11단원에서만 새 조건·방향·종료를 허용한�
 12단원은 기존 Stage·저장 v2·실행 의미를 재사용한다. u12-2만 params, u12-3만 lists를 켜며 두 플래그를 함께 켜지 않는다. 저장 허용은 기존 stagePolicy의 params/lists 기반 repeat A 허용을 그대로 사용한다(u5/u6 전용 문법 불필요). 단원 표시에는 u12 접두사를 먼저 검사한다. flow.courseCompleted는 정규 1~12단원 전체 완료만 요구하고 보너스와 예측은 제외한다. 별·새 완료 플래그를 따로 저장하지 않고 현재 진행 기록에서 계산한다.
 
 CourseCompletion은 목록과 성공 결과 창에서 SVG 월드 기호가 모이는 CSS 연출·짧은 개념 되짚기·전체 완주 문구를 공유한다. prefers-reduced-motion에서는 애니메이션을 제거한다. 새 파일은 이 컴포넌트, unit12.test.ts와 1~11단원 전체 결과·프레임 fixture다. 새 블록·저장 버전·의존성·라이브러리 API·설정 변경은 없다.
+
+### T73-1 요청형 첫 시범 [제안·잠정]
+
+설정 `lealnspire.settings`만 `{ version: 2, lang?, seenDemos: string[] }`로 이행한다. v1 언어를 보존하며 언어 변경·시범 완료·초기화는 공통 저장 함수를 거쳐 두 필드를 함께 저장한다. 잘못된 목록(알 수 없는 ID 포함)은 전체를 빈 목록으로 복구한다. 저장 실패 시 메모리 상태를 유지한다. 진행 v2 형식과 진행 삭제의 설정 보존 계약은 그대로다.
+
+DemoController는 정규 목록 밖 예시 맵과 전용 EditorController·Interpreter만 사용하며 GameController·ProgressRepository를 소유하지 않는다. 완료 콜백은 설정의 본 목록에만 연결한다. 2400ms 간격으로 4컷 뒤 정지하며 타이머는 재시작·일시정지·이탈 때 정리한다. View는 media query에 따라 자동 재생 대신 이전/다음을 제공하고, 모달 외부를 inert 처리하며 진입·복귀 포커스를 관리한다. 새 의존성은 없다.
