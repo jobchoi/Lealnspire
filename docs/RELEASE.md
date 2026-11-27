@@ -32,7 +32,8 @@
 | `v1.15.0` | `7ddc44d` | 개념 시범 14종(T73-2) |
 | `v1.16.0` | `a669e5b` | 힌트 볼 곳 강조(T74), 시범 통합 검증(T73-3) |
 | `v1.17.0` | `7fb8fa0` | 함수 탭 힌트(T77), 플레이 중 저장 실패 안내(T78) |
-| `v1.18.0` | release/1.18.0 | 시범 다시 보기·되짚기·대체 설명(T79) |
+| `v1.18.0` | `e462020` | 시범 다시 보기·되짚기·대체 설명(T79) |
+| `v1.19.0` | release/1.19.0 | 제목 번호 통일(T80), 문서 정리 |
 
 변경 내용은 [CHANGELOG.md](../CHANGELOG.md). 태그는 주석 태그(`git tag -a`)로 만들고 메시지에 요약을 적습니다.
 
@@ -41,7 +42,7 @@
 1. `develop`에서 `release/<버전>` 브랜치를 만들고 CHANGELOG.md·package.json `version`을 올립니다.
 2. `npm run verify`, `npm run e2e`, `npm run e2e:prod` 통과를 확인합니다.
 3. `release/<버전>`을 `master`와 `develop`에 병합하고 `master`에 `v<버전>` 태그를 붙입니다.
-4. `git push origin master develop --follow-tags` (이 저장소의 `.claude/settings.json`은 AI의 develop·master push를 막아 두었으므로 사람이 실행합니다).
+4. `git push origin master develop release/<버전> v<버전>` — 2026-11-26부터 전체 검증(verify·e2e·e2e:prod)을 통과한 버전은 Claude가 직접 push합니다(`.claude/settings.json`, CLAUDE.md 5절). 그 전에는 사람이 실행했습니다.
 
 ## 롤백
 

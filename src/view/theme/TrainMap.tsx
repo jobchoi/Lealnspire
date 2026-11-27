@@ -1,14 +1,14 @@
 import { isometric } from './isometric'
 import type { Frame, Dir, HintHighlight, Position, Stage } from '../../model/types'
 import { boardCells } from '../../controller/BoardPresenter'
-import { t } from '../../i18n/I18n'
+import { stageLabel, t } from '../../i18n/I18n'
 const artwork = {"station": "<path d=\"M-16 8 L0 0 L16 8 L0 16Z\" fill=\"#fca5a5\"/><path d=\"M-16 8 L0 16 L0 30 L-16 22Z\" fill=\"#fef3c7\"/><path d=\"M16 8 L0 16 L0 30 L16 22Z\" fill=\"#fde68a\"/><path d=\"M-18 8 L0 -6 L18 8 L0 0Z\" fill=\"#dc2626\"/><rect x=\"-1\" y=\"-26\" width=\"2\" height=\"18\" fill=\"#1c1917\"/><path d=\"M1 -26h10l-3 4 3 4H1z\" fill=\"#dc2626\"/>", "robot": "<path d=\"M-12 0 L6 -9 L18 -3 L0 6Z\" fill=\"#2563eb\"/><path d=\"M-12 0 L0 6 L0 14 L-12 8Z\" fill=\"#1d4ed8\"/><path d=\"M18 -3 L0 6 L0 14 L18 5Z\" fill=\"#1e40af\"/><rect x=\"2\" y=\"-20\" width=\"6\" height=\"12\" fill=\"#1e293b\"/><circle cx=\"5\" cy=\"-24\" r=\"4\" fill=\"#fff\" opacity=\".8\"/>", "rock": "<path d=\"M0 0 L40 -20 L80 0 L40 20 Z\" fill=\"#a8a29e\"/><path d=\"M0 0 L40 20 L40 44 L0 24 Z\" fill=\"#78716c\"/><path d=\"M80 0 L40 20 L40 44 L80 24 Z\" fill=\"#57534e\"/>", "tree": "<rect x=\"-3\" y=\"0\" width=\"6\" height=\"14\" fill=\"#78350f\"/><circle cy=\"-6\" r=\"12\" fill=\"#15803d\"/>"}
 export function TrainMap({ events, stage, position, direction, bump, failurePosition, hintHighlight, sensors = [], sensorLabel = '' }: { events?: Frame['events']; sensors?: Position[]; sensorLabel?: string; stage: Stage; position?: Position; direction: Dir; bump: boolean; failurePosition?: Position; hintHighlight?: HintHighlight }) {
  const grid = boardCells(stage, position, hintHighlight), h = stage.grid.length, w = grid.width
   const robotIndex = grid.cells.findIndex(cell => cell.occupied)
   const goalIndex = grid.cells.findIndex(cell => cell.goal)
   const doorLabel = grid.cells.filter(cell => cell.door).map(cell => `${cell.door}: ${t(events?.doors[cell.door!] ? 'events.open' : 'events.closed')}`).join(', ')
-  const label = (doorLabel ? doorLabel + ' ' : '') + sensorLabel + ' ' + t('board', { title: t(stage.title), row: Math.floor(robotIndex / grid.width) + 1, column: robotIndex % grid.width + 1, goalRow: Math.floor(goalIndex / grid.width) + 1, goalColumn: goalIndex % grid.width + 1, direction: t(`directions.${direction}`) })
+  const label = (doorLabel ? doorLabel + ' ' : '') + sensorLabel + ' ' + t('board', { title: stage.id.startsWith('u') ? stageLabel(stage) : t(stage.title), row: Math.floor(robotIndex / grid.width) + 1, column: robotIndex % grid.width + 1, goalRow: Math.floor(goalIndex / grid.width) + 1, goalColumn: goalIndex % grid.width + 1, direction: t(`directions.${direction}`) })
  const point = (x: number, y: number) => isometric(x, y, h)
  const a=point(0,0), b=point(w,0), c=point(w,h), d=point(0,h)
  return <svg className={`board train-island${bump ? ' board-bump' : ''}`} role="img" aria-label={label} viewBox={`0 0 ${(w+h)*40+48} ${(w+h)*20+120}`}>

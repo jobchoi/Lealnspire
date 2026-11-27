@@ -1,7 +1,7 @@
 import { TrainMap } from '../theme/TrainMap'
 import { Robot, Symbol } from '../theme/Symbols'
 import { defaultTheme, type Theme } from '../theme/defaultTheme'
-import { t } from '../../i18n/I18n'
+import { stageLabel, t } from '../../i18n/I18n'
 import { boardCells } from '../../controller/BoardPresenter'
 import type { Frame, Dir, HintHighlight, Position, Stage } from '../../model/types'
 
@@ -20,7 +20,7 @@ export function Board({ events, theme = defaultTheme, check, stage, position, di
   }) : []
   const sensorLabel = check?.atoms ? check.atoms.map(item => `${t(`logic.${item.atom}`)}: ${t(item.value ? 'logic.true' : 'logic.false')}`).join(', ') : check ? t((check.condition === 'clearAhead' ? !check.result : check.result) ? 'sensorBlocked' : 'sensorClear') : ''
   const doorLabel = grid.cells.filter(cell => cell.door).map(cell => `${cell.door}: ${t(events?.doors[cell.door!] ? 'events.open' : 'events.closed')}`).join(', ')
-  const label = (doorLabel ? doorLabel + ' ' : '') + sensorLabel + ' ' + t('board', { title: t(stage.title), row: Math.floor(robotIndex / grid.width) + 1, column: robotIndex % grid.width + 1, goalRow: Math.floor(goalIndex / grid.width) + 1, goalColumn: goalIndex % grid.width + 1, direction: t(`directions.${direction}`) })
+  const label = (doorLabel ? doorLabel + ' ' : '') + sensorLabel + ' ' + t('board', { title: stage.id.startsWith('u') ? stageLabel(stage) : t(stage.title), row: Math.floor(robotIndex / grid.width) + 1, column: robotIndex % grid.width + 1, goalRow: Math.floor(goalIndex / grid.width) + 1, goalColumn: goalIndex % grid.width + 1, direction: t(`directions.${direction}`) })
   if (theme.world === 'train') return <TrainMap events={events} sensors={sensors} sensorLabel={sensorLabel} hintHighlight={hintHighlight} stage={stage} position={position} direction={direction} bump={bump} failurePosition={failurePosition} />
   if (theme.world) {
     const pixel = theme.world === 'handheld', size = pixel ? 16 : 80, width = grid.width * size, height = stage.grid.length * size

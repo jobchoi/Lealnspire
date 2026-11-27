@@ -284,7 +284,7 @@ it('uses the localized Unit 2 title in play, list and results without exposing i
       expect(html.split('role="dialog"')[1]).toContain(title)
       expect(html).not.toContain('u2-1')
       const list = renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)
-      expect(list).toContain(title)
+      expect(list).toContain(`<strong>1. ${t(stage.title)}</strong>`)
       expect(list).not.toContain('u2-1')
     }
   } finally { i18n.locale = previous }
@@ -703,3 +703,34 @@ it('keeps demo access without suggestion after edits, saved revisits and seen de
     game.dispose()
   }
 })
+
+for (const locale of ['ko', 'en']) {
+  it(`uses consistent numbered headings, cards and result labels for all 45 regular stages (${locale})`, () => {
+    const previous = i18n.locale
+    i18n.locale = locale
+    try {
+      const regular = allStages.filter(stage => !bonusStages.includes(stage))
+      expect(regular).toHaveLength(45)
+      const store = createProgressStore()
+      const list = renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />).replaceAll('<!-- -->', '')
+      for (const stage of regular) {
+        const unit = /^u(\d+)-(\d+)$/.exec(stage.id)
+        const title = t(stage.title)
+        const escape = (text: string) => text.replaceAll('&', '&amp;').replaceAll("'", '&#x27;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+        expect(title).not.toMatch(/^(?:\d+단원 \d+: |Unit \d+-\d+: )/)
+        const heading = unit ? `${locale === 'ko' ? `${unit[1]}단원 ${unit[2]}` : `Unit ${unit[1]}-${unit[2]}`}: ${title}` : `${locale === 'ko' ? '스테이지' : 'Stage'} ${stage.id}: ${title}`
+        const controller = new GameController(stage, store)
+        const page = () => renderToString(<PlayPage stage={stage} progressStore={store} controller={controller} onList={noop} onNext={noop} lastStage={false} />).replaceAll('<!-- -->', '')
+        expect(page()).toContain(`<h1 tabindex="-1" data-page-title="true">${escape(heading)}</h1>`)
+        expect(list).toContain(`<strong>${escape(unit ? `${unit[2]}. ${title}` : heading)}</strong>`)
+        if (unit) {
+          controller.edit({ main: stage.solution, functions: stage.solutionFunctions ?? [] })
+          for (let steps = 0; !controller.finished && steps < 2000; steps++) controller.step()
+          expect(controller.finished).toBe(true)
+          expect(page()).toContain(`<p>${escape(heading)}</p>`)
+        }
+        controller.dispose()
+      }
+    } finally { i18n.locale = previous }
+  })
+}

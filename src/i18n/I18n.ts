@@ -28,3 +28,11 @@ export class I18n {
 }
 export const i18n = new I18n()
 export const t = i18n.t
+
+// Unit titles stay unnumbered in resources; each surface supplies its context.
+export function stageLabel(stage: { id: string; title: string }, card = false): string {
+  const unit = /^u(\d+)-(\d+)$/.exec(stage.id)
+  const prefix = unit ? (card ? `${unit[2]}. ` : t('unitStageLabel', { unit: unit[1], number: unit[2] }))
+    : /^\d+$/.test(stage.id) ? `${t('stage')} ${stage.id}: ` : ''
+  return prefix + t(stage.title)
+}
