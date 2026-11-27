@@ -2,7 +2,7 @@
 
 > 이 파일은 작업이 끝날 때마다 덮어씁니다. 작업 목록은 [TASKS.md](TASKS.md), 과거 기록은 [WORK_HISTORY.md](WORK_HISTORY.md)에 있습니다.
 
-마지막 갱신: 2026-11-28 · 기준 브랜치 develop(master와 같음) · 버전 **v1.15.0**
+마지막 갱신: 2026-11-28 · 기준 브랜치 develop(master와 같음) · 버전 **v1.16.0**
 
 ## 시작하는 법
 
@@ -23,22 +23,22 @@
 
 | 항목 | 결과 |
 |---|---|
-| `npm run verify` | 통과(테스트 390개) |
-| `npm run e2e` | 587개 통과(29.1분) |
+| `npm run verify` | 통과(테스트 395개) |
+| `npm run e2e` | 614개 통과(16.2분) |
 | `npm run e2e:prod` | 4개 통과 |
 | GitHub Actions | 확인 못 함(`gh` 없음) |
 | 알려진 제한 | 실제 모바일 기기·사파리·파이어폭스 미검증 |
 
 ## 병합·태그
 
-- 태그 `v0.1.0`~`v1.15.0` 원격. develop·master·release/1.15.0 원격 반영(Claude push)
+- 태그 `v0.1.0`~`v1.16.0` 원격. develop·master·release/1.16.0 원격 반영(Claude push)
 - 작업 폴더: `Lealnspire`(기준), `Lealnspire-review`(v1.12.3 사본, UI/UX 리뷰용 — `npx vite --port 5180`). 병합 끝난 작업 폴더는 2026-11-27 정리. 다음 작업부터 develop에서 `feature/<ID>-<이름>` 새 브랜치로(기준 폴더의 `feature/T60-parameters`는 develop과 같은 옛 이름)
 
 ## 다음 작업
 
-1. **T74 힌트 구조·강조 대상**: 설계 `docs/design/hints.md`, 지시서 `docs/handoff/T74.md`(구현 Codex, 브랜치 `feature/T74-hints`)
-2. **T73-3 시범 통합 검증**(세 월드×작은 화면·키보드·낭독) — T74 뒤에 Claude가 E2E로. T73-1·2 완료(v1.14.0·v1.15.0)
+1. **T77 함수 탭 힌트 강조**(지시서 `docs/handoff/T77.md`) → **T78 플레이 중 저장 실패 안내**(`docs/handoff/T78.md`) → T79 시범 다시 보기·되짚기(지시서 미작성). 출처: GPT 제품 2차 점검 `~/project/_progress/logs/product-audit2-gpt.md`
+2. T73(시범)·T74(힌트 볼 곳) 완료(v1.14.0~v1.16.0). 1·2단원 힌트 전면 교체는 T76 아동 관찰 뒤 재검토
 3. 실제 기기 확인(휴대폰·태블릿, 사파리·파이어폭스) — 사용자와 일정 상의
 4. 제안: T65(지도 렌더러 PixiJS, 승인 필요), 새 Claude 채팅으로 UI/UX 리뷰(사용자 아이디어, `~/project/Lealnspire-review`)
-5. 사용자와 함께 논의: 연령 구분, 별 기준, 실제 배포 시점(라즈베리파이), 블로그 원고(`docs/blog/`)
+5. 사용자와 함께 논의: 연령 구분, 별 기준, 종합 단원 힌트 허용 수준(GPT 2차 점검), 기록 백업 방식(T75), 실제 배포 시점(라즈베리파이), 블로그 원고(`docs/blog/`)
 - 작업 방식(사용자, 2026-11-26): 12월 초까지 GPT(Codex) 최대 활용 — 기획·검토는 GPT 읽기 전용, 구현 Codex(작업 폴더 병렬), Claude는 지시·E2E·QC·화면 수정·기록

@@ -4,7 +4,7 @@ import { Interpreter } from '../model/interpreter'
 import type { Stage, Block, Frame, FunctionDef, ProgramDocument } from '../model/types'
 import type { Scheduler } from './GameController'
 
-export const demoStage: Stage = { id: 'demo-add-run', world: 'sketchbook', title: 'demo.title', goal: 'demo.title', grid: ['S.', '#G'], startDir: 'E', starBlocks: 1, hints: { keys: ['demo.title', 'demo.title'], highlight: 'goal' }, solution: [] }
+export const demoStage: Stage = { id: 'demo-add-run', world: 'sketchbook', title: 'demo.title', goal: 'demo.title', grid: ['S.', '#G'], startDir: 'E', starBlocks: 1, hints: { keys: ['demo.title', 'demo.title'], focus: [{ primary: { kind: 'map', area: 'goal' } }, { primary: { kind: 'workspace' } }] }, solution: [] }
 // Scenes are independent examples; never read a puzzle solution here.
 export const demoEntries = [
   ['add-run', '1'], ['rotation', '2'], ['repeat', '5'], ['condition', 'u2-1'],
@@ -105,7 +105,7 @@ export function demoScene(id: DemoId, cut: number): Scene {
     stage = { ...stage, lists: [[2, 3]], variantVariables: [{ A: 0 }] }; palette = 'forEach'; target('forEach')
     if (cut >= 1) { editor.add('repeat'); editor.select(editor.editProgram[0].type === 'forEach' ? editor.editProgram[0].body[0].id : ''); editor.toggleRepeatSource(); editor.toggleRepeatSource(); editor.toggleTarget(); editor.add('turnRight') }
     if (cut >= 2) { run = true; pick = frames => frames.find(frame => frame.list?.current?.index === (cut === 2 ? 0 : 1)) ?? frames.at(-1)! }
-    cue = cut < 2 ? '[2, 3] → ▣' : cut === 2 ? '#1 · ▣ = 2' : '#2 · ▣ = 3'
+    cue = cut < 2 ? '[2, 3] → ▣' : cut === 2 ? '#0 · ▣ = 2' : '#1 · ▣ = 3'
   } else if (id === 'search') {
     stage = { ...stage, lists: [[5, 2, 8]], search: { target: 8, maxComparisons: 3 } }; palette = 'breakForEach'
     load([{ id: 'demo-each', type: 'forEach', direction: 'back', body: [{ id: 'demo-if', type: 'if', condition: { kind: 'atom', atom: 'matchesTarget' }, body: [] }] }, forward])
@@ -113,7 +113,7 @@ export function demoScene(id: DemoId, cut: number): Scene {
     if (cut >= 1) editor.add('breakForEach')
     if (cut === 2) { run = true; pick = frames => frames.find(frame => frame.search?.stopped) ?? frames.at(-1)! }
     if (cut === 3) end()
-    cue = cut >= 2 ? '◎8 · #3 ✓ · #2 ? · #1 ?' : '▣ = ◎8'
+    cue = cut >= 2 ? '◎8 · #2 ✓ · #1 ? · #0 ?' : '▣ = ◎8'
   }
   const doc = structuredClone(editor.doc)
   const frames = Interpreter.run(stage, doc).frames
