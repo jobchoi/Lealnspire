@@ -2,7 +2,7 @@
 
 > 이 파일은 작업이 끝날 때마다 덮어씁니다. 작업 목록은 [TASKS.md](TASKS.md), 과거 기록은 [WORK_HISTORY.md](WORK_HISTORY.md)에 있습니다.
 
-마지막 갱신: 2026-11-27 · 기준 줄기 브랜치 `feature/T60-parameters`(develop·master와 같음) · 버전 **v1.12.3**
+마지막 갱신: 2026-11-27 · 기준 줄기 브랜치 `feature/T60-parameters`(develop·master와 같음) · 버전 **v1.13.0**
 
 ## 시작하는 법
 
@@ -24,19 +24,20 @@
 | 항목 | 결과 |
 |---|---|
 | `npm run verify` | 통과(테스트 375개) |
-| `npm run e2e` | 558개 통과·4개 건너뜀(v1.12.3) |
+| `npm run e2e` | 562개 통과·4개 건너뜀(v1.13.0 직전, 이후 회귀 1건 수정·관련 20개 재통과) |
 | `npm run e2e:prod` | 4개 통과 |
 | GitHub Actions | 확인 못 함(`gh` 없음) |
 | 알려진 제한 | 실제 모바일 기기·사파리·파이어폭스 미검증 |
 
 ## 병합·태그
 
-- 태그 `v0.1.0`~`v1.12.3` 원격. develop·master·release/1.12.3 원격 반영(Claude push)
+- 태그 `v0.1.0`~`v1.13.0` 원격. develop·master·release/1.13.0 원격 반영(Claude push)
 - 작업 폴더: `Lealnspire`(기준), `Lealnspire-review`(v1.12.3 사본, UI/UX 리뷰용 — `npx vite --port 5180`). 병합 끝난 작업 폴더는 2026-11-27 정리. 다음 작업부터 develop에서 `feature/<ID>-<이름>` 새 브랜치로(기준 폴더의 `feature/T60-parameters`는 develop과 같은 옛 이름)
 
 ## 다음 작업
 
-1. 실제 기기 확인(휴대폰·태블릿, 사파리·파이어폭스) — 사용자와 일정 상의
-2. 제안: T65(지도 렌더러 PixiJS, 승인 필요), 새 Claude 채팅으로 UI/UX 리뷰(사용자 아이디어, `~/project/Lealnspire-review`)
-3. 사용자와 함께 논의: 연령 구분, 별 기준, 실제 배포 시점(라즈베리파이), 블로그 원고(`docs/blog/`)
+1. **T73 첫 사용 시범**(설계 `docs/design/onboarding-demos.md`, T73-1 기반부터 Codex)
+2. 실제 기기 확인(휴대폰·태블릿, 사파리·파이어폭스) — 사용자와 일정 상의
+3. 제안: T65(지도 렌더러 PixiJS, 승인 필요), 새 Claude 채팅으로 UI/UX 리뷰(사용자 아이디어, `~/project/Lealnspire-review`)
+4. 사용자와 함께 논의: 연령 구분, 별 기준, 실제 배포 시점(라즈베리파이), 블로그 원고(`docs/blog/`)
 - 작업 방식(사용자, 2026-11-26): 12월 초까지 GPT(Codex) 최대 활용 — 기획·검토는 GPT 읽기 전용, 구현 Codex(작업 폴더 병렬), Claude는 지시·E2E·QC·화면 수정·기록

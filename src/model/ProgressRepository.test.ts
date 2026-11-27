@@ -129,7 +129,7 @@ it('clears only the app key and resets progress, programs and locks across reloa
   expect(createProgressStore(storage).getProgram(stages[0])).toEqual(program)
 })
 
-it('clears memory without throwing when storage is absent or read, write or removal fails', () => {
+it('preserves memory on removal failure and clears it only after deletion succeeds', () => {
   for (const failure of ['absent', 'read', 'write', 'remove']) {
     const storage = fakeStorage(serialize())
     const store = createProgressStore(failure === 'absent' ? undefined : {
@@ -138,8 +138,9 @@ it('clears memory without throwing when storage is absent or read, write or remo
       removeItem: key => { if (failure === 'remove') throw Error('denied'); storage.removeItem(key) },
     })
     store.saveProgram(stages[0].id, program)
-    expect(store.clear()).toBe(false)
-    expect(store.getProgress().stages).toEqual({})
+    const before = store.getProgress()
+    expect(store.clear()).toBe(failure !== 'remove')
+    expect(store.getProgress()).toEqual(failure === 'remove' ? before : { version: 1, stages: {} })
     if (failure === 'write') expect(storage.getItem(progressKey)).toBeNull()
   }
 })
@@ -409,4 +410,22 @@ it('restores only effective unit palettes and permitted repeat sources while ret
   }
   const legacy = JSON.stringify({ version: 1, stages: { '1': { completed: true, bestStars: 3, lastProgram: [invalid[2]] } } })
   expect(parseProgress(legacy).stages['1']).toEqual({ completed: true, bestStars: 3, lastProgram: [] })
+})
+
+it('retries failed removal without losing completion or saved code', () => {
+  const storage = fakeStorage()
+  let denied = true
+  const store = createProgressStore({ ...storage, removeItem(key) {
+    if (denied) throw Error('denied')
+    storage.removeItem(key)
+  } })
+  store.completeStage('1', 3, program)
+  const before = store.getProgress()
+  expect(store.clear()).toBe(false)
+  expect(store.getProgress()).toEqual(before)
+  expect(createProgressStore(storage).getProgress()).toEqual(before)
+  denied = false
+  expect(store.clear()).toBe(true)
+  expect(store.getProgress().stages).toEqual({})
+  expect(createProgressStore(storage).getProgress().stages).toEqual({})
 })

@@ -24,7 +24,7 @@ const out = (g: Game) => g.press(g.action(/선택 해제$|넣기 해제$/))
 test.describe('12단원 종합', () => {
   test('u12-1: 개념 이름 없이 시작 — 반복 안에서 앞이 막혔는지 보고 돌아 두 맵 통과', async ({ page }) => {
     const g = await open(page, '구부러진 길')
-    await expect(page.locator('.stage-goal').first()).toContainText('같은 코드로 두 맵 모두 도착해 보세요')
+    await expect(page.locator('.stage-goal').first()).toContainText('같은 코드로 두 맵에서 모두 도착해 보세요')
     // repeat 7 [ if 앞 막힘 [R], F ]
     await g.add('N'); await g.select('1')
     for (let c = 3; c < 7; c++) await g.press(g.action(/늘리기$/))

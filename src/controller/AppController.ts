@@ -1,7 +1,7 @@
 import { Observable } from './Observable'
 import { allStages as stages, isLastStage } from '../model/stages'
 import { ProgressRepository, isUnlocked } from '../model/ProgressRepository'
-import { continueStageIndex, stageCards } from './flow'
+import { continueStageIndex, stageCards, nextUnit } from './flow'
 import { GameController } from './GameController'
 import { predictions } from '../model/predictions'
 import { PredictionController } from './PredictionController'
@@ -41,6 +41,11 @@ export class AppController extends Observable<Screen> {
   continue = () => { if (this.continueIndex !== undefined) this.openStage(this.continueIndex) }
   list = () => { this.prediction?.dispose(); this.game?.dispose(); this.update({ page: 'list' }) }
   home = () => { this.prediction?.dispose(); this.game?.dispose(); this.update({ page: 'home' }) }
+  nextUnit = () => {
+    if (this.state.page !== 'play') return
+    const target = nextUnit(stages[this.state.index].id)
+    if (target) this.openStage(target.index)
+  }
   next = () => {
     if (this.state.page !== 'play') return
     if (isLastStage(this.state.index)) this.list()

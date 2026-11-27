@@ -3,7 +3,7 @@ import { isUnlocked, ProgressRepository, progressKey } from '../model/ProgressRe
 import { describe, expect, it } from 'vitest'
 import { createProgressStore } from '../model/ProgressRepository'
 import { stages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, unit10Stages, unit11Stages, unit12Stages } from '../model/stages'
-import { continueStageIndex, showNextStage } from './flow'
+import { continueStageIndex, showNextStage, nextUnit } from './flow'
 
 describe('이어하기 대상', () => {
   it('진행이 없거나 알려진 스테이지 기록이 없으면 숨긴다', () => {
@@ -152,4 +152,23 @@ it('continues through unit 5, awards three stars and returns to the list at u5-3
   }
   expect(app.getSnapshot().page).toBe('list')
   expect(continueStageIndex(app.progress)).toBe(allStages.indexOf(unit6Stages[0]))
+})
+
+it('opens the first puzzle of the next unit from all eleven regular unit endings', () => {
+  const units = [stages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, unit10Stages, unit11Stages, unit12Stages]
+  const repository = new ProgressRepository()
+  const app = new AppController(repository)
+  for (const [i, unit] of units.entries()) {
+    for (const stage of unit) repository.completeStage(stage.id, 3, stage.solution)
+    const last = unit.at(-1)!
+    expect(nextUnit(unit[0].id)).toBeUndefined()
+    app.openStage(allStages.indexOf(last))
+    app.nextUnit()
+    if (i < units.length - 1) {
+      expect(nextUnit(last.id)).toEqual({ index: allStages.indexOf(units[i + 1][0]), unitKey: `unit${i + 2}` })
+      expect(app.getSnapshot()).toEqual({ page: 'play', index: allStages.indexOf(units[i + 1][0]) })
+    } else expect(nextUnit(last.id)).toBeUndefined()
+  }
+  expect(nextUnit('bonus-2')).toBeUndefined()
+  app.home()
 })

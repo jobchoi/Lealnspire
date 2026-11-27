@@ -1144,3 +1144,7 @@ button small { display: block; font-size: .75rem; }
  /* T64 2차(Claude): 리스트 단원 스케치북 좁은 화면 — 팔레트 버튼이 44px 줄을 넘쳐 블록 수 표시를 덮지 않게 */
  .play-page.lists-page.theme-sketchbook .palette-row .palette button { height:44px; min-height:44px; max-height:44px; aspect-ratio:auto; align-self:center; }
 }
+
+.home-completion { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; min-height: 44px; margin-block: 12px; padding: 8px; color: #17354a; background: #f0faf4; border: 2px solid #286247; border-radius: 12px; }
+.home-completion > span { display: inline-flex; gap: 6px; }
+.home-completion svg { width: 32px; height: 32px; }

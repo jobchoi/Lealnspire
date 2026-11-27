@@ -1,4 +1,4 @@
-import { courseCompleted } from '../../controller/flow'
+import { courseCompleted, nextUnit } from '../../controller/flow'
 import { Fragment } from 'react'
 import glossary from '../../i18n/glossary.json'
 import { selectTheme, worlds } from '../theme/themes'
@@ -16,9 +16,9 @@ import { playbackSpeeds } from '../../controller/playback'
 import { ResultModal } from '../components/ResultModal'
 import { createProgressStore } from '../../model/ProgressRepository'
 
-type Props = { stage: Stage; progressStore: ReturnType<typeof createProgressStore>; onList: () => void; onNext: () => void; lastStage: boolean; controller?: GameController }
+type Props = { stage: Stage; progressStore: ReturnType<typeof createProgressStore>; onList: () => void; onNextUnit?: () => void; onNext: () => void; lastStage: boolean; controller?: GameController }
 
-export function PlayPage({ stage, progressStore, onList, onNext, lastStage, controller: supplied }: Props) {
+export function PlayPage({ stage, progressStore, onList, onNext, onNextUnit, lastStage, controller: supplied }: Props) {
   const page = useRef<HTMLElement>(null)
   const [controller] = useState(() => supplied ?? new GameController(stage, progressStore))
   const { doc, program, hintStep, playing, speed } = useController(controller)
@@ -117,7 +117,7 @@ export function PlayPage({ stage, progressStore, onList, onNext, lastStage, cont
         </div>
         <Editor searchEnabled={!!search} listsEnabled={listsEnabled} eventsEnabled={eventsEnabled} events={events} returnsEnabled={returnsEnabled} returned={controller.returned} paramsEnabled={paramsEnabled} logicEnabled={logicEnabled} variablesEnabled={variablesEnabled && !logicEnabled} functionsEnabled={stage.id.startsWith('u4-') || paramsEnabled} call={playback.frame?.call} palette={stage.palette} conditions={!!stage.variants} checks={controller.branchChecks} controller={controller.editor} failedBlockId={controller.visibleFailure?.blockId} theme={theme} program={program} onChange={controller.edit} maxBlocks={stage.maxBlocks} locked={playback.locked} activeBlockId={playback.frame?.activeBlockId} loops={playback.frame?.loops} />
       </div>
-      {playback.showResult && playback.result && <ResultModal unit12={stage.id.startsWith('u12-')} courseComplete={courseCompleted(progressStore.getProgress())} unit11={!!search} unit10={listsEnabled} unit9={eventsEnabled} unit8={returnsEnabled} notice={playback.result === 'stepLimit' ? t('stepLimitNotice') : undefined} stageLabel={stage.variants ? t(stage.title) : undefined} unit7={paramsEnabled} unit6={logicEnabled} unit5={variablesEnabled && !logicEnabled} unit4={stage.id.startsWith('u4-')} unit3={stage.id.startsWith('u3-')} unit2={!!stage.variants} failureMessage={stage.variants && playback.result !== 'success' ? t('variantFailure', { number: (controller.getSnapshot().all?.failedVariant ?? 0) + 1, reason: playback.result === 'comparisonLimit' && search ? t('search.limit', { limit: search.maxComparisons }) : playback.result === 'indexRange' && listFrame?.read ? t('lists.range', { index: listFrame.read.index!, length: listFrame.read.length }) : t(controller.whileLimited ? 'whileStepLimit' : `failures.${playback.result}`) }) : controller.whileLimited ? t('whileStepLimit') : undefined} restoreFocus={restoreFocus} onFix={controller.fix} result={playback.result} stars={controller.stars} onRetry={playback.reset} onClose={playback.dismiss} onNext={onNext} lastStage={lastStage} bonusStage={bonusStages.some(bonus => bonus.id === stage.id)} />}
+      {playback.showResult && playback.result && <ResultModal nextUnitKey={nextUnit(stage.id)?.unitKey} onNextUnit={onNextUnit} unit12={stage.id.startsWith('u12-')} courseComplete={courseCompleted(progressStore.getProgress())} unit11={!!search} unit10={listsEnabled} unit9={eventsEnabled} unit8={returnsEnabled} notice={playback.result === 'stepLimit' ? t('stepLimitNotice') : undefined} stageLabel={stage.variants ? t(stage.title) : undefined} unit7={paramsEnabled} unit6={logicEnabled} unit5={variablesEnabled && !logicEnabled} unit4={stage.id.startsWith('u4-')} unit3={stage.id.startsWith('u3-')} unit2={!!stage.variants} failureMessage={stage.variants && playback.result !== 'success' ? t('variantFailure', { number: (controller.getSnapshot().all?.failedVariant ?? 0) + 1, reason: playback.result === 'comparisonLimit' && search ? t('search.limit', { limit: search.maxComparisons }) : playback.result === 'indexRange' && listFrame?.read ? t('lists.range', { index: listFrame.read.index!, length: listFrame.read.length }) : t(controller.whileLimited ? 'whileStepLimit' : `failures.${playback.result}`) }) : controller.whileLimited ? t('whileStepLimit') : undefined} restoreFocus={restoreFocus} onFix={controller.fix} result={playback.result} stars={controller.stars} onRetry={playback.reset} onClose={playback.dismiss} onNext={onNext} lastStage={lastStage} bonusStage={bonusStages.some(bonus => bonus.id === stage.id)} />}
     </section>
   )
 }

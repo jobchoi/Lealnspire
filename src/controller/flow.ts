@@ -22,3 +22,11 @@ export function stageCards(progress: Progress) {
 export function courseCompleted(progress: Progress): boolean {
   return allStages.filter(stage => stages.includes(stage) || stage.variants).every(stage => progress.stages[stage.id]?.completed === true)
 }
+
+// Only regular unit endings lead to another unit; bonus activities remain optional.
+export function nextUnit(stageId: string): { index: number; unitKey: string } | undefined {
+  const units = [stages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, unit10Stages, unit11Stages, unit12Stages]
+  const unit = units.findIndex(entries => entries.at(-1)?.id === stageId)
+  if (unit < 0 || unit === units.length - 1) return undefined
+  return { index: allStages.indexOf(units[unit + 1][0]), unitKey: `unit${unit + 2}` }
+}

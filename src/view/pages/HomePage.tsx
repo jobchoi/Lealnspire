@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { worlds } from '../theme/themes'
-import { ConceptDefs, WorldScene } from '../theme/Symbols'
+import { ConceptDefs, WorldScene, Symbol } from '../theme/Symbols'
 import type { Progress } from '../../model/ProgressRepository'
 import { t, i18n, languageControl, type Locale } from '../../i18n/I18n'
-import { continueStageIndex } from '../../controller/flow'
+import { continueStageIndex, courseCompleted } from '../../controller/flow'
 
 type Props = { locale?: Locale; onLanguageChange?: () => void; progress: Progress; onStart: () => void; onContinue: (index: number) => void; onList: () => void; persistent?: boolean; onClear?: () => boolean }
 export function HomePage({ progress, onStart, onContinue, onList, persistent = false, onClear, locale = 'ko', onLanguageChange }: Props) {
   const [info, setInfo] = useState(false)
   const [confirm, setConfirm] = useState(false)
+  const [clearFailed, setClearFailed] = useState(false)
   const [notice, setNotice] = useState<string>()
   const next = continueStageIndex(progress)
   return <section className="home-page"><ConceptDefs />
@@ -19,14 +20,16 @@ export function HomePage({ progress, onStart, onContinue, onList, persistent = f
       <span lang={locale === 'ko' ? 'en' : 'ko'}>{languageControl.names[locale === 'ko' ? 'en' : 'ko']}</span>
     </button>
     </div>
-    {info && <RecordDialog confirm={confirm} notice={notice ?? (!persistent ? t('privacy.unavailable') : undefined)} onClose={() => setInfo(false)} onConfirm={() => setConfirm(true)} onCancel={() => setConfirm(false)} onClear={() => {
+    {info && <RecordDialog clearFailed={clearFailed} confirm={confirm} notice={clearFailed ? t('privacy.clearFailed') : notice ?? (!persistent ? t('privacy.unavailable') : undefined)} onClose={() => setInfo(false)} onConfirm={() => setConfirm(true)} onCancel={() => setConfirm(false)} onClear={() => {
       const cleared = onClear?.() ?? false
       setConfirm(false)
-      setNotice(t(cleared ? 'privacy.cleared' : 'privacy.unavailable'))
+      setClearFailed(!cleared)
+      setNotice(t(!persistent ? 'privacy.unavailable' : cleared ? 'privacy.cleared' : 'privacy.clearFailed'))
     }} />}
     <h1 tabIndex={-1} data-page-title>{t('title')}</h1>
     <p>{t('introduction')}</p>
     <p>{t('themes.introduction')}</p>
+    {courseCompleted(progress) && <div className="home-completion" role="status"><span aria-hidden="true">{worlds.map(world => <Symbol key={world} name={world} />)}</span><strong>{t('synthesis.homeComplete')}</strong></div>}
     <div className="world-gallery">{worlds.map(world => <article key={world} className={`world-preview world-${world}`}><WorldScene world={world} /><h2>{t(`themes.${world}.name`)}</h2><p>{t(`themes.${world}.description`)}</p></article>)}</div>
     <div className="playback-controls">
       <button type="button" onClick={onStart}>{t('start')}</button>
@@ -37,8 +40,8 @@ export function HomePage({ progress, onStart, onContinue, onList, persistent = f
 }
 
 
-type DialogProps = { confirm: boolean; notice?: string; onClose: () => void; onConfirm: () => void; onCancel: () => void; onClear: () => void }
-export function RecordDialog({ confirm, notice, onClose, onConfirm, onCancel, onClear }: DialogProps) {
+type DialogProps = { clearFailed?: boolean; confirm: boolean; notice?: string; onClose: () => void; onConfirm: () => void; onCancel: () => void; onClear: () => void }
+export function RecordDialog({ clearFailed, confirm, notice, onClose, onConfirm, onCancel, onClear }: DialogProps) {
   const dialog = useRef<HTMLDivElement>(null)
   const cancel = useRef<HTMLButtonElement>(null)
   const erase = useRef<HTMLButtonElement>(null)
@@ -80,7 +83,7 @@ export function RecordDialog({ confirm, notice, onClose, onConfirm, onCancel, on
       <a className="teacher-guide-link" href={`${import.meta.env.BASE_URL}${i18n.locale === 'en' ? 'guide-en.html' : 'guide.html'}`}>{t('privacy.guide')}</a>
       {notice && <p role="status">{notice}</p>}
       <div className="playback-controls">
-        <button ref={erase} type="button" onClick={onConfirm}>{t('privacy.clear')}</button>
+        <button ref={erase} type="button" onClick={clearFailed ? onClear : onConfirm}>{t(clearFailed ? 'privacy.tryAgain' : 'privacy.clear')}</button>
         <button type="button" onClick={onClose}>{t('close')}</button>
       </div>
     </>}

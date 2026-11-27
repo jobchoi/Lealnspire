@@ -63,3 +63,12 @@ it('shows unit 2 completion and the list action only at its successful final sta
     if (result === 'success') expect(html).toContain(t(lastStage ? 'toList' : 'nextStage'))
   }
 })
+
+it('announces the next unit and preserves the optional bonus message after unit 1', () => {
+  for (const result of ['success', 'collision'] as const) {
+    const html = renderToString(<ResultModal result={result} stars={3} onRetry={noop} onClose={noop} lastStage nextUnitKey="unit2" onNextUnit={noop} />)
+    expect(html.includes(t('nextUnitOpened', { unit: t('unit2') }))).toBe(result === 'success')
+    expect(html.includes(t('nextUnit'))).toBe(result === 'success')
+    expect(html.includes(t('congratulations'))).toBe(result === 'success')
+  }
+})

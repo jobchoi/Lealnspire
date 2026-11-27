@@ -36,7 +36,7 @@ test.describe('5단원 변수', () => {
     const g = await open(page, '점점 길어지는 길', ['u5-1'])
     await g.add('N'); await g.select('1'); await into(g); await g.add('N'); await out(g)
     await g.select('1.1'); await g.press(g.action(/횟수를 A로$/)); await into(g); await g.add('F'); await out(g)
-    await g.select('1'); await into(g); await g.add('L'); await g.press(palette(page, '상자 A 1 바꾸기')); await out(g)
+    await g.select('1'); await into(g); await g.add('L'); await g.press(palette(page, '상자 A의 값을 1만큼 바꾸기')); await out(g)
     expect(await g.blockCount()).toBe(5)
     expect(await g.runToEnd()).toMatch(/성공/)
   })
@@ -57,7 +57,7 @@ test.describe('5단원 변수', () => {
     const g = await open(page, '점점 길어지는 길', ['u5-1'])
     await g.add('N'); await g.select('1'); await into(g); await g.add('N'); await out(g)
     await g.select('1.1'); await g.press(g.action(/횟수를 A로$/)); await into(g); await g.add('F'); await out(g)
-    await g.select('1'); await into(g); await g.add('L'); await g.press(palette(page, '상자 A 1 바꾸기')); await out(g)
+    await g.select('1'); await into(g); await g.add('L'); await g.press(palette(page, '상자 A의 값을 1만큼 바꾸기')); await out(g)
     await page.screenshot({ path: `e2e-results/screens/${info.project.name}-unit5-u52.png` })
     await g.noHorizontalScroll()
     expect(await page.evaluate(() => window.scrollY)).toBe(0)
@@ -72,8 +72,8 @@ test.describe('5단원 변수', () => {
     test(`${world}: set·change 팔레트 버튼과 타일이 바탕과 구분된다(대비 3:1 이상)`, async ({ page }) => {
       const g = await open(page, '점점 길어지는 길', ['u5-1', 'u5-2'])
       await g.press(page.getByRole('button', { name: `${world} 월드로 바꾸기` }))
-      await g.press(palette(page, '상자 A에 값 넣기')); await g.press(palette(page, '상자 A 1 바꾸기'))
-      for (const l of [palette(page, '상자 A에 값 넣기'), palette(page, '상자 A 1 바꾸기'), g.tile('1'), g.tile('2')]) {
+      await g.press(palette(page, '상자 A에 값 넣기')); await g.press(palette(page, '상자 A의 값을 1만큼 바꾸기'))
+      for (const l of [palette(page, '상자 A에 값 넣기'), palette(page, '상자 A의 값을 1만큼 바꾸기'), g.tile('1'), g.tile('2')]) {
         const ratio = await contrastOf(l)
         if (ratio !== null) expect(ratio, `${await l.getAttribute('aria-label')} 대비`).toBeGreaterThanOrEqual(3)
       }
@@ -87,7 +87,7 @@ test.describe('5단원 변수', () => {
     await expect(g.tile('1')).toHaveAccessibleName(/상자 A에 2 넣기/)
     await g.press(g.button('되돌리기'))
     await expect(g.tile('1')).toHaveAccessibleName(/상자 A에 1 넣기/)
-    await g.press(palette(page, '상자 A 1 바꾸기'))
+    await g.press(palette(page, '상자 A의 값을 1만큼 바꾸기'))
     await expect(g.tile('2')).toHaveAccessibleName(/상자 A에 1 더하기/)
     await g.select('2'); await g.press(g.action(/\+1\/−1 바꾸기$/))
     await expect(g.tile('2')).toHaveAccessibleName(/상자 A에서 1 빼기/)
@@ -96,7 +96,7 @@ test.describe('5단원 변수', () => {
   test('T50: 상자 A가 0보다 작아지면 어느 맵에서 왜 멈췄는지 알려 주고 고치기는 원인 블록', async ({ page }) => {
     const g = await open(page, '상자에 든 수만큼')
     // 1번 맵 A=2에서 1을 세 번 빼면 -1
-    for (let i = 0; i < 3; i++) { await g.press(palette(page, '상자 A 1 바꾸기')); await g.select(String(i + 1)); await g.press(g.action(/\+1\/−1 바꾸기$/)) }
+    for (let i = 0; i < 3; i++) { await g.press(palette(page, '상자 A의 값을 1만큼 바꾸기')); await g.select(String(i + 1)); await g.press(g.action(/\+1\/−1 바꾸기$/)) }
     expect(await g.runToEnd()).toMatch(/1번 맵에서 .*0보다 작거나/)
     await g.press(g.dialog.getByRole('button', { name: '고치기' }))
     await expect(g.tile('3'), '세 번째 빼기가 원인').toHaveAttribute('aria-pressed', 'true')

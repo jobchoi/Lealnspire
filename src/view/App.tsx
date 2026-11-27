@@ -30,7 +30,7 @@ function App({ controller: supplied, onLanguageChange }: { controller?: AppContr
     {screen.page === 'home' && <HomePage locale={locale} onLanguageChange={changeLanguage} progress={progress} onStart={controller.start} onContinue={controller.openStage} onList={controller.list} persistent={controller.repository.persistent} onClear={controller.clearProgress} />}
     {screen.page === 'list' && <StageSelectPage progress={progress} onSelect={controller.openStage} onHome={controller.home} onPrediction={controller.openPrediction} />}
     {screen.page === 'prediction' && controller.prediction && <PredictionPage controller={controller.prediction} onBack={controller.list} />}
-    {screen.page === 'play' && <PlayPage key={screen.index} stage={stages[screen.index]} progressStore={controller.repository} controller={controller.game} onList={controller.list} lastStage={isLastStage(screen.index)} onNext={controller.next} />}
+    {screen.page === 'play' && <PlayPage key={screen.index} stage={stages[screen.index]} progressStore={controller.repository} controller={controller.game} onList={controller.list} lastStage={isLastStage(screen.index)} onNextUnit={controller.nextUnit} onNext={controller.next} />}
   </main>
 }
 export default App

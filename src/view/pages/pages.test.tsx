@@ -542,3 +542,19 @@ it('renders synthesis as unit12 in both locales and every world, with course com
   }
   i18n.locale = 'ko'
 })
+
+it('shows deletion failure with a retry action', () => {
+  const html = renderToString(<RecordDialog clearFailed confirm={false} notice={t('privacy.clearFailed')} onClose={noop} onConfirm={noop} onCancel={noop} onClear={noop} />)
+  expect(html).toContain(t('privacy.clearFailed'))
+  expect(html).toContain(t('privacy.tryAgain'))
+  expect(html).not.toContain(`>${t('privacy.clear')}<`)
+})
+
+it('shows the home completion badge only after all regular units, without bonus completion', () => {
+  const store = createProgressStore()
+  const home = () => renderToString(<HomePage progress={store.getProgress()} onStart={noop} onContinue={noop} onList={noop} />)
+  expect(home()).not.toContain(t('synthesis.homeComplete'))
+  for (const stage of allStages.filter(stage => !bonusStages.includes(stage))) store.completeStage(stage.id, 3, stage.solution)
+  expect(home()).toContain(t('synthesis.homeComplete'))
+  expect(home()).not.toContain(`>${t('continue')}<`)
+})

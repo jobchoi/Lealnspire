@@ -1,9 +1,9 @@
 import { hintCells } from '../grid'
-import { t } from '../../i18n/I18n'
+import { I18n, t } from '../../i18n/I18n'
 import { describe, expect, it } from 'vitest'
 import { run, runAll } from '../interpreter'
 import { countBlocks, MAX_PROGRAM_BLOCKS } from '../program'
-import { stages, bonusStages, unit2Stages, unit3Stages, unit4Stages } from './index'
+import { allStages, stages, bonusStages, unit2Stages, unit3Stages, unit4Stages } from './index'
 import type { Program, Dir } from '../types'
 
 describe('스테이지 정답', () => {
@@ -188,3 +188,12 @@ for (const stage of unit4Stages) {
     expect(stage.palette).toEqual(['forward', 'turnLeft', 'turnRight', 'repeat', 'call'])
   })
 }
+
+it('introduces every regular prefilled puzzle as fixing existing code in both languages', () => {
+  const fixing = allStages.filter(stage => !bonusStages.includes(stage) && (stage.initialProgram || stage.initialFunctions))
+  expect(fixing.length).toBeGreaterThan(0)
+  for (const stage of fixing) {
+    expect(new I18n('ko').t(stage.goal), stage.id).toMatch(/^미리 놓인 코드(?:를 고쳐|에서 명령 하나를 고쳐)/)
+    expect(new I18n('en').t(stage.goal), stage.id).toMatch(/^Fix (?:the code that's already there|one command in the code that's already there)/)
+  }
+})

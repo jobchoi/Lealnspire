@@ -125,20 +125,17 @@ function makeStore(storage?: ProgressStorage) {
     },
     get persistent() { return storage !== undefined },
     clear() {
-      progress = empty()
-      try {
-        if (!deletionStorage?.removeItem) return false
+      if (deletionStorage) {
+        if (!deletionStorage.removeItem) return false
         let removed = true
         for (const key of [progressKey, progressV2Key]) {
           try { deletionStorage.removeItem(key) }
           catch { removed = false }
         }
-        if (!removed) storage = undefined
-        return removed && storage !== undefined
-      } catch {
-        storage = undefined
-        return false
+        if (!removed) return false
       }
+      progress = empty()
+      return true
     },
     getProgress: (): Progress => clone(progress),
     getProgram: (stage: Stage): Program => clone(progress.stages[stage.id]?.lastProgram ?? stage.initialProgram ?? []),

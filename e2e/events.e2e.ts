@@ -70,7 +70,7 @@ test.describe('9단원 이벤트', () => {
     let sawUnconnected = false, sawArrival = false
     for (let i = 0; i < 10; i++) {
       await g.press(g.button('한 단계'))
-      if (await page.getByText('연결된 처리기가 없어요').count()) sawUnconnected = true
+      if (await page.getByText('실행할 처리기가 없어요').count()) sawUnconnected = true
       if (await page.getByText(/다이아몬드 신호가 왔어요/).count()) sawArrival = true
       if (sawUnconnected && sawArrival) break
     }

@@ -32,7 +32,7 @@
   "decrease": "Repeat fewer times",
   "increase": "Repeat more times",
   "goalIcon": "🤖 → ★",
-  "introduction": "Use blocks and repeat to guide the robot to the star.",
+  "introduction": "Give the robot commands with blocks and guide it to the star.",
   "start": "Start",
   "continue": "Continue",
   "stageList": "Stages",
@@ -124,7 +124,7 @@
   "stage3Title": "Zigzag",
   "stage3Goal": "Go around the walls to reach the star.",
   "stage4Title": "Fix the Mistake",
-  "stage4Goal": "Change one block to reach the star.",
+  "stage4Goal": "Fix one command in the code that's already there and reach the star.",
   "stage5Title": "Repeat It",
   "stage5Goal": "Use repeat to move six cells.",
   "stage6Title": "Climb the Stairs",
@@ -135,7 +135,7 @@
   "stage8Goal": "Mix order and repeat to get through the maze.",
   "themes": {
     "choose": "Play again in another world",
-    "introduction": "Discover order and repeat in three worlds.",
+    "introduction": "From order and repeat to conditions, functions, variables and lists: 12 units in three worlds.",
     "sketchbook": {
       "name": "Crayon Sketchbook",
       "description": "Your first adventure, drawn in a notebook",
@@ -186,7 +186,7 @@
   "stage3Hint1": "Trace the path the robot can move along.",
   "stage3Hint2": "How many corners does the path have, and which way does each one turn?",
   "stage4Hint1": "Look at which way the robot is facing.",
-  "stage4Hint2": "When the robot turns on the first cell, is the star on the robot's right or left?",
+  "stage4Hint2": "After moving one cell, when the robot turns, is the star on its right or its left?",
   "stage5Hint1": "Count the cells on the straight path.",
   "stage5Hint2": "You need the same block many times, but you can only use 2 blocks. What can you do?",
   "stage6Hint1": "Look at how the stair shape repeats.",
@@ -203,13 +203,15 @@
     "guide": "Guide for teachers and parents",
     "location": "Your progress is saved only in this browser on this device. Nothing is sent to a server.",
     "records": "What is saved: stages you finished, your best stars for each stage, and the last blocks you made in each stage.",
-    "browser": "If you clear your browser data, your progress is deleted too.",
+    "browser": "It is deleted if you clear this site's data in your browser settings.",
     "clear": "Delete progress",
     "confirm": "Delete all progress? This can't be undone.",
     "erase": "Delete",
     "cancel": "Cancel",
     "unavailable": "This browser isn't saving your progress",
-    "cleared": "Your progress was deleted."
+    "cleared": "Your progress was deleted.",
+    "clearFailed": "Couldn't delete the progress. It may still be saved on this device. Try again, or clear this site's data in your browser settings.",
+    "tryAgain": "Try again"
   },
   "prediction": {
     "title": "Predict",
@@ -286,11 +288,11 @@
   "u32Hint1": "Look at how many times 'go to the wall, then turn' repeats.",
   "u32Hint2": "If you put while inside repeat, what gets repeated?",
   "u33Title": "Unit 3-3: The Loop That Never Ends",
-  "u33Goal": "Fix the code that never stops and reach the star.",
+  "u33Goal": "Fix the code that's already there so it stops and reaches the star.",
   "u33Hint1": "When you run the starting code, how far does the robot get?",
   "u33Hint2": "Can the blocks inside while ever change whether the path ahead is clear?",
   "functions": {
-    "addMain": "Add: main end",
+    "addMain": "Adding to: end of main",
     "views": "Workspace views",
     "showMain": "Show main",
     "show": {
@@ -338,7 +340,7 @@
   "u42Hint1": "Does the shape you’ll make into a function have a repeating part too?",
   "u42Hint2": "If you put repeat inside a function, what repeats every time you call it?",
   "u43Title": "Unit 4-3: Nothing Happens Until You Call It",
-  "u43Goal": "Fix the code so the function you made actually runs.",
+  "u43Goal": "Fix the code that's already there so the function you made actually runs.",
   "u43Hint1": "When you run it, does the robot move?",
   "u43Hint2": "Does making a function run it, or do you need to call it?",
   "unit5": "Unit 5: Variables",
@@ -438,7 +440,7 @@
       "moon": "Passed {value} to the moon function. Box A is still {a}."
     },
     "value": "the value passed in",
-    "useParam": "Repeat the value passed in",
+    "useParam": "Repeat ◆ times",
     "useA": "Use A",
     "useNumber": "Use a number"
   },
@@ -453,7 +455,7 @@
   "u82Hint1": "Which way is the robot facing when the function ends?",
   "u82Hint2": "You passed 1. What number comes back?",
   "u83Title": "After return?",
-  "u83Goal": "Fix the code that’s already there. return ends the function right away.",
+  "u83Goal": "Fix the code that's already there. return ends the function right away.",
   "u83Hint1": "Run it. Which way is the robot facing when the function counts?",
   "u83Hint2": "Will the block after return run?",
   "returns": {
@@ -463,7 +465,7 @@
       "star": "The star function returned {value}.",
       "moon": "The moon function returned {value}."
     },
-    "skipped": "Not run this call",
+    "skipped": "Skipped this call",
     "sourceShort": "↩ Value",
     "repeat": {
       "star": "Step {order}: repeat as many times as the star function returns",
@@ -493,7 +495,7 @@
     "circle": "circle signal",
     "triangle": "triangle signal",
     "arrival": "{signal} arrived.",
-    "unconnected": "No handler is connected. Nothing happens.",
+    "unconnected": "No handler to run.",
     "open": "The door opened",
     "closed": "The door is closed",
     "queue": "Waiting signals",
@@ -514,7 +516,7 @@
   "u101Hint1": "Compare each path segment with the list values.",
   "u101Hint2": "What value will ▣ hold at the next element?",
   "u102Title": "The First Index",
-  "u102Goal": "Fix the code so it reads the first element.",
+  "u102Goal": "Fix the code that's already there so it reads the first element.",
   "u102Hint1": "An index and the value in its cell are different.",
   "u102Hint2": "What index is shown above the first cell?",
   "u103Title": "Count the Cells",
@@ -549,7 +551,7 @@
     "found": "Found it at index {index}.",
     "limit": "Found it! Try using at most {limit} comparisons.",
     "reflect": "You found the same element. Was the number of comparisons the same?",
-    "unseen": "We did not look from here on",
+    "unseen": "Not checked from here on",
     "empty": "A match marks the found index. You can leave the body empty.",
     "target": "Target value {value}"
   },
@@ -560,7 +562,7 @@
   "u111Hint1": "What is shown when ▣ equals 🎯?",
   "u111Hint2": "Each cell is compared once.",
   "u112Title": "Stop When You Find It",
-  "u112Goal": "You found it, but compared too many times. Use at most 2 comparisons.",
+  "u112Goal": "Fix the code that's already there. You found it, but compared too many times. Use at most 2 comparisons.",
   "u112Hint1": "Do you keep comparing after you find it?",
   "u112Hint2": "Where should \"stop this traversal\" go so it stops right after finding?",
   "u113Title": "From the Back?",
@@ -572,7 +574,8 @@
   "synthesis": {
     "reflect": "Which tools helped you?",
     "complete": "You completed every unit! Try your tools on a new challenge.",
-    "review": "Sequence · Loops · Conditions · Functions · Values · Lists"
+    "review": "Sequence · Loops · Conditions · Functions · Values · Lists",
+    "homeComplete": "All units complete"
   },
   "u121Title": "The Bending Path",
   "u121Goal": "Reach the goal on both maps with the same code.",
@@ -585,5 +588,7 @@
   "u123Title": "Value or Count?",
   "u123Goal": "Reach the goal on both maps with the same code.",
   "u123Hint1": "What changes between the two maps?",
-  "u123Hint2": "A list tells you more than its values."
+  "u123Hint2": "A list tells you more than its values.",
+  "nextUnitOpened": "Next unit is open: {unit}",
+  "nextUnit": "Next unit"
 }
