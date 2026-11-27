@@ -32,11 +32,11 @@
 ## 병합·태그
 
 - 태그 `v0.1.0`~`v1.12.3` 원격. develop·master·release/1.12.3 원격 반영(Claude push)
-- 작업 폴더: `Lealnspire`(기준), `Lealnspire-v160`(v1.6.0 사본, UI/UX 리뷰용). 병합 끝난 작업 폴더는 2026-11-27 정리. 다음 작업부터 develop에서 `feature/<ID>-<이름>` 새 브랜치로(기준 폴더의 `feature/T60-parameters`는 develop과 같은 옛 이름)
+- 작업 폴더: `Lealnspire`(기준), `Lealnspire-review`(v1.12.3 사본, UI/UX 리뷰용 — `npx vite --port 5180`). 병합 끝난 작업 폴더는 2026-11-27 정리. 다음 작업부터 develop에서 `feature/<ID>-<이름>` 새 브랜치로(기준 폴더의 `feature/T60-parameters`는 develop과 같은 옛 이름)
 
 ## 다음 작업
 
 1. 실제 기기 확인(휴대폰·태블릿, 사파리·파이어폭스) — 사용자와 일정 상의
-2. 제안: T65(지도 렌더러 PixiJS, 승인 필요), 새 Claude 채팅으로 UI/UX 리뷰(사용자 아이디어, `Lealnspire-v160` 또는 최신 빌드)
+2. 제안: T65(지도 렌더러 PixiJS, 승인 필요), 새 Claude 채팅으로 UI/UX 리뷰(사용자 아이디어, `~/project/Lealnspire-review`)
 3. 사용자와 함께 논의: 연령 구분, 별 기준, 실제 배포 시점(라즈베리파이), 블로그 원고(`docs/blog/`)
 - 작업 방식(사용자, 2026-11-26): 12월 초까지 GPT(Codex) 최대 활용 — 기획·검토는 GPT 읽기 전용, 구현 Codex(작업 폴더 병렬), Claude는 지시·E2E·QC·화면 수정·기록
