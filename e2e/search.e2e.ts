@@ -87,6 +87,9 @@ test.describe('11단원 탐색', () => {
     await expect(page.getByText(/번호 0에서 찾았어요/).first()).toBeVisible()
     await expect(page.getByText(/비교 1회 \/ 상한 2회/).first()).toBeVisible()
     expect(await page.locator('body').innerText(), '화면 글자에 🎯 같은 이모지 문자 없음(SVG로 그림)').not.toMatch(/[\u{1F300}-\u{1FAFF}]/u)
+    // 블록이 선택돼 작업 막대가 나온 상태에서도 타일 줄이 실행 막대 위로 40px 이상 보임
+    const tb = (await page.locator('.workspace [data-block-id]').first().boundingBox())!, bar = (await page.locator('.execution-controls').first().boundingBox())!
+    expect(bar.y - tb.y, '선택 상태 타일 보임').toBeGreaterThanOrEqual(40)
     await page.screenshot({ path: 'e2e-results/screens/search-step-375.png' })
     await g.noHorizontalScroll()
   })
@@ -121,4 +124,18 @@ for (const world of worlds) {
       await g.noHorizontalScroll()
     })
   }
+}
+
+/** T64 2차 회귀 방지: 11단원 좁은 화면에서 맵이 리스트 칸·블록 수 표시를 덮지 않는다(세 월드) */
+for (const world of worlds) {
+  test(`@layout ${world} 375: 11단원 맵이 리스트 칸과 겹치지 않음`, async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 })
+    const g = await open(page, '뒤에서 찾으면?', ['u11-1', 'u11-2', 'u11-3'])
+    await g.press(page.getByRole('button', { name: `${world} 월드로 바꾸기` }))
+    const [board, list, budget] = await Promise.all([g.board.boundingBox(), page.locator('.list-state').boundingBox(), page.locator('.block-budget p').first().boundingBox()])
+    for (const [name, other] of [['리스트 칸', list!], ['블록 수 표시', budget!]] as const) {
+      const overlap = Math.min(board!.y + board!.height, other.y + other.height) - Math.max(board!.y, other.y) > 2 && Math.min(board!.x + board!.width, other.x + other.width) - Math.max(board!.x, other.x) > 2
+      expect(overlap, `맵이 ${name}과 겹침`).toBe(false)
+    }
+  })
 }

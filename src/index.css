@@ -1133,3 +1133,14 @@ button small { display: block; font-size: .75rem; }
 @media (min-width:701px) {
  .play-page.variables-page.theme-sketchbook .palette-row .palette button { width:64px; height:64px; min-width:44px; min-height:44px; aspect-ratio:1; align-self:center; }
 }
+@media (max-width:700px) {
+ /* T64 2차(Claude): 11단원 기차 섬의 최소 높이(120px) 규칙 때문에 72px가 무시되던 문제 — 블록을 골라 작업 막대가 나와도 타일 줄이 보이게 */
+ .play-page.search-page .map-panel .train-island { min-height:72px; }
+}
+@media (max-width:700px) {
+ .play-page.conditions-page.variables-page.lists-page.search-page.theme-train .game-layout { grid-template-rows:72px minmax(0,1fr) 64px; }
+}
+@media (max-width:700px) {
+ /* T64 2차(Claude): 리스트 단원 스케치북 좁은 화면 — 팔레트 버튼이 44px 줄을 넘쳐 블록 수 표시를 덮지 않게 */
+ .play-page.lists-page.theme-sketchbook .palette-row .palette button { height:44px; min-height:44px; max-height:44px; aspect-ratio:auto; align-self:center; }
+}

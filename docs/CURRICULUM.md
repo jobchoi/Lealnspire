@@ -1,7 +1,7 @@
 # 학습 과정 (CURRICULUM)
 
 > 표시: **[확정]** · **[제안]** · **[미결정]** — 의미는 GAME_DESIGN.md와 같습니다.
-> 1단원 스테이지 1~8은 구현돼 있습니다(T2, 정답 자동 테스트 포함). 보너스 b1·b2는 T21. 2단원(조건 if) u2-1~u2-4는 T38·T39. 아래 표는 처음 초안이며, 실제 블록 제한은 `src/model/stages/index.ts`가 기준입니다(2026-11-21 T23 정리).
+> 1~12단원 모두 구현돼 있습니다(2026-11-27 v1.12.x). 실제 맵·블록 제한은 `src/model/stages/index.ts`가 기준이고, 아래 3절 이후는 단원별 당시 기록입니다.
 
 ## 1. 장기 단원 계획 [확정: 방향만]
 
@@ -10,8 +10,21 @@
 
 | 단원 | 주제 | 상태 |
 |---|---|---|
-| 1 | 블록 코딩: 순서와 반복 (MVP) | 구현 완료(첫 제품, 배포 준비 중) |
-| 2~ | [확정 방향, 사용자 2026-11-25] 프로그래밍 기본 개념 전체: 조건 if → if/else → while → 함수 → 변수 → 논리 → 매개변수 → 반환값 → 이벤트 → 리스트(ROADMAP 라운드 3) | 2단원(if/else) **구현 완료**(u2-1~u2-6, 조건 예측, T38·T39·T41), 3단원(while) **구현 완료**(u3-1~u3-3, T42): [design/unit2-conditions.md](design/unit2-conditions.md), 4단원(함수) **구현 완료**(u4-1~u4-3, T44·T45): [design/unit4-functions.md](design/unit4-functions.md), 5단원(변수) **구현 완료**(u5-1~u5-3, T47·T48): [design/unit5-variables.md](design/unit5-variables.md), 6단원(논리 not/and/or) **구현 완료·잠정**(u6-1~u6-4, T59 옆 센서 전환·브라우저 검증 대기): [design/unit6-logic.md](design/unit6-logic.md). 다음: 매개변수 → 반환값 … |
+| 1 | 순서와 반복 (1~8, 보너스 b1·b2) | 구현 완료 (v1.0.0) |
+| 2 | 조건 if / if·else (u2-1~u2-6, 조건 예측) | 구현 완료 (v1.1.0~v1.2.0) — [design/unit2-conditions.md](design/unit2-conditions.md) |
+| 3 | 조건 반복 while (u3-1~u3-3) | 구현 완료 (v1.3.0) — [design/unit3-while.md](design/unit3-while.md) |
+| 4 | 함수 (u4-1~u4-3) | 구현 완료 (v1.4.0) — [design/unit4-functions.md](design/unit4-functions.md) |
+| 5 | 변수 상자 A (u5-1~u5-3) | 구현 완료 (v1.5.0) — [design/unit5-variables.md](design/unit5-variables.md) |
+| 6 | 논리 not/and/or, 옆 센서 (u6-1~u6-4) | 구현 완료 (v1.6.0) — [design/unit6-logic.md](design/unit6-logic.md) |
+| 7 | 매개변수 (u7-1~u7-3) | 구현 완료 (v1.7.0) — [design/unit7-parameters.md](design/unit7-parameters.md) |
+| 8 | 반환값 (u8-1~u8-3) | 구현 완료 (v1.8.0) — [design/unit8-returns.md](design/unit8-returns.md) |
+| 9 | 이벤트 (u9-1~u9-3) | 구현 완료 (v1.9.0) — [design/unit9-events.md](design/unit9-events.md) |
+| 10 | 리스트 (u10-1~u10-3) | 구현 완료 (v1.10.0) — [design/unit10-lists.md](design/unit10-lists.md) |
+| 11 | 탐색·알고리즘 비교 (u11-1~u11-3) | 구현 완료 (v1.11.0) — [design/unit11-search.md](design/unit11-search.md) |
+| 12 | 종합 — 배운 도구를 골라요 (u12-1~u12-3, 전체 과정 완주) | 구현 완료 (v1.12.0) — [design/unit12-synthesis.md](design/unit12-synthesis.md) |
+
+- 단원 2~12는 사용자 결정(2026-11-25 "프로그래밍 기본 개념 전체, 글자 암기가 아닌 개념")과 ROADMAP 라운드 3 개념 지도에 따른 것이다. 모든 단원은 [제안·잠정](아동 관찰 전) — 퍼즐마다 "목표 개념 없이 상한 이하로 풀 수 없음"을 그 단원 팔레트 범위에서 전수 탐색으로 확인했다.
+- 정규 퍼즐 45개(1단원 8 + 2단원 6 + 3·4·5단원 각 3 + 6단원 4 + 7~12단원 각 3), 선택 활동: 보너스 2개, 예측 도전.
 | 3~ | 자료구조, 알고리즘, 컴퓨터 구조, 운영체제, 네트워크 | 미정 |
 
 ## 2. 1단원 학습 목표 [확정]

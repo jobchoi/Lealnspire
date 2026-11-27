@@ -160,9 +160,9 @@ for (const world of ['크레용 스케치북', '기차 마을']) {
 
 /** T64 2차: 스케치북 데스크톱 — 팔레트 원 버튼이 블록 수 표시·안내 문장과 겹치지 않는다(단원마다 팔레트 개수가 다름) */
 import { allStages } from '../src/model/stages'
-test('@layout 스케치북 1280: 모든 단원 첫 스테이지에서 팔레트가 블록 수 표시와 겹치지 않음', async ({ page }) => {
+for (const viewport of [{ width: 1280, height: 720 }, { width: 375, height: 667 }]) test(`@layout 스케치북 ${viewport.width}: 모든 단원 첫 스테이지에서 팔레트가 블록 수 표시와 겹치지 않음`, async ({ page }) => {
   test.setTimeout(180_000)
-  await page.setViewportSize({ width: 1280, height: 720 })
+  await page.setViewportSize(viewport)
   const g = new Game(page)
   await g.fresh()
   await page.evaluate(ids => localStorage.setItem('lealnspire.progress.v2', JSON.stringify({ version: 2, stages: Object.fromEntries(ids.map(id => [id, { completed: true, bestStars: 3 }])) })), allStages.map(s => s.id))
