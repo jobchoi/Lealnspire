@@ -1,6 +1,7 @@
 import { renderToString } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import { Editor } from './Editor'
+import { BlockTiles } from './BlockTiles'
 import { GameController } from '../../controller/GameController'
 import { ProgressRepository } from '../../model/ProgressRepository'
 import { stages } from '../../model/stages'
@@ -11,6 +12,15 @@ import { i18n, t } from '../../i18n/I18n'
 const program: Program = [{ id: 'a', type: 'repeat', count: 3, body: [{ id: 'b', type: 'repeat', count: 2, body: [{ id: 'c', type: 'forward' }] }] }]
 const onChange = () => {}
 describe('Editor', () => {
+  it('keeps nested English block positions distinct from execution steps', () => {
+    const previous = i18n.locale
+    try {
+      i18n.locale = 'en'
+      const html = renderToString(<BlockTiles program={[{ id: 'outer', type: 'repeat', count: 2, body: [{ id: 'list', type: 'forEach', body: [] }] }]} selectedId={null} targetId={null} locked={false} onSelect={() => {}} />)
+      expect(html).toContain('aria-label="Block 1.1: use each list value in order"')
+      expect(html).not.toContain('Step 1.1')
+    } finally { i18n.locale = previous }
+  })
   it('renders nested order, repeat counts and accessible editing controls', () => {
     const html = renderToString(<Editor program={program} onChange={onChange} />)
     expect(html.replaceAll('<!-- -->', '')).toContain('aria-label="1.1.1번 앞으로"')

@@ -1,5 +1,12 @@
 # 작업 기록 (WORK_HISTORY)
 
+## 2026-11-28 — T81 영어 문구·T82 후반 시나리오 E2E, v1.20.0 (점검 GPT, 구현 Codex, E2E·QC Claude)
+
+- GPT 읽기 전용 3차 점검(`~/project/_progress/logs/product-audit3-gpt.md`): 영어 블록 번호 표현·아동 문구, 후반 단원 E2E 빈틈 4개, 코드 정리 제안(T83 제안으로 보류 — 동작 변경 위험 대비 이득이 작음)
+- Codex(T81): en 25개 키(Step → Block {order} 22개 키, list loop, Round, Run 등), `{order}` 키 계약 단위 테스트, 중첩 영어 접근성 이름 검사(verify 405)
+- Claude(T82): `e2e/late-scenarios.e2e.ts` 4개. 내 첫 가정이 틀림 — 빈 함수는 반복 횟수 원천으로 고를 수 없어 return 누락이 그 경로로는 생기지 않음 → 실제로 생길 수 있는 경로(연결 뒤 return 삭제)로 바꿈. 스크린샷: 누락 안내 "1번 맵에서 함수가 값을 돌려주지 않았어요. return이 실행됐나요?"와 고치기 버튼
+- 검증: verify 405, e2e 638(16.9분), e2e:prod 4
+
 ## 2026-11-28 — T80 제목 번호 통일, 문서 정리, v1.19.0 (점검 GPT, 구현 Codex, 문구·문서·E2E·QC Claude)
 
 - Codex: 2~12단원 제목 문구에서 접두 제거, 화면에서 `unitStageLabel`로 "N단원 M: " 조합(게임 제목·결과 창·맵 접근성 설명), 목록 카드 "M. 제목", 45개 ko/en 회귀 테스트(verify 403)

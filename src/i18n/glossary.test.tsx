@@ -13,6 +13,23 @@ function leaves(messages: Messages, prefix = ''): Record<string, string> {
 const params = (value: string) => [...new Set([...value.matchAll(/\{(\w+)\}/g)].map(match => match[1]))].sort()
 
 describe('terminology and locale contracts', () => {
+  it('describes block positions as blocks rather than execution steps in English', () => {
+    const blockOrderKeys = [
+      'targetWhile', 'target', 'targetIf', 'targetElse', 'action', 'tile', 'repeatTile',
+      'variables.setTile', 'variables.changeAddTile', 'variables.changeSubtractTile',
+      'parameters.call.star', 'parameters.call.moon', 'returns.tile',
+      'returns.repeat.star', 'returns.repeat.moon', 'events.tile', 'events.target',
+      'lists.tile', 'lists.target', 'lists.repeat.current', 'lists.repeat.listAtA',
+      'lists.repeat.listLength',
+    ]
+    const base = leaves(korean)
+    const english = leaves(locales['./locales/en.json'])
+    expect(Object.keys(base).filter(key => base[key].includes('{order}')).sort()).toEqual([...blockOrderKeys].sort())
+    for (const key of blockOrderKeys) {
+      expect(english[key], key).toContain('Block {order}')
+      expect(english[key], key).not.toMatch(/step/i)
+    }
+  })
   it('requires complete keys and matching interpolation arguments for supported locales', () => {
     const base = leaves(korean)
     for (const locale of supportedLocales) {
