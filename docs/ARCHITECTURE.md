@@ -304,3 +304,5 @@ CourseCompletion은 목록과 성공 결과 창에서 SVG 월드 기호가 모�
 설정 `lealnspire.settings`만 `{ version: 2, lang?, seenDemos: string[] }`로 이행한다. v1 언어를 보존하며 언어 변경·시범 완료·초기화는 공통 저장 함수를 거쳐 두 필드를 함께 저장한다. 잘못된 목록(알 수 없는 ID 포함)은 전체를 빈 목록으로 복구한다. 저장 실패 시 메모리 상태를 유지한다. 진행 v2 형식과 진행 삭제의 설정 보존 계약은 그대로다.
 
 DemoController는 정규 목록 밖 예시 맵과 전용 EditorController·Interpreter만 사용하며 GameController·ProgressRepository를 소유하지 않는다. 완료 콜백은 설정의 본 목록에만 연결한다. 2400ms 간격으로 4컷 뒤 정지하며 타이머는 재시작·일시정지·이탈 때 정리한다. View는 media query에 따라 자동 재생 대신 이전/다음을 제공하고, 모달 외부를 inert 처리하며 진입·복귀 포커스를 관리한다. 새 의존성은 없다.
+
+T73-2는 DemoController의 demoEntries(14개 ID·진입 스테이지)와 demoScene(4컷별 독립 문서·실행 프레임)을 통해 개념 장면을 확장한다. 각 컷은 새 EditorController로 조립하고 Interpreter에서 실행한 결과 중 해당 프레임을 선택하며, 마지막 검사·반환 정보를 표시용으로 보존한다. DemoModal은 함수 몸체·리스트 칸을 기존 BlockTiles와 함께 표시한다. 설정은 기존 v2의 허용 시범 ID만 늘린다. 정규 진행 저장·퍼즐 데이터와 연결하지 않는다.

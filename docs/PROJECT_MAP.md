@@ -318,3 +318,7 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 - `controller/DemoController.ts`, `DemoController.test.ts`: 정규 목록 밖 2×2 예시 맵, EditorController·Interpreter를 이용한 격리된 4컷 재생, 주입 타이머·수동 컷·정리·진행 불변 검사.
 - `view/components/DemoModal.tsx`, `DemoModal.css`, `DemoModal.test.tsx`: 기존 Board·BlockTiles 재사용, 장식 손·재생 제어·모달 포커스·배경 inert·동작 줄이기·ko/en×세 월드 렌더링.
 - ProgressRepository는 설정만 v2(lang/seenDemos)로 이행한다. PlayPage는 1번 첫 편집 전 요청 버튼, HomePage는 확인 후 시범 기록 초기화를 제공한다. E2E·브라우저 QC는 Claude 담당이며 환경 제한은 설계 구현 기록 참조.
+
+### T73-2 개념 시범 [제안·잠정]
+
+DemoController.ts의 demoEntries/demoScene이 기존 첫 시범 포함 14종×4컷·진입점을 정의한다. DemoModal은 함수·조건 검사·리스트 번호와 값을 표시하며 PlayPage는 초기 제공 코드를 허용하되 편집 기록이 있으면 제안을 숨긴다. DemoController.test.ts는 모든 컷의 정답·맵 비동일성, 14종 진행 불변·설정 복원·주요 실행 추적을 검사한다. 저장 형식·의존성·새 파일 추가는 없다.

@@ -90,3 +90,15 @@
 Context7 도구가 없어 React 19.3 공식 useEffect 문서(https://react.dev/reference/react/useEffect)의 정리·Strict Mode 동작을 참고했다. Playwright MCP 없음. 개발 서버는 listen EPERM(127.0.0.1:5173), 설치된 Chromium도 sandbox_host_linux.cc shutdown Operation not permitted로 실행 불가. npm run e2e는 webServer 시작 실패. 브라우저 상호작용·작은 화면·콘솔·스크린샷 육안 확인·화면 낭독기 검증은 미검증이며 Claude QC가 필요하다. E2E 파일은 지시서대로 수정하지 않았다.
 
 최종 검증: `npm run verify` 3회 연속 통과(lint·387개 테스트·TypeScript/Vite build). `git diff --check` 통과. 브라우저·E2E는 위 환경 제한으로 미검증이므로 완료 승인 전 Claude QC가 필요하다.
+
+## T73-2 구현 기록 (Codex, 2026-11-27) [제안·잠정]
+
+기존 add-run 외 13종을 DemoController의 독립 장면으로 확장했다. 식별자와 진입점은 rotation(2), repeat(5), condition(u2-1), else(u2-5), while(u3-1), function(u4-1), variable(u5-1), logic(u6-1), parameter(u7-1), return(u8-1), event(u9-1), list(u10-1), search(u11-2)이며 모두 4컷이다. 12단원에는 시범이 없다. 각 컷은 격리된 EditorController와 Interpreter로 구성하고 같은 컷의 문서·프레임을 캐시한다. 실제 편집 기록이 없을 때만 제안하며 초기 제공 코드 자체는 편집으로 보지 않는다. 설정 v2의 허용 ID만 확장하고 저장 형식은 바꾸지 않았다. 본 시범의 강조 제거·홈 전체 초기화 계약을 유지한다.
+
+한영 52문장, 함수 몸체·매개변수·반환 뒤 생략, 센서 검사, 리스트 번호/값·포인터·미확인 칸을 추가했다. 장식은 aria-hidden/inert 안에 두고 한 컷당 한 문장의 status만 낭독 대상으로 둔다. 동작 줄이기는 기존 수동 이전/다음과 정지 컷을 유지한다. 새 의존성·라이브러리 API는 도입하지 않았다.
+
+유출 방지 테스트는 14종×4컷 모두 진입 스테이지의 모든 변형 맵과 다름을 검사하고, ID를 제거한 main/functions 문서가 정답 문서와 다름을 검사한다. 이 검사에서 탐색 시범의 정답 동일 구조를 발견해 역방향 순회·별도 리스트 [5,2,8]·목표 8로 변경했다. 각 시범 전후 실제 GameController snapshot, Progress와 두 진행 키 원문 불변 및 개별 본 기록 복원도 검사한다.
+
+Playwright MCP는 제공되지 않았고, 개발 서버는 127.0.0.1:5173 listen EPERM으로 시작하지 못했다. npm run e2e도 webServer 시작 실패다. 세 월드×1280/375/360 실제 배치·터치 크기·대비·콘솔·스크린샷 육안 확인과 실제 화면 낭독은 미검증이며 Claude QC가 필요하다. E2E 파일은 변경하지 않았다.
+
+최종 검증: npm run verify 3회 연속 통과(각 36개 파일·390개 테스트, lint·TypeScript·Vite build), git diff --check 통과. 브라우저·E2E 미검증 상태이므로 완료 승인은 Claude QC 이후로 남긴다. 변경은 feature/T73-onboarding 작업 트리에 두었으며 커밋·push·브랜치 변경은 하지 않았다.

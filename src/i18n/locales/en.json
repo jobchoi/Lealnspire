@@ -605,6 +605,86 @@
     "cut0": "Pressed the forward block",
     "cut1": "A block appeared in the workspace",
     "cut2": "Pressed play",
-    "cut3": "The robot moved one square"
+    "cut3": "The robot moved one square",
+    "scenes": {
+      "rotation": {
+        "0": "The robot faces up.",
+        "1": "Add a right turn and run it.",
+        "2": "The robot turns right without moving.",
+        "3": "Forward now moves in the new direction."
+      },
+      "repeat": {
+        "0": "Add a repeat block.",
+        "1": "Select repeat and choose to put blocks inside.",
+        "2": "Forward goes inside repeat.",
+        "3": "The action runs twice."
+      },
+      "condition": {
+        "0": "Put a turn inside if.",
+        "1": "The sensor checks the square ahead.",
+        "2": "A wall ahead makes the turn inside if run.",
+        "3": "With an open square ahead, if skips its body."
+      },
+      "else": {
+        "0": "Select if and add else.",
+        "1": "Choose else as the place to add blocks.",
+        "2": "A turn goes inside else.",
+        "3": "With an open square ahead, only else runs."
+      },
+      "while": {
+        "0": "Put forward inside while.",
+        "1": "The path is clear, so move one square.",
+        "2": "Check ahead again before moving.",
+        "3": "A wall stops while without entering its body."
+      },
+      "function": {
+        "0": "Create a function and open its star card.",
+        "1": "Put a turn inside the star function.",
+        "2": "Return to main and call the star function.",
+        "3": "Run the star body, then return after the call."
+      },
+      "variable": {
+        "0": "Box A holds 3.",
+        "1": "Choose A as the repeat count source.",
+        "2": "The value 3 passes from A to repeat.",
+        "3": "Turn as many times as A says."
+      },
+      "logic": {
+        "0": "Select if to edit its condition.",
+        "1": "Choose left to check the wall on that side.",
+        "2": "Turn on not to change false to true.",
+        "3": "Choosing and or or shows two condition slots."
+      },
+      "parameter": {
+        "0": "Enable the star function input ◆.",
+        "1": "Use ◆ for the repeat count inside the function.",
+        "2": "Choose 2 as the number to send in the call.",
+        "3": "Copy 2 into ◆ while A stays 4."
+      },
+      "return": {
+        "0": "Add return inside the function and choose 2.",
+        "1": "Use the function result for the main repeat count.",
+        "2": "The function sends 2 back with return.",
+        "3": "Skip the turn after return and continue main."
+      },
+      "event": {
+        "0": "Create an on handler for the diamond signal.",
+        "1": "Put a turn inside on.",
+        "2": "The diamond signal arrives and waits in the queue.",
+        "3": "Run the connected on body, then finish."
+      },
+      "list": {
+        "0": "Add a list loop and choose its body.",
+        "1": "Use the current value ▣ for the inner repeat count.",
+        "2": "The first slot has number 1 and value ▣ of 2.",
+        "3": "The next slot has number 2 and value ▣ of 3."
+      },
+      "search": {
+        "0": "Choose the comparison body as the place to add blocks.",
+        "1": "Put a stop block inside the condition.",
+        "2": "The value matches target 8, so stop the list loop.",
+        "3": "Leave the remaining slots unchecked and run the next action."
+      }
+    }
   }
 }

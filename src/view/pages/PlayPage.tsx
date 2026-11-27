@@ -1,4 +1,4 @@
-import { canOfferDemo } from '../../controller/DemoController'
+import { canOfferDemo, demoForStage } from '../../controller/DemoController'
 import { DemoModal, DemoHand } from '../components/DemoModal'
 import { courseCompleted, nextUnit } from '../../controller/flow'
 import { Fragment } from 'react'
@@ -21,8 +21,9 @@ import { createProgressStore } from '../../model/ProgressRepository'
 type Props = { stage: Stage; progressStore: ReturnType<typeof createProgressStore>; onList: () => void; onNextUnit?: () => void; onNext: () => void; lastStage: boolean; controller?: GameController }
 
 export function PlayPage({ stage, progressStore, onList, onNext, onNextUnit, lastStage, controller: supplied }: Props) {
+  const demoId = demoForStage(stage.id)
   const [demoOpen, setDemoOpen] = useState(false)
-  const [seenDemo, setSeenDemo] = useState(() => progressStore.getSeenDemos().includes('add-run'))
+  const [seenDemo, setSeenDemo] = useState(() => progressStore.getSeenDemos().includes(demoId ?? ''))
   const page = useRef<HTMLElement>(null)
   const [controller] = useState(() => supplied ?? new GameController(stage, progressStore))
   const { doc, program, hintStep, playing, speed } = useController(controller)
@@ -65,10 +66,10 @@ export function PlayPage({ stage, progressStore, onList, onNext, onNextUnit, las
   const variableBox = variablesEnabled && <div className="variable-box" role="status" aria-label={t('variables.status', { value: variableValue })}><span aria-hidden="true"><Symbol name="set" /> A <strong>{variableValue}</strong><span className="variable-transition">{variableChange && `${variableChange.from} → ${variableChange.to}`}</span></span><span className="sr-only">{variableChange ? t('variables.changed', variableChange) : t('variables.status', { value: variableValue })}</span></div>
   return (
     <section ref={page} className={`play-page theme-${theme.world}${stage.id === 'u12-1' ? ' synthesis-path-page' : ''}${stage.variants ? ' conditions-page' : ''}${stage.id.startsWith('u3-') || stage.id === 'u12-1' ? ' while-page' : ''}${stage.id.startsWith('u4-') || paramsEnabled ? ' functions-page' : ''}${variablesEnabled || logicEnabled ? ' variables-page' : ''}${logicEnabled ? ' logic-page' : ''}${paramsEnabled ? ' params-page' : ''}${returnsEnabled ? ' returns-page' : ''}${eventsEnabled ? ' events-page' : ''}${listsEnabled ? ' lists-page' : ''}${search ? ' search-page' : ''}`}>
-      {demoOpen && <DemoModal theme={theme} onClose={() => setDemoOpen(false)} onSeen={() => { progressStore.markDemoSeen('add-run'); setSeenDemo(true) }} />}
+      {demoOpen && demoId && <DemoModal key={demoId} demoId={demoId} theme={theme} onClose={() => setDemoOpen(false)} onSeen={() => { progressStore.markDemoSeen(demoId); setSeenDemo(true) }} />}
       <ConceptDefs /><h1 tabIndex={-1} data-page-title>{stage.variants || bonusStages.some(bonus => bonus.id === stage.id) ? '' : `${t('stage')} ${stage.id}: `}{t(stage.title)}</h1>
       <div className="playback-controls stage-controls">
-        {canOfferDemo(stage.id, controller.hasEdited || completed || program.length > 0, !!controller.getSnapshot().execution, controller.showResult) && <button className={`demo-trigger${seenDemo ? '' : ' demo-suggested'}`} type="button" aria-label={t('demo.button')} onClick={() => setDemoOpen(true)}><DemoHand /><span aria-hidden="true">▶</span></button>}
+        {canOfferDemo(stage.id, controller.hasEdited || !!progressStore.getProgress().stages[stage.id], !!controller.getSnapshot().execution, controller.showResult) && <button className={`demo-trigger${seenDemo ? '' : ' demo-suggested'}`} type="button" aria-label={t('demo.button')} onClick={() => setDemoOpen(true)}><DemoHand /><span aria-hidden="true">▶</span></button>}
         <button type="button" onClick={onList} aria-label={theme.buttonLabel('stageList')} title={theme.buttonLabel('stageList')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="stageList" /></span><small>{theme.buttonLabel('stageList')}</small></button>
         <button type="button" aria-expanded={hintStep > 0} aria-controls="stage-hint" onClick={controller.toggleHint} aria-label={theme.buttonLabel('hint')} title={theme.buttonLabel('hint')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="hint" /></span><small>{theme.buttonLabel('hint')}</small></button>
         {(controller.canNext && !lastStage) && <button type="button" aria-label={theme.buttonLabel('nextStage')} title={theme.buttonLabel('nextStage')} onClick={onNext}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="nextStage" /></span><small>{theme.buttonLabel('nextStage')}</small></button>}

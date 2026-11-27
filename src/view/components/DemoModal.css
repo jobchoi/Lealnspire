@@ -2,7 +2,7 @@
 .demo-trigger.demo-suggested { outline: 3px solid #986000; outline-offset: 2px; }
 .demo-modal { width: min(440px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow: auto; padding: 16px; }
 .demo-modal h2, .demo-modal p { margin: 8px 0; }
-.demo-scene { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center; }
+.demo-scene { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: center; }
 .demo-scene .board { width: 150px; max-width: 100%; height: 125px; min-height: 0; margin: auto; }
 .demo-palette, .demo-run { display: flex; align-items: center; justify-content: center; min-height: 56px; border: 2px solid #45536b; border-radius: 8px; }
 .demo-run > svg { width: 32px; height: 32px; }
@@ -10,3 +10,51 @@
 .demo-workspace { min-height: 75px; border: 2px dashed #45536b; padding: 6px; }
 .demo-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 10px; }
 .demo-controls button { min-height: 48px; min-width: 48px; }
+.demo-workspace { grid-column: 1 / -1; min-width: 0; }
+.demo-workspace .tile-list { flex-wrap: wrap; }
+.demo-function { margin-top: 6px; padding: 4px; border: 2px solid #45536b; border-radius: 8px; }
+.demo-cue { grid-column: 1 / -1; color: #243247; background: #fff; padding: 4px; overflow-wrap: anywhere; }
+@media (max-width: 400px) {
+  .demo-modal { padding: 10px; }
+  .demo-scene { gap: 6px; }
+}
+.demo-list { grid-column: 1 / -1; display: flex; justify-content: center; gap: 10px; padding: 4px; margin: 0; list-style: none; color: #243247; }
+.demo-list li { display: grid; min-width: 44px; padding: 3px; background: #fff; border: 2px solid #45536b; text-align: center; }
+.demo-list small { border-bottom: 1px solid #45536b; }
+.demo-list .demo-unchecked { border-style: dashed; }
+.demo-target-cue { display: flex; align-items: center; color: #243247; background: #fff; }
+
+/* Only the dialog scrolls; nested programs keep their full natural height. */
+.demo-backdrop { padding: 12px; }
+.demo-modal .demo-run { grid-column: 1 / -1; }
+.demo-modal { --tile-size: 56px; --tile-gap: 4px; }
+.demo-modal .tile-list { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 4px; }
+.demo-modal .repeat-frame { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; }
+.demo-modal .block-tile {
+  width: 56px; min-width: 56px; height: auto; min-height: 56px; flex: 0 0 56px;
+  padding: 12px 3px 4px; gap: 2px; font: 12px/16px sans-serif;
+}
+.demo-modal .block-tile small { top: 1px; left: 3px; font: 9px/10px sans-serif; }
+.demo-modal .block-tile .block-symbol { font: 20px/24px sans-serif; }
+.demo-modal .block-tile .theme-symbol { width: 28px; height: 28px; }
+.demo-modal .block-tile strong { position: static; padding: 0; font: bold 11px/14px monospace; }
+.demo-modal .block-tile.block-repeat strong { display: flex; flex-direction: column; align-items: center; }
+.demo-modal .block-repeat .concept-keyword { font: bold 10px/12px monospace; }
+.demo-modal .block-repeat .repeat-count { font: bold 20px/24px monospace; overflow-wrap: anywhere; }
+.demo-modal .block-call .block-symbol { display: flex; align-items: center; font: 14px/20px monospace; }
+.demo-modal .block-call .theme-symbol { width: 20px; height: 20px; }
+/* Condition text, skip status and iteration badges each occupy their own row. */
+.demo-modal .block-tile:is(.block-if, .block-while) { flex-basis: 112px; width: 112px; }
+.demo-modal .block-tile:has(.logic-condition) .logic-condition {
+  position: static; order: 1; width: 100%; overflow: visible; white-space: normal;
+  overflow-wrap: anywhere; font: bold 11px/15px sans-serif;
+}
+.demo-modal .block-tile .sensor-icon { width: 20px; height: 20px; }
+.demo-modal .block-tile :is(.skip-label, .recheck-label, .empty-repeat-label, .call-running, .return-count) {
+  position: static; order: 2; white-space: normal; font: 10px/14px sans-serif;
+}
+.demo-modal .block-tile .loop-progress {
+  position: static; order: 3; transform: none; max-width: 100%;
+  white-space: normal; font: bold 10px/14px sans-serif;
+}
+.demo-modal .block-tile.has-loop-progress { padding-bottom: 4px; }
