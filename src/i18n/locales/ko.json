@@ -1,4 +1,8 @@
 {
+  "saveNotice": {
+    "failed": "기록을 저장하지 못했어요. 계속 풀 수 있지만, 창을 닫으면 이번 기록은 남지 않을 수 있어요.",
+    "result": "이 기기에는 기록이 저장되지 않았어요."
+  },
   "hintLookAt": "볼 곳: {target}",
   "hintTargets": {"map": "맵", "palette": "블록 상자", "workspace": "작업 공간", "list": "리스트", "search": "비교", "signals": "신호", "variables": "상자 A"},
   "stepLimitNotice": "실행 단계가 너무 많아요(1000단계). 반복 횟수나 블록을 줄여 보세요.",

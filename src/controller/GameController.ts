@@ -12,8 +12,14 @@ export type Scheduler = { set(callback: () => void, delay: number): unknown; cle
 // Include the initial frame; show a few loop cycles before skipping to the computed end.
 const stepLimitPreviewFrames = 12
 const scheduler: Scheduler = { set: (callback, delay) => setTimeout(callback, delay), clear: handle => clearTimeout(handle as ReturnType<typeof setTimeout>) }
-type State = { variant: number; all: RunAllResult | null; undoProgram: ProgramDocument | null; doc: ProgramDocument; program: Program; execution: RunResult | null; index: number; playing: boolean; dismissed: boolean; speed: keyof typeof playbackSpeeds; hintStep: 0 | 1 | 2; failure: ReturnType<typeof failurePoint> }
+type State = { saveNotice: boolean; variant: number; all: RunAllResult | null; undoProgram: ProgramDocument | null; doc: ProgramDocument; program: Program; execution: RunResult | null; index: number; playing: boolean; dismissed: boolean; speed: keyof typeof playbackSpeeds; hintStep: 0 | 1 | 2; failure: ReturnType<typeof failurePoint> }
 export class GameController extends Observable<State> {
+  private static readonly notifiedRepositories = new WeakSet<ProgressRepository>()
+  private static takeSaveNotice(repository: ProgressRepository) {
+    if (repository.persistent || this.notifiedRepositories.has(repository)) return false
+    this.notifiedRepositories.add(repository)
+    return true
+  }
   hasEdited = false
   readonly editor = new EditorController(() => { if (this.finished) this.reset() }, { undo: () => this.undo(), available: () => this.canUndo })
   readonly stage: Stage
@@ -21,7 +27,7 @@ export class GameController extends Observable<State> {
   private clock: Scheduler
   private timer: unknown
   constructor(stage: Stage, repository: ProgressRepository, clock: Scheduler = scheduler) {
-    super({ variant: 0, all: null, undoProgram: null, doc: repository.getDocument(stage), program: repository.getProgram(stage), execution: null, index: 0, playing: false, dismissed: false, speed: 'normal', hintStep: 0, failure: null })
+    super({ saveNotice: GameController.takeSaveNotice(repository), variant: 0, all: null, undoProgram: null, doc: repository.getDocument(stage), program: repository.getProgram(stage), execution: null, index: 0, playing: false, dismissed: false, speed: 'normal', hintStep: 0, failure: null })
     this.stage = stage; this.repository = repository; this.clock = clock
     this.editor.program = this.state.program
     this.editor.functions = structuredClone(this.state.doc.functions)
@@ -90,7 +96,7 @@ export class GameController extends Observable<State> {
     }
     this.editor.program = next.program
     this.editor.functions = structuredClone(next.doc.functions)
-    this.update(next)
+    this.update({ ...next, saveNotice: next.saveNotice || GameController.takeSaveNotice(this.repository) })
     if (next.playing && !this.finished) this.timer = this.clock.set(() => {
       this.advance(true)
     }, playbackSpeeds[next.speed])
@@ -147,6 +153,7 @@ export class GameController extends Observable<State> {
     this.editor.reveal(failure?.blockId ?? null, failure?.call?.fn)
     this.publish({ ...this.state, execution: null, all: null, variant: this.state.all?.failedVariant ?? this.variant, failure, index: 0, playing: false, dismissed: false })
   }
+  dismissSaveNotice = () => this.update({ ...this.state, saveNotice: false })
   dismiss = () => this.update({ ...this.state, dismissed: true })
   toggleHint = () => this.update({ ...this.state, hintStep: this.state.hintStep === 0 ? 1 : 0 })
   nextHint = () => { if (this.state.hintStep === 1) this.update({ ...this.state, hintStep: 2 }) }
