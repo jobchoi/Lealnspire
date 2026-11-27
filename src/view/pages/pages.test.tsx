@@ -685,3 +685,21 @@ it('omits save warnings with working storage and warns only once when storage st
     first.dispose()
   }
 })
+
+it('keeps demo access without suggestion after edits, saved revisits and seen demos', () => {
+  for (const mode of ['fresh', 'edited', 'saved', 'seen']) {
+    const store = createProgressStore()
+    if (mode === 'saved') store.saveProgram('1', [{ id: 'saved', type: 'forward' }])
+    if (mode === 'seen') store.markDemoSeen('add-run')
+    const game = new GameController(stages[0], store)
+    if (mode === 'edited') game.editor.add('forward')
+    const render = () => renderToString(<PlayPage stage={stages[0]} progressStore={store} onList={noop} onNext={noop} lastStage={false} controller={game} />)
+    expect(render()).toContain('demo-trigger')
+    expect(render().includes('demo-suggested')).toBe(mode === 'fresh')
+    if (mode === 'saved' || mode === 'edited') {
+      game.play()
+      expect(render()).not.toContain('demo-trigger')
+    }
+    game.dispose()
+  }
+})

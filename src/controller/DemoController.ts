@@ -139,7 +139,7 @@ export class DemoController extends Observable<{ cut: number; paused: boolean }>
   private stop() { if (this.timer !== undefined) this.scheduler.clear(this.timer); this.timer = undefined }
   private schedule() {
     this.stop()
-    if (!this.disposed && !this.state.paused && this.state.cut < 3) this.timer = this.scheduler.set(() => this.next(), 2400)
+    if (!this.disposed && !this.state.paused && this.state.cut < 3) this.timer = this.scheduler.set(() => this.advance(), 2400)
   }
   restart = (manual = false) => {
     this.disposed = false
@@ -147,7 +147,7 @@ export class DemoController extends Observable<{ cut: number; paused: boolean }>
     this.cachedScene = undefined
     this.update({ cut: 0, paused: manual }); this.schedule()
   }
-  next = () => {
+  private advance = () => {
     if (this.disposed || this.state.cut === 3) return
     const cut = this.state.cut + 1
     this.cachedScene = undefined
@@ -155,8 +155,10 @@ export class DemoController extends Observable<{ cut: number; paused: boolean }>
     if (cut === 3) this.complete()
     this.schedule()
   }
+  next = () => { if (!this.disposed) { this.stop(); this.update({ ...this.state, paused: true }); this.advance() } }
   back = () => { if (!this.disposed) { this.stop(); this.cachedScene = undefined; this.update({ cut: Math.max(0, this.state.cut - 1), paused: true }) } }
   pause = () => { if (!this.disposed) { this.update({ ...this.state, paused: !this.state.paused }); this.schedule() } }
   dispose = () => { this.disposed = true; this.stop() }
 }
-export function canOfferDemo(stageId: string, edited: boolean, executing: boolean, result: boolean) { return !!demoForStage(stageId) && !edited && !executing && !result }
+/** 편집 뒤에도 강조 없이 제공(T79). 이미 깬 스테이지는 숨김 — 좁은 화면에서 '다음 스테이지'와 함께 놓이면 작업 공간이 줄어듦(v1.18.0 QC) */
+export function canOfferDemo(stageId: string, _edited: boolean, executing: boolean, result: boolean, completed = false) { return !!demoForStage(stageId) && !executing && !result && !completed }
