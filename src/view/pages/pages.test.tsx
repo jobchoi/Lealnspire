@@ -596,22 +596,30 @@ it('T74 renders both focus steps for all stages without changing editor or progr
   } finally { i18n.locale = 'ko' }
 })
 
-it('T74 preserves the selected function tab, block and playback when hints change', () => {
-  const stage = unit7Stages[2], store = createProgressStore()
-  const controller = new GameController(stage, store)
-  const fn = controller.getSnapshot().doc.functions[0]
-  controller.editor.chooseFunction(fn.id)
-  controller.editor.select(fn.body[0].id)
-  const doc = structuredClone(controller.getSnapshot().doc), editor = controller.editor.getSnapshot()
-  const frame = controller.frame, progress = store.getProgress()
-  for (const change of [controller.toggleHint, controller.nextHint, controller.toggleHint]) {
-    change()
-    renderToString(<PlayPage stage={stage} progressStore={store} controller={controller} onList={noop} onNext={noop} lastStage={false} />)
-    expect(controller.getSnapshot().doc).toEqual(doc)
-    expect(controller.editor.functionId).toBe(fn.id)
-    expect(controller.editor.getSnapshot()).toEqual(editor)
-    expect(controller.frame).toEqual(frame)
-    expect(store.getProgress()).toEqual(progress)
+it('T77 highlights every function body for workspace hints and preserves editing and playback', () => {
+  for (const stage of [...unit4Stages, ...unit7Stages]) {
+    const store = createProgressStore()
+    const controller = new GameController(stage, store)
+    controller.edit({ main: stage.solution, functions: stage.solutionFunctions! })
+    const fn = controller.getSnapshot().doc.functions[0]
+    controller.editor.chooseFunction(fn.id)
+    controller.editor.select(fn.body[0].id)
+    const doc = structuredClone(controller.getSnapshot().doc), editor = controller.editor.getSnapshot()
+    const frame = controller.frame, progress = store.getProgress()
+    for (const [index, change] of [controller.toggleHint, controller.nextHint, controller.toggleHint].entries()) {
+      change()
+      const html = renderToString(<PlayPage stage={stage} progressStore={store} controller={controller} onList={noop} onNext={noop} lastStage={false} />)
+      const focus = stage.hints.focus[index === 1 ? 1 : 0]
+      const workspace = index !== 2 && [focus.primary, focus.secondary].some(target => target?.kind === 'workspace')
+      const bodies = html.match(/<div class="function-body workspace"[^>]*>/g) ?? []
+      expect(bodies).toHaveLength(doc.functions.length)
+      for (const body of bodies) expect(body.includes('data-hint-focus="workspace"')).toBe(workspace)
+      expect(controller.getSnapshot().doc).toEqual(doc)
+      expect(controller.editor.functionId).toBe(fn.id)
+      expect(controller.editor.getSnapshot()).toEqual(editor)
+      expect(controller.frame).toEqual(frame)
+      expect(store.getProgress()).toEqual(progress)
+    }
+    controller.dispose()
   }
-  controller.dispose()
 })
