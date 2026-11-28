@@ -961,7 +961,6 @@
     "undo": "Undo",
     "theme": "Picture world",
     "topHandle": "Top box",
-    "notice": "This factory goes away when you leave this page.",
     "rejected": "This does not fit here. Check the open tools and block count.",
     "atoms": {
       "beltEmpty": "Belt is empty",
@@ -985,6 +984,38 @@
       "missingReturn": "No number came back for the count. Check the function return.",
       "indexRange": "There is no item at index {index}. This list has length {length}.",
       "stepLimit": "Many actions continued, so we paused. Check the loop condition."
+    },
+    "myProjects": "My projects",
+    "newProject": "Create new",
+    "defaultName": "My factory {number}",
+    "noProjects": "Shall we build a new factory?",
+    "projectName": "Project name",
+    "nameHelp": "You do not need to use your real name or school name. Use up to 20 characters.",
+    "save": "Save",
+    "saved": "Saved",
+    "unsaved": "You have changes to save",
+    "savedDate": "Saved on",
+    "openProject": "Open project",
+    "versions": "Earlier saves",
+    "openVersion": "Open save {number} ({date})",
+    "replaceVersion": "Delete save {number} and save ({date})",
+    "chooseVersion": "You can keep 5 saves. Choose a save to delete.",
+    "manageProjects": "Manage projects",
+    "deleteProject": "Delete project",
+    "deleteConfirm": "Delete this project and all its saves?",
+    "cancel": "Cancel",
+    "leaveTitle": "Save your changes?",
+    "saveAndLeave": "Save and leave",
+    "discardAndLeave": "Leave without saving",
+    "keepMaking": "Keep building",
+    "saveStatus": {
+      "saved": "Saved",
+      "unchanged": "Saved. The same content did not need another save.",
+      "unavailable": "Your changes may disappear if you close this window",
+      "snapshotLimit": "You have 5 saves. Choose a save to delete.",
+      "projectLimit": "You can keep 20 projects. Delete a project, then try saving again.",
+      "budget": "Storage is full. Delete a project, then try saving again.",
+      "invalid": "Please check what you want to save."
     }
   }
 }

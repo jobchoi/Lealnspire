@@ -1,5 +1,6 @@
+import { createProgressStore, projectsKey } from '../model/ProgressRepository'
 import { describe, expect, it } from 'vitest'
-import { FactoryEditorController } from './FactoryEditorController'
+import { FactoryEditorController, FactoryProjectsController } from './FactoryEditorController'
 import { factoryUnits } from '../model/factory/unlocks'
 import type { Block, RunInput } from '../model/factory/types'
 
@@ -124,5 +125,141 @@ describe('factory editor', () => {
     expect(e.undo()).toBe(true)
     expect(e.getSnapshot().input.signals).toEqual([])
     expect(e.run().allowed).toBe(true)
+  })
+})
+
+
+describe('factory project drafts', () => {
+  function setup() {
+    const values = new Map<string, string>()
+    const storage = { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => { values.set(key, value) }, removeItem: (key: string) => { values.delete(key) } }
+    const repository = createProgressStore(storage)
+    return { storage, repository, controller: new FactoryProjectsController(repository) }
+  }
+  it('saves explicitly, tracks edits and undo, and keeps names out of learning history', () => {
+    const { controller: c, repository, storage } = setup()
+    c.open(undefined, undefined, 'Name')
+    expect(storage.getItem(projectsKey)).toBeNull()
+    expect(c.getSnapshot().dirty).toBe(true)
+    expect(c.requestLeave('home')).toBe(false)
+    c.cancelLeave(); expect(c.getSnapshot().leaving).toBeUndefined()
+    expect(c.save()).toBe(true)
+    expect(c.getSnapshot()).toMatchObject({ dirty: false, notice: 'saved' })
+    c.editor!.addBox('belt', '◆')
+    expect(c.getSnapshot()).toMatchObject({ dirty: true, notice: undefined })
+    c.editor!.undo()
+    expect(c.getSnapshot().dirty).toBe(false)
+    expect(c.requestLeave('list')).toBe(true)
+    c.rename('Name with space ')
+    expect(c.getSnapshot().name).toBe('Name with space ')
+    c.save()
+    expect(c.getSnapshot().name).toBe('Name with space')
+    expect(repository.getHistory().events).toEqual([])
+    c.dispose()
+  })
+  it('opens previous snapshots as independent dirty drafts and never changes their sources', () => {
+    const { controller: c, repository, storage } = setup()
+    c.open(undefined, undefined, 'Factory'); c.save()
+    c.editor!.addBox('belt', '○'); c.save()
+    const project = repository.getProjects().projects[0]
+    const first = structuredClone(project.snapshots[0])
+    c.close(); c.open(project.id, first.id)
+    expect(c.getSnapshot().dirty).toBe(true)
+    expect(c.editor!.getSnapshot().input.start.belt).toEqual([])
+    c.editor!.addBox('moon', '◆')
+    expect(repository.getProjects().projects[0].snapshots[0]).toEqual(first)
+    c.save(); c.close()
+    const reconnect = new FactoryProjectsController(createProgressStore(storage))
+    reconnect.open(project.id)
+    expect(reconnect.editor!.getSnapshot().input.start.piles.moon).toHaveLength(1)
+    expect(reconnect.getSnapshot().dirty).toBe(false)
+    expect(repository.getProjects().projects[0].snapshots[0]).toEqual(first)
+    c.dispose(); reconnect.dispose()
+  })
+  it('retains a failed draft, keeps exit pending, and retries the same content without duplicating it', () => {
+    const { storage } = setup(); let fail = true
+    const repository = createProgressStore({ ...storage, setItem(key, value) { if (fail && key === projectsKey) throw Error('denied'); storage.setItem(key, value) } })
+    const c = new FactoryProjectsController(repository)
+    c.open(undefined, undefined, 'Memory'); c.editor!.addBox('belt', '◆')
+    c.requestLeave('home')
+    expect(c.save()).toBe(false)
+    expect(c.getSnapshot()).toMatchObject({ dirty: true, notice: 'unavailable', leaving: 'home' })
+    expect(c.editor!.getSnapshot().input.start.belt).toHaveLength(1)
+    c.rename('Memory changed')
+    expect(c.getSnapshot().volatile).toBe(true)
+    fail = false
+    expect(c.save()).toBe(true)
+    expect(c.getSnapshot().dirty).toBe(false)
+    expect(createProgressStore(storage).getProjects().projects[0].snapshots).toHaveLength(1)
+    c.dispose()
+  })
+  it('keeps failed projects unsaved after returning to the list and reopening, until persistence succeeds', () => {
+    const { storage } = setup()
+    let fail = false
+    const repository = createProgressStore({ ...storage, setItem(key, value) { if (fail && key === projectsKey) throw Error('denied'); storage.setItem(key, value) } })
+    const c = new FactoryProjectsController(repository)
+    c.open(undefined, undefined, 'Saved')
+    expect(c.save()).toBe(true)
+    const savedId = c.getSnapshot().projectId!
+    c.close()
+    fail = true
+    c.open(undefined, undefined, 'Memory')
+    c.editor!.addBox('belt', '◆')
+    expect(c.save()).toBe(false)
+    const failedId = c.getSnapshot().projectId!
+    expect(c.requestLeave('list')).toBe(false)
+    c.close()
+    expect(c.getSnapshot().projects.map(p => p.id)).toContain(failedId)
+    expect(c.open(savedId)).toBe(true)
+    expect(c.getSnapshot()).toMatchObject({ dirty: false, volatile: false })
+    expect(c.requestLeave('list')).toBe(true)
+    c.close()
+    expect(c.open(failedId)).toBe(true)
+    expect(c.editor!.getSnapshot().input.start.belt).toHaveLength(1)
+    expect(c.getSnapshot()).toMatchObject({ dirty: true, volatile: true, notice: undefined })
+    expect(c.requestLeave('home')).toBe(false)
+    expect(c.getSnapshot().leaving).toBe('home')
+    c.cancelLeave()
+    expect(c.save()).toBe(false)
+    c.close(); c.open(failedId)
+    expect(c.getSnapshot()).toMatchObject({ dirty: true, volatile: true, notice: undefined })
+    expect(c.requestLeave('list')).toBe(false)
+    fail = false
+    expect(c.save()).toBe(true)
+    c.close(); c.open(failedId)
+    expect(c.getSnapshot()).toMatchObject({ dirty: false, volatile: false })
+    expect(c.requestLeave('home')).toBe(true)
+    expect(createProgressStore(storage).getProjects().projects.find(p => p.id === failedId)?.snapshots).toHaveLength(1)
+    // A failed update to an already persisted project must also stay dirty on reopen.
+    fail = true
+    c.editor!.addBox('moon', '○')
+    expect(c.save()).toBe(false)
+    c.close(); c.open(failedId)
+    expect(c.getSnapshot()).toMatchObject({ dirty: true, volatile: true, notice: undefined })
+    expect(c.requestLeave('list')).toBe(false)
+    c.dispose()
+    const reopened = new FactoryProjectsController(repository)
+    reopened.open(failedId)
+    expect(reopened.getSnapshot()).toMatchObject({ dirty: true, volatile: true, notice: undefined })
+    expect(reopened.requestLeave('home')).toBe(false)
+    reopened.dispose()
+  })
+  it('preserves locked snapshots after progress is reduced, allowing setup but refusing execution', () => {
+    const { controller: c, repository } = setup()
+    factoryUnits[0].forEach(stage => repository.completeStage(stage.id, 1, []))
+    c.open(undefined, undefined, 'Locked')
+    expect(c.editor!.add({ id: 'take', type: 'takeBelt' })).toBe(true)
+    c.save(); const id = c.getSnapshot().projectId!
+    // Simulate a restored save in a device/session without the corresponding progress.
+    const projectDoc = repository.getProjects()
+    const locked = createProgressStore({ getItem: key => key === projectsKey ? JSON.stringify(projectDoc) : null, setItem() {} })
+    const next = new FactoryProjectsController(locked)
+    next.open(id)
+    expect(next.editor!.doc.main).toHaveLength(1)
+    expect(next.editor!.getSnapshot().requiredUnits).toEqual([1])
+    expect(next.editor!.run().allowed).toBe(false)
+    expect(next.save()).toBe(true)
+    expect(locked.getProjects()).toEqual(projectDoc)
+    c.dispose(); next.dispose()
   })
 })

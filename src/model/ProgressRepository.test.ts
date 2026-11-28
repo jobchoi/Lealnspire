@@ -1,7 +1,7 @@
 import { validDocument } from './program'
 import { EditorController } from '../controller/EditorController'
 import { describe, expect, it } from 'vitest'
-import { createProgressStore, isUnlocked, parseProgress, progressKey, progressV2Key, progressV4Key, progressV3Key, legacyHistoryKey, historyKey, migrateV1toV2, settingsKey } from './ProgressRepository'
+import { projectsKey, projectLimits, factoryProjectName, createProgressStore, isUnlocked, parseProgress, progressKey, progressV2Key, progressV4Key, progressV3Key, legacyHistoryKey, historyKey, migrateV1toV2, settingsKey } from './ProgressRepository'
 import { allStages, stages } from './stages'
 import type { Program } from './types'
 
@@ -306,7 +306,7 @@ describe('T36 v2 migration', () => {
       storage.removeItem(key)
     } })
     expect(failed.clear()).toBe(false)
-    expect(calls).toEqual([progressKey, progressV2Key, progressV3Key, progressV4Key, legacyHistoryKey, historyKey])
+    expect(calls).toEqual([progressKey, progressV2Key, progressV3Key, progressV4Key, legacyHistoryKey, historyKey, projectsKey])
   })
   it('keeps migrated progress in memory when migration write fails', () => {
     const storage = fakeStorage(serialize())
@@ -464,5 +464,149 @@ describe('v4 corruption recovery', () => {
     store.saveProgram('1', [])
     expect(storage.getItem(progressV4Key)).toBe(future)
     expect(store.persistent).toBe(false)
+  })
+})
+
+
+describe('T84-7 factory project saves', () => {
+  const input = (): import('./factory/types').RunInput => ({ start: { belt: [{ id: 'box', shape: '◆' }], piles: { leaf: [], moon: [], sun: [] } }, program: { main: [{ id: 'take', type: 'takeBelt' }], functions: [] }, orders: [], target: 0, signals: [] })
+  const options = () => { let id = 0; return { now: () => '2026-11-28T00:00:00.000Z', createId: () => `id-${++id}` } }
+  it('restores saves with isolated copies and excludes runtime state, progress and history', () => {
+    const storage = fakeStorage(), store = createProgressStore(storage, options()), value = input()
+    value.program.functions = [{ id: 'function', icon: 'star', param: true, body: [{ id: 'return', type: 'return', value: { kind: 'param' } }] }]
+    value.orders = [0, 2, 10]; value.target = 2; value.signals = ['◇', '○', '△']
+    value.start.piles.moon.push({ id: 'moon-box', shape: '○' })
+    const before = store.getHistory()
+    const result = store.saveProject(undefined, 'Factory', value)
+    expect(result.status).toBe('saved')
+    if (!('project' in result)) throw Error('save failed')
+    value.start.belt.length = 0
+    const restored = createProgressStore(storage).getProjects()
+    expect(restored.projects[0]).toEqual(result.project)
+    expect(restored.projects[0].snapshots[0].input.start.belt).toHaveLength(1)
+    expect(Object.keys(restored.projects[0].snapshots[0])).toEqual(['id', 'sequence', 'documentVersion', 'rulesVersion', 'savedAt', 'input'])
+    result.project.snapshots[0].input.start.belt.length = 0
+    expect(store.getProjects().projects[0].snapshots[0].input.start.belt).toHaveLength(1)
+    expect(store.getHistory()).toEqual(before)
+    expect(store.getProgress().stages).toEqual({})
+  })
+  it('deduplicates content and permits renaming without another snapshot', () => {
+    const store = createProgressStore(fakeStorage(), options())
+    store.saveProject(undefined, 'One', input())
+    const id = store.getProjects().projects[0].id
+    expect(store.saveProject(id, 'One', input()).status).toBe('unchanged')
+    expect(store.saveProject(id, 'Two', input()).status).toBe('unchanged')
+    expect(store.getProjects().projects[0]).toMatchObject({ name: 'Two', nextSequence: 2 })
+    expect(store.getProjects().projects[0].snapshots).toHaveLength(1)
+  })
+  it('requires an explicit selection for the sixth snapshot, keeping the other four and sequence numbers', () => {
+    const store = createProgressStore(fakeStorage(), options())
+    let id: string | undefined
+    for (let n = 0; n < 5; n++) {
+      expect(store.saveProject(id, 'Name', { ...input(), target: n }).status).toBe('saved')
+      id = store.getProjects().projects[0].id
+    }
+    const before = store.getProjects(), snapshots = before.projects[0].snapshots
+    expect(store.saveProject(id, 'Name', { ...input(), target: 5 }).status).toBe('snapshotLimit')
+    expect(store.saveProject(id, 'Name', { ...input(), target: 5 }, 'missing').status).toBe('snapshotLimit')
+    expect(store.getProjects()).toEqual(before)
+    expect(store.saveProject(id, 'Name', { ...input(), target: 5 }, snapshots[2].id).status).toBe('saved')
+    expect(store.getProjects().projects[0].snapshots.map(s => s.sequence)).toEqual([1, 2, 4, 5, 6])
+    expect(store.getProjects().projects[0].snapshots[0]).toEqual(snapshots[0])
+  })
+  it('allows 20 projects including duplicate names, refuses the 21st, then permits a save after deletion', () => {
+    const storage = fakeStorage(), store = createProgressStore(storage, options())
+    for (let i = 0; i < 20; i++) expect(store.saveProject(undefined, 'Same', input()).status).toBe('saved')
+    expect(store.saveProject(undefined, 'Same', input()).status).toBe('projectLimit')
+    expect(store.deleteProject(store.getProjects().projects[0].id)).toBe(true)
+    expect(store.saveProject(undefined, 'Same', input()).status).toBe('saved')
+    expect(createProgressStore(storage).getProjects().projects).toHaveLength(20)
+  })
+  it('retains failed saves in memory, retries persistence and preserves works when deletion fails', () => {
+    const storage = fakeStorage(); let fail = false
+    const store = createProgressStore({ ...storage, setItem(key, value) { if (fail && key === projectsKey) throw Error('quota'); storage.setItem(key, value) } }, options())
+    store.saveProject(undefined, 'Keep', input())
+    const id = store.getProjects().projects[0].id, persisted = storage.getItem(projectsKey)
+    fail = true
+    expect(store.saveProject(id, 'Keep', { ...input(), target: 2 }).status).toBe('unavailable')
+    expect(store.getProjects().projects[0].snapshots).toHaveLength(2)
+    expect(storage.getItem(projectsKey)).toBe(persisted)
+    expect(store.deleteProject(id)).toBe(false)
+    expect(store.getProjects().projects).toHaveLength(1)
+    fail = false
+    expect(store.saveProject(id, 'Keep', { ...input(), target: 2 }).status).toBe('unchanged')
+    expect(createProgressStore(storage).getProjects().projects[0].snapshots).toHaveLength(2)
+    expect(createProgressStore().saveProject(undefined, 'Memory', input()).status).toBe('unavailable')
+  })
+  it('isolates corrupt projects and malformed envelopes without affecting progress or settings', () => {
+    const storage = fakeStorage(serialize()), store = createProgressStore(storage, options())
+    store.saveLanguage('en'); store.saveProject(undefined, 'Good', input())
+    const doc = store.getProjects()
+    storage.setItem(projectsKey, JSON.stringify({ version: 1, projects: [{ ...doc.projects[0], id: 'bad', snapshots: [{ invalid: true }] }, ...doc.projects] }))
+    const restored = createProgressStore(storage)
+    expect(restored.getProjects()).toEqual(doc)
+    expect(restored.getProgress().stages['1'].completed).toBe(true)
+    expect(restored.getLanguage()).toBe('en')
+    storage.setItem(projectsKey, '{broken')
+    expect(createProgressStore(storage).getProjects().projects).toEqual([])
+    expect(createProgressStore(storage).getProgress().stages['1'].completed).toBe(true)
+    storage.setItem(projectsKey, '{"version":2,"projects":[]}')
+    expect(createProgressStore(storage).saveProject(undefined, 'Future', input()).status).toBe('unavailable')
+    expect(storage.getItem(projectsKey)).toBe('{"version":2,"projects":[]}')
+  })
+  it('clears all project data while preserving settings and reports removal failure', () => {
+    const storage = fakeStorage(), store = createProgressStore(storage, options())
+    store.saveLanguage('en'); store.saveProject(undefined, 'Remove', input())
+    expect(store.clear()).toBe(true)
+    expect(storage.getItem(projectsKey)).toBeNull()
+    expect(store.getProjects().projects).toEqual([])
+    expect(createProgressStore(storage).getLanguage()).toBe('en')
+    const failed = createProgressStore({ ...storage, removeItem(key) { if (key === projectsKey) throw Error('denied'); storage.removeItem(key) } })
+    expect(failed.clear()).toBe(false)
+  })
+  it('sanitizes names at 20 Unicode characters and treats markup as plain text', () => {
+    expect(factoryProjectName('  A\n\t\u007f\u0085\u202eB  ')).toBe('AB')
+    expect(Array.from(factoryProjectName('◆'.repeat(21)))).toHaveLength(20)
+    expect(Array.from(factoryProjectName('😀'.repeat(21)))).toHaveLength(20)
+    const store = createProgressStore(fakeStorage(), options())
+    store.saveProject(undefined, '<b>My name</b>', input())
+    store.saveProject(undefined, '', input())
+    expect(store.getProjects().projects.map(p => p.name)).toEqual(['<b>My name</b>', '내 공장 2'])
+  })
+  it('accepts exactly 512 KiB, rejects additions above it without deleting any work', () => {
+    const storage = fakeStorage(), store = createProgressStore(storage, options())
+    store.saveProject(undefined, 'Limit', input())
+    const doc = store.getProjects(), snapshot = doc.projects[0].snapshots[0]
+    snapshot.input.program.main[0].id += 'x'.repeat(projectLimits.bytes / 2 - JSON.stringify(doc).length)
+    expect(JSON.stringify(doc).length * 2).toBe(projectLimits.bytes)
+    storage.setItem(projectsKey, JSON.stringify(doc))
+    const restored = createProgressStore(storage)
+    expect(restored.saveProject(doc.projects[0].id, 'Limit', snapshot.input).status).toBe('unchanged')
+    expect(restored.saveProject(undefined, 'Over', input()).status).toBe('budget')
+    expect(restored.getProjects()).toEqual(doc)
+  })
+  it('counts unknown future progress versions toward the app budget without overwriting them', () => {
+    const storage = fakeStorage()
+    const raw = JSON.stringify({ version: 99, padding: 'x'.repeat(1024 * 1024 - 30) })
+    storage.setItem(progressV4Key, raw)
+    const store = createProgressStore(storage)
+    expect(store.saveProject(undefined, 'Over', input()).status).toBe('budget')
+    expect(storage.getItem(progressV4Key)).toBe(raw)
+    expect(storage.getItem(projectsKey)).toBeNull()
+  })
+  it('counts retained originals and projects toward the 2 MiB app budget', () => {
+    const storage = fakeStorage(), store = createProgressStore(storage, options())
+    store.saveProject(undefined, 'Limit', input())
+    storage.setItem(progressV4Key, JSON.stringify(store.getProgressDocument()))
+    const projectBytes = storage.getItem(projectsKey)!.length * 2
+    const otherBytes = JSON.stringify(store.getProgressDocument()).length * 2 + JSON.stringify(store.getHistory()).length * 2
+    storage.setItem(progressKey, ' '.repeat((2 * 1024 * 1024 - projectBytes - otherBytes) / 2))
+    const restored = createProgressStore(storage)
+    const project = restored.getProjects().projects[0]
+    expect(restored.saveProject(project.id, project.name, input()).status).toBe('unchanged')
+    expect(restored.saveProject(undefined, 'Over', input()).status).toBe('budget')
+    restored.saveProgram('1', [])
+    expect(restored.persistent).toBe(false)
+    expect(storage.getItem(projectsKey)).toBe(JSON.stringify(store.getProjects()))
   })
 })

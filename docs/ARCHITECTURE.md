@@ -328,3 +328,12 @@ T73-2는 DemoController의 demoEntries(14개 ID·진입 스테이지)와 demoSce
 선택 도전 정의는 `model/challenges.ts`의 `{stageId,id,kind,ruleVersion,params}[]`다. 화면·저장 확정·내 배움·관리자는 이 레지스트리를 읽는다. 삭제된 정의의 저장 기록은 보존하지만 현재 화면·집계에서는 제외한다. 상태는 `{ruleVersion,achievedAt:string|null,partial?:string[]}`이며 null은 두 전략 중 일부만 확보한 상태다. 다른 규칙 버전의 부분 증거는 합치지 않는다. shorter는 모든 함수·분기 포함 FunctionProgram.count(), bothTurns는 성공 경로의 실제 turn 프레임, bothDirections는 실제 비교 수 증가 프레임의 순회 문맥을 사용한다. 두 방향 도전은 각 방향만 사용하여 모든 변형에 성공한 실행을 각각 요구한다.
 
 GameController는 모든 변형 성공과 마지막 프레임에서만 도장·도전을 확정한다. 첫 성공 자동 인정과 동일 규칙 중복 이벤트 방지를 지원한다. 시범·예측·이탈은 도전 증거가 아니다. 이력 v2는 별 없는 completionConfirmed와 challengeAchieved를 지원하고 이전 별 이벤트는 그대로 읽는다. 완료 후 도전이 있는 퍼즐의 재시도에는 attemptStarted.purpose:'challenge'를 기록하여 관리자 상세에서 구분하고 기본 시도·실패 집계에서 제외한다. 도전 기록은 완료·개방·완주 조건이나 살펴볼 퍼즐 조건에 사용하지 않는다.
+
+
+### T84-7-라 공장 작품 저장본 [제안·잠정]
+
+`ProgressRepository`만 별도 키 `lealnspire.projects.v1`의 `{version:1,projects:[]}`를 읽고 쓴다. 작품은 앱 생성 id·이름(Unicode 코드 포인트 기준 20자, 제어 문자 제거, 일반 텍스트)·`world:factory`·생성/저장 시각·다음 순번·저장본을 가진다. 저장본은 id·증가 순번·`documentVersion:1`·`rulesVersion:1`·저장 시각·공장 `RunInput` 복사본이다. 실행 프레임·결과·이력은 넣지 않으며 진행 v4·이력 v2 구조는 유지한다.
+
+명시적 저장에서 최근 저장본과 입력이 같으면 새 저장본을 만들지 않는다. 이름 변경은 작품 메타데이터에만 반영한다. 작품당 5저장본·20작품·프로젝트 JSON의 UTF-16 크기 512KiB를 제한하며 기존 보존 원본·설정·진행·이력과 합쳐 2MiB를 검사한다. 여섯 번째 저장본은 사용자가 선택한 저장본만 교체한다. 예산 거부에는 원본을 보존하고, storage 쓰기 실패에는 작업본과 저장 요청 내용을 메모리에 유지하며 미저장 안내·재시도를 제공한다. 전체 기록 삭제는 프로젝트 키도 제거하고 설정은 유지한다. 손상은 작품 단위로 격리하고 알 수 없는 문서 판은 덮어쓰지 않는다.
+
+기존 `FactoryEditorController.ts`의 `FactoryProjectsController`가 작업본·명시적 저장·미저장 이탈을 관리한다. 이전 저장본은 복사해서 편집하며 필요한 단원 검사를 그대로 적용해 잠긴 코드의 실행을 막는다. 기존 `FactoryPage.tsx`의 `FactoryProjectsPage`가 목록·새로 만들기·삭제 확인·저장과 이탈 선택을 표시한다. 이름·코드는 학습 이력에 연결하지 않는다(7-마 범위). 새 의존성·소스 파일은 없다.

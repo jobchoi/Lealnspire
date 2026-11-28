@@ -338,3 +338,10 @@ DemoController.ts의 demoEntries/demoScene이 기존 첫 시범 포함 14종×4�
 - `model/challenges.ts`, `challenges.test.ts`: stageId·id·kind·ruleVersion·params 레지스트리, 실제 성공 실행의 회전·비교 방향과 FunctionProgram 개수 판정, 확정·이행 회귀. 샘플은 2/bothTurns, u2-1/shorter(4), u11-1/bothDirections. 정의 추가·제거는 이곳만 변경한다.
 - `view/components/CompletionStamp.tsx`: 결과·목록·게임에서 공유하는 로봇·체크 SVG 도장. 미완료에는 빈 보상 표시를 만들지 않는다.
 - ProgressRepository는 진행 v4(`lealnspire.progress.v4`)와 이력 v2(`lealnspire.history.v2`)를 쓰며 v3·이력 v1 원본을 보존한다. bestStars는 동결하고 완료·도전은 마지막 재생 프레임에서 확정한다. 내 배움에는 최근 도전 사실 문장과 접힌 이전 별, 관리자에는 완료·도전 별도 열을 표시한다.
+
+
+### T84-7-라 공장 작품 저장본 [제안·잠정]
+
+- `model/ProgressRepository.ts`: 프로젝트 v1 키·작품/저장본 타입·명시적 저장·중복 방지·5저장본 선택 교체·20작품/512KiB/앱 2MiB 예산·손상 격리·전체 삭제. 기존 `ProgressRepository.test.ts`에서 복원·경계·실패·이름·격리를 검사한다.
+- 기존 `controller/FactoryEditorController.ts`의 `FactoryProjectsController`: 작업본 복사·이름·미저장 감지·이탈·저장 실패 재시도. 기존 Controller 테스트에 이전 저장본 복사·개방 감소·명시적 저장 검사를 추가한다.
+- 기존 `view/pages/FactoryPage.tsx`의 `FactoryProjectsPage`: 내 작품 목록·저장·이전 저장본 열기·삭제 확인·미저장 이탈. `App.tsx`의 공장 진입과 연결한다. ko/en 리소스·기존 CSS/렌더링 테스트를 확장하며 새 소스 파일은 없다.

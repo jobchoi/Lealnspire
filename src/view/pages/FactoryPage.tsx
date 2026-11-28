@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
-import type { Progress } from '../../model/ProgressRepository'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import type { Progress, ProgressRepository } from '../../model/ProgressRepository'
 import type { Atom, Block, Box, Condition, Frame, Pile, Shape, StartState, Value } from '../../model/factory/types'
-import { FactoryEditorController, type FactoryTarget } from '../../controller/FactoryEditorController'
+import { FactoryEditorController, FactoryProjectsController, type FactoryTarget } from '../../controller/FactoryEditorController'
 import { FactoryPlaybackController } from '../../controller/FactoryPlaybackController'
 import { useController } from '../hooks/useController'
 import { t } from '../../i18n/I18n'
@@ -182,7 +182,7 @@ export function FactoryControls({ playback }: { playback: FactoryPlaybackControl
   const allowed = !editor.requiredUnits.length
   return <div className="factory-runbar"><button type="button" disabled={state.running || !allowed} onClick={playback.play}>{label('run')}</button><button type="button" disabled={state.running || !allowed} onClick={playback.step}>{label('step')}</button><button type="button" onClick={playback.reset}>{label('reset')}</button><button type="button" disabled={!editor.locked && !state.running} onClick={playback.stop}>{label('stop')}</button><Select title={label('speed')} value={state.speed} choices={options(['slow', 'normal', 'fast'])} onChange={v => playback.setSpeed(v as typeof state.speed)} /></div>
 }
-export function FactoryPage({ progress, onHome, supplied }: { progress: Progress; onHome: () => void; supplied?: FactoryPlaybackController }) {
+export function FactoryPage({ progress, onHome, supplied, projectControls }: { progress: Progress; onHome: () => void; supplied?: FactoryPlaybackController; projectControls?: ReactNode }) {
   const [playback] = useState(() => supplied ?? new FactoryPlaybackController(new FactoryEditorController(undefined, progress)))
   const [tab, setTab] = useState('start')
   const [world, setWorld] = useState<typeof worlds[number]>('sketchbook')
@@ -191,7 +191,7 @@ export function FactoryPage({ progress, onHome, supplied }: { progress: Progress
   useEffect(() => { playback.activate(); return playback.dispose }, [playback])
   const changed = playing.frame?.state.held?.id ?? playing.previous?.state.held?.id
   return <section className={`factory-page theme-${world} world-${world}`}><ConceptDefs /><header><h1 data-page-title tabIndex={-1}>{label('title')}</h1><button type="button" onClick={onHome}>{t('home')}</button></header>
-    <p>{label('notice')}</p><Select title={label('theme')} value={world} choices={worlds.map(value => ({ value, name: t(`themes.${value}.name`) }))} onChange={v => setWorld(v as typeof world)} />
+    {projectControls}<Select title={label('theme')} value={world} choices={worlds.map(value => ({ value, name: t(`themes.${value}.name`) }))} onChange={v => setWorld(v as typeof world)} />
     <FactoryControls playback={playback} />
     <div role="status" className="factory-observation"><p>{!playing.started && playing.frame && !playing.finished ? label('stopped') : factoryObservation(playing.frame, playing.previous)}</p>{playing.finished && !playing.frame?.error && <p>{label('question')}</p>}</div>
     <div className="factory-columns"><div><FactoryPicture title={label('current')} state={playing.frame?.state ?? { ...editing.input.start, held: null }} changed={changed ? [changed] : []} /><p>{label('A')}: {playing.frame?.state.A ?? 0}</p><details><summary>{label('compare')}</summary><FactoryPicture title={label('start')} state={editing.input.start} /></details></div>
@@ -199,4 +199,61 @@ export function FactoryPage({ progress, onHome, supplied }: { progress: Progress
       {tab === 'start' ? <FactorySetup editor={playback.editor} /> : <FactoryCode editor={playback.editor} activeId={playing.frame?.activeBlockId} />}</div>
     </div>
   </section>
+}
+
+
+function FactoryDialog({ title, onCancel, children }: { title: string; onCancel: () => void; children: ReactNode }) {
+  const ref = useRef<HTMLDialogElement>(null)
+  useEffect(() => { const dialog = ref.current; dialog?.showModal(); return () => { dialog?.close() } }, [])
+  return <dialog className="factory-dialog" ref={ref} aria-label={title} onCancel={event => { event.preventDefault(); onCancel() }}><h2>{title}</h2>{children}</dialog>
+}
+export function FactoryProjectsPage({ repository, onHome }: { repository: ProgressRepository; onHome: () => void }) {
+  const [controller] = useState(() => new FactoryProjectsController(repository))
+  const state = useController(controller)
+  const [deleting, setDeleting] = useState<string>()
+  const root = useRef<HTMLDivElement>(null)
+  useEffect(() => { root.current?.querySelector<HTMLElement>('[data-page-title]')?.focus() }, [state.editing, state.session])
+  useEffect(() => () => controller.dispose(), [controller])
+  useEffect(() => {
+    if (!state.dirty && !state.volatile) return
+    const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = '' }
+    window.addEventListener('beforeunload', warn)
+    return () => window.removeEventListener('beforeunload', warn)
+  }, [state.dirty, state.volatile])
+  const leave = (to: 'home' | 'list', discard = false) => {
+    if (!discard && !controller.requestLeave(to)) return
+    controller.close()
+    if (to === 'home') onHome()
+  }
+  const cards = <div className="factory-projects">{state.projects.map(project => <article key={project.id}>
+    <h2>{project.name}</h2><p>{label('savedDate')} <time dateTime={project.savedAt}>{project.savedAt.slice(0, 10)}</time></p>
+    {!state.editing && <><button type="button" onClick={() => controller.open(project.id)}>{label('openProject')}</button><details><summary>{label('versions')}</summary>{[...project.snapshots].sort((a, b) => b.sequence - a.sequence).map(v => <button type="button" key={v.id} onClick={() => controller.open(project.id, v.id)}>{t('factory.openVersion', { number: v.sequence, date: v.savedAt.slice(0, 10) })}</button>)}</details></>}
+    <button type="button" disabled={state.editing && state.projectId === project.id} onClick={() => setDeleting(project.id)}>{label('deleteProject')}</button>
+  </article>)}</div>
+  const save = (replace?: string) => {
+    if (controller.save(replace) && state.leaving) leave(state.leaving, true)
+  }
+  const controls = <section className="factory-save" aria-label={label('save')}>
+    <label className="factory-field">{label('projectName')}<input type="text" value={state.name} aria-describedby="factory-name-help" onChange={event => controller.rename(event.target.value)} /></label>
+    <p id="factory-name-help">{label('nameHelp')}</p>
+    <div className="factory-actions"><button type="button" onClick={() => save()}>{label('save')}</button><button type="button" onClick={() => leave('list')}>{label('myProjects')}</button></div>
+    {state.volatile && state.notice !== 'unavailable' && <p role="status">{label('saveStatus.unavailable')}</p>}
+    <p role="status">{state.notice ? label(`saveStatus.${state.notice}`) : label(state.dirty ? 'unsaved' : 'saved')}</p>
+    {(state.notice === 'budget' || state.notice === 'projectLimit') && <details open><summary>{label('manageProjects')}</summary>{cards}</details>}
+    {state.notice === 'snapshotLimit' && <fieldset><legend>{label('chooseVersion')}</legend>{state.projects.find(p => p.id === state.projectId)?.snapshots.map(v => <button type="button" key={v.id} onClick={() => save(v.id)}>{t('factory.replaceVersion', { number: v.sequence, date: v.savedAt.slice(0, 10) })}</button>)}</fieldset>}
+  </section>
+  return <div ref={root}>
+    {state.editing && controller.editor ? <FactoryProjectEditor key={state.session} controller={controller} onHome={() => leave('home')} controls={controls} /> : <section className="factory-page"><header><h1 data-page-title tabIndex={-1}>{label('myProjects')}</h1><button type="button" onClick={onHome}>{t('home')}</button></header>
+      <button type="button" onClick={() => controller.open(undefined, undefined, t('factory.defaultName', { number: state.projects.length + 1 }))}>{label('newProject')}</button>
+      {!state.projects.length && <p>{label('noProjects')}</p>}{state.volatile && <p role="status">{label('saveStatus.unavailable')}</p>}{cards}
+    </section>}
+    {state.leaving && <FactoryDialog title={label('leaveTitle')} onCancel={controller.cancelLeave}><div className="factory-actions">
+      <button type="button" onClick={() => save()}>{label('saveAndLeave')}</button><button type="button" onClick={() => leave(state.leaving!, true)}>{label('discardAndLeave')}</button><button type="button" onClick={controller.cancelLeave}>{label('keepMaking')}</button>
+    </div>{state.notice && <p role="status">{label(`saveStatus.${state.notice}`)}</p>}{state.notice === 'snapshotLimit' && <fieldset><legend>{label('chooseVersion')}</legend>{state.projects.find(p => p.id === state.projectId)?.snapshots.map(v => <button type="button" key={v.id} onClick={() => save(v.id)}>{t('factory.replaceVersion', { number: v.sequence, date: v.savedAt.slice(0, 10) })}</button>)}</fieldset>}</FactoryDialog>}
+    {deleting && <FactoryDialog title={label('deleteConfirm')} onCancel={() => setDeleting(undefined)}><p>{state.projects.find(p => p.id === deleting)?.name}</p><div className="factory-actions"><button type="button" onClick={() => { controller.deleteProject(deleting); setDeleting(undefined) }}>{label('deleteProject')}</button><button type="button" onClick={() => setDeleting(undefined)}>{label('cancel')}</button></div></FactoryDialog>}
+  </div>
+}
+function FactoryProjectEditor({ controller, onHome, controls }: { controller: FactoryProjectsController; onHome: () => void; controls: ReactNode }) {
+  const [playback] = useState(() => new FactoryPlaybackController(controller.editor!))
+  return <FactoryPage progress={controller.repository.getProgress()} onHome={onHome} supplied={playback} projectControls={controls} />
 }
