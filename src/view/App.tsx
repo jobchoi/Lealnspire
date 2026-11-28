@@ -1,3 +1,4 @@
+import { AdminPage } from './pages/AdminPage'
 import { LearningPage } from './pages/LearningPage'
 import { useEffect, useRef, useState } from 'react'
 import { allStages as stages, isLastStage } from '../model/stages'
@@ -33,8 +34,9 @@ function App({ controller: supplied, onLanguageChange }: { controller?: AppContr
   }, [pageKey, focusUnit])
   const progress = controller.progress
   return <main className="app" ref={main}>
-    {screen.page === 'home' && <HomePage onLearning={controller.learning} onResetDemos={controller.repository.resetDemos} locale={locale} onLanguageChange={changeLanguage} progress={progress} onStart={controller.start} onContinue={controller.openStage} onList={controller.list} persistent={controller.repository.persistent} onClear={controller.clearProgress} />}
+    {screen.page === 'home' && <HomePage onAdmin={controller.admin} onLearning={controller.learning} onResetDemos={controller.repository.resetDemos} locale={locale} onLanguageChange={changeLanguage} progress={progress} onStart={controller.start} onContinue={controller.openStage} onList={controller.list} persistent={controller.repository.persistent} onClear={controller.clearProgress} />}
     {screen.page === 'list' && <StageSelectPage onLearning={controller.learning} isReview={controller.isReview} onReview={controller.setReview} progress={progress} onSelect={controller.openStage} onHome={controller.home} onPrediction={controller.openPrediction} />}
+    {screen.page === 'admin' && <AdminPage data={controller.adminData} onHome={controller.home} />}
     {screen.page === 'learning' && <LearningPage data={controller.learningData} onHome={controller.home} onList={controller.list} onUnit={controller.unitList} onSelect={controller.openStage} onRemove={id => controller.setReview(id, false)} />}
     {screen.page === 'prediction' && controller.prediction && <PredictionPage controller={controller.prediction} onBack={controller.list} />}
     {screen.page === 'play' && <PlayPage key={screen.index} stage={stages[screen.index]} progressStore={controller.repository} controller={controller.game} onList={controller.list} lastStage={isLastStage(screen.index)} onNextUnit={controller.nextUnit} onNext={controller.next} />}
