@@ -1,0 +1,34 @@
+.admin-page { font: 16px/1.6 system-ui, sans-serif; color: #1f2933; background: #f7f9fc; overflow-wrap: break-word; word-break: keep-all; }
+.admin-page section { margin-block: 2rem; }
+.admin-page h1 { font-size: 1.8rem; }
+.admin-page h2 { font-size: 1.35rem; }
+.admin-development { background: #fff1c2; color: #513b00; padding: .75rem; border: 1px solid #866100; }
+.admin-page dl { display: grid; grid-template-columns: minmax(100px, 1fr) minmax(0, 3fr); gap: .5rem; }
+.admin-page dd { margin: 0; }
+.admin-table-scroll { max-width: 100%; overflow-x: auto; padding: 4px; }
+.admin-page table { width: 100%; border-collapse: collapse; font-size: 14px; background: white; }
+.admin-page th, .admin-page td { padding: .65rem; border: 1px solid #64748b; text-align: left; vertical-align: top; min-width: 95px; }
+.admin-page th { background: #e2e8f0; color: #1e293b; }
+.admin-page td p { margin-bottom: 0; }
+.admin-page button, .admin-page select, .admin-entry { min-height: 44px; min-width: 44px; font-size: 14px; }
+.admin-page select { max-width: 100%; background: white; color: #1f2933; }
+.admin-entry { font-size: 14px; }
+.admin-table-scroll:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+.admin-page li { margin-block: .5rem; }
+
+.admin-cards { display: none; }
+.admin-day h4 { margin-bottom: .25rem; }
+.admin-day ol { margin-top: .25rem; padding-left: 1.5rem; }
+.admin-day time { white-space: nowrap; font-variant-numeric: tabular-nums; }
+@media (max-width: 700px) {
+  .admin-table-scroll { display: none; }
+  .admin-cards { display: grid; gap: .4rem; }
+  .admin-cards article { background: white; border: 1px solid #64748b; padding: .4rem .65rem; min-width: 0; }
+  .admin-cards h3 { font-size: 14px; margin: 0; }
+  .admin-cards dl { display: flex; flex-wrap: wrap; gap: .15rem .75rem; font-size: 14px; margin: .15rem 0 0; }
+  .admin-cards dl > div { display: flex; flex-wrap: wrap; gap: .3rem; }
+  .admin-cards dt { color: #334155; }
+  .admin-cards p { font-size: 14px; margin: .25rem 0 0; }
+  .admin-units-cards dl > div:nth-child(2) { order: 1; flex-basis: 100%; }
+  .admin-page section { margin-block: 1.25rem; }
+}

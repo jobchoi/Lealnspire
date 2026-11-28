@@ -6,8 +6,8 @@ import type { Progress } from '../../model/ProgressRepository'
 import { t, i18n, languageControl, type Locale } from '../../i18n/I18n'
 import { continueStageIndex, courseCompleted } from '../../controller/flow'
 
-type Props = { onLearning?: () => void; onResetDemos?: () => void; locale?: Locale; onLanguageChange?: () => void; progress: Progress; onStart: () => void; onContinue: (index: number) => void; onList: () => void; persistent?: boolean; onClear?: () => boolean }
-export function HomePage({ onLearning, progress, onStart, onContinue, onList, persistent = false, onClear, locale = 'ko', onLanguageChange, onResetDemos }: Props) {
+type Props = { onAdmin?: () => void; onLearning?: () => void; onResetDemos?: () => void; locale?: Locale; onLanguageChange?: () => void; progress: Progress; onStart: () => void; onContinue: (index: number) => void; onList: () => void; persistent?: boolean; onClear?: () => boolean }
+export function HomePage({ onAdmin, onLearning, progress, onStart, onContinue, onList, persistent = false, onClear, locale = 'ko', onLanguageChange, onResetDemos }: Props) {
   const [resetDemo, setResetDemo] = useState(false)
   const [info, setInfo] = useState(false)
   const [confirm, setConfirm] = useState(false)
@@ -17,6 +17,7 @@ export function HomePage({ onLearning, progress, onStart, onContinue, onList, pe
   return <section className="home-page"><ConceptDefs />
     <div className="home-tools">
     <button className="privacy-info-button" type="button" aria-label={t('privacy.title')} onClick={() => { setConfirm(false); setNotice(undefined); setInfo(true) }}><span aria-hidden="true">ⓘ</span></button>
+    {onAdmin && <button className="admin-entry" type="button" onClick={onAdmin}>{t('admin.title')}</button>}
     <button className="language-button" lang="ko" type="button" aria-label={languageControl.label} onClick={onLanguageChange}>
       <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9" /><ellipse cx="12" cy="12" rx="4" ry="9" /><path d="M3 12h18M5 7h14M5 17h14" /></svg>
       <span lang={locale === 'ko' ? 'en' : 'ko'}>{languageControl.names[locale === 'ko' ? 'en' : 'ko']}</span>

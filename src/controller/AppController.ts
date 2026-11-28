@@ -1,3 +1,4 @@
+import { adminSummary } from '../model/adminSummary'
 import { learningSummary, summarizeHistory, summaryKey } from '../model/historySummary'
 import { Observable } from './Observable'
 import { allStages as stages, isLastStage } from '../model/stages'
@@ -6,7 +7,7 @@ import { continueStageIndex, stageCards, nextUnit } from './flow'
 import { GameController } from './GameController'
 import { predictions } from '../model/predictions'
 import { PredictionController } from './PredictionController'
-export type Screen = { page: 'home' | 'learning' } | { page: 'list'; unit?: number } | { page: 'play'; index: number } | { page: 'prediction'; id: string }
+export type Screen = { page: 'home' | 'learning' | 'admin' } | { page: 'list'; unit?: number } | { page: 'play'; index: number } | { page: 'prediction'; id: string }
 export class AppController extends Observable<Screen> {
   readonly repository: ProgressRepository
   prediction?: PredictionController
@@ -23,6 +24,8 @@ export class AppController extends Observable<Screen> {
         return { unit, total: entries.length, completed: data.units[unit]?.completed ?? 0, active: entries.some(e => this.cards[e.index].unlocked) }
       }) }
   }
+  get adminData() { return { ...adminSummary(this.repository.getHistory(), this.progress, stages, this.repository.getProgressDocument()), persistent: this.repository.persistent } }
+  admin = () => { this.prediction?.dispose(); this.game?.dispose(); this.update({ page: 'admin' }) }
   get reviews() { return summarizeHistory(this.repository.getHistory(), this.progress, stages).puzzles }
   setReview = (id: string, selected: boolean) => {
     this.repository.setReview(id, selected)
