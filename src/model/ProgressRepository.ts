@@ -302,6 +302,14 @@ export class ProgressRepository {
   historyId = () => this.store.createId()
   flushHistory = () => this.store.flushHistory()
   appendHistory = (input: HistoryEventInput, deferred = false) => this.store.appendHistory(input, deferred)
+  setReview = (id: string, selected: boolean) => {
+    const visitId = this.historyId()
+    const context = { visitId, activityKind: id.startsWith('b') ? 'bonus' as const : 'puzzle' as const, activityId: id,
+      unit: Number(/^u(\d+)-/.exec(id)?.[1] ?? 1), recordedAt: this.historyNow(), elapsedMs: 0,
+      appVersion: '1.20.0', contentVersion: '1', evaluationVersion: '1' }
+    this.appendHistory({ ...context, type: 'reviewChanged', data: { selected } }, true)
+    this.appendHistory({ ...context, type: 'visitEnded', data: { reason: 'leave' } })
+  }
   getProgress = () => this.store.getProgress()
   getProgram = (stage: Stage) => this.store.getProgram(stage)
   getDocument = (stage: Stage) => this.store.getDocument(stage)

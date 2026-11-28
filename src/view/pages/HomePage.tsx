@@ -1,3 +1,4 @@
+import { LearningButton } from './LearningPage'
 import { useEffect, useRef, useState } from 'react'
 import { worlds } from '../theme/themes'
 import { ConceptDefs, WorldScene, Symbol } from '../theme/Symbols'
@@ -5,8 +6,8 @@ import type { Progress } from '../../model/ProgressRepository'
 import { t, i18n, languageControl, type Locale } from '../../i18n/I18n'
 import { continueStageIndex, courseCompleted } from '../../controller/flow'
 
-type Props = { onResetDemos?: () => void; locale?: Locale; onLanguageChange?: () => void; progress: Progress; onStart: () => void; onContinue: (index: number) => void; onList: () => void; persistent?: boolean; onClear?: () => boolean }
-export function HomePage({ progress, onStart, onContinue, onList, persistent = false, onClear, locale = 'ko', onLanguageChange, onResetDemos }: Props) {
+type Props = { onLearning?: () => void; onResetDemos?: () => void; locale?: Locale; onLanguageChange?: () => void; progress: Progress; onStart: () => void; onContinue: (index: number) => void; onList: () => void; persistent?: boolean; onClear?: () => boolean }
+export function HomePage({ onLearning, progress, onStart, onContinue, onList, persistent = false, onClear, locale = 'ko', onLanguageChange, onResetDemos }: Props) {
   const [resetDemo, setResetDemo] = useState(false)
   const [info, setInfo] = useState(false)
   const [confirm, setConfirm] = useState(false)
@@ -35,6 +36,7 @@ export function HomePage({ progress, onStart, onContinue, onList, persistent = f
     {courseCompleted(progress) && <div className="home-completion" role="status"><span aria-hidden="true">{worlds.map(world => <Symbol key={world} name={world} />)}</span><strong>{t('synthesis.homeComplete')}</strong></div>}
     <div className="world-gallery">{worlds.map(world => <article key={world} className={`world-preview world-${world}`}><WorldScene world={world} /><h2>{t(`themes.${world}.name`)}</h2><p>{t(`themes.${world}.description`)}</p></article>)}</div>
     <div className="playback-controls">
+      <LearningButton onClick={onLearning} />
       <button type="button" onClick={onStart}>{t('start')}</button>
       {next !== undefined && <button type="button" onClick={() => onContinue(next)}>{t('continue')}</button>}
       <button type="button" onClick={onList}>{t('stageList')}</button>

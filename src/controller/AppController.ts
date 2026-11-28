@@ -1,3 +1,4 @@
+import { learningSummary, summarizeHistory, summaryKey } from '../model/historySummary'
 import { Observable } from './Observable'
 import { allStages as stages, isLastStage } from '../model/stages'
 import { ProgressRepository, isUnlocked } from '../model/ProgressRepository'
@@ -5,7 +6,7 @@ import { continueStageIndex, stageCards, nextUnit } from './flow'
 import { GameController } from './GameController'
 import { predictions } from '../model/predictions'
 import { PredictionController } from './PredictionController'
-export type Screen = { page: 'home' | 'list' } | { page: 'play'; index: number } | { page: 'prediction'; id: string }
+export type Screen = { page: 'home' | 'learning' } | { page: 'list'; unit?: number } | { page: 'play'; index: number } | { page: 'prediction'; id: string }
 export class AppController extends Observable<Screen> {
   readonly repository: ProgressRepository
   prediction?: PredictionController
@@ -13,6 +14,23 @@ export class AppController extends Observable<Screen> {
   constructor(repository = new ProgressRepository()) { super({ page: 'home' }); this.repository = repository }
   get progress() { return this.repository.getProgress() }
   get continueIndex() { return continueStageIndex(this.progress) }
+  get learningData() {
+    const data = learningSummary(this.repository.getHistory(), this.progress, stages, this.repository.getProgressDocument())
+    return { ...data, next: this.cards.find(c => !c.stage.id.startsWith('b') && c.unlocked && !this.progress.stages[c.stage.id]?.completed),
+      tools: Array.from({ length: 12 }, (_, i) => {
+        const unit = i + 1
+        const entries = data.entries.filter(e => e.puzzle.unit === unit && !e.stage.id.startsWith('b'))
+        return { unit, total: entries.length, completed: data.units[unit]?.completed ?? 0, active: entries.some(e => this.cards[e.index].unlocked) }
+      }) }
+  }
+  get reviews() { return summarizeHistory(this.repository.getHistory(), this.progress, stages).puzzles }
+  setReview = (id: string, selected: boolean) => {
+    this.repository.setReview(id, selected)
+    this.update({ ...this.state })
+  }
+  isReview = (id: string) => this.reviews[summaryKey(id.startsWith('b') ? 'bonus' : 'puzzle', id)]?.reviewSelected ?? false
+  learning = () => { this.prediction?.dispose(); this.game?.dispose(); this.update({ page: 'learning' }) }
+  unitList = (unit: number) => { this.prediction?.dispose(); this.game?.dispose(); this.update({ page: 'list', unit }) }
   get cards() { return stageCards(this.progress) }
   openStage = (index: number) => {
     if (!isUnlocked(this.progress, index)) return

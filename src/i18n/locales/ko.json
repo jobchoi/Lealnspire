@@ -388,7 +388,7 @@
     "changeAddTile": "{order}번 상자 A에 1 더하기",
     "changeSubtractTile": "{order}번 상자 A에서 1 빼기"
   },
-  "unit6": "6단원 논리",
+  "unit6": "6단원: 논리 (logic)",
   "unit6Congratulations": "6단원을 모두 마쳤어요!",
   "logic": {
     "operator": "조건 조합",
@@ -734,5 +734,24 @@
         "alt3": "목표 8을 번호 2에서 찾아 멈췄어요. 번호 0과 1은 보지 않고 순회 뒤의 앞으로 가기를 실행했어요."
       }
     }
+  },
+  "learning": {
+    "none": "아직 없어요.",
+    "reviewEmpty": "퍼즐 결과 창에서 담을 수 있어요.",
+    "title": "내 배움",
+    "count": "지금까지 퍼즐 {count}개를 해냈어요",
+    "tools": "배워 본 도구",
+    "inProgress": "하는 중",
+    "recent": "최근 해낸 것",
+    "fixed": "고쳐서 도착했어요",
+    "arrived": "도착했어요",
+    "again": "다시 해 보기",
+    "review": "다시 보고 싶어요",
+    "try": "해 보기",
+    "remove": "빼기",
+    "next": "다음 한 걸음",
+    "older": "예전 기록은 해낸 퍼즐만 보여요.",
+    "empty": "아직 해낸 퍼즐이 없어요. 첫 퍼즐부터 해 볼까요?",
+    "unit1": "1단원: 순서와 반복"
   }
 }

@@ -142,3 +142,29 @@ export function compactHistory(input: HistoryDocument, now: string, otherBytes =
   }
   return h
 }
+
+// Learner-facing projection: progress is authoritative; optional activities stay separate.
+export function learningSummary(history: HistoryDocument, progress: Progress, stages: Stage[], provenance?: { historyStartedAt: string; pastDetailsUnavailable: boolean }) {
+  const regular = stages.filter(s => !s.id.startsWith('b'))
+  const summary = summarizeHistory(history, progress, stages, provenance)
+  const entries = stages.map(stage => {
+    const puzzle = summary.puzzles[summaryKey(stage.id.startsWith('b') ? 'bonus' : 'puzzle', stage.id)]
+    const events = history.events.filter(e => (e.activityKind === 'puzzle' || e.activityKind === 'bonus') && e.activityId === stage.id)
+    const completions = events.filter(e => e.type === 'completionConfirmed')
+    const completion = completions.at(-1)
+    // Only explicit failure → edit/fix → successful completion evidence earns this sentence.
+    const start = events.find(e => e.type === 'attemptStarted' && e.attemptId === completion?.attemptId)
+    const fixed = !!completion && !!start && events.some(e => e.type === 'fixRequested' && e.sequence < start.sequence
+      && events.some(c => c.type === 'codeChanged' && c.data.changed && c.sequence > e.sequence && c.sequence < start.sequence)
+      && events.some(f => f.type === 'executionCalculated' && f.data.result !== 'success' && f.attemptId === e.data.previousAttemptId)
+      && start.type === 'attemptStarted' && start.data.previousAttemptId === e.data.previousAttemptId)
+    const rolled = history.rollups.filter(r => (r.summary.activityKind === 'puzzle' || r.summary.activityKind === 'bonus') && r.summary.activityId === stage.id)
+    return { stage, index: stages.indexOf(stage), puzzle, fixed,
+      completionSequence: Math.max(completion?.sequence ?? 0, ...rolled.filter(r => r.summary.completions > 0).map(r => r.throughSequence)),
+      activitySequence: Math.max(0, ...events.filter(e => e.type !== 'reviewChanged' && e.type !== 'visitEnded').map(e => e.sequence), ...rolled.filter(r => r.summary.attempts > 0).map(r => r.throughSequence)) }
+  })
+  const recent = entries.filter(e => e.puzzle.completed && e.completionSequence > 0).sort((a,b) => b.completionSequence - a.completionSequence).slice(0,3)
+  const selected = entries.filter(e => e.puzzle.reviewSelected).sort((a,b) => b.puzzle.reviewSequence - a.puzzle.reviewSequence)
+  const unfinished = entries.filter(e => !e.puzzle.completed && e.activitySequence > 0 && !e.puzzle.reviewSelected && e.puzzle.reviewSequence === 0).sort((a,b) => b.activitySequence - a.activitySequence)
+  return { ...summary, entries, recent, review: [...selected, ...unfinished].slice(0,3), completed: entries.filter(e => regular.includes(e.stage) && e.puzzle.completed).length }
+}

@@ -1,3 +1,4 @@
+import { summarizeHistory, summaryKey } from '../model/historySummary'
 import type { ActivityKind, HistoryEventInput, HistoryPayloads } from '../model/history'
 import { blockAt, hasBody, findBlockPath } from '../model/editor'
 import { Observable } from './Observable'
@@ -266,6 +267,8 @@ export class GameController extends Observable<State> {
     this.advance(false)
   }
   setSpeed = (speed: keyof typeof playbackSpeeds) => this.publish({ ...this.state, speed })
+  get reviewSelected() { return summarizeHistory(this.repository.getHistory(), this.repository.getProgress(), [this.stage]).puzzles[summaryKey(this.activityKind, this.activityId)]?.reviewSelected ?? false }
+  toggleReview = () => { this.repository.setReview(this.stage.id, !this.reviewSelected); this.update({ ...this.state }) }
   reset = () => { this.activity(); this.interrupt('reset'); this.publish({ ...this.state, execution: null, all: null, failure: null, index: 0, playing: false, dismissed: false }); this.flushHistory() }
   fix = () => {
     if (!this.finished || !this.state.execution || this.result === 'success') return
