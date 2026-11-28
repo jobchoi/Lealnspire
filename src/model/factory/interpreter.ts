@@ -6,8 +6,14 @@ export const LOOP_ENTRY_LIMIT = 1000
 const HALT = Symbol('factory halt')
 type Flow = { kind: 'return'; value: number } | { kind: 'break' } | undefined
 
+export function run(input: RunInput): RunResult { return runWithLimits(input) }
+
 /** All work is synchronous and isolated. Playback/stop/unlocks belong to later controllers. */
-export function run(input: RunInput): RunResult {
+export function runWithLimits(input: RunInput, limits: { computation?: number; loopEntries?: number } = {}): RunResult {
+  // Optional tighter budgets support isolated hosts/tests; production ceilings cannot be raised.
+  const computationLimit = limits.computation ?? COMPUTATION_LIMIT
+  const loopEntryLimit = limits.loopEntries ?? LOOP_ENTRY_LIMIT
+  if (!Number.isInteger(computationLimit) || computationLimit < 0 || computationLimit > COMPUTATION_LIMIT || !Number.isInteger(loopEntryLimit) || loopEntryLimit < 0 || loopEntryLimit > LOOP_ENTRY_LIMIT) throw new Error('Invalid factory limits')
   if (!validInput(input)) throw new Error('Invalid factory input')
   const source = structuredClone(input)
   const state: State = { ...source.start, held: null, A: 0 }
@@ -24,7 +30,7 @@ export function run(input: RunInput): RunResult {
   }
   // Reserve before reading or mutating, then emit at most one frame per charged work item.
   function work(id: string, event: Frame['event'] = 'operation', action: () => number | boolean | void = () => {}): number | boolean | void {
-    if (cost >= COMPUTATION_LIMIT) fail('stepLimit', id)
+    if (cost >= computationLimit) fail('stepLimit', id)
     cost++
     try {
       const value = action()
@@ -36,7 +42,7 @@ export function run(input: RunInput): RunResult {
     }
   }
   function enter(id: string) {
-    if (loopEntries >= LOOP_ENTRY_LIMIT) fail('stepLimit', id)
+    if (loopEntries >= loopEntryLimit) fail('stepLimit', id)
     work(id, 'loop', () => { loopEntries++ })
   }
   function read(v: Value, id: string): number {

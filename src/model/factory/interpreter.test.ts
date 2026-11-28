@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { run } from './interpreter'
+import { run, runWithLimits } from './interpreter'
 import { countDocument } from './program'
 import type { Atom, Block, Box, Condition, Pile, RunInput, Shape, State } from './types'
 
@@ -137,6 +137,30 @@ describe('factory execution contract', () => {
       expect(r.loopEntries).toBeLessThanOrEqual(1000)
       expect(r.frames.length).toBeLessThanOrEqual(1002)
       expect(r.error?.context.loops.length).toBeGreaterThan(0)
+    }
+  })
+  it('blocks loop entry independently while computation budget remains', () => {
+    const v = input([repeat('r', 10, [])])
+    const r = runWithLimits(v, { loopEntries: 3 })
+    expect(r.result).toBe('stepLimit')
+    expect(r.loopEntries).toBe(3)
+    expect(r.cost).toBe(5)
+    expect(r.cost).toBeLessThan(1000)
+    expect(r.error).toMatchObject({ blockId: 'r', context: { loops: [{ iteration: 4 }] } })
+    expect(run(v).result).toBe('ended')
+    expect(() => runWithLimits(v, { computation: 1001 })).toThrow('Invalid factory limits')
+    expect(() => runWithLimits(v, { loopEntries: -1 })).toThrow('Invalid factory limits')
+  })
+  it('compares returned numbers with actual repeat entry counts for every return source', () => {
+    for (const [value, expected] of [[{ kind: 'number', value: 2 }, 2], [{ kind: 'A' }, 3], [{ kind: 'param' }, 4], [{ kind: 'beltCount' }, 5], [{ kind: 'pileCount', pile: 'leaf' }, 6]] as const) {
+      const v = input([{ id: 'set', type: 'set', variable: 'A', value: 3 }, { id: 'repeat', type: 'repeat', countCall: { fn: 'f', arg: { kind: 'number', value: 4 } }, body: [] }], ['◆', '◆', '◆', '◆', '◆'])
+      v.start.piles.leaf = Array.from({ length: 6 }, (_, i) => box(`pile${i}`))
+      v.program.functions = [{ id: 'f', icon: 'star', param: true, body: [{ id: 'ret', type: 'return', value }] }]
+      const r = run(v)
+      expect(r.result).toBe('ended')
+      expect(r.frames.find(f => f.activeBlockId === 'ret' && f.event === 'read')?.value).toBe(expected)
+      expect(r.frames.filter(f => f.activeBlockId === 'repeat' && f.event === 'loop')).toHaveLength(expected)
+      expect(r.loopEntries).toBe(expected)
     }
   })
   it('evaluates both logical operands, with false shape checks on empty places', () => {
