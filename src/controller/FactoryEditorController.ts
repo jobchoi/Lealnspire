@@ -1,3 +1,4 @@
+import { factoryProjectName, type FactoryProject, type ProjectSaveResult, type ProgressRepository } from '../model/ProgressRepository'
 import { Observable } from './Observable'
 import { countDocument, validInput } from '../model/factory/program'
 import { completedFactoryUnits, factoryAccess, readFactoryDocument, runFactory, type FactoryProgress } from '../model/factory/unlocks'
@@ -151,4 +152,79 @@ export class FactoryEditorController extends Observable<EditorState> {
     this.publish(); return true
   }
   run() { return runFactory(this.input, this.progress) }
+}
+
+
+type ProjectState = {
+  projects: FactoryProject[]; editing: boolean; name: string; projectId?: string;
+  dirty: boolean; volatile: boolean; notice?: ProjectSaveResult['status']; leaving?: 'home' | 'list'; session: number
+}
+const unpersistedProjectsByRepository = new WeakMap<ProgressRepository, Set<string>>()
+
+/** Explicit saves only. A failed write retains the draft and never marks it clean. */
+export class FactoryProjectsController extends Observable<ProjectState> {
+  editor?: FactoryEditorController
+  private baseline = ''
+  private unpersistedProjects: Set<string>
+  private unsubscribe?: () => void
+  readonly repository: ProgressRepository
+  constructor(repository: ProgressRepository) {
+    super({ projects: repository.getProjects().projects, editing: false, name: '', dirty: false, volatile: false, session: 0 })
+    this.repository = repository
+    this.unpersistedProjects = unpersistedProjectsByRepository.get(repository) ?? new Set<string>()
+    unpersistedProjectsByRepository.set(repository, this.unpersistedProjects)
+  }
+  private content() { return JSON.stringify({ name: this.state.name, input: this.editor?.getSnapshot().input }) }
+  private publishDraft() {
+    this.update({ ...this.state, dirty: this.content() !== this.baseline, notice: undefined })
+  }
+  open = (id?: string, snapshotId?: string, defaultName = '') => {
+    const project = this.repository.getProjects().projects.find(p => p.id === id)
+    if (id && !project) return false
+    const latest = project?.snapshots.reduce((a, b) => a.sequence > b.sequence ? a : b)
+    const snapshot = snapshotId ? project?.snapshots.find(s => s.id === snapshotId) : latest
+    if (snapshotId && !snapshot) return false
+    this.unsubscribe?.()
+    this.editor = new FactoryEditorController(snapshot?.input, this.repository.getProgress())
+    const unpersisted = !!project && this.unpersistedProjects.has(project.id)
+    this.state = { ...this.state, volatile: unpersisted, projectId: project?.id, name: project?.name ?? defaultName, editing: true, leaving: undefined, notice: undefined, session: this.state.session + 1 }
+    this.baseline = project && !unpersisted && snapshot === latest ? this.content() : ''
+    let previous = JSON.stringify(this.editor.getSnapshot().input)
+    this.unsubscribe = this.editor.subscribe(() => {
+      const next = JSON.stringify(this.editor?.getSnapshot().input)
+      if (next !== previous) { previous = next; this.publishDraft() }
+    })
+    this.publishDraft()
+    return true
+  }
+  rename = (name: string) => { this.state = { ...this.state, name: factoryProjectName(name, false) }; this.publishDraft() }
+  save = (replaceSnapshotId?: string): boolean => {
+    if (!this.editor) return false
+    const result = this.repository.saveProject(this.state.projectId, this.state.name, this.editor.getSnapshot().input, replaceSnapshotId)
+    if ('project' in result) this.state = { ...this.state, projectId: result.project.id, name: result.project.name }
+    if (result.status === 'unavailable') this.unpersistedProjects.add(result.project.id)
+    if (result.status === 'saved' || result.status === 'unchanged') {
+      // Each successful write persists the entire projects envelope.
+      this.unpersistedProjects.clear()
+      this.baseline = this.content()
+    }
+    this.update({ ...this.state, notice: result.status, volatile: result.status === 'unavailable' || this.state.volatile && result.status !== 'saved' && result.status !== 'unchanged', projects: this.repository.getProjects().projects, dirty: this.content() !== this.baseline })
+    return result.status === 'saved' || result.status === 'unchanged'
+  }
+  requestLeave = (destination: 'home' | 'list') => {
+    if (!this.state.dirty) return true
+    this.update({ ...this.state, leaving: destination }); return false
+  }
+  cancelLeave = () => this.update({ ...this.state, leaving: undefined })
+  close = () => {
+    this.unsubscribe?.(); this.unsubscribe = undefined; this.editor = undefined
+    this.update({ ...this.state, editing: false, dirty: false, leaving: undefined, notice: undefined, projects: this.repository.getProjects().projects })
+  }
+  deleteProject = (id: string) => {
+    const ok = this.repository.deleteProject(id)
+    if (ok) this.unpersistedProjects.clear()
+    this.update({ ...this.state, projects: this.repository.getProjects().projects, volatile: !ok, notice: ok ? undefined : 'unavailable' })
+    return ok
+  }
+  dispose = () => { this.unsubscribe?.(); this.unsubscribe = undefined }
 }

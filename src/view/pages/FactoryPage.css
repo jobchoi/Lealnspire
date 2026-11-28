@@ -48,3 +48,13 @@
 @media (prefers-reduced-motion: reduce) { .factory-page *, .factory-page *::before, .factory-page *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 .factory-tile .factory-tile .factory-tile { padding: 4px 0; border-left: 0; border-right: 0; border-radius: 0; }
 .factory-nest .factory-nest { border-left: 0; padding-left: 0; }
+
+.factory-save { border: 2px solid var(--factory-ink); border-radius: 10px; padding: 12px; margin: 12px 0; }
+.factory-page input[type=text] { min-height: 44px; max-width: 100%; width: 100%; border: 2px solid var(--factory-ink); border-radius: 6px; padding: 8px; color: inherit; background: #fff; font: inherit; }
+.factory-projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 12px; margin-top: 16px; }
+.factory-projects article { border: 2px solid var(--factory-ink); border-radius: 10px; padding: 12px; min-width: 0; overflow-wrap: anywhere; }
+.factory-projects button, .factory-save fieldset button { margin: 4px; }
+.factory-dialog { max-width: min(90vw, 560px); max-height: 90vh; overflow: auto; border: 3px solid #25445a; border-radius: 14px; padding: 20px; background: #fffdf5; color: #25445a; }
+.factory-dialog::backdrop { background: #0009; }
+.factory-dialog button { min-width: 44px; min-height: 44px; margin: 4px; padding: 10px; font: inherit; color: #25445a; background: #fff; border: 2px solid #25445a; border-radius: 8px; white-space: normal; overflow-wrap: anywhere; }
+.factory-dialog :focus-visible { outline: 3px solid #894400; outline-offset: 3px; }

@@ -1,3 +1,5 @@
+import { validInput as validFactoryInput } from './factory/program'
+import type { RunInput as FactoryInput } from './factory/types'
 import { stageChallenges, evaluateChallenge } from './challenges'
 import type { ChallengeState } from './challenges'
 import { emptyHistory, validHistoryEvent, validDate } from './history'
@@ -29,6 +31,39 @@ const empty = (): Progress => ({ version: 1, stages: {} })
 const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value)) as T
 const record = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
+
+export const projectsKey = 'lealnspire.projects.v1'
+export const projectLimits = { projects: 20, snapshots: 5, bytes: 512 * 1024 }
+export type FactorySnapshot = { id: string; sequence: number; documentVersion: 1; rulesVersion: 1; savedAt: string; input: FactoryInput }
+export type FactoryProject = { id: string; name: string; world: 'factory'; createdAt: string; savedAt: string; nextSequence: number; snapshots: FactorySnapshot[] }
+export type ProjectsDocument = { version: 1; projects: FactoryProject[] }
+export type ProjectSaveResult = { status: 'saved' | 'unchanged' | 'unavailable'; project: FactoryProject } | { status: 'snapshotLimit' | 'projectLimit' | 'budget' | 'invalid' }
+export function factoryProjectName(name: string, trim = true): string {
+  const clean = Array.from(name).filter(char => {
+    const code = char.codePointAt(0)!
+    return code >= 32 && !(code >= 127 && code <= 159) && !(code >= 0x202a && code <= 0x202e) && !(code >= 0x2066 && code <= 0x2069)
+  }).join('')
+  return Array.from(trim ? clean.trim() : clean).slice(0, 20).join('')
+}
+function parseProjects(value: unknown): ProjectsDocument {
+  const projects: FactoryProject[] = []
+  if (!record(value) || value.version !== 1 || !Array.isArray(value.projects)) return { version: 1, projects }
+  const ids = new Set<string>()
+  for (const p of value.projects) {
+    try {
+      if (!record(p) || typeof p.id !== 'string' || !p.id || ids.has(p.id) || p.world !== 'factory' || typeof p.name !== 'string' || !p.name || factoryProjectName(p.name) !== p.name || !validDate(p.createdAt) || !validDate(p.savedAt) || !Number.isSafeInteger(p.nextSequence) || !Array.isArray(p.snapshots) || !p.snapshots.length || p.snapshots.length > 5) continue
+      const snapshotIds = new Set<string>(), sequences = new Set<number>()
+      if (!p.snapshots.every(v => {
+        if (!record(v) || typeof v.id !== 'string' || !v.id || snapshotIds.has(v.id) || !Number.isSafeInteger(v.sequence) || Number(v.sequence) < 1 || sequences.has(Number(v.sequence)) || v.documentVersion !== 1 || v.rulesVersion !== 1 || !validDate(v.savedAt) || !validFactoryInput(v.input)) return false
+        snapshotIds.add(v.id); sequences.add(Number(v.sequence)); return true
+      }) || Number(p.nextSequence) <= Math.max(...sequences)) continue
+      // Copy only the supported schema: runtime frames and arbitrary fields never enter saves.
+      projects.push({ id: p.id, name: p.name, world: 'factory', createdAt: p.createdAt, savedAt: p.savedAt, nextSequence: Number(p.nextSequence), snapshots: p.snapshots.map(v => ({ id: v.id, sequence: v.sequence, documentVersion: 1, rulesVersion: 1, savedAt: v.savedAt, input: clone(v.input) })) })
+      ids.add(p.id)
+    } catch { /* Isolate malformed/deeply nested projects from other works. */ }
+  }
+  return { version: 1, projects }
+}
 
 // Omitted palettes still have the unit's default commands.
 function stagePolicy(id: string) {
@@ -122,6 +157,16 @@ function makeStore(storage?: ProgressStorage, options: HistoryOptions = {}) {
   let historyStartedAt = now()
   let pastDetailsUnavailable = false
   let history: HistoryDocument = emptyHistory()
+  let projects: ProjectsDocument = { version: 1, projects: [] }
+  let projectsBytes = 0
+  let projectsWritable = true
+  try {
+    const raw = storage?.getItem(projectsKey) ?? null
+    projectsBytes = (raw?.length ?? 0) * 2
+    const value = readJSON(raw)
+    projectsWritable = !(record(value) && 'version' in value && value.version !== 1)
+    projects = parseProjects(value)
+  } catch { projectsWritable = false }
   let progressWritable = true
   let historyWritable = true
   let preservedBytes = 0
@@ -200,18 +245,18 @@ function makeStore(storage?: ProgressStorage, options: HistoryOptions = {}) {
     progressBytes = progressWritable ? raw.length * 2 : futureProgressBytes
     if (!storage || !progressWritable) return
     try {
-      if (preservedBytes + settingsBytes + progressBytes + historyBytes > historyLimits.bytes) {
+      if (preservedBytes + settingsBytes + projectsBytes + progressBytes + historyBytes > historyLimits.bytes) {
         historyDirty = true
         flushHistory(false)
-        if (preservedBytes + settingsBytes + progressBytes + historyBytes > historyLimits.bytes) throw Error('app storage budget')
+        if (preservedBytes + settingsBytes + projectsBytes + progressBytes + historyBytes > historyLimits.bytes) throw Error('app storage budget')
       }
       storage?.setItem(progressV4Key, raw)
       identityPersisted = true
     } catch {
-      history = compactHistory(history, now(), preservedBytes + settingsBytes + progressBytes, true)
+      history = compactHistory(history, now(), preservedBytes + settingsBytes + projectsBytes + progressBytes, true)
       try {
         const rawHistory = JSON.stringify(history); historyBytes = rawHistory.length * 2
-        if (historyBytes + preservedBytes + settingsBytes + progressBytes > historyLimits.bytes) throw Error('app storage budget')
+        if (historyBytes + preservedBytes + settingsBytes + projectsBytes + progressBytes > historyLimits.bytes) throw Error('app storage budget')
         if (historyWritable) storage?.setItem(historyKey, rawHistory)
         storage?.setItem(progressV4Key, raw)
         identityPersisted = true
@@ -221,7 +266,7 @@ function makeStore(storage?: ProgressStorage, options: HistoryOptions = {}) {
   function flushHistory(ensureIdentity = true) {
     if (!historyDirty) return
     if (ensureIdentity && !identityPersisted && progressWritable) persist()
-    const otherBytes = preservedBytes + settingsBytes + (progressBytes || (progressWritable ? JSON.stringify(progressDocument()).length * 2 : futureProgressBytes))
+    const otherBytes = preservedBytes + settingsBytes + projectsBytes + (progressBytes || (progressWritable ? JSON.stringify(progressDocument()).length * 2 : futureProgressBytes))
     history = compactHistory(history, now(), otherBytes)
     const write = () => {
       const raw = JSON.stringify(history)
@@ -237,7 +282,7 @@ function makeStore(storage?: ProgressStorage, options: HistoryOptions = {}) {
     historyDirty = false
   }
   // Apply retention on restore, even when the next action is a read-only dashboard.
-  const restoredHistory = compactHistory(history, now(), preservedBytes + settingsBytes + (progressWritable ? JSON.stringify(progressDocument()).length * 2 : futureProgressBytes))
+  const restoredHistory = compactHistory(history, now(), preservedBytes + settingsBytes + projectsBytes + (progressWritable ? JSON.stringify(progressDocument()).length * 2 : futureProgressBytes))
   if (JSON.stringify(restoredHistory) !== JSON.stringify(history)) { history = restoredHistory; historyDirty = true; flushHistory() }
   historyBytes = JSON.stringify(history).length * 2
   let recovered = false
@@ -259,6 +304,47 @@ function makeStore(storage?: ProgressStorage, options: HistoryOptions = {}) {
   }
   return {
     now, createId, flushHistory, recoverHistory,
+    getProjects: () => clone(projects),
+    saveProject(projectId: string | undefined, name: string, input: FactoryInput, replaceSnapshotId?: string): ProjectSaveResult {
+      if (!validFactoryInput(input)) return { status: 'invalid' }
+      const existing = projects.projects.find(p => p.id === projectId)
+      if (projectId && !existing) return { status: 'invalid' }
+      if (!existing && projects.projects.length >= projectLimits.projects) return { status: 'projectLimit' }
+      const time = now(), candidate = clone(projects)
+      const project: FactoryProject = existing ? candidate.projects.find(p => p.id === projectId)! : { id: createId(), name: '', world: 'factory', createdAt: time, savedAt: time, nextSequence: 1, snapshots: [] }
+      project.name = factoryProjectName(name) || existing?.name || `내 공장 ${projects.projects.length + 1}`
+      const latest = project.snapshots.reduce<FactorySnapshot | undefined>((a, b) => !a || b.sequence > a.sequence ? b : a, undefined)
+      const unchanged = !!latest && JSON.stringify(latest.input) === JSON.stringify(input)
+      if (!unchanged) {
+        if (project.nextSequence >= Number.MAX_SAFE_INTEGER) return { status: 'invalid' }
+        if (project.snapshots.length >= projectLimits.snapshots) {
+          if (!replaceSnapshotId || !project.snapshots.some(v => v.id === replaceSnapshotId)) return { status: 'snapshotLimit' }
+          project.snapshots = project.snapshots.filter(v => v.id !== replaceSnapshotId)
+        }
+        project.snapshots.push({ id: createId(), sequence: project.nextSequence++, documentVersion: 1, rulesVersion: 1, savedAt: time, input: clone(input) })
+      }
+      if (!unchanged || project.name !== existing?.name) project.savedAt = time
+      if (!existing) candidate.projects.push(project)
+      const raw = JSON.stringify(candidate), bytes = raw.length * 2
+      const otherBytes = preservedBytes + settingsBytes + (progressBytes || (progressWritable ? JSON.stringify(progressDocument()).length * 2 : futureProgressBytes)) + historyBytes
+      if (bytes > projectLimits.bytes || (projectsWritable ? bytes : Math.max(projectsBytes, bytes)) + otherBytes > historyLimits.bytes) return { status: 'budget' }
+      projects = candidate; projectsBytes = projectsWritable ? bytes : Math.max(projectsBytes, bytes)
+      try {
+        if (!storage || !projectsWritable) throw Error('project storage unavailable')
+        storage.setItem(projectsKey, raw)
+        return { status: unchanged ? 'unchanged' : 'saved', project: clone(project) }
+      } catch { return { status: 'unavailable', project: clone(project) } }
+    },
+    deleteProject(id: string): boolean {
+      const candidate = { ...projects, projects: projects.projects.filter(p => p.id !== id) }
+      try {
+        if (!storage || !projectsWritable) return false
+        const raw = JSON.stringify(candidate)
+        storage.setItem(projectsKey, raw)
+        projects = candidate; projectsBytes = raw.length * 2
+        return true
+      } catch { return false }
+    },
     getSeenDemos: () => [...seenDemos],
     markDemoSeen(id: string) { if (!demoIds.includes(id)) return; seenDemos = [...new Set([...seenDemos, id])]; persistSettings() },
     resetDemos() { seenDemos = []; persistSettings() },
@@ -272,12 +358,13 @@ function makeStore(storage?: ProgressStorage, options: HistoryOptions = {}) {
       if (deletionStorage) {
         if (!deletionStorage.removeItem) return false
         let removed = true
-        for (const key of [progressKey, progressV2Key, progressV3Key, progressV4Key, legacyHistoryKey, historyKey]) {
+        for (const key of [progressKey, progressV2Key, progressV3Key, progressV4Key, legacyHistoryKey, historyKey, projectsKey]) {
           try { deletionStorage.removeItem(key) }
           catch { removed = false }
         }
         if (!removed) return false
       }
+      projects = { version: 1, projects: [] }; projectsBytes = 0; projectsWritable = true
       progress = empty()
       history = emptyHistory(); historyBytes = 0; historyDirty = false; learnerId = createId(); historyStartedAt = now(); pastDetailsUnavailable = false
       progressWritable = true; historyWritable = true; preservedBytes = 0; identityPersisted = false; progressBytes = 0; recovered = false
@@ -331,6 +418,9 @@ export class ProgressRepository {
   private store: ReturnType<typeof makeStore>
   constructor(storage?: ProgressStorage, options: HistoryOptions = {}) { this.store = makeStore(storage, options) }
   get persistent() { return this.store.persistent }
+  getProjects = () => this.store.getProjects()
+  saveProject = (id: string | undefined, name: string, input: FactoryInput, replaceSnapshotId?: string) => this.store.saveProject(id, name, input, replaceSnapshotId)
+  deleteProject = (id: string) => this.store.deleteProject(id)
   getSeenDemos = () => this.store.getSeenDemos()
   markDemoSeen = (id: string) => this.store.markDemoSeen(id)
   resetDemos = () => this.store.resetDemos()

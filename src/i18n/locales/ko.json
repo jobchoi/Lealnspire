@@ -961,7 +961,6 @@
     "undo": "되돌리기",
     "theme": "그림 세계",
     "topHandle": "맨 위 상자",
-    "notice": "여기서 만든 공장은 이 화면을 나가면 사라져요.",
     "rejected": "이곳에는 넣을 수 없어요. 열린 도구와 블록 수를 살펴보세요.",
     "atoms": {
       "beltEmpty": "벨트가 비었음",
@@ -985,6 +984,38 @@
       "missingReturn": "횟수로 쓸 숫자가 돌아오지 않았어요. function의 return을 살펴볼까요?",
       "indexRange": "번호 {index}인 칸이 없어요. 이 리스트의 길이는 {length}이에요.",
       "stepLimit": "동작이 아주 많이 이어져 잠깐 멈췄어요. 반복 조건을 살펴볼까요?"
+    },
+    "myProjects": "내 작품",
+    "newProject": "새로 만들기",
+    "defaultName": "내 공장 {number}",
+    "noProjects": "새 공장을 만들어 볼까요?",
+    "projectName": "작품 이름",
+    "nameHelp": "진짜 이름이나 학교 이름은 쓰지 않아도 돼요. 이름은 20자까지 쓸 수 있어요.",
+    "save": "저장하기",
+    "saved": "저장했어요",
+    "unsaved": "아직 저장하지 않은 변경이 있어요",
+    "savedDate": "저장일",
+    "openProject": "작품 열기",
+    "versions": "이전 저장본",
+    "openVersion": "저장본 {number} 열기 ({date})",
+    "replaceVersion": "저장본 {number} 지우고 저장하기 ({date})",
+    "chooseVersion": "저장본은 5개까지 담을 수 있어요. 지울 저장본을 골라 주세요.",
+    "manageProjects": "작품 정리하기",
+    "deleteProject": "작품 삭제",
+    "deleteConfirm": "이 작품과 저장본을 모두 지울까요?",
+    "cancel": "취소",
+    "leaveTitle": "바뀐 내용을 저장할까요?",
+    "saveAndLeave": "저장하고 나가기",
+    "discardAndLeave": "저장하지 않고 나가기",
+    "keepMaking": "계속 만들기",
+    "saveStatus": {
+      "saved": "저장했어요",
+      "unchanged": "저장했어요. 같은 내용이라 저장본을 더 만들지 않았어요.",
+      "unavailable": "이 창을 닫으면 바뀐 내용이 사라질 수 있어요",
+      "snapshotLimit": "저장본이 5개예요. 지울 저장본을 골라 주세요.",
+      "projectLimit": "작품은 20개까지 담을 수 있어요. 작품을 정리한 뒤 다시 저장해 주세요.",
+      "budget": "저장 공간이 부족해요. 작품을 정리한 뒤 다시 저장해 주세요.",
+      "invalid": "저장할 내용을 다시 확인해 주세요."
     }
   }
 }

@@ -1,10 +1,11 @@
 import { afterEach, expect, it } from 'vitest'
 import { renderToString } from 'react-dom/server'
-import { FactoryCode, FactoryPage, FactoryPicture } from './FactoryPage'
+import { FactoryCode, FactoryPage, FactoryPicture, FactoryProjectsPage } from './FactoryPage'
 import { FactoryEditorController } from '../../controller/FactoryEditorController'
 import { FactoryPlaybackController } from '../../controller/FactoryPlaybackController'
 import { factoryUnits } from '../../model/factory/unlocks'
 import { i18n, t } from '../../i18n/I18n'
+import { createProgressStore } from '../../model/ProgressRepository'
 import type { Progress } from '../../model/ProgressRepository'
 const progress = (units: number[]): Progress => ({ version: 1, stages: Object.fromEntries(factoryUnits.flatMap((ss, i) => units.includes(i + 1) ? ss.map(s => [s.id, { completed: true, bestStars: 0, lastProgram: [] }]) : [])) })
 afterEach(() => { i18n.locale = 'ko' })
@@ -54,4 +55,24 @@ it('renders source errors and completion questions without scoring or saving pro
   p.reset(); e.remove('empty-belt'); p.step()
   expect(renderToString(<FactoryPage progress={progress([1])} onHome={() => {}} supplied={p} />)).toContain(t('factory.question'))
   p.dispose()
+})
+
+it('renders the project list with escaped names, save dates and earlier saves in both languages', () => {
+  const store = createProgressStore({ getItem: () => null, setItem() {} })
+  const editor = new FactoryEditorController()
+  store.saveProject(undefined, '<script>name</script>', editor.getSnapshot().input)
+  const project = store.getProjects().projects[0]
+  editor.addBox('belt', '◆')
+  store.saveProject(project.id, project.name, editor.getSnapshot().input)
+  for (const locale of ['ko', 'en']) {
+    i18n.locale = locale
+    const html = renderToString(<FactoryProjectsPage repository={store} onHome={() => {}} />)
+    expect(html).toContain(t('factory.myProjects'))
+    expect(html).toContain(t('factory.newProject'))
+    expect(html).toContain(t('factory.versions'))
+    expect(html).toContain('&lt;script&gt;')
+    expect(html).not.toContain('<script>')
+    expect(html).toContain(t('factory.openVersion', { number: 1, date: project.savedAt.slice(0, 10) }))
+    expect(html).not.toContain('This factory goes away')
+  }
 })
