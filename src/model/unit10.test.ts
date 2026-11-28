@@ -4,7 +4,7 @@ import { run, runAll, failurePoint } from './interpreter'
 import { countBlocks, validDocument } from './program'
 import baseline from './unit123456789-run.fixture.json'
 import type { Block } from './types'
-import { ProgressRepository, progressV2Key, isUnlocked } from './ProgressRepository'
+import { ProgressRepository, progressV2Key, progressV3Key, isUnlocked } from './ProgressRepository'
 import { GameController } from '../controller/GameController'
 import { continueStageIndex } from '../controller/flow'
 
@@ -89,7 +89,7 @@ it('restores nested current scope, freezes source values, and bounds empty visit
 
 it('isolates invalid list code, preserves awards/other stages and restores v2 list documents', () => {
   let raw = ''
-  const storage = { getItem: (key: string) => key === progressV2Key ? raw || null : null, setItem: (_key: string, value: string) => { raw = value } }
+  const storage = { getItem: (key: string) => key === (JSON.parse(raw || 'null')?.version === 3 ? progressV3Key : progressV2Key) ? raw || null : null, setItem: (key: string, value: string) => { if (key === progressV3Key) raw = value } }
   const good = { main: unit10Stages[0].solution, functions: [] }
   const repeat = { id: 'r', type: 'repeat', countSource: 'listAtA', body: [] }
   const invalid = [
@@ -114,7 +114,7 @@ it('isolates invalid list code, preserves awards/other stages and restores v2 li
   }
   const repo = new ProgressRepository(storage)
   repo.saveProgram('u10-1', good)
-  expect(JSON.parse(raw).version).toBe(2)
+  expect(JSON.parse(raw).version).toBe(3)
   expect(new ProgressRepository(storage).getDocument(unit10Stages[0])).toEqual(good)
 })
 it('opens after unit9, edits list sources in lexical scope with undo, and saves after both maps', () => {

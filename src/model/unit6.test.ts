@@ -96,7 +96,7 @@ for (const stage of puzzles.slice(1)) it(`${stage.id}: exhaust programs through 
 })
 
 it('unlocks sequentially and isolates logic code by stage when restoring', async () => {
-  const { ProgressRepository, progressV2Key, isUnlocked } = await import('./ProgressRepository')
+  const { ProgressRepository, progressV3Key, isUnlocked } = await import('./ProgressRepository')
   const data = new Map<string, string>()
   const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => { data.set(key, value) } }
   const store = new ProgressRepository(storage)
@@ -108,9 +108,9 @@ it('unlocks sequentially and isolates logic code by stage when restoring', async
   expect(isUnlocked(store.getProgress(), first + 1)).toBe(false)
   store.completeStage(puzzles[0].id, 3, puzzles[0].solution)
   expect(isUnlocked(store.getProgress(), first + 1)).toBe(true)
-  const raw = JSON.parse(data.get(progressV2Key)!)
+  const raw = JSON.parse(data.get(progressV3Key)!)
   raw.stages['u2-1'].lastProgram = { main: puzzles[0].solution, functions: [] }
-  data.set(progressV2Key, JSON.stringify(raw))
+  data.set(progressV3Key, JSON.stringify(raw))
   const restored = new ProgressRepository(storage)
   expect(restored.getDocument(puzzles[0]).main).toEqual(puzzles[0].solution)
   expect(restored.getDocument(allStages.find(stage => stage.id === 'u2-1')!).main).toEqual([])

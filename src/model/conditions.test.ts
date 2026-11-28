@@ -2,7 +2,7 @@ import { expect, it } from 'vitest'
 import { failurePoint, run, runAll } from './interpreter'
 import { cloneBlock, createBlock, findBlockPath } from './editor'
 import { Program, addBlock, countBlocks, deleteBlock, moveBlock } from './program'
-import { ProgressRepository, progressV2Key } from './ProgressRepository'
+import { ProgressRepository, progressV2Key, progressV3Key } from './ProgressRepository'
 import baseline from './unit1-run.fixture.json'
 import { allStages, stages, unit2Stages } from './stages'
 import type { Block, Stage } from './types'
@@ -121,7 +121,7 @@ it('edits and clones mixed child lists with fresh IDs and independent ownership'
 
 it('round-trips nested if in v2 and rejects invalid conditions, bodies, IDs, depth and node count', () => {
   let raw: string | null = null
-  const storage = { getItem: (key: string) => key === progressV2Key ? raw : null, setItem: (_key: string, value: string) => { raw = value } }
+  const storage = { getItem: (key: string) => key === (JSON.parse(raw || 'null')?.version === 3 ? progressV3Key : progressV2Key) ? raw : null, setItem: (key: string, value: string) => { if (key === progressV3Key) raw = value } }
   const store = new ProgressRepository(storage)
   const code = [iff([loop([{ ...f, id: 'nested' }])])]
   store.saveProgram(unit2Stages[0].id, code)

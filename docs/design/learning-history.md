@@ -239,3 +239,15 @@ T84는 **학습 기록 기반 → 학습자 화면 → 관리자 화면 → 프�
 순위표·공유는 계속 제외합니다. 기록 기반 마련을 아동 관찰보다 먼저 진행하며, 관찰은 이후 화면과 해석 기준을 개선하는 데 사용할 수 있습니다.
 
 T84 읽기 전용 기획을 완료했습니다. 지정 문서·저장소·실행 컨트롤러를 확인했으며 **파일 수정, 커밋, 푸시, 브랜치 변경은 없습니다.** 실행 방법은 해당 없고, 코드·화면 검증은 미실행입니다. 다음 작업은 위 결정 중 로컬 학습자 수·보존 정책·관리자 접근을 확정하여 T84-1 지시서를 만드는 것입니다.
+## T84-1·2 구현 기록 [제안·잠정]
+
+- Model에만 이벤트 명세와 저장·집계 API를 추가했다. 실제 이벤트 수집은 T84-3에서 연결한다. 공통 봉투는 id/sequence/learnerId/deviceId/visitId/attemptId(실행 관련)/activityKind/activityId/unit/recordedAt/elapsedMs/appVersion/contentVersion/evaluationVersion이다. deviceId는 로컬 익명 learnerId와 같으며 기기 지문이 아니다.
+- 이벤트: visitStarted/visitEnded, attemptStarted, executionCalculated, resultReached/executionInterrupted, codeChanged, fixRequested, undo, hintShown, demoStarted/demoEnded, completionConfirmed, reviewChanged, timeSegment. 실패 종류는 RunResult에서 직접 가져오고 변형별 결과·첫 실패·원인 블록 종류·경로·호출 ID를 제한된 자료로 남긴다. 과거 코드·실행 프레임·자유 서술은 저장하지 않는다.
+- 진행 v3 예: `{"version":3,"learnerId":"local-example","historyStartedAt":"2026-11-28T00:00:00.000Z","pastDetailsUnavailable":true,"stages":{"1":{"completed":true,"bestStars":3,"lastProgram":{"main":[],"functions":[]}}}}`. v1·v2의 완료·별·코드를 이행하고 원본은 보존한다. 기존 사용자의 과거 시도·시간·힌트를 소급 생성하지 않는다.
+- 이력 v1 예: `{"version":1,"nextSequence":2,"events":[{"id":"local-example:1","sequence":1,"learnerId":"local-example","deviceId":"local-example","visitId":"visit-1","activityKind":"puzzle","activityId":"1","unit":1,"recordedAt":"2026-11-28T00:00:00.000Z","elapsedMs":0,"appVersion":"1.20.0","contentVersion":"1","evaluationVersion":"1","type":"visitStarted","data":{}}],"rollups":[],"incomplete":false,"compactedAt":null}`.
+- 시도 분모는 attemptStarted 기준이다. 계산상 실패라도 resultReached가 없으면 최근 종료 실패·실패 종류 빈도에 넣지 않는다. 중단 시도는 시도 수에만 남는다. 완료 수는 진행 문서가 기준이다. 힌트는 같은 방문에서 공개한 단계별로 이후 시작 시도에 연결한다. 같은 힌트를 반복해서 열어도 한 시도당 한 번이다.
+- 활동 추정: 보이는 구간에서 마지막 조작 후 60초까지만 포함한다. 예: 120초 풀이 구간에서 최초 조작만 있으면 활동 60초·비활동 60초. 이어서 재생 10초·시범 10초·숨김 10초면 각각 재생 10초·시범 10초·총 비활동 70초다. timeSegment는 직전 구간 이후의 비중첩 구간이며 호출자가 표시 상태·마지막 조작 시점을 전달해야 한다. 겹친 구간의 중복 시간은 제외한다.
+- 90일·2,000시도·10,000이벤트·2,097,152바이트 중 먼저 넘은 한계에서 오래된 종료 방문을 요약한다. 2MiB 예산에는 옛 진행 두 키와 설정도 포함한다. 요약한 방문의 상세는 제거하고 늦게 도착한 같은 방문의 이벤트는 거부한다. 최근 종료 결과 순번을 요약에 남겨 방문 간 순서가 보존된다. 열린 방문·원본·마지막 코드·요약만으로 예산을 넘는 경우 강제 손실 대신 저장 불가 상태로 메모리 유지한다. 저장 예외 때는 추가 정리 후 한 번만 재시도한다.
+- 삭제는 네 학습 기록 키를 모두 시도하고 설정은 유지한다. 하나라도 실패하면 메모리 진행·이력을 초기화하지 않는 T72 계약을 유지한다. 미래 버전 키는 쓰지 않으며 이력 손상은 진행과 격리한다. 상세와 요약의 범위를 함께 반환하며 중복 방문은 합산하지 않는다.
+- 검증 결과는 작업 종료 보고에 기록한다. 화면·실제 이벤트 연결·E2E 변경·서버·새 라이브러리 API 사용은 이번 범위에 없다.
+- 구현 검증(2026-11-28, Codex): 신규 학습 기록 테스트 20개 통과. `npm run lint`, `npm run typecheck`, 별도 `npm run build`, `git diff --check` 통과. `npm run verify`는 4회 실행했으나 모두 기존 Controller 테스트 두 곳에서 실패했다(최종 425개 중 423 통과·2 실패). `src/controller/controllers.test.ts:49`는 v2 키 직접 조회로 `SyntaxError: "undefined" is not valid JSON`, `src/controller/flow.test.ts:47`은 모든 키를 같은 문자열로 처리하는 가짜 저장소 때문에 이전 진행 복원 기대값 불일치다. 지시서 밖 두 테스트의 v3·분리 저장 계약 갱신은 사용자 범위 승인 대기이며 Controller 구현은 수정하지 않았다. 따라서 **verify 3회 연속 통과 조건은 미충족**이다. 화면 변경이 없어 E2E는 실행하지 않았다.

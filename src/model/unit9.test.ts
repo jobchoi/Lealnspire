@@ -2,7 +2,7 @@ import { expect, it } from 'vitest'
 import { allStages, unit9Stages, unit10Stages, isLastStage } from './stages'
 import { run, runAll, supplySignal } from './interpreter'
 import { countBlocks, validDocument } from './program'
-import { ProgressRepository, progressV2Key, isUnlocked } from './ProgressRepository'
+import { ProgressRepository, progressV2Key, progressV3Key, isUnlocked } from './ProgressRepository'
 import { GameController } from '../controller/GameController'
 import { continueStageIndex } from '../controller/flow'
 import baseline from './unit12345678-run.fixture.json'
@@ -122,10 +122,10 @@ it('rejects nested/duplicate/unknown connections and isolates v2 corruption whil
   }
   expect(() => run({ ...stage, events: undefined }, good.main)).toThrow()
   let raw = ''
-  const storage = { getItem: (key: string) => key === progressV2Key ? raw || null : null, setItem: (_key: string, value: string) => { raw = value } }
+  const storage = { getItem: (key: string) => key === (JSON.parse(raw || 'null')?.version === 3 ? progressV3Key : progressV2Key) ? raw || null : null, setItem: (key: string, value: string) => { if (key === progressV3Key) raw = value } }
   const repo = new ProgressRepository(storage)
   repo.saveProgram(stage.id, good)
-  expect(JSON.parse(raw).version).toBe(2)
+  expect(JSON.parse(raw).version).toBe(3)
   expect(new ProgressRepository(storage).getDocument(stage)).toEqual(good)
   const oldStage = allStages[0]
   raw = JSON.stringify({ version: 2, stages: { [oldStage.id]: { completed: true, bestStars: 3, lastProgram: good } } })

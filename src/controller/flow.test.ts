@@ -1,5 +1,5 @@
 import { AppController } from './AppController'
-import { isUnlocked, ProgressRepository, progressKey } from '../model/ProgressRepository'
+import { isUnlocked, ProgressRepository, progressKey, progressV3Key, historyKey } from '../model/ProgressRepository'
 import { describe, expect, it } from 'vitest'
 import { createProgressStore } from '../model/ProgressRepository'
 import { stages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, unit10Stages, unit11Stages, unit12Stages } from '../model/stages'
@@ -43,10 +43,16 @@ it('완료한 스테이지에서만 다음 버튼을 표시하며 마지막에�
 
 it('preserves version 1 regular completion and isolates the bonus next flow', () => {
   const old = { version: 1, stages: Object.fromEntries(stages.map(stage => [stage.id, { completed: true, bestStars: 3, lastProgram: stage.solution }])) }
-  let raw = JSON.stringify(old)
-  const storage = { getItem: () => raw, setItem: (_key: string, value: string) => { raw = value } }
+  const raw = JSON.stringify(old)
+  const data = new Map<string, string>([[progressKey, raw]])
+  const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => { data.set(key, value) } }
   const repository = new ProgressRepository(storage)
   expect(repository.getProgress()).toEqual(old)
+  expect(JSON.parse(data.get(progressV3Key)!)).toMatchObject({
+    version: 3, pastDetailsUnavailable: true,
+    stages: Object.fromEntries(stages.map(stage => [stage.id, { completed: true, bestStars: 3, lastProgram: { main: stage.solution, functions: [] } }])),
+  })
+  expect(JSON.parse(data.get(historyKey)!)).toMatchObject({ version: 1, events: [] })
   expect(continueStageIndex(repository.getProgress())).toBe(allStages.indexOf(unit2Stages[0]))
   expect(isUnlocked(repository.getProgress(), 8)).toBe(true)
   expect(isUnlocked(repository.getProgress(), 9)).toBe(false)
@@ -64,7 +70,9 @@ it('preserves version 1 regular completion and isolates the bonus next flow', ()
   app.next()
   expect(app.getSnapshot().page).toBe('list')
   const restored = new ProgressRepository(storage)
+  expect(data.get(progressKey)).toBe(raw)
   expect(restored.getProgress().version).toBe(1)
+  for (const stage of stages) expect(restored.getProgress().stages[stage.id]).toEqual(old.stages[stage.id])
   expect(restored.getProgress().stages.b2.completed).toBe(true)
   expect(continueStageIndex(restored.getProgress())).toBe(allStages.indexOf(unit2Stages[0]))
   expect(progressKey).toBe('lealnspire.progress')

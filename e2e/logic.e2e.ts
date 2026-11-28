@@ -165,6 +165,7 @@ test('u6-3 한 단계: 갈림길 검사에서 두 조건 결과와 최종 결과
 for (const world of worlds) {
   for (const viewport of [{ width: 1280, height: 720 }, { width: 375, height: 667 }, { width: 360, height: 560 }]) {
     test(`@layout ${world} ${viewport.width} and 조건 편집 줄이 잘리지 않는다`, async ({ page }) => {
+      test.setTimeout(60_000) // 조작 수십 개를 하나씩 재므로 전체 실행 부하에서 30초를 넘김(단독 8초)
       await page.setViewportSize(viewport)
       const game = await open(page, '양쪽이 다 열렸을 때')
       await game.press(page.getByRole('button', { name: `${world} 월드로 바꾸기` }))

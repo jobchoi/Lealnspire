@@ -2,7 +2,7 @@ import { expect, it } from 'vitest'
 import { run, runAll, failurePoint } from './interpreter'
 import { Program, validDocument, FunctionProgram } from './program'
 import { createBlock, cloneBlock } from './editor'
-import { ProgressRepository, progressV2Key } from './ProgressRepository'
+import { ProgressRepository, progressV3Key } from './ProgressRepository'
 import { stages, unit4Stages, unit5Stages } from './stages'
 import unit4Baseline from './unit4-run.fixture.json'
 import type { Block, Stage } from './types'
@@ -87,11 +87,11 @@ it('roundtrips code only in v2, isolates corrupt variables while retaining compl
   repo.completeStage(stage.id, 3, doc)
   run(stage, doc)
   expect(new ProgressRepository(storage).getDocument(stage)).toEqual(doc)
-  const saved = JSON.parse(data.get(progressV2Key)!)
-  expect(saved.version).toBe(2)
-  expect(data.get(progressV2Key)).not.toContain('variables')
+  const saved = JSON.parse(data.get(progressV3Key)!)
+  expect(saved.version).toBe(3)
+  expect(data.get(progressV3Key)).not.toContain('variables')
   saved.stages[stage.id].lastProgram.main[0].variable = 'B'
-  data.set(progressV2Key, JSON.stringify(saved))
+  data.set(progressV3Key, JSON.stringify(saved))
   const restored = new ProgressRepository(storage)
   expect(restored.getDocument(stage)).toEqual({ main: [], functions: [] })
   expect(restored.getProgress().stages[stage.id]).toMatchObject({ completed: true, bestStars: 3 })
