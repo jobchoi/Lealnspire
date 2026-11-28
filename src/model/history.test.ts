@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { ProgressRepository, historyKey, progressKey, progressV2Key, progressV3Key, settingsKey } from './ProgressRepository'
+import { ProgressRepository, historyKey, progressKey, progressV2Key, progressV4Key, settingsKey } from './ProgressRepository'
 import { emptyHistory, validHistoryEvent } from './history'
 import type { HistoryEventInput, HistoryResult } from './history'
 import { compactHistory, historyLimits, parseHistory, summarizeHistory } from './historySummary'
@@ -34,8 +34,8 @@ it('migrates v1 and v2 achievements and code, preserves originals and restores a
     const raw = JSON.stringify({ version, stages: { '1': { completed: true, bestStars: 2, lastProgram: version === 1 ? code : { main: code, functions: [] } } } })
     s.setItem(key, raw)
     const repo = new ProgressRepository(s, options)
-    expect(repo.getProgress().stages['1']).toEqual({ completed: true, bestStars: 2, lastProgram: code })
-    expect(repo.getProgressDocument()).toMatchObject({ version: 3, learnerId: 'anonymous-1', historyStartedAt: date, pastDetailsUnavailable: true })
+    expect(repo.getProgress().stages['1']).toMatchObject({ completed: true, bestStars: 2, lastProgram: code })
+    expect(repo.getProgressDocument()).toMatchObject({ version: 4, learnerId: 'anonymous-1', historyStartedAt: date, pastDetailsUnavailable: true })
     expect(repo.getHistory().events).toEqual([])
     repo.saveProgram('2', [])
     expect(s.getItem(key)).toBe(raw)
@@ -58,7 +58,7 @@ it('isolates corrupted events and documents from completion and rejects unknown/
   expect(new ProgressRepository(s).getHistory().incomplete).toBe(true)
 })
 it('never overwrites future versions, including after edits and completions', () => {
-  for (const key of [progressV3Key, historyKey, progressV2Key, progressKey]) {
+  for (const key of [progressV4Key, historyKey, progressV2Key, progressKey]) {
     const s = storage(), raw = '{"version":99,"stages":{}}'
     s.setItem(key, raw)
     const repo = new ProgressRepository(s, options)
@@ -140,7 +140,7 @@ it('deletes all four learning keys, preserves settings and preserves memory on d
   const repo = new ProgressRepository(s, options)
   repo.saveLanguage('en'); repo.completeStage('1', 3, [])
   expect(repo.clear()).toBe(true)
-  for (const k of [progressKey, progressV2Key, progressV3Key, historyKey]) expect(s.getItem(k)).toBeNull()
+  for (const k of [progressKey, progressV2Key, progressV4Key, historyKey]) expect(s.getItem(k)).toBeNull()
   expect(JSON.parse(s.getItem(settingsKey)!).lang).toBe('en')
   expect(repo.getHistory()).toEqual(emptyHistory())
   const failed = new ProgressRepository({ ...s, removeItem() { throw Error('denied') } }, options)
@@ -221,13 +221,13 @@ it('preserves progress when only history reads fail or v3 metadata is damaged', 
   const s = storage(), repo = new ProgressRepository(s, options)
   repo.completeStage('1', 2, [{ id: 'f', type: 'forward' }])
   const brokenHistory = new ProgressRepository({ ...s, getItem(k) { if (k === historyKey) throw Error('denied'); return s.getItem(k) } }, options)
-  expect(brokenHistory.getProgress().stages['1']).toEqual(repo.getProgress().stages['1'])
+  expect(brokenHistory.getProgress().stages['1']).toMatchObject(repo.getProgress().stages['1'])
   expect(brokenHistory.getHistory().incomplete).toBe(true)
   expect(brokenHistory.persistent).toBe(false)
-  const v3 = JSON.parse(s.getItem(progressV3Key)!); v3.learnerId = null; v3.historyStartedAt = 'invalid'
-  s.setItem(progressV3Key, JSON.stringify(v3))
+  const v3 = JSON.parse(s.getItem(progressV4Key)!); v3.learnerId = null; v3.historyStartedAt = 'invalid'
+  s.setItem(progressV4Key, JSON.stringify(v3))
   const restored = new ProgressRepository(s, options)
-  expect(restored.getProgress().stages['1']).toEqual(repo.getProgress().stages['1'])
+  expect(restored.getProgress().stages['1']).toMatchObject(repo.getProgress().stages['1'])
   expect(restored.getHistory().incomplete).toBe(true)
 })
 it('applies the 90-day retention window on restore without waiting for a new event', () => {

@@ -1,3 +1,4 @@
+import { earnedChallenges } from './challenges'
 import type { Progress } from './ProgressRepository'
 import type { Stage } from './types'
 import { emptyHistory, historyResults, isRecord, validDate, validHistoryEvent } from './history'
@@ -27,6 +28,7 @@ export function summarizeVisit(events: HistoryEvent[]): PuzzleHistorySummary {
     switch (event.type) {
       case 'hintShown': hints.add(event.data.step); break
       case 'attemptStarted':
+        if (event.data.purpose === 'challenge') break
         if (!attempts.has(event.attemptId!)) {
           attempts.set(event.attemptId!, {}); summary.attempts++
           if (hints.has(1)) summary.hint1Attempts++
@@ -108,7 +110,7 @@ export function parseHistory(raw: string | null): HistoryDocument {
   if (raw === null) return empty
   try {
     const v: unknown = JSON.parse(raw)
-    if (!isRecord(v) || v.version !== 1 || !Array.isArray(v.events) || !Array.isArray(v.rollups)) return { ...empty, incomplete: true }
+    if (!isRecord(v) || (v.version !== 1 && v.version !== 2) || !Array.isArray(v.events) || !Array.isArray(v.rollups)) return { ...empty, incomplete: true }
     const ids = new Set<string>(), sequences = new Set<number>(), visits = new Set<string>()
     const rollups = v.rollups.filter(r => {
       if (!isRecord(r) || Object.keys(r).some(k => !['visitId', 'from', 'to', 'throughSequence', 'summary'].includes(k)) || typeof r.visitId !== 'string' || !/^[\w.:-]{1,128}$/.test(r.visitId) || visits.has(r.visitId) || !validDate(r.from) || !validDate(r.to) || r.from > r.to || !Number.isSafeInteger(r.throughSequence) || (r.throughSequence as number) < 1 || !validSummary(r.summary)) return false
@@ -126,7 +128,7 @@ export function parseHistory(raw: string | null): HistoryDocument {
       ids.add(e.id); sequences.add(e.sequence); return true
     }).sort((a, b) => a.sequence - b.sequence)
     const nextSequence = Math.max(1, ...events.map(e => e.sequence + 1), ...rollups.map(r => r.throughSequence + 1), Number.isSafeInteger(v.nextSequence) ? v.nextSequence as number : 1)
-    return { version: 1, events, rollups, nextSequence, incomplete: v.incomplete === true || events.length !== v.events.length || rollups.length !== v.rollups.length, compactedAt: validDate(v.compactedAt) ? v.compactedAt : null }
+    return { version: 2, events, rollups, nextSequence, incomplete: v.incomplete === true || events.length !== v.events.length || rollups.length !== v.rollups.length, compactedAt: validDate(v.compactedAt) ? v.compactedAt : null }
   } catch { return { ...empty, incomplete: true } }
 }
 export const historyLimits = { days: 90, attempts: 2000, events: 10000, bytes: 2 * 1024 * 1024 }
@@ -159,12 +161,13 @@ export function learningSummary(history: HistoryDocument, progress: Progress, st
       && events.some(f => f.type === 'executionCalculated' && f.data.result !== 'success' && f.attemptId === e.data.previousAttemptId)
       && start.type === 'attemptStarted' && start.data.previousAttemptId === e.data.previousAttemptId)
     const rolled = history.rollups.filter(r => (r.summary.activityKind === 'puzzle' || r.summary.activityKind === 'bonus') && r.summary.activityId === stage.id)
-    return { stage, index: stages.indexOf(stage), puzzle, fixed,
+    return { stage, index: stages.indexOf(stage), puzzle, fixed, challenges: earnedChallenges(stage.id, progress.stages[stage.id]?.challenges), legacyStars: progress.stages[stage.id]?.bestStars ?? 0,
       completionSequence: Math.max(completion?.sequence ?? 0, ...rolled.filter(r => r.summary.completions > 0).map(r => r.throughSequence)),
       activitySequence: Math.max(0, ...events.filter(e => e.type !== 'reviewChanged' && e.type !== 'visitEnded').map(e => e.sequence), ...rolled.filter(r => r.summary.attempts > 0).map(r => r.throughSequence)) }
   })
   const recent = entries.filter(e => e.puzzle.completed && e.completionSequence > 0).sort((a,b) => b.completionSequence - a.completionSequence).slice(0,3)
   const selected = entries.filter(e => e.puzzle.reviewSelected).sort((a,b) => b.puzzle.reviewSequence - a.puzzle.reviewSequence)
   const unfinished = entries.filter(e => !e.puzzle.completed && e.activitySequence > 0 && !e.puzzle.reviewSelected && e.puzzle.reviewSequence === 0).sort((a,b) => b.activitySequence - a.activitySequence)
-  return { ...summary, entries, recent, review: [...selected, ...unfinished].slice(0,3), completed: entries.filter(e => regular.includes(e.stage) && e.puzzle.completed).length }
+  const recentChallenges = entries.flatMap(e => e.challenges.map(challenge => ({ stage: e.stage, challenge, at: progress.stages[e.stage.id].challenges![challenge.id].achievedAt! }))).sort((a,b) => b.at.localeCompare(a.at)).slice(0,3)
+  return { ...summary, entries, recent, recentChallenges, review: [...selected, ...unfinished].slice(0,3), completed: entries.filter(e => regular.includes(e.stage) && e.puzzle.completed).length }
 }

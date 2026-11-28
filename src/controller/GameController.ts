@@ -6,6 +6,7 @@ import { EditorController } from './EditorController'
 import { failurePoint, Interpreter, runAll } from '../model/interpreter'
 import { FunctionProgram } from '../model/program'
 import { Score } from '../model/score'
+import { stageChallenges } from '../model/challenges'
 import { programDocument } from '../model/types'
 import type { Program, ProgramDocument, ProgramInput, RunResult, RunAllResult, Stage } from '../model/types'
 import type { ProgressRepository } from '../model/ProgressRepository'
@@ -22,6 +23,8 @@ export class GameController extends Observable<State> {
     this.notifiedRepositories.add(repository)
     return true
   }
+  newlyAchieved: string[] = []
+  get challenges() { return stageChallenges(this.stage.id) }
   hasEdited = false
   readonly editor = new EditorController(() => { if (this.finished) this.reset() }, { undo: () => this.undo(), available: () => this.canUndo })
   readonly stage: Stage
@@ -72,7 +75,7 @@ export class GameController extends Observable<State> {
     if (this.ended) return
     this.historyRepository.appendHistory({ type, data, visitId: this.visitId, ...(attemptId ? { attemptId } : {}),
       activityKind: this.activityKind, activityId: this.activityId, unit: Number(/^u(\d+)-/.exec(this.stage.id)?.[1] ?? 1),
-      recordedAt: this.historyRepository.historyNow(), elapsedMs: this.elapsed(), appVersion: '1.20.0', contentVersion: '1', evaluationVersion: '1',
+      recordedAt: this.historyRepository.historyNow(), elapsedMs: this.elapsed(), appVersion: '1.20.0', contentVersion: '1', evaluationVersion: '2',
     } as HistoryEventInput, true)
   }
   private time() {
@@ -118,11 +121,12 @@ export class GameController extends Observable<State> {
     if (this.attemptId && !this.terminal) { this.record('executionInterrupted', { reason }, this.attemptId); this.terminal = true }
   }
   private begin(run: ReturnType<GameController['execute']>, mode: 'auto' | 'step') {
+    this.newlyAchieved = []
     this.activity(); this.interrupt('rerun'); this.codeSummary()
     const previousAttemptId = this.attemptId
     this.attemptId = this.historyRepository.historyId(); this.terminal = false
     const code = JSON.stringify(this.state.doc)
-    this.record('attemptStarted', { revision: this.revision, mode, changed: code !== this.lastCode, ...(previousAttemptId ? { previousAttemptId } : {}) }, this.attemptId)
+    this.record('attemptStarted', { revision: this.revision, mode, ...(this.canNext && this.challenges.length ? { purpose: 'challenge' as const } : {}), changed: code !== this.lastCode, ...(previousAttemptId ? { previousAttemptId } : {}) }, this.attemptId)
     this.lastCode = code
     const failure = failurePoint(run.all ?? run.execution)
     const blocks = failure?.call ? this.state.doc.functions.find(fn => fn.id === failure.call?.fn)?.body ?? [] : this.state.program
@@ -200,9 +204,13 @@ export class GameController extends Observable<State> {
     }
     if (next.playing !== this.state.playing) this.time()
     this.stop()
-    if (isLastFrame(next.index, next.execution?.frames.length ?? 0) && (!next.all || next.variant === next.all.results.length - 1) && (next.all?.result ?? next.execution?.result) === 'success' && (!this.finished || next.execution !== this.state.execution)) {
-      this.record('completionConfirmed', { first: !this.repository.getProgress().stages[this.stage.id]?.completed, stars: this.stage.variants ? 3 : Score.score('success', new FunctionProgram(next.doc).count(), this.stage.starBlocks) }, this.attemptId)
+    if (isLastFrame(next.index, next.execution?.frames.length ?? 0) && (!next.all || next.variant === next.all.results.length - 1) && (next.all?.result ?? next.execution?.result) === 'success' && !this.ended && (!this.finished || next.execution !== this.state.execution)) {
+      this.record('completionConfirmed', { first: !this.repository.getProgress().stages[this.stage.id]?.completed }, this.attemptId)
       this.repository.completeStage(this.stage.id, this.stage.variants ? 3 : Score.score('success', new FunctionProgram(next.doc).count(), this.stage.starBlocks), next.doc)
+      if (!this.ended && (this.activityKind === 'puzzle' || this.activityKind === 'bonus')) {
+        this.newlyAchieved = this.repository.confirmChallenges(this.stage.id, next.doc, next.all?.results ?? [next.execution!])
+        for (const id of this.newlyAchieved) this.record('challengeAchieved', { challengeId: id, ruleVersion: this.challenges.find(c => c.id === id)!.ruleVersion }, this.attemptId)
+      }
     }
     this.editor.program = next.program
     this.editor.functions = structuredClone(next.doc.functions)

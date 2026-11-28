@@ -13,7 +13,7 @@ test.describe('처음 온 아이', () => {
       await g.clear()
       await g.build(SOLUTIONS[s])
       const result = await g.runToEnd()
-      expect(result, `스테이지 ${s} 별 3개`).toMatch(/별 3개|★★★/)
+      expect(result, `스테이지 ${s} 완료 도장(T84-6)`).toContain('해냈어요')
       if (s < 8) await g.press(g.dialog.getByRole('button', { name: '다음 스테이지', exact: true }))
       else expect(result).toContain('완주')
     }
@@ -49,7 +49,7 @@ test.describe('처음 온 아이', () => {
     await g.add('R')
     await g.select('3')
     await g.press(g.action(/앞으로 옮기기$|위로$/))
-    expect(await g.runToEnd()).toMatch(/별 3개|★★★/)
+    expect(await g.runToEnd(), '완료 도장(T84-6)').toContain('해냈어요')
   })
 })
 
@@ -97,7 +97,7 @@ test.describe('실수가 많은 사용자', () => {
       if (await step.isEnabled()) await g.press(step)
     }
     await expect(g.dialog).toBeVisible()
-    await expect(g.dialog).toContainText(/별 \d개|★/)
+    await expect(g.dialog, '완료 도장(T84-6)').toContainText('해냈어요')
   })
 
   test('재생 도중 새로고침해도 만든 코드가 그대로 있고 오류가 없다', async ({ page }) => {

@@ -85,12 +85,12 @@ for (const locale of ['ko', 'en']) for (const world of ['sketchbook', 'train', '
     await page.screenshot({ path: `/tmp/T46-${locale}-${world}-${viewport.width}.png` })
     // Restore a failing call to exercise the real result → fix → edit flow.
     await page.evaluate(() => {
-      const progress = JSON.parse(localStorage.getItem('lealnspire.progress.v3')!)
+      const progress = JSON.parse(localStorage.getItem('lealnspire.progress.v4')!)
       progress.stages['u4-2'].lastProgram = {
         main: [{ id: 'call-star', type: 'call', fn: 'star' }],
         functions: [{ id: 'star', icon: 'star', body: [{ id: 'failed-forward', type: 'forward' }] }],
       }
-      localStorage.setItem('lealnspire.progress.v3', JSON.stringify(progress))
+      localStorage.setItem('lealnspire.progress.v4', JSON.stringify(progress))
     })
     await page.reload()
     await button(t('stageList')).click()

@@ -330,3 +330,9 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 ### T73-2 개념 시범 [제안·잠정]
 
 DemoController.ts의 demoEntries/demoScene이 기존 첫 시범 포함 14종×4컷·진입점을 정의한다. DemoModal은 함수·조건 검사·리스트 번호와 값을 표시하며 PlayPage는 초기 제공 코드를 허용하되 편집 기록이 있으면 제안을 숨긴다. DemoController.test.ts는 모든 컷의 정답·맵 비동일성, 14종 진행 불변·설정 복원·주요 실행 추적을 검사한다. 저장 형식·의존성·새 파일 추가는 없다.
+
+### T84-6 완료 도장·선택 도전 [제안·잠정]
+
+- `model/challenges.ts`, `challenges.test.ts`: stageId·id·kind·ruleVersion·params 레지스트리, 실제 성공 실행의 회전·비교 방향과 FunctionProgram 개수 판정, 확정·이행 회귀. 샘플은 2/bothTurns, u2-1/shorter(4), u11-1/bothDirections. 정의 추가·제거는 이곳만 변경한다.
+- `view/components/CompletionStamp.tsx`: 결과·목록·게임에서 공유하는 로봇·체크 SVG 도장. 미완료에는 빈 보상 표시를 만들지 않는다.
+- ProgressRepository는 진행 v4(`lealnspire.progress.v4`)와 이력 v2(`lealnspire.history.v2`)를 쓰며 v3·이력 v1 원본을 보존한다. bestStars는 동결하고 완료·도전은 마지막 재생 프레임에서 확정한다. 내 배움에는 최근 도전 사실 문장과 접힌 이전 별, 관리자에는 완료·도전 별도 열을 표시한다.

@@ -1,3 +1,4 @@
+import { earnedChallenges, stageChallenges } from './challenges'
 import type { Progress } from './ProgressRepository'
 import type { Stage } from './types'
 import type { HistoryDocument, HistoryEvent } from './history'
@@ -13,7 +14,7 @@ export function adminSummary(history: HistoryDocument, progress: Progress, stage
     const detail = events.filter(e => e.activityKind === 'puzzle' && e.activityId === stage.id)
     let helpedSuccess = 0, independentSuccess = 0, helpedAttempts = 0
     for (const event of detail) {
-      if (event.type !== 'attemptStarted') continue
+      if (event.type !== 'attemptStarted' || event.data.purpose === 'challenge') continue
       const help = detail.filter(e => e.sequence < event.sequence && (e.type === 'hintShown' || e.type === 'demoStarted'))
       const helped = help.some(e => e.visitId === event.visitId)
       if (helped) helpedAttempts++
@@ -30,11 +31,11 @@ export function adminSummary(history: HistoryDocument, progress: Progress, stage
     const timeline: ({ sequence: number; event: HistoryEvent } | { sequence: number; from: string; to: string })[] = [
       ...detail.map(event => ({ sequence: event.sequence, event })), ...compacted,
     ].sort((a, b) => a.sequence - b.sequence)
-    return { stage, puzzle, repeated, helpedUnfinished, helpedAttempts, helpedSuccess, independentSuccess, timeline,
+    return { stage, puzzle, challenges: earnedChallenges(stage.id, progress.stages[stage.id]?.challenges), legacyStars: progress.stages[stage.id]?.bestStars ?? 0, repeated, helpedUnfinished, helpedAttempts, helpedSuccess, independentSuccess, timeline,
       attention: puzzle.needsAttention || repeated.length > 0 || helpedUnfinished }
   })
   const dates = [...events.map(e => e.recordedAt), ...history.rollups.map(r => r.to)].sort()
-  return { ...summary, entries, completed: entries.filter(e => e.puzzle.completed).length, total: entries.length,
+  return { ...summary, entries, challengeEntries: entries.filter(e => stageChallenges(e.stage.id).length > 0), completed: entries.filter(e => e.puzzle.completed).length, total: entries.length,
     lastActivity: dates.at(-1) ?? null,
     units: Array.from({ length: 12 }, (_, i) => {
       const unit = i + 1, rows = entries.filter(e => e.puzzle.unit === unit)

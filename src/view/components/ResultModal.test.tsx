@@ -5,14 +5,14 @@ import { t } from '../../i18n/I18n'
 
 const noop = () => {}
 describe('결과 모달', () => {
-  it('성공 결과와 별, 다시 하기와 닫기 버튼을 렌더링한다', () => {
+  it('성공 결과와 도장, 다시 하기와 닫기 버튼을 렌더링한다', () => {
     const html = renderToString(<ResultModal result="success" stars={3} onRetry={noop} onClose={noop} />)
     expect(html).toContain('role="dialog"')
     expect(html).toContain('aria-modal="true"')
     expect(html).toContain('aria-labelledby="result-title"')
     expect(html).toContain('tabindex="-1"')
     expect(html).toContain(t('success'))
-    expect(html).toContain(t('stars', { count: 3 }))
+    expect(html).toContain(t('stamp.done'))
     expect(html).toContain(t('retry'))
     expect(html).toContain(t('close'))
   })

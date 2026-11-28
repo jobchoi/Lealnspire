@@ -320,3 +320,11 @@ T73-2는 DemoController의 demoEntries(14개 ID·진입 스테이지)와 demoSce
 문서별 미래 버전은 해당 키를 덮어쓰지 않으며 `persistent:false`를 반환한다. 이력 JSON 손상과 잘못된 이벤트·요약은 진행을 초기화하지 않고 `incomplete`로 누락을 표시한다. 두 문서 쓰기는 원자적이지 않으므로 완료 수를 이력에서 추정하지 않는다. 삭제는 v1·v2·v3·이력 네 키 모두 시도하고 하나라도 실패하면 메모리 기록을 보존하며 false를 반환한다. 설정(언어·시범 확인)은 삭제하지 않는다.
 
 새 Model 파일: `history.ts`(이벤트 명세·검증), `historySummary.ts`(집계·보존·이력 파싱), `history.test.ts`(이행·격리·상한·삭제·집계 회귀). 새 의존성·화면·Controller 변경 없음.
+
+## T84-6 완료 도장·선택 도전 [제안·잠정]
+
+현재 진행 키는 `lealnspire.progress.v4`(version:4), 이력 키는 `lealnspire.history.v2`(version:2)다. v3의 익명 식별자·시작 시각·완료·기존 별·코드를 보존하며 v1/v2/v3 진행 및 이력 v1 원본은 덮어쓰지 않는다. 모든 단계의 `legacyEvaluationVersion:1`과 `challenges`를 직렬화하고 새 완료에는 `completionEvaluationVersion:2`를 남긴다. `bestStars`는 새 성공으로 갱신하지 않는다. 삭제는 보존 원본을 포함한 여섯 키를 모두 시도하고 설정을 유지한다. 보존 원본도 저장 예산에 포함한다.
+
+선택 도전 정의는 `model/challenges.ts`의 `{stageId,id,kind,ruleVersion,params}[]`다. 화면·저장 확정·내 배움·관리자는 이 레지스트리를 읽는다. 삭제된 정의의 저장 기록은 보존하지만 현재 화면·집계에서는 제외한다. 상태는 `{ruleVersion,achievedAt:string|null,partial?:string[]}`이며 null은 두 전략 중 일부만 확보한 상태다. 다른 규칙 버전의 부분 증거는 합치지 않는다. shorter는 모든 함수·분기 포함 FunctionProgram.count(), bothTurns는 성공 경로의 실제 turn 프레임, bothDirections는 실제 비교 수 증가 프레임의 순회 문맥을 사용한다. 두 방향 도전은 각 방향만 사용하여 모든 변형에 성공한 실행을 각각 요구한다.
+
+GameController는 모든 변형 성공과 마지막 프레임에서만 도장·도전을 확정한다. 첫 성공 자동 인정과 동일 규칙 중복 이벤트 방지를 지원한다. 시범·예측·이탈은 도전 증거가 아니다. 이력 v2는 별 없는 completionConfirmed와 challengeAchieved를 지원하고 이전 별 이벤트는 그대로 읽는다. 완료 후 도전이 있는 퍼즐의 재시도에는 attemptStarted.purpose:'challenge'를 기록하여 관리자 상세에서 구분하고 기본 시도·실패 집계에서 제외한다. 도전 기록은 완료·개방·완주 조건이나 살펴볼 퍼즐 조건에 사용하지 않는다.

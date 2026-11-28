@@ -37,8 +37,8 @@ test.describe('보너스와 완주 계약', () => {
     expect(await g.runToEnd()).toMatch(/성공|별 \d개|★/)
 
     await page.reload()
-    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('lealnspire.progress.v3') ?? '{}'))
-    expect(saved.version, '저장 v3(T84, 옛 v2 시드에서 이행)').toBe(3)
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('lealnspire.progress.v4') ?? '{}'))
+    expect(saved.version, '저장 v4(T84-6, 옛 v2 시드에서 이행)').toBe(4)
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem('lealnspire.progress') ?? '{}').version), 'v1 원본은 그대로').toBe(1)
     expect(saved.stages.b1?.completed && saved.stages.b2?.completed).toBe(true)
     expect(Object.keys(saved.stages).filter(k => /^[1-8]$/.test(k)), '정규 기록 보존').toHaveLength(8)

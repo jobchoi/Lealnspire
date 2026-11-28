@@ -2,7 +2,7 @@ import { expect, it } from 'vitest'
 import { run, runAll } from './interpreter'
 import { normalizeLogicProgram, Program, validCondition, validDocument } from './program'
 import { cloneBlock } from './editor'
-import { ProgressRepository, progressV2Key, progressV3Key } from './ProgressRepository'
+import { ProgressRepository, progressV2Key, progressV4Key } from './ProgressRepository'
 import { allStages, unit2Stages } from './stages'
 import baseline from './unit1-5-run.fixture.json'
 import type { Block, Condition, ConditionAtom } from './types'
@@ -63,17 +63,17 @@ it('rejects logic trees in older stages on v2 restore while preserving progress'
   const repo = new ProgressRepository(storage); repo.completeStage(target.id, 3, doc); repo.completeStage(other.id, 2, [])
   expect(validDocument(doc)).toBe(true)
   expect(new ProgressRepository(storage).getDocument(target)).toEqual({ main: [], functions: [] })
-  expect(data.get(progressV3Key)).not.toContain('variables')
+  expect(data.get(progressV4Key)).not.toContain('variables')
   const logicStage = allStages.find(stage => stage.id === 'u6-3')!
   repo.completeStage(logicStage.id, 3, doc)
   expect(new ProgressRepository(storage).getDocument(logicStage)).toEqual({ ...doc, main: normalizeLogicProgram(doc.main) })
-  const saved = JSON.parse(data.get(progressV3Key)!)
+  const saved = JSON.parse(data.get(progressV4Key)!)
   saved.stages[logicStage.id].lastProgram.main[0].condition.left.atom = 'unknown'
-  data.set(progressV3Key, JSON.stringify(saved))
+  data.set(progressV4Key, JSON.stringify(saved))
   const restored = new ProgressRepository(storage)
   expect(restored.getDocument(logicStage)).toEqual({ main: [], functions: [] })
-  expect(restored.getProgress().stages[logicStage.id]).toMatchObject({ completed: true, bestStars: 3 })
-  expect(restored.getProgress().stages[other.id]).toMatchObject({ completed: true, bestStars: 2 })
+  expect(restored.getProgress().stages[logicStage.id]).toMatchObject({ completed: true, bestStars: 0 })
+  expect(restored.getProgress().stages[other.id]).toMatchObject({ completed: true, bestStars: 0 })
 })
 it('documents old v2 reader rollback and resave loss against a simplified legacy validator (간이 검증기 기준)', () => {
   const oldValid = (condition: unknown) => condition === 'blockedAhead'
@@ -104,12 +104,12 @@ it('rejects retired A=0 saves only for the affected stage and preserves completi
   const repo = new ProgressRepository(storage)
   const first = allStages.find(s => s.id === 'u6-1')!, second = allStages.find(s => s.id === 'u6-2')!
   repo.completeStage(first.id, 3, first.solution); repo.completeStage(second.id, 3, second.solution)
-  const raw = JSON.parse(data.get(progressV3Key)!)
+  const raw = JSON.parse(data.get(progressV4Key)!)
   raw.stages[first.id].lastProgram.main[0].condition = { kind: 'atom', atom: 'aIsZero' }
-  data.set(progressV3Key, JSON.stringify(raw))
+  data.set(progressV4Key, JSON.stringify(raw))
   const restored = new ProgressRepository(storage)
   expect(restored.getDocument(first).main).toEqual([])
-  expect(restored.getProgress().stages[first.id]).toMatchObject({ completed: true, bestStars: 3 })
+  expect(restored.getProgress().stages[first.id]).toMatchObject({ completed: true, bestStars: 0 })
   expect(restored.getDocument(second).main).toEqual(second.solution)
 })
 

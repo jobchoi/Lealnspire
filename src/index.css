@@ -1172,3 +1172,23 @@ button small { display: block; font-size: .75rem; }
 }
 .save-notice p { margin: 0; flex: 1; }
 .save-notice button { flex-shrink: 0; min-width: 44px; min-height: 44px; }
+
+.completion-stamp { display: inline-flex; align-items: center; gap: .3rem; color: #245c38; font-weight: bold; }
+.completion-stamp svg { flex-shrink: 0; }
+.challenge-sticker { color: #245c38; font-size: .9rem; }
+.play-page h1 { display: flex; align-items: center; gap: .4rem; }
+.play-completion { display: inline-flex; flex-shrink: 0; }
+.theme-train .play-completion .completion-stamp { color: inherit; }
+.play-completion .completion-stamp svg { width: 26px; height: 26px; }
+.play-completion .completion-stamp > span { display: none; }
+.challenge-panel { position: relative; min-width: 0; }
+.play-page .stage-controls { flex-wrap: nowrap; align-items: stretch; }
+.play-page .stage-controls .challenge-panel { display: flex; flex-shrink: 0; }
+.play-page .stage-controls button small { font-size: inherit; line-height: inherit; }
+.play-page .stage-controls .challenge-trigger { white-space: nowrap; padding-inline: 6px; }
+#challenge-goals { position: fixed; top: 0; left: 0; z-index: 10; box-sizing: border-box; width: 100%; max-height: 100%; overflow: auto; background: #fff8df; color: #493b23; border: 2px solid currentColor; border-radius: 8px; box-shadow: 0 4px 12px #0003; }
+.challenge-panel button { min-height: 44px; }
+#challenge-goals { margin: 0; padding: .6rem 1.5rem; }
+
+.result-symbol .completion-stamp { font-size: 1.3rem; }
+.result-symbol .completion-stamp svg { width: 64px; height: 64px; }

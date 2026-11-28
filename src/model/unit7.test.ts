@@ -2,7 +2,7 @@ import { expect, it } from 'vitest'
 import { allStages, unit7Stages, unit6Stages, isLastStage } from './stages'
 import { run, runAll } from './interpreter'
 import { FunctionProgram, validDocument } from './program'
-import { ProgressRepository, progressV2Key, progressV3Key, isUnlocked } from './ProgressRepository'
+import { ProgressRepository, progressV2Key, progressV4Key, isUnlocked } from './ProgressRepository'
 import { GameController } from '../controller/GameController'
 import { AppController } from '../controller/AppController'
 import baseline from './unit123456-run.fixture.json'
@@ -77,10 +77,10 @@ it('rejects invalid parameter contexts and isolates corrupt stage code while pre
     expect(store.getProgress().stages[stage.id].bestStars).toBe(2)
   }
   let saved = ''
-  const storage = { getItem: (key: string) => key === (JSON.parse(saved || 'null')?.version === 3 ? progressV3Key : progressV2Key) ? saved || null : null, setItem: (key: string, value: string) => { if (key === progressV3Key) saved = value } }
+  const storage = { getItem: (key: string) => key === (JSON.parse(saved || 'null')?.version === 4 ? progressV4Key : progressV2Key) ? saved || null : null, setItem: (key: string, value: string) => { if (key === progressV4Key) saved = value } }
   new ProgressRepository(storage).saveProgram('u7-1', valid)
   expect(new ProgressRepository(storage).getDocument(unit7Stages[0])).toEqual(valid)
-  expect(JSON.parse(saved).version).toBe(3)
+  expect(JSON.parse(saved).version).toBe(4)
 })
 it('cleans only the selected input and its nested call arguments, supports undo and source cycling', () => {
   const doc = solution()
@@ -135,7 +135,7 @@ it('unlocks after unit 6, continues sequentially, saves three stars and returns 
     app.openStage(index + i); app.game!.edit(solution(i))
     for (let steps = 0; steps < 200 && !app.game!.finished; steps++) app.game!.step()
     expect(app.game!.finished).toBe(true)
-    expect(store.getProgress().stages[unit7Stages[i].id]).toMatchObject({ completed: true, bestStars: 3 })
+    expect(store.getProgress().stages[unit7Stages[i].id]).toMatchObject({ completed: true, bestStars: 0 })
     app.next()
   }
   expect(isLastStage(index + 2)).toBe(true)

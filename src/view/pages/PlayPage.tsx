@@ -1,3 +1,4 @@
+import { CompletionStamp } from '../components/CompletionStamp'
 import { canOfferDemo, demoForStage } from '../../controller/DemoController'
 import { DemoModal, DemoHand } from '../components/DemoModal'
 import { courseCompleted, nextUnit } from '../../controller/flow'
@@ -22,12 +23,38 @@ type Props = { stage: Stage; progressStore: ReturnType<typeof createProgressStor
 
 export function PlayPage({ stage, progressStore, onList, onNext, onNextUnit, lastStage, controller: supplied }: Props) {
   const demoId = demoForStage(stage.id)
+  const [challengeOpen, setChallengeOpen] = useState(false)
+  const [challengeStyle, setChallengeStyle] = useState<CSSProperties>()
   const [demoOpen, setDemoOpen] = useState(false)
   const [seenDemo, setSeenDemo] = useState(() => progressStore.getSeenDemos().includes(demoId ?? ''))
   const page = useRef<HTMLElement>(null)
   const [controller] = useState(() => supplied ?? new GameController(stage, progressStore))
   const { doc, program, hintStep, playing, speed, saveNotice } = useController(controller)
   useEffect(() => () => controller.suspend(), [controller])
+  useEffect(() => {
+    if (!challengeOpen) return
+    const outside = (event: Event) => {
+      const target = event.target
+      if (target instanceof Element && !target.closest('.challenge-trigger, #challenge-goals')) setChallengeOpen(false)
+    }
+    const escape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      event.preventDefault()
+      setChallengeOpen(false)
+      page.current?.querySelector<HTMLButtonElement>('.challenge-trigger')?.focus()
+    }
+    const close = () => setChallengeOpen(false)
+    window.addEventListener('resize', close)
+    document.addEventListener('pointerdown', outside)
+    document.addEventListener('click', outside)
+    document.addEventListener('keydown', escape)
+    return () => {
+      window.removeEventListener('resize', close)
+      document.removeEventListener('pointerdown', outside)
+      document.removeEventListener('click', outside)
+      document.removeEventListener('keydown', escape)
+    }
+  }, [challengeOpen])
   const [requestedWorld, setWorld] = useState<Stage['world']>()
   const completed = !!progressStore.getProgress().stages[stage.id]?.completed
   const theme = selectTheme(stage.world, completed, requestedWorld)
@@ -71,12 +98,17 @@ export function PlayPage({ stage, progressStore, onList, onNext, onNextUnit, las
   return (
     <section ref={page} className={`play-page theme-${theme.world}${stage.id === 'u12-1' ? ' synthesis-path-page' : ''}${stage.variants ? ' conditions-page' : ''}${stage.id.startsWith('u3-') || stage.id === 'u12-1' ? ' while-page' : ''}${stage.id.startsWith('u4-') || paramsEnabled ? ' functions-page' : ''}${variablesEnabled || logicEnabled ? ' variables-page' : ''}${logicEnabled ? ' logic-page' : ''}${paramsEnabled ? ' params-page' : ''}${returnsEnabled ? ' returns-page' : ''}${eventsEnabled ? ' events-page' : ''}${listsEnabled ? ' lists-page' : ''}${search ? ' search-page' : ''}`}>
       {demoOpen && demoId && <DemoModal key={demoId} demoId={demoId} theme={theme} onClose={() => { controller.demoEnded(); setDemoOpen(false) }} onReachedEnd={controller.demoReachedEnd} onSeen={() => { progressStore.markDemoSeen(demoId); setSeenDemo(true) }} />}
-      <ConceptDefs /><h1 tabIndex={-1} data-page-title>{stageLabel(stage)}</h1>
+      <ConceptDefs /><h1 tabIndex={-1} data-page-title>{stageLabel(stage)}{completed && <span className="play-completion" role="img" aria-label={t('stamp.done')}><CompletionStamp /></span>}</h1>
       <div className="playback-controls stage-controls">
         {canOfferDemo(stage.id, controller.hasEdited || !!progressStore.getProgress().stages[stage.id], !!controller.getSnapshot().execution, controller.showResult, completed) && <button className={`demo-trigger${seenDemo || controller.hasEdited || !!progressStore.getProgress().stages[stage.id] ? '' : ' demo-suggested'}`} type="button" aria-label={t('demo.button')} onClick={() => { controller.demoStarted(demoId!); setDemoOpen(true) }}><DemoHand /><span aria-hidden="true">▶</span></button>}
         <button type="button" onClick={onList} aria-label={theme.buttonLabel('stageList')} title={theme.buttonLabel('stageList')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="stageList" /></span><small>{theme.buttonLabel('stageList')}</small></button>
         <button type="button" aria-expanded={hintStep > 0} aria-controls="stage-hint" onClick={controller.toggleHint} aria-label={theme.buttonLabel('hint')} title={theme.buttonLabel('hint')}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="hint" /></span><small>{theme.buttonLabel('hint')}</small></button>
         {(controller.canNext && !lastStage) && <button type="button" aria-label={theme.buttonLabel('nextStage')} title={theme.buttonLabel('nextStage')} onClick={onNext}><span className="control-symbol" aria-hidden="true"><Symbol world={theme.world} name="nextStage" /></span><small>{theme.buttonLabel('nextStage')}</small></button>}
+      {completed && controller.challenges.length > 0 && <div className="challenge-panel"><button className="challenge-trigger" type="button" aria-expanded={challengeOpen} aria-controls="challenge-goals" onClick={() => {
+          const bounds = page.current?.querySelector('.board')?.getBoundingClientRect()
+          if (bounds) setChallengeStyle({ top: bounds.top, left: bounds.left, width: bounds.width, maxHeight: bounds.height })
+          setChallengeOpen(!challengeOpen)
+        }}>{t('challenges.button')}</button></div>}
       </div>
       {saveNotice && <div className="save-notice" role="status"><p>{t('saveNotice.failed')}</p><button type="button" aria-label={t('close')} onClick={controller.dismissSaveNotice}>{t('close')}</button></div>}
       {completed && <div className="world-switch" role="group" aria-label={t('themes.choose')}>{worlds.map(world => <button key={world} type="button" aria-label={t(`themes.${world}.switch`)} aria-pressed={theme.world === world} onClick={() => setWorld(world)}><Symbol world={theme.world} name={world} /></button>)}</div>}
@@ -109,6 +141,10 @@ export function PlayPage({ stage, progressStore, onList, onNext, onNextUnit, las
           {returnsEnabled && playback.frame?.sensorAhead !== undefined && <p className="ahead-observation" role="status">▤ {t('returns.ahead')}: {playback.frame.sensorAhead}</p>}
           {!variablesEnabled && variantCards}
           <div className="sensor-board-panel">
+            {challengeOpen && <ul id="challenge-goals" style={challengeStyle} tabIndex={0}>{controller.challenges.map(c => {
+        const state = progressStore.getProgress().stages[stage.id]?.challenges?.[c.id]
+        return <li key={c.id}>{t(`challenges.${c.kind}`, { max: c.params.maxBlocks ?? 0 })}{state?.ruleVersion === c.ruleVersion && (state.achievedAt ? <span> ✓ {t('challenges.achieved')}</span> : !!state.partial?.length && <p>{t('challenges.partial')}</p>)}</li>
+      })}</ul>}
             {stage.variants && !eventsEnabled && !variablesEnabled && !logicEnabled && <p className="sensor-status" role="status">{check && <><Symbol name={check.result ? 'yes' : 'no'} />{t(check.condition === 'clearAhead' ? check.result ? 'whileContinue' : 'whileStop' : check.result ? 'sensorBlocked' : 'sensorClear')}</>}</p>}
 
             {eventsEnabled && <div className="event-state" data-hint-focus={focused('signals')}>
@@ -130,7 +166,7 @@ export function PlayPage({ stage, progressStore, onList, onNext, onNextUnit, las
         </div>
         <Editor hintPalette={!!focused('palette')} hintWorkspace={!!focused('workspace')} searchEnabled={!!search} listsEnabled={listsEnabled} eventsEnabled={eventsEnabled} events={events} returnsEnabled={returnsEnabled} returned={controller.returned} paramsEnabled={paramsEnabled} logicEnabled={logicEnabled} variablesEnabled={variablesEnabled && !logicEnabled} functionsEnabled={stage.id.startsWith('u4-') || paramsEnabled} call={playback.frame?.call} palette={stage.palette} conditions={!!stage.variants} checks={controller.branchChecks} controller={controller.editor} failedBlockId={controller.visibleFailure?.blockId} theme={theme} program={program} onChange={controller.edit} maxBlocks={stage.maxBlocks} locked={playback.locked} activeBlockId={playback.frame?.activeBlockId} loops={playback.frame?.loops} />
       </div>
-      {playback.showResult && playback.result && <ResultModal reviewSelected={controller.reviewSelected} onReview={controller.toggleReview} storageUnavailable={!progressStore.persistent} nextUnitKey={nextUnit(stage.id)?.unitKey} onNextUnit={onNextUnit} unit12={stage.id.startsWith('u12-')} courseComplete={courseCompleted(progressStore.getProgress())} unit11={!!search} unit10={listsEnabled} unit9={eventsEnabled} unit8={returnsEnabled} notice={playback.result === 'stepLimit' ? t('stepLimitNotice') : undefined} stageLabel={stage.variants ? stageLabel(stage) : undefined} unit7={paramsEnabled} unit6={logicEnabled} unit5={variablesEnabled && !logicEnabled} unit4={stage.id.startsWith('u4-')} unit3={stage.id.startsWith('u3-')} unit2={!!stage.variants} failureMessage={stage.variants && playback.result !== 'success' ? t('variantFailure', { number: (controller.getSnapshot().all?.failedVariant ?? 0) + 1, reason: playback.result === 'comparisonLimit' && search ? t('search.limit', { limit: search.maxComparisons }) : playback.result === 'indexRange' && listFrame?.read ? t('lists.range', { index: listFrame.read.index!, length: listFrame.read.length }) : t(controller.whileLimited ? 'whileStepLimit' : `failures.${playback.result}`) }) : controller.whileLimited ? t('whileStepLimit') : undefined} restoreFocus={restoreFocus} onFix={controller.fix} result={playback.result} stars={controller.stars} onRetry={playback.reset} onClose={playback.dismiss} onNext={onNext} lastStage={lastStage} bonusStage={bonusStages.some(bonus => bonus.id === stage.id)} />}
+      {playback.showResult && playback.result && <ResultModal newlyAchieved={controller.newlyAchieved} reviewSelected={controller.reviewSelected} onReview={controller.toggleReview} storageUnavailable={!progressStore.persistent} nextUnitKey={nextUnit(stage.id)?.unitKey} onNextUnit={onNextUnit} unit12={stage.id.startsWith('u12-')} courseComplete={courseCompleted(progressStore.getProgress())} unit11={!!search} unit10={listsEnabled} unit9={eventsEnabled} unit8={returnsEnabled} notice={playback.result === 'stepLimit' ? t('stepLimitNotice') : undefined} stageLabel={stage.variants ? stageLabel(stage) : undefined} unit7={paramsEnabled} unit6={logicEnabled} unit5={variablesEnabled && !logicEnabled} unit4={stage.id.startsWith('u4-')} unit3={stage.id.startsWith('u3-')} unit2={!!stage.variants} failureMessage={stage.variants && playback.result !== 'success' ? t('variantFailure', { number: (controller.getSnapshot().all?.failedVariant ?? 0) + 1, reason: playback.result === 'comparisonLimit' && search ? t('search.limit', { limit: search.maxComparisons }) : playback.result === 'indexRange' && listFrame?.read ? t('lists.range', { index: listFrame.read.index!, length: listFrame.read.length }) : t(controller.whileLimited ? 'whileStepLimit' : `failures.${playback.result}`) }) : controller.whileLimited ? t('whileStepLimit') : undefined} restoreFocus={restoreFocus} onFix={controller.fix} result={playback.result} stars={controller.stars} onRetry={playback.reset} onClose={playback.dismiss} onNext={onNext} lastStage={lastStage} bonusStage={bonusStages.some(bonus => bonus.id === stage.id)} />}
     </section>
   )
 }

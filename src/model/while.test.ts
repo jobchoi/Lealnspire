@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { run, runAll, failurePoint } from './interpreter'
 import { unit3Stages, unit2Stages, allStages, stages } from './stages'
-import { ProgressRepository, progressV3Key, isUnlocked } from './ProgressRepository'
+import { ProgressRepository, progressV4Key, isUnlocked } from './ProgressRepository'
 import { blockAt, cloneBlock, createBlock, findBlockPath } from './editor'
 import { countBlocks, Program as ProgramModel } from './program'
 import type { Block, Stage } from './types'
@@ -72,9 +72,9 @@ it('roundtrips while in v2 and rejects conditions outside its allowlist', () => 
   const repository = new ProgressRepository(storage)
   repository.saveProgram('u3-1', [loop()])
   expect(new ProgressRepository(storage).getProgram(unit3Stages[0])).toEqual([loop()])
-  const doc = JSON.parse(data.get(progressV3Key)!)
+  const doc = JSON.parse(data.get(progressV4Key)!)
   doc.stages['u3-1'].lastProgram.main[0].condition = 'blockedAhead'
-  data.set(progressV3Key, JSON.stringify(doc))
+  data.set(progressV4Key, JSON.stringify(doc))
   expect(new ProgressRepository(storage).getProgram(unit3Stages[0])).toEqual([])
 })
 

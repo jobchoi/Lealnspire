@@ -42,6 +42,8 @@ export function LearningPage({ data, onHome, onList, onUnit, onSelect, onRemove 
       </li>)}</ul>
     </section>
 
+    <section><h2>{t('challenges.recent')}</h2>{data.recentChallenges.map(({ stage, challenge }) => <p key={`${stage.id}:${challenge.id}`}>{stageLabel(stage)}: {t(`challenges.facts.${challenge.kind}`)}</p>)}</section>
+    <details><summary>{t('challenges.legacyTitle')}</summary><p>{t('challenges.legacy')}</p>{data.entries.filter(e => e.legacyStars > 0).map(e => <p key={e.stage.id}>{stageLabel(e.stage)}: {t('stars', { count: e.legacyStars })}</p>)}</details>
     <div className="learning-actions"><button type="button" onClick={onHome}>{t('home')}</button><button type="button" onClick={onList}>{t('stageList')}</button></div>
   </section>
 }
