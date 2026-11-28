@@ -52,7 +52,7 @@ it('preserves version 1 regular completion and isolates the bonus next flow', ()
     version: 4, pastDetailsUnavailable: true,
     stages: Object.fromEntries(stages.map(stage => [stage.id, { completed: true, bestStars: 3, lastProgram: { main: stage.solution, functions: [] } }])),
   })
-  expect(JSON.parse(data.get(historyKey)!)).toMatchObject({ version: 2, events: [] })
+  expect(JSON.parse(data.get(historyKey)!)).toMatchObject({ version: 3, events: [] })
   expect(continueStageIndex(repository.getProgress())).toBe(allStages.indexOf(unit2Stages[0]))
   expect(isUnlocked(repository.getProgress(), 8)).toBe(true)
   expect(isUnlocked(repository.getProgress(), 9)).toBe(false)

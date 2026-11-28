@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { ProgressRepository, historyKey, progressKey, progressV2Key, progressV4Key, settingsKey } from './ProgressRepository'
+import { ProgressRepository, legacyHistoryKey, historyV2Key, historyKey, progressKey, progressV2Key, progressV4Key, settingsKey } from './ProgressRepository'
 import { emptyHistory, validHistoryEvent } from './history'
 import type { HistoryEventInput, HistoryResult } from './history'
 import { compactHistory, historyLimits, parseHistory, summarizeHistory } from './historySummary'
@@ -250,4 +250,39 @@ it('keeps over-budget legacy migration in memory without recursive identity pers
   expect(repo.getProgress().stages['1'].completed).toBe(true)
   expect(repo.persistent).toBe(false)
   expect(s.getItem(progressKey)).toBe(raw)
+})
+
+it.each([1, 2])('migrates history v%s to v3, preserving puzzle events, rollups and source bytes', version => {
+  const s = storage()
+  // A current progress document must not prevent a history-only migration.
+  new ProgressRepository(s, options).saveProgram('1', [])
+  const source = flow(['success'])
+  const rolled = compactHistory(flow(['collision'], 'rolled'), date, 0, true)
+  const raw = JSON.stringify({ ...source, version, rollups: rolled.rollups })
+  const key = version === 1 ? legacyHistoryKey : historyV2Key
+  s.setItem(key, raw)
+  const repo = new ProgressRepository(s, options)
+  expect(historyKey).toBe('lealnspire.history.v3')
+  expect(repo.getHistory()).toMatchObject({ version: 3, events: source.events, rollups: rolled.rollups })
+  expect(JSON.parse(s.getItem(historyKey)!)).toMatchObject({ version: 3, events: source.events })
+  expect(repo.appendHistory({ ...envelope, visitId: 'project-visit', activityKind: 'project', activityId: 'factory-1', unit: 0, type: 'projectCreated', data: {} })).toBe(true)
+  expect(s.getItem(key)).toBe(raw)
+  expect(new ProgressRepository(s, options).getHistory().events).toContainEqual(expect.objectContaining({ type: 'projectCreated' }))
+  expect(s.getItem(key)).toBe(raw)
+})
+it('prefers v3 over v2 over v1, isolates malformed migrated events and clears every history key', () => {
+  const s = storage(), source = flow(['success'])
+  const old = JSON.stringify({ ...source, version: 1, events: [] })
+  const raw = JSON.stringify({ ...source, version: 2, events: [...source.events, { private: 'invalid' }] })
+  s.setItem(legacyHistoryKey, old)
+  s.setItem(historyV2Key, raw)
+  const repo = new ProgressRepository(s, options)
+  expect(repo.getHistory()).toMatchObject({ version: 3, events: source.events, incomplete: true })
+  expect(s.getItem(historyV2Key)).toBe(raw)
+  s.setItem(historyV2Key, old)
+  expect(new ProgressRepository(s, options).getHistory().events).toEqual(source.events)
+  s.setItem(settingsKey, 'keep-settings')
+  expect(repo.clear()).toBe(true)
+  for (const key of [legacyHistoryKey, historyV2Key, historyKey]) expect(s.getItem(key)).toBeNull()
+  expect(s.getItem(settingsKey)).toBe('keep-settings')
 })

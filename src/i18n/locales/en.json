@@ -1016,6 +1016,29 @@
       "projectLimit": "You can keep 20 projects. Delete a project, then try saving again.",
       "budget": "Storage is full. Delete a project, then try saving again.",
       "invalid": "Please check what you want to save."
+    },
+    "activityTitle": "Factory activity",
+    "factCreated": "I made a factory program",
+    "factEdited": "I edited a saved project again",
+    "deletedProject": "Deleted project",
+    "projectCount": "Recorded projects: {count}",
+    "runs": "Runs",
+    "saves": "Saves",
+    "revisits": "Revisits",
+    "executed": "Block types actually executed",
+    "operationErrors": "Operation error types",
+    "timeEstimate": "Activity time is estimated from gaps between records, capped at one minute each. Waiting without records is excluded.",
+    "historyMissing": "Your project is retained, but some activity history may not be saved on this device.",
+    "adultErrors": {
+      "heldOccupied": "Tried to pick up while already holding a box",
+      "beltEmpty": "Tried to pick up from an empty belt",
+      "pileEmpty": "Tried to pick up from an empty pile",
+      "heldEmpty": "Tried to put down with an empty gripper",
+      "pileFull": "Tried to put down onto a full pile",
+      "variableRange": "Variable A exceeded its allowed range",
+      "missingReturn": "A value call did not return a value",
+      "indexRange": "Read an index outside the order list",
+      "stepLimit": "Reached the computation or loop safety limit"
     }
   }
 }

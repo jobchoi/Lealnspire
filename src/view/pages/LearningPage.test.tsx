@@ -158,3 +158,19 @@ it('keeps partial units in progress and supplies empty guidance and full puzzle 
     expect(html).toContain('theme-sketchbook')
   }
 })
+
+it('shows project facts without activity counts and labels deleted projects in both languages', () => {
+  const app = new AppController()
+  const base = { visitId: 'factory-visit', activityKind: 'project' as const, activityId: 'factory-project', unit: 0, recordedAt: '2026-11-28T00:00:00.000Z', elapsedMs: 0, appVersion: '1', contentVersion: '1', evaluationVersion: '1' }
+  app.repository.appendHistory({ ...base, type: 'projectCreated', data: {} })
+  app.repository.appendHistory({ ...base, type: 'projectEdited', data: { saved: true, startChanged: false, codeChanged: true, changes: 37, counts: { takeBelt: 1 } } })
+  for (const locale of ['ko', 'en']) {
+    i18n.locale = locale
+    const html = render(app)
+    expect(html).toContain(t('factory.factEdited'))
+    expect(html).not.toContain(t('factory.runs'))
+    expect(html.replace(/<[^>]*>/g, '')).not.toContain('37')
+  }
+  app.repository.appendHistory({ ...base, type: 'projectDeleted', data: {} })
+  expect(render(app)).toContain(t('factory.deletedProject'))
+})

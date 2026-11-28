@@ -1,7 +1,7 @@
 import { earnedChallenges } from './challenges'
 import type { Progress } from './ProgressRepository'
 import type { Stage } from './types'
-import { emptyHistory, historyResults, isRecord, validDate, validHistoryEvent } from './history'
+import { emptyHistory, historyResults, isRecord, validDate, validHistoryEvent, factoryBlockTypes, factoryErrors } from './history'
 import type { ActivityKind, HistoryDocument, HistoryEvent, HistoryResult, PuzzleHistorySummary } from './history'
 
 export const summaryKey = (kind: ActivityKind, id: string) => `${kind}:${id}`
@@ -14,6 +14,10 @@ export function mergeSummary(a: PuzzleHistorySummary, b: PuzzleHistorySummary): 
   for (const key of ['attempts', 'completions', 'hint1Attempts', 'hint2Attempts', 'demoUses', 'demoEnds', 'activityMs', 'playbackMs', 'demoMs', 'inactiveMs'] as const) merged[key] += b[key]
   for (const key of historyResults) if (b.failures[key]) merged.failures[key] = (merged.failures[key] ?? 0) + b.failures[key]!
   if (b.reviewSequence > a.reviewSequence) { merged.reviewSequence = b.reviewSequence; merged.reviewSelected = b.reviewSelected }
+  if (b.project) {
+    const aProject = a.project
+    merged.project = aProject ? { projectId: b.project.projectId || aProject.projectId, created: aProject.created + b.project.created, opened: aProject.opened + b.project.opened, runs: aProject.runs + b.project.runs, saves: aProject.saves + b.project.saves, edited: aProject.edited || b.project.edited, revisitedEdit: aProject.revisitedEdit || b.project.revisitedEdit, deleted: aProject.deleted || b.project.deleted, lastAt: aProject.lastAt > b.project.lastAt ? aProject.lastAt : b.project.lastAt, activityMs: aProject.activityMs + b.project.activityMs, executed: [...new Set([...aProject.executed, ...b.project.executed])], errors: [...new Set([...aProject.errors, ...b.project.errors])] } : structuredClone(b.project)
+  }
   return merged
 }
 // One visit is the retention unit: hint context and attempt terminals never split.
@@ -21,6 +25,24 @@ export function summarizeVisit(events: HistoryEvent[]): PuzzleHistorySummary {
   const sorted = [...events].sort((a, b) => a.sequence - b.sequence)
   const first = sorted[0]
   const summary = emptySummary(first.activityKind, first.activityId, first.unit)
+  if (first.activityKind === 'project') {
+    const p = { projectId: '', created: 0, opened: 0, runs: 0, saves: 0, edited: false, revisitedEdit: false, deleted: false, lastAt: first.recordedAt, activityMs: 0, executed: [] as string[], errors: [] as string[] }
+    let previousMs = 0
+    for (const e of sorted) {
+      p.lastAt = e.recordedAt
+      p.activityMs += Math.min(60_000, Math.max(0, e.elapsedMs - previousMs)); previousMs = e.elapsedMs
+      if (e.type === 'projectCreated') p.created++
+      if (e.type === 'projectOpened' && e.data.saved) p.opened++
+      if (e.type === 'projectRunStarted') p.runs++
+      if (e.type === 'projectSaved') { p.saves++; p.projectId = e.data.projectId }
+      if (e.type === 'projectEdited') { p.edited = true; p.revisitedEdit ||= e.data.saved }
+      if (e.type === 'projectDeleted') p.deleted = true
+      if (e.type === 'projectRunEnded') { p.executed.push(...e.data.executed); if (e.data.error) p.errors.push(e.data.error) }
+    }
+    p.executed = [...new Set(p.executed)]; p.errors = [...new Set(p.errors)]
+    summary.project = p
+    return summary
+  }
   const attempts = new Map<string, { result?: HistoryResult; terminal?: 'reached' | 'interrupted'; sequence?: number }>()
   const hints = new Set<number>()
   let timeThrough = 0
@@ -92,13 +114,24 @@ export function summarizeHistory(history: HistoryDocument, progress: Progress, s
     units[unit] ??= { completed: 0, total: 0 }; units[unit].total++
     if (progress.stages[stage.id]?.completed) units[unit].completed++
   }
-  return { units, puzzles, historyStartedAt: provenance?.historyStartedAt ?? null, pastDetailsUnavailable: provenance?.pastDetailsUnavailable ?? false, detailFrom: history.events.length ? history.events.reduce((a, b) => a < b.recordedAt ? a : b.recordedAt, history.events[0].recordedAt) : null, compactedRanges: history.rollups.map(r => ({ from: r.from, to: r.to })), incomplete: history.incomplete }
+  const projectGroups = new Map<string, PuzzleHistorySummary>()
+  for (const s of Object.values(puzzles).filter(s => s.activityKind === 'project' && s.project)) {
+    const id = s.project!.projectId || s.activityId
+    const previous = projectGroups.get(id)
+    projectGroups.set(id, previous ? mergeSummary(previous, s) : s)
+  }
+  const projects = [...projectGroups].map(([id, s]) => ({ id, ...s.project! }))
+  return { projects, units, puzzles, historyStartedAt: provenance?.historyStartedAt ?? null, pastDetailsUnavailable: provenance?.pastDetailsUnavailable ?? false, detailFrom: history.events.length ? history.events.reduce((a, b) => a < b.recordedAt ? a : b.recordedAt, history.events[0].recordedAt) : null, compactedRanges: history.rollups.map(r => ({ from: r.from, to: r.to })), incomplete: history.incomplete }
 }
 function validSummary(v: unknown): v is PuzzleHistorySummary {
   if (!isRecord(v)) return false
   const base = emptySummary('puzzle', 'x', 1)
-  if (Object.keys(v).length !== Object.keys(base).length || Object.keys(v).some(k => !Object.hasOwn(base, k))) return false
-  return ['puzzle', 'bonus', 'prediction', 'demo'].includes(v.activityKind as string) && typeof v.activityId === 'string' && /^[\w.:-]{1,128}$/.test(v.activityId)
+  if (v.project !== undefined) {
+    const p = v.project
+    if (!isRecord(p) || typeof p.projectId !== 'string' || (p.projectId !== '' && !/^[\w.:-]{1,128}$/.test(p.projectId)) || Object.keys(p).sort().join() !== 'activityMs,created,deleted,edited,errors,executed,lastAt,opened,projectId,revisitedEdit,runs,saves' || !['created', 'opened', 'runs', 'saves', 'activityMs'].every(k => Number.isSafeInteger(p[k]) && Number(p[k]) >= 0) || !['edited', 'revisitedEdit', 'deleted'].every(k => typeof p[k] === 'boolean') || !validDate(p.lastAt) || !Array.isArray(p.executed) || !p.executed.every(k => factoryBlockTypes.includes(k)) || !Array.isArray(p.errors) || !p.errors.every(k => factoryErrors.includes(k))) return false
+  }
+  if (Object.keys(v).filter(k => k !== 'project').length !== Object.keys(base).length || Object.keys(v).some(k => k !== 'project' && !Object.hasOwn(base, k))) return false
+  return ['puzzle', 'bonus', 'prediction', 'demo', 'project'].includes(v.activityKind as string) && typeof v.activityId === 'string' && /^[\w.:-]{1,128}$/.test(v.activityId)
     && Number.isInteger(v.unit) && (v.unit as number) >= 0 && (v.unit as number) <= 12
     && Object.entries(base).filter(([, value]) => typeof value === 'number').every(([key]) => Number.isSafeInteger(v[key]) && (v[key] as number) >= 0)
     && typeof v.reviewSelected === 'boolean' && Array.isArray(v.recentResults) && v.recentResults.length <= 3 && v.recentResults.every(r => historyResults.includes(r))
@@ -110,7 +143,7 @@ export function parseHistory(raw: string | null): HistoryDocument {
   if (raw === null) return empty
   try {
     const v: unknown = JSON.parse(raw)
-    if (!isRecord(v) || (v.version !== 1 && v.version !== 2) || !Array.isArray(v.events) || !Array.isArray(v.rollups)) return { ...empty, incomplete: true }
+    if (!isRecord(v) || (v.version !== 1 && v.version !== 2 && v.version !== 3) || !Array.isArray(v.events) || !Array.isArray(v.rollups)) return { ...empty, incomplete: true }
     const ids = new Set<string>(), sequences = new Set<number>(), visits = new Set<string>()
     const rollups = v.rollups.filter(r => {
       if (!isRecord(r) || Object.keys(r).some(k => !['visitId', 'from', 'to', 'throughSequence', 'summary'].includes(k)) || typeof r.visitId !== 'string' || !/^[\w.:-]{1,128}$/.test(r.visitId) || visits.has(r.visitId) || !validDate(r.from) || !validDate(r.to) || r.from > r.to || !Number.isSafeInteger(r.throughSequence) || (r.throughSequence as number) < 1 || !validSummary(r.summary)) return false
@@ -128,7 +161,7 @@ export function parseHistory(raw: string | null): HistoryDocument {
       ids.add(e.id); sequences.add(e.sequence); return true
     }).sort((a, b) => a.sequence - b.sequence)
     const nextSequence = Math.max(1, ...events.map(e => e.sequence + 1), ...rollups.map(r => r.throughSequence + 1), Number.isSafeInteger(v.nextSequence) ? v.nextSequence as number : 1)
-    return { version: 2, events, rollups, nextSequence, incomplete: v.incomplete === true || events.length !== v.events.length || rollups.length !== v.rollups.length, compactedAt: validDate(v.compactedAt) ? v.compactedAt : null }
+    return { version: 3, events, rollups, nextSequence, incomplete: v.incomplete === true || events.length !== v.events.length || rollups.length !== v.rollups.length, compactedAt: validDate(v.compactedAt) ? v.compactedAt : null }
   } catch { return { ...empty, incomplete: true } }
 }
 export const historyLimits = { days: 90, attempts: 2000, events: 10000, bytes: 2 * 1024 * 1024 }

@@ -89,6 +89,6 @@ test.describe('기록 신뢰성', () => {
     await g.press(g.button('내 기록 안내'))
     await g.press(page.getByRole('dialog').getByRole('button', { name: '기록 지우기' }))
     await g.press(page.getByRole('dialog').getByRole('button', { name: '지우기', exact: true }))
-    expect(await page.evaluate(() => ['lealnspire.progress', 'lealnspire.progress.v2', 'lealnspire.progress.v3', 'lealnspire.progress.v4', 'lealnspire.history.v1', 'lealnspire.history.v2'].map(k => localStorage.getItem(k)))).toEqual([null, null, null, null, null, null])
+    expect(await page.evaluate(() => ['lealnspire.progress', 'lealnspire.progress.v2', 'lealnspire.progress.v3', 'lealnspire.progress.v4', 'lealnspire.history.v1', 'lealnspire.history.v2', 'lealnspire.history.v3'].map(k => localStorage.getItem(k)))).toEqual([null, null, null, null, null, null, null])
   })
 })

@@ -215,6 +215,14 @@ export function FactoryProjectsPage({ repository, onHome }: { repository: Progre
   useEffect(() => { root.current?.querySelector<HTMLElement>('[data-page-title]')?.focus() }, [state.editing, state.session])
   useEffect(() => () => controller.dispose(), [controller])
   useEffect(() => {
+    window.addEventListener('pagehide', controller.suspend)
+    window.addEventListener('pageshow', controller.resume)
+    return () => {
+      window.removeEventListener('pagehide', controller.suspend)
+      window.removeEventListener('pageshow', controller.resume)
+    }
+  }, [controller])
+  useEffect(() => {
     if (!state.dirty && !state.volatile) return
     const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = '' }
     window.addEventListener('beforeunload', warn)
@@ -238,6 +246,7 @@ export function FactoryProjectsPage({ repository, onHome }: { repository: Progre
     <p id="factory-name-help">{label('nameHelp')}</p>
     <div className="factory-actions"><button type="button" onClick={() => save()}>{label('save')}</button><button type="button" onClick={() => leave('list')}>{label('myProjects')}</button></div>
     {state.volatile && state.notice !== 'unavailable' && <p role="status">{label('saveStatus.unavailable')}</p>}
+    {state.historyMissing && <p role="status">{label('historyMissing')}</p>}
     <p role="status">{state.notice ? label(`saveStatus.${state.notice}`) : label(state.dirty ? 'unsaved' : 'saved')}</p>
     {(state.notice === 'budget' || state.notice === 'projectLimit') && <details open><summary>{label('manageProjects')}</summary>{cards}</details>}
     {state.notice === 'snapshotLimit' && <fieldset><legend>{label('chooseVersion')}</legend>{state.projects.find(p => p.id === state.projectId)?.snapshots.map(v => <button type="button" key={v.id} onClick={() => save(v.id)}>{t('factory.replaceVersion', { number: v.sequence, date: v.savedAt.slice(0, 10) })}</button>)}</fieldset>}

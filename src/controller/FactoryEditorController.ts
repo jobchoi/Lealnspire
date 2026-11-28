@@ -1,3 +1,4 @@
+import type { HistoryEventInput, HistoryPayloads } from '../model/history'
 import { factoryProjectName, type FactoryProject, type ProjectSaveResult, type ProgressRepository } from '../model/ProgressRepository'
 import { Observable } from './Observable'
 import { countDocument, validInput } from '../model/factory/program'
@@ -24,6 +25,8 @@ function destination(doc: ProgramDocument, target: FactoryTarget): Block[] | und
 
 /** Provisional headless editor. Every accepted mutation is atomic and undoable. */
 export class FactoryEditorController extends Observable<EditorState> {
+  beforeHistoryClose?: () => void
+  history?: FactoryProjectsController
   private input: RunInput
   private progress: FactoryProgress
   private previous: RunInput[] = []
@@ -157,7 +160,7 @@ export class FactoryEditorController extends Observable<EditorState> {
 
 type ProjectState = {
   projects: FactoryProject[]; editing: boolean; name: string; projectId?: string;
-  dirty: boolean; volatile: boolean; notice?: ProjectSaveResult['status']; leaving?: 'home' | 'list'; session: number
+  historyMissing?: boolean; dirty: boolean; volatile: boolean; notice?: ProjectSaveResult['status']; leaving?: 'home' | 'list'; session: number
 }
 const unpersistedProjectsByRepository = new WeakMap<ProgressRepository, Set<string>>()
 
@@ -165,6 +168,41 @@ const unpersistedProjectsByRepository = new WeakMap<ProgressRepository, Set<stri
 export class FactoryProjectsController extends Observable<ProjectState> {
   editor?: FactoryEditorController
   private baseline = ''
+  private visitId = ''
+  private activityId = ''
+  private startedAt = 0
+  private changes = 0
+  private startChanged = false
+  private codeChanged = false
+  private openedSaved = false
+  record<K extends keyof HistoryPayloads>(type: K, data: HistoryPayloads[K]) {
+    if (!this.visitId) return
+    const recordedAt = this.repository.historyNow()
+    const appended = this.repository.appendHistory({ visitId: this.visitId, activityKind: 'project', activityId: this.activityId, unit: 0, recordedAt, elapsedMs: Math.max(0, Date.parse(recordedAt) - this.startedAt), appVersion: '1.25.0', contentVersion: 'factory.1', evaluationVersion: '1', type, data } as HistoryEventInput)
+    if (!appended || !this.repository.persistent) this.update({ ...this.state, historyMissing: true })
+  }
+  flushEdits = () => {
+    if (!this.changes || !this.editor) return
+    const counts: HistoryPayloads['projectEdited']['counts'] = {}
+    for (const b of lists(this.editor.doc).flat()) counts[b.type] = (counts[b.type] ?? 0) + 1
+    this.record('projectEdited', { startChanged: this.startChanged, codeChanged: this.codeChanged, changes: this.changes, counts, saved: this.openedSaved })
+    this.changes = 0; this.startChanged = false; this.codeChanged = false
+  }
+  private endVisit() {
+    if (!this.visitId) return
+    this.editor?.beforeHistoryClose?.()
+    this.flushEdits()
+    this.record('projectClosed', { unsaved: this.state.dirty })
+    this.record('visitEnded', { reason: 'leave' })
+    this.visitId = ''
+  }
+  suspend = () => this.endVisit()
+  resume = () => {
+    if (this.visitId || !this.editor) return
+    this.visitId = this.repository.historyId()
+    this.startedAt = Date.parse(this.repository.historyNow())
+    this.record('projectOpened', { saved: !!this.state.projectId && !this.state.volatile })
+  }
   private unpersistedProjects: Set<string>
   private unsubscribe?: () => void
   readonly repository: ProgressRepository
@@ -184,15 +222,30 @@ export class FactoryProjectsController extends Observable<ProjectState> {
     const latest = project?.snapshots.reduce((a, b) => a.sequence > b.sequence ? a : b)
     const snapshot = snapshotId ? project?.snapshots.find(s => s.id === snapshotId) : latest
     if (snapshotId && !snapshot) return false
+    this.endVisit()
     this.unsubscribe?.()
     this.editor = new FactoryEditorController(snapshot?.input, this.repository.getProgress())
+    this.editor.history = this
+    this.visitId = this.repository.historyId()
+    this.activityId = project?.id ?? this.repository.historyId()
+    this.startedAt = Date.parse(this.repository.historyNow())
+    this.openedSaved = !!project
+    this.changes = 0
+    this.record(project ? 'projectOpened' : 'projectCreated', project ? { saved: true } : {})
     const unpersisted = !!project && this.unpersistedProjects.has(project.id)
     this.state = { ...this.state, volatile: unpersisted, projectId: project?.id, name: project?.name ?? defaultName, editing: true, leaving: undefined, notice: undefined, session: this.state.session + 1 }
     this.baseline = project && !unpersisted && snapshot === latest ? this.content() : ''
-    let previous = JSON.stringify(this.editor.getSnapshot().input)
+    let previousInput = this.editor.getSnapshot().input
+    let previous = JSON.stringify(previousInput)
     this.unsubscribe = this.editor.subscribe(() => {
       const next = JSON.stringify(this.editor?.getSnapshot().input)
-      if (next !== previous) { previous = next; this.publishDraft() }
+      if (next !== previous) {
+        const input = this.editor!.getSnapshot().input
+        this.changes++
+        this.codeChanged ||= JSON.stringify(input.program) !== JSON.stringify(previousInput.program)
+        this.startChanged ||= JSON.stringify({ ...input, program: undefined }) !== JSON.stringify({ ...previousInput, program: undefined })
+        previousInput = input; previous = next; this.publishDraft()
+      }
     })
     this.publishDraft()
     return true
@@ -200,6 +253,8 @@ export class FactoryProjectsController extends Observable<ProjectState> {
   rename = (name: string) => { this.state = { ...this.state, name: factoryProjectName(name, false) }; this.publishDraft() }
   save = (replaceSnapshotId?: string): boolean => {
     if (!this.editor) return false
+    this.flushEdits()
+    const retrying = this.state.volatile
     const result = this.repository.saveProject(this.state.projectId, this.state.name, this.editor.getSnapshot().input, replaceSnapshotId)
     if ('project' in result) this.state = { ...this.state, projectId: result.project.id, name: result.project.name }
     if (result.status === 'unavailable') this.unpersistedProjects.add(result.project.id)
@@ -207,6 +262,10 @@ export class FactoryProjectsController extends Observable<ProjectState> {
       // Each successful write persists the entire projects envelope.
       this.unpersistedProjects.clear()
       this.baseline = this.content()
+      if (result.status === 'saved' || retrying) {
+        const snapshot = result.project.snapshots.reduce((a, b) => a.sequence > b.sequence ? a : b)
+        this.record('projectSaved', { snapshotId: snapshot.id, projectId: result.project.id })
+      }
     }
     this.update({ ...this.state, notice: result.status, volatile: result.status === 'unavailable' || this.state.volatile && result.status !== 'saved' && result.status !== 'unchanged', projects: this.repository.getProjects().projects, dirty: this.content() !== this.baseline })
     return result.status === 'saved' || result.status === 'unchanged'
@@ -217,14 +276,21 @@ export class FactoryProjectsController extends Observable<ProjectState> {
   }
   cancelLeave = () => this.update({ ...this.state, leaving: undefined })
   close = () => {
+    this.endVisit()
     this.unsubscribe?.(); this.unsubscribe = undefined; this.editor = undefined
     this.update({ ...this.state, editing: false, dirty: false, leaving: undefined, notice: undefined, projects: this.repository.getProjects().projects })
   }
   deleteProject = (id: string) => {
     const ok = this.repository.deleteProject(id)
-    if (ok) this.unpersistedProjects.clear()
+    if (ok) {
+      this.unpersistedProjects.clear()
+      const oldVisit = this.visitId, oldActivity = this.activityId, oldStart = this.startedAt
+      this.visitId = this.repository.historyId(); this.activityId = id; this.startedAt = Date.parse(this.repository.historyNow())
+      this.record('projectDeleted', {}); this.record('visitEnded', { reason: 'leave' })
+      this.visitId = oldVisit; this.activityId = oldActivity; this.startedAt = oldStart
+    }
     this.update({ ...this.state, projects: this.repository.getProjects().projects, volatile: !ok, notice: ok ? undefined : 'unavailable' })
     return ok
   }
-  dispose = () => { this.unsubscribe?.(); this.unsubscribe = undefined }
+  dispose = () => { this.endVisit(); this.unsubscribe?.(); this.unsubscribe = undefined }
 }
