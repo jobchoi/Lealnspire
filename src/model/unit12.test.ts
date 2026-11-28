@@ -2,7 +2,7 @@ import { expect, it } from 'vitest'
 import { allStages, stages, bonusStages, unit12Stages, isLastStage } from './stages'
 import { runAll } from './interpreter'
 import { FunctionProgram } from './program'
-import { ProgressRepository, progressV2Key, isUnlocked } from './ProgressRepository'
+import { ProgressRepository, progressV2Key, progressV3Key, isUnlocked } from './ProgressRepository'
 import { GameController } from '../controller/GameController'
 import { continueStageIndex, courseCompleted } from '../controller/flow'
 import type { Block, Program } from './types'
@@ -40,15 +40,15 @@ it('solves all six maps and the six accepted alternatives within the limits', ()
 })
 it('round trips all new policies in v2 and isolates corrupt code without losing awards', () => {
   let raw = ''
-  const storage = { getItem: (key: string) => key === progressV2Key ? raw || null : null, setItem: (_key: string, value: string) => { raw = value } }
+  const storage = { getItem: (key: string) => key === (JSON.parse(raw || 'null')?.version === 3 ? progressV3Key : progressV2Key) ? raw || null : null, setItem: (key: string, value: string) => { if (key === progressV3Key) raw = value } }
   const repo = new ProgressRepository(storage)
   for (const stage of unit12Stages) repo.completeStage(stage.id, 3, { main: stage.solution, functions: stage.solutionFunctions ?? [] })
   const restored = new ProgressRepository(storage)
   for (const stage of unit12Stages) expect(restored.getDocument(stage)).toEqual({ main: stage.solution, functions: stage.solutionFunctions ?? [] })
-  expect(JSON.parse(raw).version).toBe(2)
+  expect(JSON.parse(raw).version).toBe(3)
   for (const stage of unit12Stages) {
     const bad = JSON.parse(raw); bad.stages[stage.id].lastProgram.main.push({ id: 'bad', type: 'repeat', countParam: true, body: [] })
-    const broken = new ProgressRepository({ ...storage, getItem: key => key === progressV2Key ? JSON.stringify(bad) : null })
+    const broken = new ProgressRepository({ ...storage, getItem: key => key === progressV3Key ? JSON.stringify(bad) : null })
     expect(broken.getDocument(stage)).toEqual({ main: [], functions: [] })
     expect(broken.getProgress().stages[stage.id]).toMatchObject({ completed: true, bestStars: 3 })
     for (const other of unit12Stages.filter(s => s !== stage)) expect(broken.getDocument(other)).toEqual(restored.getDocument(other))

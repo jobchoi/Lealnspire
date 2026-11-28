@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest'
 import { run, runAll, failurePoint } from './interpreter'
 import { FunctionProgram, validDocument, Program } from './program'
-import { ProgressRepository, progressV2Key } from './ProgressRepository'
+import { ProgressRepository, progressV3Key } from './ProgressRepository'
 import { GameController } from '../controller/GameController'
 import baseline from './unit123-run.fixture.json'
 import { allStages, stages, unit4Stages } from './stages'
@@ -82,9 +82,9 @@ it('roundtrips v2, isolates corrupt code and preserves completion and other stag
   repo.completeStage(stage.id, 3, doc())
   repo.saveProgram(stages[1].id, stages[1].solution)
   expect(new ProgressRepository(storage).getDocument(stage)).toEqual(doc())
-  const saved = JSON.parse(data.get(progressV2Key)!)
+  const saved = JSON.parse(data.get(progressV3Key)!)
   saved.stages[stage.id].lastProgram.functions[0].body.push({ id: 'recursive', type: 'call', fn: 'fn' })
-  data.set(progressV2Key, JSON.stringify(saved))
+  data.set(progressV3Key, JSON.stringify(saved))
   const restored = new ProgressRepository(storage)
   expect(restored.getDocument(stage)).toEqual({ main: [], functions: [] })
   expect(restored.getProgress().stages[stage.id]).toMatchObject({ completed: true, bestStars: 3 })

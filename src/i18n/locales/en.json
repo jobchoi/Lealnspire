@@ -734,5 +734,24 @@
         "alt3": "Target 8 was found at index 2 and the loop stopped. Indexes 0 and 1 were not checked, and the forward action after the loop ran."
       }
     }
+  },
+  "learning": {
+    "none": "Nothing here yet.",
+    "reviewEmpty": "You can add puzzles from the result window.",
+    "title": "My Learning",
+    "count": "You've solved {count} puzzles so far",
+    "tools": "Tools you've tried",
+    "inProgress": "In progress",
+    "recent": "Recently solved",
+    "fixed": "Fixed it and got there",
+    "arrived": "Got there",
+    "again": "Try again",
+    "review": "Want to try again",
+    "try": "Try it",
+    "remove": "Remove",
+    "next": "Next step",
+    "older": "Older records only show solved puzzles.",
+    "empty": "No puzzles solved yet. Want to start with the first one?",
+    "unit1": "Unit 1: Sequence and repeat"
   }
 }

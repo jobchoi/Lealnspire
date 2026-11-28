@@ -1,9 +1,12 @@
+import { predictions } from '../model/predictions'
+import { summarizeHistory } from '../model/historySummary'
+import { historyKey } from '../model/ProgressRepository'
 import { unit3Stages, bonusStages } from '../model/stages'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AppController } from './AppController'
 import { GameController } from './GameController'
 import { EditorController } from './EditorController'
-import { ProgressRepository, progressV2Key } from '../model/ProgressRepository'
+import { ProgressRepository, progressV3Key } from '../model/ProgressRepository'
 import { stages } from '../model/stages'
 
 afterEach(() => vi.useRealTimers())
@@ -46,15 +49,19 @@ describe('Controller without React', () => {
     const repository = new ProgressRepository({ getItem: key => data.get(key) ?? null, setItem: (key, value) => { data.set(key, value) } })
     const game = new GameController(stages[0], repository)
     game.edit(stages[0].solution)
-    expect(JSON.parse(data.get(progressV2Key)!).stages['1'].completed).toBe(false)
+    expect(JSON.parse(data.get(progressV3Key)!)).toMatchObject({
+      version: 3, stages: { '1': { completed: false, bestStars: 0, lastProgram: { main: stages[0].solution, functions: [] } } },
+    })
     game.setSpeed('fast'); game.play()
     expect(game.locked).toBe(true)
     game.edit([]); expect(game.getSnapshot().program).toEqual(stages[0].solution)
     vi.advanceTimersByTime(150)
     expect(game.frame?.pos).toEqual({ x: 1, y: 0 })
     expect(game.finished).toBe(false)
+    expect(JSON.parse(data.get(progressV3Key)!).stages['1'].completed).toBe(false)
     vi.advanceTimersByTime(150)
     expect(game.finished).toBe(true); expect(game.showResult).toBe(true); expect(game.stars).toBe(3)
+    expect(JSON.parse(data.get(progressV3Key)!).stages['1']).toMatchObject({ completed: true, bestStars: 3 })
     expect(new ProgressRepository({ getItem: key => data.get(key) ?? null, setItem: () => {} }).getProgress().stages['1'].completed).toBe(true)
     game.dismiss(); expect(game.showResult).toBe(false)
     game.reset(); expect(game.locked).toBe(false)
@@ -338,6 +345,10 @@ it('T38 replays all maps before saving success and fixes the first failed varian
   while (!game.finished) game.step()
   expect(game.result).toBe('collision')
   expect(game.variantResults).toEqual(['success', 'collision'])
+  expect(repository.getHistory().events.filter(e => e.type === 'executionCalculated').map(e => e.data)).toEqual([
+    { result: 'success', variants: ['success', 'success'], failedVariant: null },
+    { result: 'collision', variants: ['success', 'collision'], failedVariant: 1, cause: 'forward', path: [1] },
+  ])
   game.fix()
   expect(game.variant).toBe(1)
   expect(game.editor.getSnapshot().selectedId).toBe('failure-1')
@@ -528,4 +539,128 @@ it('T66: deselection discards nested return points in main, functions and else b
     expect((inFunction ? editor.functions[0].body : editor.program).map(block => block.type)).toEqual([outer.type, 'turnLeft'])
     expect(inFunction ? editor.program : editor.functions).toEqual([])
   }
+})
+
+describe('T84 learning history from real controller actions', () => {
+  const finish = (game: GameController) => { while (!game.finished) game.step() }
+  it('records three failures, hints once per visit, fixing and confirmed success in order', () => {
+    const repository = new ProgressRepository()
+    const game = new GameController(stages[0], repository)
+    game.edit([{ id: 'short', type: 'forward' }])
+    for (let i = 0; i < 3; i++) { game.step(); finish(game); if (i < 2) game.reset() }
+    let summary = summarizeHistory(repository.getHistory(), repository.getProgress(), stages).puzzles['puzzle:1']
+    expect(summary).toMatchObject({ attempts: 3, needsAttention: true, completions: 0 })
+    game.toggleHint(); game.nextHint(); game.toggleHint(); game.toggleHint(); game.nextHint()
+    game.fix(); game.edit(stages[0].solution); game.step(); finish(game)
+    game.dispose(); game.dispose()
+    const events = repository.getHistory().events
+    expect(events.filter(e => e.type === 'hintShown').map(e => e.data.step)).toEqual([1, 2])
+    expect(events.filter(e => e.type === 'attemptStarted').map(e => e.data.previousAttemptId)).toEqual([undefined, ...events.filter(e => e.type === 'attemptStarted').slice(0, 3).map(e => e.attemptId)])
+    expect(events.filter(e => e.type === 'executionCalculated').map(e => e.data.result)).toEqual(['unfinished', 'unfinished', 'unfinished', 'success'])
+    expect(events.filter(e => e.type === 'completionConfirmed')).toHaveLength(1)
+    expect(events.filter(e => e.type === 'visitEnded')).toHaveLength(1)
+    const types = events.map(e => e.type)
+    expect(types.indexOf('fixRequested')).toBeGreaterThan(types.lastIndexOf('hintShown'))
+    expect(types.lastIndexOf('attemptStarted')).toBeGreaterThan(types.indexOf('fixRequested'))
+    summary = summarizeHistory(repository.getHistory(), repository.getProgress(), stages).puzzles['puzzle:1']
+    expect(summary).toMatchObject({ attempts: 4, completions: 1, hint1Attempts: 1, hint2Attempts: 1, completed: true, needsAttention: false })
+  })
+  it('counts repeated step presses as one attempt and records interruption instead of completion', () => {
+    const repository = new ProgressRepository()
+    const game = new GameController(stages[0], repository)
+    game.edit(stages[0].solution); game.step(); game.step(); game.step()
+    expect(repository.getHistory().events.filter(e => e.type === 'attemptStarted')).toHaveLength(1)
+    game.reset(); game.play(); game.reset()
+    const interrupted = repository.getHistory().events.filter(e => e.type === 'executionInterrupted')
+    expect(interrupted).toMatchObject([{ data: { reason: 'reset' } }])
+    expect(repository.getHistory().events.filter(e => e.type === 'completionConfirmed')).toHaveLength(1)
+    game.dispose()
+  })
+  it('leaving before the success frame does not confirm completion, and rerun interrupts a stepped attempt', () => {
+    const repository = new ProgressRepository()
+    const game = new GameController(stages[0], repository)
+    game.edit(stages[0].solution); game.step(); game.play(); game.dispose()
+    expect(repository.getHistory().events.filter(e => e.type === 'executionInterrupted').map(e => e.data.reason)).toEqual(['rerun', 'leave'])
+    expect(repository.getHistory().events.filter(e => e.type === 'completionConfirmed')).toHaveLength(0)
+    expect(repository.getProgress().stages['1'].completed).toBe(false)
+  })
+  it('records undo and implicit fixing, including bodies, else branches and functions in counts', () => {
+    const repository = new ProgressRepository()
+    const game = new GameController(stages[0], repository)
+    game.edit([{ id: 'short', type: 'forward' }]); game.step(); finish(game)
+    game.edit(stages[0].solution); game.undo(); game.flushHistory()
+    expect(repository.getHistory().events.filter(e => e.type === 'fixRequested')).toMatchObject([{ data: { source: 'edit' } }])
+    expect(repository.getHistory().events.filter(e => e.type === 'undo')).toMatchObject([{ data: { revision: 3 } }])
+    game.edit({ main: [{ id: 'if', type: 'if', condition: 'blockedAhead', body: [{ id: 'f', type: 'forward' }], else: [{ id: 'l', type: 'turnLeft' }] }], functions: [{ id: 'fn', icon: 'star', body: [{ id: 'r', type: 'turnRight' }] }] })
+    game.dispose()
+    expect(repository.getHistory().events.filter(e => e.type === 'codeChanged').at(-1)).toMatchObject({ data: { counts: { if: 1, forward: 1, turnLeft: 1, turnRight: 1 } } })
+  })
+  it('records demonstration end and early close without counting demonstration execution as attempts', () => {
+    const repository = new ProgressRepository()
+    const game = new GameController(stages[0], repository)
+    game.demoStarted('add-run'); game.demoReachedEnd(); game.demoReachedEnd(); game.demoEnded()
+    game.demoStarted('rotation'); game.dispose()
+    expect(repository.getHistory().events.filter(e => e.type === 'demoEnded').map(e => e.data)).toEqual([{ demoId: 'add-run', reachedEnd: true }, { demoId: 'rotation', reachedEnd: false }])
+    expect(repository.getHistory().events.filter(e => e.type === 'attemptStarted')).toHaveLength(0)
+  })
+  it('closes visits left open by a vanished process once, preserving unknown completion status', () => {
+    const data = new Map<string, string>()
+    const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => { data.set(key, value) } }
+    const first = new GameController(stages[0], new ProgressRepository(storage))
+    first.edit(stages[0].solution); first.step()
+    const restored = new ProgressRepository(storage)
+    const second = new GameController(stages[0], restored)
+    expect(restored.getHistory().events.filter(e => e.type === 'visitEnded')).toMatchObject([{ data: { reason: 'unknown' } }])
+    expect(restored.getHistory().events.filter(e => e.type === 'completionConfirmed')).toHaveLength(0)
+    second.dispose()
+    new GameController(stages[0], restored).dispose()
+    expect(restored.getHistory().events.filter(e => e.type === 'visitEnded' && e.data.reason === 'unknown')).toHaveLength(1)
+    first.dispose()
+  })
+  it('keeps playing and exposes the existing save notice when history storage fails', () => {
+    const repository = new ProgressRepository({ getItem: () => null, setItem: () => { throw Error('blocked') } })
+    const game = new GameController(stages[0], repository)
+    game.edit(stages[0].solution); game.step(); finish(game)
+    expect(game.getSnapshot().saveNotice).toBe(true)
+    expect(repository.getProgress().stages['1'].completed).toBe(true)
+    expect(repository.getHistory().events.filter(e => e.type === 'completionConfirmed')).toHaveLength(1)
+    game.dispose()
+  })
+  it('batches 100 edits into one summary without serializing or writing history per edit', () => {
+    const writes: string[] = []
+    const repository = new ProgressRepository({ getItem: () => null, setItem: key => { writes.push(key) } })
+    const game = new GameController(stages[0], repository)
+    const initialWrites = writes.length
+    const stringify = vi.spyOn(JSON, 'stringify')
+    for (let i = 0; i < 100; i++) game.edit([{ id: `f${i}`, type: 'forward' }])
+    expect(writes.length - initialWrites).toBe(100)
+    expect(writes.filter(key => key === historyKey)).toHaveLength(1)
+    expect(stringify.mock.calls.filter(([value]) => value && typeof value === 'object' && 'events' in value)).toHaveLength(0)
+    stringify.mockRestore()
+    game.dispose()
+    expect(repository.getHistory().events.filter(e => e.type === 'codeChanged')).toMatchObject([{ data: { changes: 100, revision: 100, counts: { forward: 1 } } }])
+  })
+  it('separates visible activity, 60-second idle cutoff, hidden time, playback and demo intervals', () => {
+    vi.useFakeTimers(); vi.setSystemTime(new Date('2026-11-28T00:00:00Z'))
+    const repository = new ProgressRepository()
+    const game = new GameController(stages[0], repository)
+    vi.advanceTimersByTime(120_000); game.setVisible(false)
+    vi.advanceTimersByTime(10_000); game.setVisible(true); game.activity()
+    game.demoStarted('add-run'); vi.advanceTimersByTime(2000); game.demoEnded()
+    game.edit(stages[0].solution); game.play(); vi.advanceTimersByTime(800); game.dispose()
+    const summary = summarizeHistory(repository.getHistory(), repository.getProgress(), stages).puzzles['puzzle:1']
+    expect(summary).toMatchObject({ activityMs: 60_000, inactiveMs: 70_000, playbackMs: 800, demoMs: 2000 })
+  })
+  it('separates prediction and bonus history and keeps prediction completion isolated', () => {
+    const repository = new ProgressRepository()
+    repository.completeStage(predictions[0].stageId, 3, [])
+    const before = repository.getProgress()
+    const app = new AppController(repository)
+    app.openPrediction(predictions[0].id)
+    app.prediction!.choose(0); app.prediction!.game.reset(); app.list()
+    expect(repository.getProgress()).toEqual(before)
+    expect(repository.getHistory().events.some(e => e.activityKind === 'prediction' && e.type === 'attemptStarted')).toBe(true)
+    const bonus = new GameController(bonusStages[0], repository); bonus.dispose()
+    expect(repository.getHistory().events.some(e => e.activityKind === 'bonus')).toBe(true)
+  })
 })

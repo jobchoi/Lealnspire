@@ -10,8 +10,8 @@ import { i18n, t } from '../../i18n/I18n'
 import './DemoModal.css'
 
 export function DemoHand() { return <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 17V5a2 2 0 0 1 4 0v9-3a2 2 0 0 1 4 0v3-1a2 2 0 0 1 4 0v2a2 2 0 0 1 4 0v7c0 5-3 8-8 8-4 0-6-3-9-6l-5-6a2 2 0 0 1 3-3l3 3Z" /></svg> }
-export function DemoModal({ theme, onClose, onSeen, demoId = 'add-run' }: { demoId?: DemoId; theme: Theme; onClose: () => void; onSeen: () => void }) {
-  const [controller] = useState(() => new DemoController(onSeen, undefined, demoId))
+export function DemoModal({ theme, onClose, onSeen, onReachedEnd, demoId = 'add-run' }: { demoId?: DemoId; theme: Theme; onClose: () => void; onSeen: () => void; onReachedEnd?: () => void }) {
+  const [controller] = useState(() => new DemoController(() => { onReachedEnd?.(); onSeen() }, undefined, demoId))
   const scene = controller.scene
   const { cut, paused } = useController(controller)
   const altKey = `demo.scenes.${demoId}.alt${cut}`

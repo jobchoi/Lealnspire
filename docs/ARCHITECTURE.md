@@ -306,3 +306,17 @@ CourseCompletion은 목록과 성공 결과 창에서 SVG 월드 기호가 모�
 DemoController는 정규 목록 밖 예시 맵과 전용 EditorController·Interpreter만 사용하며 GameController·ProgressRepository를 소유하지 않는다. 완료 콜백은 설정의 본 목록에만 연결한다. 2400ms 간격으로 4컷 뒤 정지하며 타이머는 재시작·일시정지·이탈 때 정리한다. View는 media query에 따라 자동 재생 대신 이전/다음을 제공하고, 모달 외부를 inert 처리하며 진입·복귀 포커스를 관리한다. 새 의존성은 없다.
 
 T73-2는 DemoController의 demoEntries(14개 ID·진입 스테이지)와 demoScene(4컷별 독립 문서·실행 프레임)을 통해 개념 장면을 확장한다. 각 컷은 새 EditorController로 조립하고 Interpreter에서 실행한 결과 중 해당 프레임을 선택하며, 마지막 검사·반환 정보를 표시용으로 보존한다. DemoModal은 함수 몸체·리스트 칸을 기존 BlockTiles와 함께 표시한다. 설정은 기존 v2의 허용 시범 ID만 늘린다. 정규 진행 저장·퍼즐 데이터와 연결하지 않는다.
+
+### T84-1·2 학습 기록 Model [제안·잠정]
+
+진행 저장은 `lealnspire.progress.v3`의 `{version:3, learnerId, historyStartedAt, pastDetailsUnavailable, stages}`다. stages는 v2와 같은 완료·최고 별·마지막 `{main,functions}` 코드다. 기존 Controller가 쓰는 `getProgress()`의 version:1 외부 API와 `getDocument(stage)`는 유지하고, 저장 문서 조회는 `getProgressDocument()`로 구분한다. v3가 없거나 손상된 경우 v2, v1 순으로 이행하며 원본 두 키를 보존한다. 과거 상세 이벤트를 생성하지 않고 `pastDetailsUnavailable:true`로 표시한다. 이름이나 기기 지문 대신 로컬 임의 식별자 하나를 쓰며 브라우저당 한 명이다.
+
+별도 `lealnspire.history.v1`은 `{version:1,nextSequence,events,rollups,incomplete,compactedAt}`이다. `history.ts`는 제한된 이벤트별 자료와 공통 봉투를 정의·검증하고, `ProgressRepository.appendHistory()`가 익명 식별자·이벤트 ID·증가 순번을 부여한다. `getHistory()`는 복사본이다. 시도 시작, 계산 결과, 결과 도달, 중단, 완료 확정을 구분하며 코드 본문·프레임·자유 서술을 이력에 넣지 않는다. 시간은 호출자가 제공하는 겹치지 않는 방문 경과 구간에 대해 집계하며 보이는 풀이 구간의 마지막 조작 후 60초까지만 활동 추정으로 센다. 재생·시범·숨김 구간은 분리한다. 실제 이벤트 연결은 T84-3이다.
+
+`historySummary.ts`는 진행 기준 단원 완료 수와 활동 종류별 퍼즐 집계를 계산한다. 힌트는 방문 내 해당 단계가 공개된 뒤 시작한 시도를 한 번씩 세며 반복 공개로 수가 늘지 않는다. 중단은 시도 분모에 포함하지만 종료 결과·실패 빈도·최근 실패 3회 판정에서는 제외한다. `completionConfirmed`만 완료 확정 횟수에 포함하고, 실제 완료 여부는 진행 문서를 우선한다. 예측·보너스·시범은 정규 퍼즐과 별도 키다.
+
+보존 기본값은 상세 90일·시도 2,000·이벤트 10,000·전체 값 문자열 UTF-16 길이×2의 2MiB다. 진행 v3·이력·보존한 v1/v2·설정을 예산에 포함한다. 상한을 넘으면 오래된 **종료 방문 전체**를 방문 범위·마지막 순번을 가진 퍼즐 누적 요약으로 접는다. 요약과 같은 방문의 상세는 합산하지 않고, 마지막 종료 결과 3개의 순번을 보존해 방문이 겹쳐도 시간순을 유지한다. 열린 방문은 파괴하지 않는다. 열린 방문·마지막 코드·원본·누적 요약만으로 예산을 넘으면 영구 저장을 멈추고 메모리로 유지한다. 저장 오류 때 종료 방문을 추가 정리하고 정확히 한 번 재시도하며 다시 실패하면 기존 `persistent:false` 안내 계약을 따른다.
+
+문서별 미래 버전은 해당 키를 덮어쓰지 않으며 `persistent:false`를 반환한다. 이력 JSON 손상과 잘못된 이벤트·요약은 진행을 초기화하지 않고 `incomplete`로 누락을 표시한다. 두 문서 쓰기는 원자적이지 않으므로 완료 수를 이력에서 추정하지 않는다. 삭제는 v1·v2·v3·이력 네 키 모두 시도하고 하나라도 실패하면 메모리 기록을 보존하며 false를 반환한다. 설정(언어·시범 확인)은 삭제하지 않는다.
+
+새 Model 파일: `history.ts`(이벤트 명세·검증), `historySummary.ts`(집계·보존·이력 파싱), `history.test.ts`(이행·격리·상한·삭제·집계 회귀). 새 의존성·화면·Controller 변경 없음.

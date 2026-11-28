@@ -6,7 +6,7 @@ test('2번을 깬 뒤 예측 도전: 틀린 후보 → 실제 길 확인 → 다
   await g.fresh()
   await page.evaluate(() => localStorage.setItem('lealnspire.progress', JSON.stringify({ version: 1, stages: { 1: { completed: true, bestStars: 3, lastProgram: [] }, 2: { completed: true, bestStars: 2, lastProgram: [] } } })))
   await page.reload()
-  const before = await page.evaluate(() => [localStorage.getItem('lealnspire.progress'), localStorage.getItem('lealnspire.progress.v2')])
+  const before = await page.evaluate(() => [localStorage.getItem('lealnspire.progress'), localStorage.getItem('lealnspire.progress.v2'), localStorage.getItem('lealnspire.progress.v3')])
   await g.press(g.button('스테이지 목록'))
   await expect(page.getByRole('button', { name: '예측 도전' }), '깬 스테이지에만 열림(1번은 도전 없음, 3번은 안 깸)').toHaveCount(1)
   await g.press(page.getByRole('button', { name: '예측 도전' }))
@@ -23,7 +23,7 @@ test('2번을 깬 뒤 예측 도전: 틀린 후보 → 실제 길 확인 → 다
     if (i < 2) await g.press(g.button('다시 고르기'))
   }
   expect(results.filter(r => r === 'O'), `정답은 정확히 하나: ${results.join('')}`).toHaveLength(1)
-  expect(await page.evaluate(() => [localStorage.getItem('lealnspire.progress'), localStorage.getItem('lealnspire.progress.v2')]), '저장 기록 불변(벌점·별 없음)').toEqual(before)
+  expect(await page.evaluate(() => [localStorage.getItem('lealnspire.progress'), localStorage.getItem('lealnspire.progress.v2'), localStorage.getItem('lealnspire.progress.v3')]), '저장 기록 불변(벌점·별 없음)').toEqual(before)
   await g.press(g.button('돌아가기'))
   await expect(page.locator('.stage-card').first()).toBeVisible()
 })

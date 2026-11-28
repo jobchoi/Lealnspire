@@ -9,6 +9,13 @@ import { i18n, resolveLocale } from './i18n/I18n'
 let repository: ProgressRepository
 try { repository = new ProgressRepository(globalThis.localStorage) } catch { repository = new ProgressRepository() }
 const controller = new AppController(repository)
+globalThis.addEventListener('pagehide', controller.pagehide)
+globalThis.addEventListener('pageshow', event => { if (event.persisted) controller.restorePage() })
+document.addEventListener('visibilitychange', () => controller.setVisible(document.visibilityState === 'visible'))
+// Observe activity without storing click or key details.
+document.addEventListener('pointerdown', controller.activity, { passive: true })
+document.addEventListener('keydown', controller.activity)
+globalThis.setInterval(() => { controller.flushHistory() }, 30_000)
 i18n.locale = resolveLocale(new URLSearchParams(globalThis.location.search).get('lang'), repository.getLanguage())
 repository.saveLanguage(resolveLocale(i18n.locale, undefined))
 const syncLanguageUrl = (locale: string) => {

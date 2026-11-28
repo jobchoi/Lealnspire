@@ -1,3 +1,4 @@
+import { LearningPage } from './pages/LearningPage'
 import { useEffect, useRef, useState } from 'react'
 import { allStages as stages, isLastStage } from '../model/stages'
 import { AppController } from '../controller/AppController'
@@ -24,11 +25,17 @@ function App({ controller: supplied, onLanguageChange }: { controller?: AppContr
   const screen = useController(controller)
   const main = useRef<HTMLElement>(null)
   const pageKey = screen.page === 'play' ? `play-${screen.index}` : screen.page
-  useEffect(() => { main.current?.querySelector<HTMLElement>('[data-page-title]')?.focus() }, [pageKey])
+  const focusUnit = screen.page === 'list' ? screen.unit : undefined
+  useEffect(() => {
+    const title = main.current?.querySelector<HTMLElement>(focusUnit ? `[data-unit="${focusUnit}"] h2` : '[data-page-title]')
+    title?.focus()
+    if (focusUnit) title?.scrollIntoView({ block: 'start' })
+  }, [pageKey, focusUnit])
   const progress = controller.progress
   return <main className="app" ref={main}>
-    {screen.page === 'home' && <HomePage onResetDemos={controller.repository.resetDemos} locale={locale} onLanguageChange={changeLanguage} progress={progress} onStart={controller.start} onContinue={controller.openStage} onList={controller.list} persistent={controller.repository.persistent} onClear={controller.clearProgress} />}
-    {screen.page === 'list' && <StageSelectPage progress={progress} onSelect={controller.openStage} onHome={controller.home} onPrediction={controller.openPrediction} />}
+    {screen.page === 'home' && <HomePage onLearning={controller.learning} onResetDemos={controller.repository.resetDemos} locale={locale} onLanguageChange={changeLanguage} progress={progress} onStart={controller.start} onContinue={controller.openStage} onList={controller.list} persistent={controller.repository.persistent} onClear={controller.clearProgress} />}
+    {screen.page === 'list' && <StageSelectPage onLearning={controller.learning} isReview={controller.isReview} onReview={controller.setReview} progress={progress} onSelect={controller.openStage} onHome={controller.home} onPrediction={controller.openPrediction} />}
+    {screen.page === 'learning' && <LearningPage data={controller.learningData} onHome={controller.home} onList={controller.list} onUnit={controller.unitList} onSelect={controller.openStage} onRemove={id => controller.setReview(id, false)} />}
     {screen.page === 'prediction' && controller.prediction && <PredictionPage controller={controller.prediction} onBack={controller.list} />}
     {screen.page === 'play' && <PlayPage key={screen.index} stage={stages[screen.index]} progressStore={controller.repository} controller={controller.game} onList={controller.list} lastStage={isLastStage(screen.index)} onNextUnit={controller.nextUnit} onNext={controller.next} />}
   </main>

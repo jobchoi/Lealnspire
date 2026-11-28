@@ -4,7 +4,7 @@ import { failurePoint, run, runAll } from './interpreter'
 import { countBlocks, validDocument } from './program'
 import baseline from './unit12345678910-run.fixture.json'
 import type { Block, Program, Stage } from './types'
-import { ProgressRepository, progressV2Key, isUnlocked } from './ProgressRepository'
+import { ProgressRepository, progressV2Key, progressV3Key, isUnlocked } from './ProgressRepository'
 import { continueStageIndex } from '../controller/flow'
 import { GameController } from '../controller/GameController'
 
@@ -158,7 +158,7 @@ it('charges comparisons and breaks against the step budget', () => {
 })
 it('opens after unit10, edits direction with undo, enforces insertion scope, and saves both-map completion in v2', () => {
   let raw = ''
-  const repo = new ProgressRepository({ getItem: key => key === progressV2Key ? raw || null : null, setItem: (_key, value) => { raw = value } })
+  const repo = new ProgressRepository({ getItem: key => key === (JSON.parse(raw || 'null')?.version === 3 ? progressV3Key : progressV2Key) ? raw || null : null, setItem: (key, value) => { if (key === progressV3Key) raw = value } })
   for (const stage of allStages.slice(0, allStages.indexOf(unit11Stages[0]) - 1)) repo.completeStage(stage.id, 3, [])
   expect(isUnlocked(repo.getProgress(), allStages.indexOf(unit11Stages[0]))).toBe(false)
   repo.completeStage('u10-3', 3, [])
@@ -182,8 +182,8 @@ it('opens after unit10, edits direction with undo, enforces insertion scope, and
     while (!game.finished) game.step()
     expect(game.result).toBe('success')
     expect(repo.getProgress().stages[stage.id].bestStars).toBe(3)
-    expect(new ProgressRepository({ getItem: key => key === progressV2Key ? raw : null, setItem: () => {} }).getDocument(stage).main).toEqual(stage.solution)
-    expect(JSON.parse(raw).version).toBe(2)
+    expect(new ProgressRepository({ getItem: key => key === progressV3Key ? raw : null, setItem: () => {} }).getDocument(stage).main).toEqual(stage.solution)
+    expect(JSON.parse(raw).version).toBe(3)
     game.reset(); expect(game.frame?.search).toBeUndefined()
     game.selectVariant(1); expect(game.frame?.search).toBeUndefined()
     game.dispose()
