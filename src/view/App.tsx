@@ -1,3 +1,4 @@
+import { FactoryPage } from './pages/FactoryPage'
 import { AdminPage } from './pages/AdminPage'
 import { LearningPage } from './pages/LearningPage'
 import { useEffect, useRef, useState } from 'react'
@@ -34,7 +35,8 @@ function App({ controller: supplied, onLanguageChange }: { controller?: AppContr
   }, [pageKey, focusUnit])
   const progress = controller.progress
   return <main className="app" ref={main}>
-    {screen.page === 'home' && <HomePage onAdmin={controller.admin} onLearning={controller.learning} onResetDemos={controller.repository.resetDemos} locale={locale} onLanguageChange={changeLanguage} progress={progress} onStart={controller.start} onContinue={controller.openStage} onList={controller.list} persistent={controller.repository.persistent} onClear={controller.clearProgress} />}
+    {screen.page === 'home' && <HomePage onFactory={controller.factory} onAdmin={controller.admin} onLearning={controller.learning} onResetDemos={controller.repository.resetDemos} locale={locale} onLanguageChange={changeLanguage} progress={progress} onStart={controller.start} onContinue={controller.openStage} onList={controller.list} persistent={controller.repository.persistent} onClear={controller.clearProgress} />}
+    {screen.page === 'factory' && <FactoryPage progress={progress} onHome={controller.home} />}
     {screen.page === 'list' && <StageSelectPage onLearning={controller.learning} isReview={controller.isReview} onReview={controller.setReview} progress={progress} onSelect={controller.openStage} onHome={controller.home} onPrediction={controller.openPrediction} />}
     {screen.page === 'admin' && <AdminPage data={controller.adminData} onHome={controller.home} />}
     {screen.page === 'learning' && <LearningPage data={controller.learningData} onHome={controller.home} onList={controller.list} onUnit={controller.unitList} onSelect={controller.openStage} onRemove={id => controller.setReview(id, false)} />}

@@ -1,6 +1,6 @@
 import { Observable } from './Observable'
 import { countDocument, validInput } from '../model/factory/program'
-import { factoryAccess, readFactoryDocument, runFactory, type FactoryProgress } from '../model/factory/unlocks'
+import { completedFactoryUnits, factoryAccess, readFactoryDocument, runFactory, type FactoryProgress } from '../model/factory/unlocks'
 import type { Block, FunctionDef, Pile, ProgramDocument, RunInput, Shape } from '../model/factory/types'
 
 export type FactoryTarget = { kind: 'main' } | { kind: 'function'; id: string } | { kind: 'body' | 'else'; id: string }
@@ -33,6 +33,22 @@ export class FactoryEditorController extends Observable<EditorState> {
     this.input = structuredClone(input)
     this.progress = structuredClone(progress)
     this.publish()
+  }
+  get units() { return completedFactoryUnits(this.progress) }
+  nextBlockId() { return this.id('factory-block', lists(this.input.program).flat().map(b => b.id)) }
+  canAdd(block: Block, target: FactoryTarget = { kind: 'main' }): boolean {
+    const next = structuredClone(this.input)
+    const list = destination(next.program, target)
+    if (!list) return false
+    list.push(structuredClone(block))
+    return validInput(next) && factoryAccess(next.program, this.progress, next).allowed
+  }
+  canReplace(block: Block): boolean {
+    const next = structuredClone(this.input)
+    const list = lists(next.program).find(l => l.some(b => b.id === block.id))
+    if (!list) return false
+    list[list.findIndex(b => b.id === block.id)] = structuredClone(block)
+    return validInput(next) && factoryAccess(next.program, this.progress, next).allowed
   }
   get doc() { return structuredClone(this.input.program) }
   get total() { return countDocument(this.input.program) }
