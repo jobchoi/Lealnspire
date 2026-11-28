@@ -76,7 +76,7 @@ for (const viewport of [{ width: 375, height: 667 }, { width: 360, height: 560 }
     }
     expect(problems).toEqual([])
     const height = await page.evaluate(() => document.documentElement.scrollHeight)
-    expect(height, `전체 높이 ${height}px(QC1 전 375에서 9,760px)`).toBeLessThanOrEqual(3600)
+    expect(height, `전체 높이 ${height}px(QC1 전 375에서 9,760px)`).toBeLessThanOrEqual(4200) // T84-7-마: 공장 활동 영역 추가로 기준 상향(QC1 전 9,760px 수준의 비대는 계속 잡음)
     await page.evaluate(() => scrollTo(0, 0))
     await page.screenshot({ path: `e2e-results/screens/admin-${viewport.width}.png`, fullPage: true })
   })

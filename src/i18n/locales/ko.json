@@ -1016,6 +1016,29 @@
       "projectLimit": "작품은 20개까지 담을 수 있어요. 작품을 정리한 뒤 다시 저장해 주세요.",
       "budget": "저장 공간이 부족해요. 작품을 정리한 뒤 다시 저장해 주세요.",
       "invalid": "저장할 내용을 다시 확인해 주세요."
+    },
+    "activityTitle": "공장 활동",
+    "factCreated": "공장 프로그램을 만들었어요",
+    "factEdited": "저장한 작품을 다시 고쳤어요",
+    "deletedProject": "삭제된 작품",
+    "projectCount": "기록된 작품 수: {count}",
+    "runs": "실행 횟수",
+    "saves": "저장 횟수",
+    "revisits": "재방문 횟수",
+    "executed": "실제로 실행한 블록 종류",
+    "operationErrors": "조작 오류 종류",
+    "timeEstimate": "활동 시간은 기록 사이를 최대 1분씩 합산한 추정값입니다. 기록이 없는 대기 시간은 제외합니다.",
+    "historyMissing": "작품은 보존했지만 활동 기록 일부가 이 기기에 남지 않을 수 있어요.",
+    "adultErrors": {
+      "heldOccupied": "집게에 상자를 든 상태에서 다시 집기를 실행함",
+      "beltEmpty": "빈 벨트에서 집기를 실행함",
+      "pileEmpty": "빈 더미에서 집기를 실행함",
+      "heldEmpty": "빈 집게로 놓기를 실행함",
+      "pileFull": "가득 찬 더미에 놓기를 실행함",
+      "variableRange": "변수 A의 허용 범위를 벗어남",
+      "missingReturn": "값 호출의 반환값이 없음",
+      "indexRange": "주문 리스트의 범위를 벗어난 번호를 읽음",
+      "stepLimit": "계산 또는 반복 안전 상한에 도달함"
     }
   }
 }

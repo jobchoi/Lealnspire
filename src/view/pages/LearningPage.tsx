@@ -32,6 +32,7 @@ export function LearningPage({ data, onHome, onList, onUnit, onSelect, onRemove 
         <button type="button" onClick={() => onSelect(index)} aria-label={`${t('learning.again')}: ${stageLabel(stage)}`}>{t('learning.again')}</button>
       </li>)}</ul>
     </section>
+    <section><h2>{t('factory.activityTitle')}</h2><ul className="learning-cards">{data.projects.filter(p => p.created || p.revisitedEdit).map(p => <li key={p.id}><p>{t(p.deleted ? 'factory.deletedProject' : p.revisitedEdit ? 'factory.factEdited' : 'factory.factCreated')}</p></li>)}</ul></section>
     <section aria-labelledby="learning-review"><h2 id="learning-review">{t('learning.review')}</h2>
       {data.review.length === 0 && <p>{t('learning.reviewEmpty')}</p>}
       <ul className="learning-cards">{data.review.map(({ stage, index }) => <li className={`world-${stage.world}`} key={stage.id}>

@@ -87,7 +87,7 @@ describe('confirmation and migration', () => {
    expect(game.newlyAchieved).toEqual(['shorter'])
    const completed = repo.getHistory().events.find(e => e.type === 'completionConfirmed')!
    expect(completed.data).toEqual({first:true})
-   expect(repo.getHistory().version).toBe(2)
+   expect(repo.getHistory().version).toBe(3)
    game.setSpeed('normal'); game.toggleReview(); game.reset(); game.edit(stage.solution); finish(game)
    expect(game.newlyAchieved).toEqual([])
    expect(repo.getHistory().events.filter(e => e.type === 'challengeAchieved')).toHaveLength(1)
@@ -117,7 +117,7 @@ describe('confirmation and migration', () => {
    const copy = repo.getProgressDocument(); copy.stages['2'].challenges = {}
    expect(repo.getProgressDocument().stages['2'].challenges?.['both-turns'].achievedAt).toBe(now)
    expect(s.getItem(progressV3Key)).toBe(raw); expect(s.getItem(legacyHistoryKey)).toBe(oldHistory)
-   expect(JSON.parse(s.getItem(historyKey)!).version).toBe(2)
+   expect(JSON.parse(s.getItem(historyKey)!).version).toBe(3)
    expect(repo.clear()).toBe(true)
    for (const key of [progressV3Key,progressV4Key,legacyHistoryKey,historyKey]) expect(s.getItem(key)).toBeNull()
  })

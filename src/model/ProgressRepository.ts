@@ -18,7 +18,8 @@ export const progressV2Key = 'lealnspire.progress.v2'
 export const progressV3Key = 'lealnspire.progress.v3'
 export const progressV4Key = 'lealnspire.progress.v4'
 export const legacyHistoryKey = 'lealnspire.history.v1'
-export const historyKey = 'lealnspire.history.v2'
+export const historyV2Key = 'lealnspire.history.v2'
+export const historyKey = 'lealnspire.history.v3'
 export type ProgressV3 = Omit<ProgressV2, 'version'> & { version: 3; learnerId: string; historyStartedAt: string; pastDetailsUnavailable: boolean }
 export type ProgressV4 = Omit<ProgressV3, 'version'> & { version: 4 }
 export type HistoryOptions = { now?: () => string; createId?: () => string }
@@ -208,11 +209,17 @@ function makeStore(storage?: ProgressStorage, options: HistoryOptions = {}) {
     try {
       const oldHistoryRaw = storage?.getItem(legacyHistoryKey) ?? null
       preservedBytes += (oldHistoryRaw?.length ?? 0) * 2
-      const historyRaw = storage?.getItem(historyKey) ?? oldHistoryRaw
+      const v2HistoryRaw = storage?.getItem(historyV2Key) ?? null
+      preservedBytes += (v2HistoryRaw?.length ?? 0) * 2
+      const currentHistoryRaw = storage?.getItem(historyKey) ?? null
+      const historyRaw = currentHistoryRaw ?? v2HistoryRaw ?? oldHistoryRaw
       const historyValue = readJSON(historyRaw)
-      historyWritable = !(record(historyValue) && 'version' in historyValue && historyValue.version !== 1 && historyValue.version !== 2)
-      if (historyWritable) history = parseHistory(historyRaw)
-      else { history.incomplete = true; preservedBytes += (historyRaw?.length ?? 0) * 2 }
+      historyWritable = !(record(historyValue) && 'version' in historyValue && historyValue.version !== 1 && historyValue.version !== 2 && historyValue.version !== 3)
+      if (historyWritable) {
+        history = parseHistory(historyRaw)
+        historyDirty = currentHistoryRaw === null && historyRaw !== null
+      }
+      else { history.incomplete = true; preservedBytes += (currentHistoryRaw?.length ?? 0) * 2 }
     } catch { historyWritable = false; history.incomplete = true }
     if (record(v3) && (useV4 ? v3.version === 4 : v3.version === 3) && record(v3.stages)) {
       identityPersisted = useV4
@@ -277,13 +284,14 @@ function makeStore(storage?: ProgressStorage, options: HistoryOptions = {}) {
     try { write() }
     catch {
       history = compactHistory(history, now(), otherBytes, true)
-      try { write() } catch { storage = undefined }
+      try { write() } catch { history.incomplete = true; historyWritable = false }
     }
     historyDirty = false
   }
   // Apply retention on restore, even when the next action is a read-only dashboard.
   const restoredHistory = compactHistory(history, now(), preservedBytes + settingsBytes + projectsBytes + (progressWritable ? JSON.stringify(progressDocument()).length * 2 : futureProgressBytes))
   if (JSON.stringify(restoredHistory) !== JSON.stringify(history)) { history = restoredHistory; historyDirty = true; flushHistory() }
+  flushHistory()
   historyBytes = JSON.stringify(history).length * 2
   let recovered = false
   function recoverHistory() {
@@ -358,7 +366,7 @@ function makeStore(storage?: ProgressStorage, options: HistoryOptions = {}) {
       if (deletionStorage) {
         if (!deletionStorage.removeItem) return false
         let removed = true
-        for (const key of [progressKey, progressV2Key, progressV3Key, progressV4Key, legacyHistoryKey, historyKey, projectsKey]) {
+        for (const key of [progressKey, progressV2Key, progressV3Key, progressV4Key, legacyHistoryKey, historyV2Key, historyKey, projectsKey]) {
           try { deletionStorage.removeItem(key) }
           catch { removed = false }
         }

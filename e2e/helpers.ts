@@ -17,7 +17,7 @@ export const test = base.extend<{ errors: string[] }>({
         const at = order.indexOf(key)
         if (at >= 0 && at < order.length - 1 && !(window as unknown as { __appWriting?: boolean }).__appWriting) {
           for (const newer of order.slice(at + 1)) this.removeItem(newer)
-          this.removeItem('lealnspire.history.v1'); this.removeItem('lealnspire.history.v2')
+          this.removeItem('lealnspire.history.v1'); this.removeItem('lealnspire.history.v2'); this.removeItem('lealnspire.history.v3')
         }
         return original.call(this, key, value)
       }

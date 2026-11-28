@@ -1,7 +1,11 @@
-import { createProgressStore, projectsKey } from '../model/ProgressRepository'
+import { createProgressStore, projectsKey, historyKey } from '../model/ProgressRepository'
 import { describe, expect, it } from 'vitest'
 import { FactoryEditorController, FactoryProjectsController } from './FactoryEditorController'
 import { factoryUnits } from '../model/factory/unlocks'
+import { FactoryPlaybackController } from './FactoryPlaybackController'
+import { compactHistory, parseHistory, summarizeHistory } from '../model/historySummary'
+import { validHistoryEvent } from '../model/history'
+import { allStages } from '../model/stages'
 import type { Block, RunInput } from '../model/factory/types'
 
 const progress = { stages: Object.fromEntries(factoryUnits.flat().map(s => [s.id, { completed: true, bestStars: 0, lastProgram: [] }])) }
@@ -154,7 +158,8 @@ describe('factory project drafts', () => {
     expect(c.getSnapshot().name).toBe('Name with space ')
     c.save()
     expect(c.getSnapshot().name).toBe('Name with space')
-    expect(repository.getHistory().events).toEqual([])
+    expect(repository.getHistory().events.some(e => e.type === 'projectSaved')).toBe(true)
+    expect(JSON.stringify(repository.getHistory())).not.toContain('Name with space')
     c.dispose()
   })
   it('opens previous snapshots as independent dirty drafts and never changes their sources', () => {
@@ -261,5 +266,86 @@ describe('factory project drafts', () => {
     expect(next.save()).toBe(true)
     expect(locked.getProjects()).toEqual(projectDoc)
     c.dispose(); next.dispose()
+  })
+})
+
+
+describe('factory activity history', () => {
+  function setup() {
+    const values = new Map<string, string>()
+    const storage = { getItem: (k: string) => values.get(k) ?? null, setItem: (k: string, v: string) => { values.set(k, v) }, removeItem: (k: string) => { values.delete(k) } }
+    const repo = createProgressStore(storage)
+    factoryUnits.flat().forEach(s => repo.completeStage(s.id, 1, []))
+    const c = new FactoryProjectsController(repo)
+    c.open(undefined, undefined, 'Private project name')
+    return { c, repo, storage }
+  }
+  it('records ordered summaries and only viewed execution, preserving privacy and puzzle totals through compaction', () => {
+    const { c, repo } = setup()
+    const before = summarizeHistory(repo.getHistory(), repo.getProgress(), allStages)
+    const e = c.editor!
+    e.addBox('belt', '◆'); e.add({ id: 'private-block-id', type: 'takeBelt' }); e.add({ id: 'never-viewed', type: 'putPile', pile: 'moon' })
+    const playback = new FactoryPlaybackController(e)
+    playback.step(); playback.stop()
+    expect(c.save()).toBe(true)
+    const id = c.getSnapshot().projectId!
+    c.close(); playback.dispose()
+    const events = repo.getHistory().events
+    expect(events.map(e => e.type)).toEqual(['projectCreated', 'projectEdited', 'projectRunStarted', 'projectRunEnded', 'projectSaved', 'projectClosed', 'visitEnded'])
+    expect(events.find(e => e.type === 'projectEdited')?.data).toMatchObject({ changes: 3, startChanged: true, codeChanged: true, counts: { takeBelt: 1, putPile: 1 } })
+    expect(events.find(e => e.type === 'projectRunEnded')?.data).toEqual({ outcome: 'stopped', executed: ['takeBelt'] })
+    const saved = events.find(e => e.type === 'projectSaved')!
+    expect(saved.data).toEqual({ snapshotId: repo.getProjects().projects[0].snapshots[0].id, projectId: id })
+    const raw = JSON.stringify(events)
+    for (const secret of ['Private project name', 'private-block-id', 'never-viewed', '◆', 'frames', 'program', 'piles']) expect(raw).not.toContain(secret)
+    expect(events.every(validHistoryEvent)).toBe(true)
+    expect(validHistoryEvent({ ...events[3], data: { outcome: 'stopped', executed: [], 'error?': 'private' } })).toBe(false)
+    expect(validHistoryEvent({ ...events[0], data: { name: 'private' } })).toBe(false)
+    c.open(id); c.editor!.addBox('moon', '○'); c.close()
+    expect(c.deleteProject(id)).toBe(true)
+    const h = repo.getHistory()
+    const after = summarizeHistory(h, repo.getProgress(), allStages)
+    expect(after.units).toEqual(before.units)
+    expect(Object.values(after.puzzles).filter(p => p.activityKind !== 'project')).toEqual(Object.values(before.puzzles).filter(p => p.activityKind !== 'project'))
+    expect(after.projects).toHaveLength(1)
+    expect(after.projects[0]).toMatchObject({ deleted: true, opened: 1, runs: 1, saves: 1, revisitedEdit: true, executed: ['takeBelt'] })
+    const compacted = parseHistory(JSON.stringify(compactHistory(h, repo.historyNow(), 0, true)))
+    expect(compacted.incomplete).toBe(false)
+    expect(summarizeHistory(compacted, repo.getProgress(), allStages).projects).toEqual(after.projects)
+  })
+  it('does not record a calculated but unseen ending or duplicate terminals on close', () => {
+    const { c, repo } = setup()
+    c.editor!.add({ id: 'take', type: 'takeBelt' })
+    const p = new FactoryPlaybackController(c.editor!)
+    p.play(); c.close(); p.dispose()
+    expect(repo.getHistory().events.filter(e => e.type === 'projectRunEnded')).toHaveLength(0)
+    c.open(); c.editor!.add({ id: 'take', type: 'takeBelt' })
+    const next = new FactoryPlaybackController(c.editor!)
+    next.step(); c.close(); next.dispose()
+    expect(repo.getHistory().events.filter(e => e.type === 'projectRunEnded').map(e => e.data)).toEqual([{ outcome: 'error', error: 'beltEmpty', executed: ['takeBelt'] }])
+  })
+  it('flushes on page exit and resumes a restored draft without losing edits', () => {
+    const { c, repo } = setup()
+    c.editor!.addBox('belt', '◆')
+    c.suspend(); c.suspend()
+    expect(repo.getHistory().events.map(e => e.type)).toEqual(['projectCreated', 'projectEdited', 'projectClosed', 'visitEnded'])
+    c.resume(); c.editor!.addBox('moon', '○'); c.close()
+    expect(repo.getHistory().events.filter(e => e.type === 'projectEdited')).toHaveLength(2)
+    expect(repo.getHistory().events.filter(e => e.type === 'projectOpened').map(e => e.data)).toEqual([{ saved: false }])
+  })
+  it('keeps a successfully saved project when only history storage fails', () => {
+    const { storage } = setup()
+    let failHistory = false
+    const repo = createProgressStore({ ...storage, setItem(k, v) { if (failHistory && k === historyKey) throw Error('history denied'); storage.setItem(k, v) } })
+    const c = new FactoryProjectsController(repo)
+    c.open(); failHistory = true
+    expect(c.save()).toBe(true)
+    expect(c.getSnapshot()).toMatchObject({ dirty: false, historyMissing: true })
+    expect(createProgressStore(storage).getProjects().projects).toHaveLength(1)
+    expect(repo.getHistory().incomplete).toBe(true)
+    // History failure must not disable subsequent explicit project writes.
+    c.editor!.addBox('belt', '◆'); expect(c.save()).toBe(true)
+    expect(createProgressStore(storage).getProjects().projects[0].snapshots).toHaveLength(2)
+    c.close()
   })
 })

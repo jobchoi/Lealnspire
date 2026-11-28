@@ -83,6 +83,19 @@ export function AdminPage({ data, onHome }: Props) {
       {data.incomplete && <p>{t('admin.incomplete')}</p>}
       {data.compactedRanges.map((range, i) => <p key={i}>{t('admin.compacted')}: {date(range.from)} — {date(range.to)}</p>)}
     </section>
+    <section aria-labelledby="admin-factory"><h2 id="admin-factory">{t('factory.activityTitle')}</h2>
+      <p>{t('factory.projectCount', { count: data.projects.filter(p => !p.deleted).length })}</p>
+      <p>{t('factory.timeEstimate')}</p>
+      <div className="factory-activity-cards">{data.projects.map(p => <article key={p.id}>
+        <h3>{t(p.deleted ? 'factory.deletedProject' : 'factory.activityTitle')}</h3>
+        <dl><dt>{t('admin.lastActivity')}</dt><dd>{date(p.lastAt)}</dd>
+          <dt>{t('factory.runs')}</dt><dd>{p.runs}</dd><dt>{t('factory.saves')}</dt><dd>{p.saves}</dd>
+          <dt>{t('factory.revisits')}</dt><dd>{p.opened}</dd><dt>{t('admin.minutes')}</dt><dd>{t('admin.minuteValue', { count: Math.round(p.activityMs / 60000) })}</dd>
+          <dt>{t('factory.executed')}</dt><dd>{p.executed.map(k => t(`factory.${k}`)).join(', ') || t('admin.none')}</dd>
+          <dt>{t('factory.operationErrors')}</dt><dd>{p.errors.map(k => t(`factory.adultErrors.${k}`)).join(', ') || t('admin.none')}</dd>
+        </dl>
+      </article>)}</div>
+    </section>
     <section aria-labelledby="admin-units"><h2 id="admin-units">{t('admin.units')}</h2>
       <div className="admin-table-scroll" role="region" aria-labelledby="admin-units" tabIndex={0}><table>
         <thead><tr>{['unit', 'completed', 'active', 'minutes'].map(key => <th scope="col" key={key}>{t(`admin.${key}`)}</th>)}</tr></thead>

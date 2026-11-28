@@ -185,3 +185,23 @@ it('shows only registered challenge puzzles in both table and cards, following r
     challenges.splice(0, challenges.length, ...original)
   }
 })
+
+it('shows factory activity separately with viewed block types and adult error explanations', () => {
+  const app = new AppController()
+  const base = { visitId: 'factory-visit', activityKind: 'project' as const, activityId: 'factory-project', unit: 0, recordedAt: '2026-11-28T00:00:00.000Z', elapsedMs: 0, appVersion: '1', contentVersion: '1', evaluationVersion: '1' }
+  app.repository.appendHistory({ ...base, type: 'projectCreated', data: {} })
+  app.repository.appendHistory({ ...base, type: 'projectRunStarted', data: {} })
+  app.repository.appendHistory({ ...base, type: 'projectRunEnded', data: { outcome: 'error', error: 'beltEmpty', executed: ['takeBelt'] } })
+  app.repository.appendHistory({ ...base, type: 'projectDeleted', data: {} })
+  for (const locale of ['ko', 'en']) {
+    i18n.locale = locale
+    const html = render(app)
+    expect(html).toContain(t('factory.activityTitle'))
+    expect(html).toContain(t('factory.deletedProject'))
+    expect(html).toContain(t('factory.takeBelt'))
+    expect(html).toContain(t('factory.adultErrors.beltEmpty'))
+    expect(html).toContain('factory-activity-cards')
+    expect(app.adminData.completed).toBe(0)
+    expect(app.adminData.entries.some(e => e.attention)).toBe(false)
+  }
+})

@@ -1,7 +1,7 @@
 import { validDocument } from './program'
 import { EditorController } from '../controller/EditorController'
 import { describe, expect, it } from 'vitest'
-import { projectsKey, projectLimits, factoryProjectName, createProgressStore, isUnlocked, parseProgress, progressKey, progressV2Key, progressV4Key, progressV3Key, legacyHistoryKey, historyKey, migrateV1toV2, settingsKey } from './ProgressRepository'
+import { projectsKey, projectLimits, factoryProjectName, createProgressStore, isUnlocked, parseProgress, progressKey, progressV2Key, progressV4Key, progressV3Key, legacyHistoryKey, historyV2Key, historyKey, migrateV1toV2, settingsKey } from './ProgressRepository'
 import { allStages, stages } from './stages'
 import type { Program } from './types'
 
@@ -306,7 +306,7 @@ describe('T36 v2 migration', () => {
       storage.removeItem(key)
     } })
     expect(failed.clear()).toBe(false)
-    expect(calls).toEqual([progressKey, progressV2Key, progressV3Key, progressV4Key, legacyHistoryKey, historyKey, projectsKey])
+    expect(calls).toEqual([progressKey, progressV2Key, progressV3Key, progressV4Key, legacyHistoryKey, historyV2Key, historyKey, projectsKey])
   })
   it('keeps migrated progress in memory when migration write fails', () => {
     const storage = fakeStorage(serialize())
