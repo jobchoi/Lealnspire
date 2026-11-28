@@ -26,7 +26,7 @@ test('기록 안내 → 지우기 취소(유지) → 지우기 확정 → 새로
   await page.reload()
   expect(await page.evaluate(() => localStorage.getItem('lealnspire.progress')), '앱 기록 삭제(v1)').toBeNull()
   expect(await page.evaluate(() => localStorage.getItem('lealnspire.progress.v2')), '앱 기록 삭제(v2)').toBeNull()
-  expect(await page.evaluate(() => [localStorage.getItem('lealnspire.progress.v3'), localStorage.getItem('lealnspire.history.v1')]), '앱 기록 삭제(v3·학습 이력, T84)').toEqual([null, null])
+  expect(await page.evaluate(() => ['lealnspire.progress.v3', 'lealnspire.progress.v4', 'lealnspire.history.v1', 'lealnspire.history.v2'].map(k => localStorage.getItem(k))), '앱 기록 삭제(v3·v4·학습 이력, T84)').toEqual([null, null, null, null])
   expect(await page.evaluate(() => localStorage.getItem('other-app')), '다른 데이터 보존').toBe('keep')
   await expect(page.getByRole('button', { name: /이어/ }), '이어하기 사라짐').toHaveCount(0)
 })

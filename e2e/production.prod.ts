@@ -19,7 +19,7 @@ test('배포 빌드: 시작 → 성공 → 새로고침 후 기록 복원 → �
   await page.goto('./')
   await expect(g.button('이어하기'), '새로고침 뒤 기록 복원').toBeVisible()
   await g.press(g.button('스테이지 목록'))
-  await expect(page.locator('.stage-card').first()).toContainText('최고 별 3개')
+  await expect(page.locator('.stage-card').first(), '완료 도장(T84-6)').toContainText('해냈어요')
 
   await page.goto('./')
   await g.press(g.button('내 기록 안내'))

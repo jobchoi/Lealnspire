@@ -1,9 +1,9 @@
 import type { Page } from '@playwright/test'
 import { expect, Game, test } from './helpers'
 
-/** T84-3: 실제 사용 흐름이 학습 이력(lealnspire.history.v1)에 의미 단위로 남는다 — 클릭·프레임 로그가 아니고, 개인정보 없음, 편집마다 이력을 다시 쓰지 않음 */
+/** T84-3: 실제 사용 흐름이 학습 이력(lealnspire.history.v2)에 의미 단위로 남는다 — 클릭·프레임 로그가 아니고, 개인정보 없음, 편집마다 이력을 다시 쓰지 않음 */
 type Ev = { type: string; activityId: string; activityKind: string; attemptId?: string; data: Record<string, unknown> }
-const events = (page: Page) => page.evaluate(() => (JSON.parse(localStorage.getItem('lealnspire.history.v1') ?? '{"events":[]}').events ?? []) as Ev[])
+const events = (page: Page) => page.evaluate(() => (JSON.parse(localStorage.getItem('lealnspire.history.v2') ?? '{"events":[]}').events ?? []) as Ev[])
 const types = (list: Ev[]) => list.map(e => e.type)
 
 test('처음 온 아이: 틀리게 실행 → 힌트 1·2 → 고쳐서 성공 → 홈. 방문·시도·결과·힌트·완료가 순서대로 남는다', async ({ page }) => {
@@ -26,7 +26,7 @@ test('처음 온 아이: 틀리게 실행 → 힌트 1·2 → 고쳐서 성공 �
   expect(t.filter(x => x === 'hintShown'), '힌트 단계 2개').toHaveLength(2)
   expect(t.filter(x => x === 'completionConfirmed'), '완료 한 번').toHaveLength(1)
   expect(t.indexOf('completionConfirmed'), '완료는 성공 결과 뒤').toBeGreaterThan(t.lastIndexOf('attemptStarted'))
-  const raw = await page.evaluate(() => localStorage.getItem('lealnspire.history.v1') ?? '')
+  const raw = await page.evaluate(() => localStorage.getItem('lealnspire.history.v2') ?? '')
   expect(raw, '개인정보·코드 원문 없음').not.toMatch(/"name"|"email"|"photo"|"forward","id"/)
 })
 
@@ -49,7 +49,7 @@ test('성능: 블록을 30번 편집해도 학습 이력 문서는 편집마다 
     w.__historyWrites = 0
     const original = Storage.prototype.setItem
     Storage.prototype.setItem = function (key: string, value: string) {
-      if (key === 'lealnspire.history.v1') w.__historyWrites++
+      if (key === 'lealnspire.history.v2') w.__historyWrites++
       return original.call(this, key, value)
     }
   })

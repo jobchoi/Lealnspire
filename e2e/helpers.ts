@@ -8,12 +8,17 @@ const names: Record<Cmd | 'N', string> = { F: '앞으로', L: '왼쪽으로 돌�
 /** 모든 테스트: 콘솔 오류·페이지 예외가 하나라도 있으면 실패 */
 export const test = base.extend<{ errors: string[] }>({
   errors: [async ({ page }, use) => {
-    // T84: 앱은 진행 v3·이력 v1만 쓰고 v2에는 쓰지 않는다(옛 원본 보존). 테스트가 v2 키에 진행을 심으면
-    // "옛 버전 사용자"로 다시 이행되도록 v3·이력을 지운다 — 기존 테스트의 v2 시드 의미를 그대로 유지
+    // T84: 앱은 최신 진행(v4)·이력(v2)만 쓰고 옛 키에는 쓰지 않는다(옛 원본 보존). 테스트가 옛 진행 키(v1~v3)에
+    // 진행을 심으면 "옛 버전 사용자"로 다시 이행되도록 그보다 새 키·이력을 지운다 — 기존 테스트의 시드 의미를 그대로 유지
     await page.addInitScript(() => {
+      const order = ['lealnspire.progress', 'lealnspire.progress.v2', 'lealnspire.progress.v3', 'lealnspire.progress.v4']
       const original = Storage.prototype.setItem
       Storage.prototype.setItem = function (key: string, value: string) {
-        if (key === 'lealnspire.progress.v2') { this.removeItem('lealnspire.progress.v3'); this.removeItem('lealnspire.history.v1') }
+        const at = order.indexOf(key)
+        if (at >= 0 && at < order.length - 1 && !(window as unknown as { __appWriting?: boolean }).__appWriting) {
+          for (const newer of order.slice(at + 1)) this.removeItem(newer)
+          this.removeItem('lealnspire.history.v1'); this.removeItem('lealnspire.history.v2')
+        }
         return original.call(this, key, value)
       }
     })

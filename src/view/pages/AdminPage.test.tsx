@@ -4,11 +4,12 @@ import { AdminPage } from './AdminPage'
 import { HomePage } from './HomePage'
 import { AppController } from '../../controller/AppController'
 import { ProgressRepository, progressV2Key } from '../../model/ProgressRepository'
+import { challenges } from '../../model/challenges'
 import { adminSummary } from '../../model/adminSummary'
 import { compactHistory } from '../../model/historySummary'
 import { allStages } from '../../model/stages'
 import type { HistoryEventInput, HistoryResult } from '../../model/history'
-import { i18n, t } from '../../i18n/I18n'
+import { stageLabel, i18n, t } from '../../i18n/I18n'
 
 const noop = () => {}
 const render = (app: AppController) => renderToString(<AdminPage data={app.adminData} onHome={app.home} />)
@@ -35,7 +36,7 @@ it('renders empty and unavailable state, twelve units, 45 puzzles and both langu
     const html = render(app)
     expect(html).toContain(t('admin.ratio', { count: 0, total: 45 }))
     for (const key of ['development', 'local', 'unavailable', 'noAttempts', 'emptyDetail', 'noAttention']) expect(html).toContain(t(`admin.${key}`))
-    expect(html.match(/<th scope="row">/g)).toHaveLength(12)
+    expect(html.match(/<th scope="row">/g)).toHaveLength(12 + app.adminData.challengeEntries.length)
     expect(html).not.toContain('theme-sketchbook')
     expect(html).not.toContain('admin.events.')
   }
@@ -136,7 +137,7 @@ it('shows hint-only puzzles, merges consecutive edits across time segments, and 
     expect(html).toContain(`${t('admin.events.attemptStarted')} → ${t('admin.events.executionInterrupted')}`)
     expect(html).not.toContain(t('admin.events.timeSegment'))
     expect(html.match(/<h4>/g)).toHaveLength(1)
-    expect(html.match(/<th scope="row">/g)).toHaveLength(13)
+    expect(html.match(/<th scope="row">/g)).toHaveLength(13 + app.adminData.challengeEntries.length)
     expect(html).toContain('admin-help-cards')
     expect(html).toContain('<dt>')
     expect(html).toContain('<dd>')
@@ -146,4 +147,41 @@ it('shows hint-only puzzles, merges consecutive edits across time segments, and 
   const item = data.entries[0].timeline.at(-1)!
   if ('event' in item) item.event.recordedAt = '2026-11-29T00:00:00.000Z'
   expect(renderToString(<AdminPage data={data} onHome={noop} />).match(/<h4>/g)).toHaveLength(2)
+})
+
+it('shows only registered challenge puzzles in both table and cards, following registry additions and removals', () => {
+  const app = new AppController()
+  const original = challenges.slice()
+  const check = () => {
+    const data = app.adminData
+    const expected = allStages.filter(stage => !stage.id.startsWith('b') && challenges.some(c => c.stageId === stage.id))
+    expect(data.challengeEntries.map(e => e.stage.id)).toEqual(expected.map(stage => stage.id))
+    expect(data.entries).toHaveLength(45)
+    expect(data.total).toBe(45)
+    for (const locale of ['ko', 'en']) {
+      i18n.locale = locale
+      const section = render(app).split('<section aria-labelledby="admin-challenges">')[1].split('</section>')[0]
+      expect(section.match(/<th scope="row">/g) ?? []).toHaveLength(expected.length)
+      expect(section.match(/<article>/g) ?? []).toHaveLength(expected.length)
+      expect(section).toContain('admin-challenges-cards')
+      for (const stage of allStages.filter(stage => !stage.id.startsWith('b'))) {
+        expect(section.includes(stageLabel(stage))).toBe(expected.some(e => e.id === stage.id))
+      }
+      for (const entry of data.challengeEntries) {
+        expect(entry.challenges).toEqual([])
+        expect(section).toContain(`<td>${t('admin.none')}</td>`)
+      }
+    }
+  }
+  try {
+    check()
+    challenges.push({ stageId: '1', id: 'admin-test', kind: 'shorter', ruleVersion: 1, params: { maxBlocks: 3 } })
+    check()
+    challenges.push({ ...challenges[0], id: 'second-challenge' })
+    check()
+    challenges.splice(0, challenges.length)
+    check()
+  } finally {
+    challenges.splice(0, challenges.length, ...original)
+  }
 })

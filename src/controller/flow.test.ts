@@ -1,5 +1,5 @@
 import { AppController } from './AppController'
-import { isUnlocked, ProgressRepository, progressKey, progressV3Key, historyKey } from '../model/ProgressRepository'
+import { isUnlocked, ProgressRepository, progressKey, progressV4Key, historyKey } from '../model/ProgressRepository'
 import { describe, expect, it } from 'vitest'
 import { createProgressStore } from '../model/ProgressRepository'
 import { stages, allStages, unit2Stages, unit3Stages, unit4Stages, unit5Stages, unit6Stages, unit7Stages, unit8Stages, unit9Stages, unit10Stages, unit11Stages, unit12Stages } from '../model/stages'
@@ -47,12 +47,12 @@ it('preserves version 1 regular completion and isolates the bonus next flow', ()
   const data = new Map<string, string>([[progressKey, raw]])
   const storage = { getItem: (key: string) => data.get(key) ?? null, setItem: (key: string, value: string) => { data.set(key, value) } }
   const repository = new ProgressRepository(storage)
-  expect(repository.getProgress()).toEqual(old)
-  expect(JSON.parse(data.get(progressV3Key)!)).toMatchObject({
-    version: 3, pastDetailsUnavailable: true,
+  expect(repository.getProgress()).toMatchObject(old)
+  expect(JSON.parse(data.get(progressV4Key)!)).toMatchObject({
+    version: 4, pastDetailsUnavailable: true,
     stages: Object.fromEntries(stages.map(stage => [stage.id, { completed: true, bestStars: 3, lastProgram: { main: stage.solution, functions: [] } }])),
   })
-  expect(JSON.parse(data.get(historyKey)!)).toMatchObject({ version: 1, events: [] })
+  expect(JSON.parse(data.get(historyKey)!)).toMatchObject({ version: 2, events: [] })
   expect(continueStageIndex(repository.getProgress())).toBe(allStages.indexOf(unit2Stages[0]))
   expect(isUnlocked(repository.getProgress(), 8)).toBe(true)
   expect(isUnlocked(repository.getProgress(), 9)).toBe(false)
@@ -72,7 +72,7 @@ it('preserves version 1 regular completion and isolates the bonus next flow', ()
   const restored = new ProgressRepository(storage)
   expect(data.get(progressKey)).toBe(raw)
   expect(restored.getProgress().version).toBe(1)
-  for (const stage of stages) expect(restored.getProgress().stages[stage.id]).toEqual(old.stages[stage.id])
+  for (const stage of stages) expect(restored.getProgress().stages[stage.id]).toMatchObject(old.stages[stage.id])
   expect(restored.getProgress().stages.b2.completed).toBe(true)
   expect(continueStageIndex(restored.getProgress())).toBe(allStages.indexOf(unit2Stages[0]))
   expect(progressKey).toBe('lealnspire.progress')
@@ -133,7 +133,7 @@ it('opens unit 4 after u3-3, preserves its initial card, saves three stars and f
     game.edit({ main: stage.solution, functions: stage.solutionFunctions! })
     while (!game.finished) game.step()
     expect(game.result).toBe('success')
-    expect(repository.getProgress().stages[stage.id].bestStars).toBe(3)
+    expect(repository.getProgress().stages[stage.id].bestStars).toBe(0)
     expect(repository.getDocument(stage)).toEqual(game.getSnapshot().doc)
     app.next()
     if (stage.id === 'u4-3') expect(app.getSnapshot().page).toBe('list')
@@ -155,7 +155,7 @@ it('continues through unit 5, awards three stars and returns to the list at u5-3
     while (!game.finished) game.step()
     expect(game.result).toBe('success')
     expect(game.stars).toBe(3)
-    expect(app.progress.stages[stage.id].bestStars).toBe(3)
+    expect(app.progress.stages[stage.id].bestStars).toBe(0)
     app.next()
   }
   expect(app.getSnapshot().page).toBe('list')

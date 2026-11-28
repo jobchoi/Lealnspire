@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AppController } from './AppController'
 import { GameController } from './GameController'
 import { EditorController } from './EditorController'
-import { ProgressRepository, progressV3Key } from '../model/ProgressRepository'
+import { ProgressRepository, progressV4Key } from '../model/ProgressRepository'
 import { stages } from '../model/stages'
 
 afterEach(() => vi.useRealTimers())
@@ -49,8 +49,8 @@ describe('Controller without React', () => {
     const repository = new ProgressRepository({ getItem: key => data.get(key) ?? null, setItem: (key, value) => { data.set(key, value) } })
     const game = new GameController(stages[0], repository)
     game.edit(stages[0].solution)
-    expect(JSON.parse(data.get(progressV3Key)!)).toMatchObject({
-      version: 3, stages: { '1': { completed: false, bestStars: 0, lastProgram: { main: stages[0].solution, functions: [] } } },
+    expect(JSON.parse(data.get(progressV4Key)!)).toMatchObject({
+      version: 4, stages: { '1': { completed: false, bestStars: 0, lastProgram: { main: stages[0].solution, functions: [] } } },
     })
     game.setSpeed('fast'); game.play()
     expect(game.locked).toBe(true)
@@ -58,10 +58,10 @@ describe('Controller without React', () => {
     vi.advanceTimersByTime(150)
     expect(game.frame?.pos).toEqual({ x: 1, y: 0 })
     expect(game.finished).toBe(false)
-    expect(JSON.parse(data.get(progressV3Key)!).stages['1'].completed).toBe(false)
+    expect(JSON.parse(data.get(progressV4Key)!).stages['1'].completed).toBe(false)
     vi.advanceTimersByTime(150)
     expect(game.finished).toBe(true); expect(game.showResult).toBe(true); expect(game.stars).toBe(3)
-    expect(JSON.parse(data.get(progressV3Key)!).stages['1']).toMatchObject({ completed: true, bestStars: 3 })
+    expect(JSON.parse(data.get(progressV4Key)!).stages['1']).toMatchObject({ completed: true, bestStars: 0 })
     expect(new ProgressRepository({ getItem: key => data.get(key) ?? null, setItem: () => {} }).getProgress().stages['1'].completed).toBe(true)
     game.dismiss(); expect(game.showResult).toBe(false)
     game.reset(); expect(game.locked).toBe(false)
@@ -211,7 +211,7 @@ it('preserves completed progress when the first edit resets a successful run', (
   game.editor.add('turnLeft')
   expect(game.frame).toBeUndefined()
   expect(game.getSnapshot().program).toHaveLength(stages[0].solution.length + 1)
-  expect(repository.getProgress().stages[stages[0].id]).toMatchObject({ completed: true, bestStars: 3 })
+  expect(repository.getProgress().stages[stages[0].id]).toMatchObject({ completed: true, bestStars: 0 })
 })
 
 

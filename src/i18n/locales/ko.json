@@ -827,7 +827,28 @@
       "demoEnded": "시범을 닫았어요",
       "completionConfirmed": "퍼즐을 완료했어요",
       "reviewChanged": "다시 보기 선택을 바꿨어요",
-      "timeSegment": "활동 시간 구간을 기록했어요"
+      "timeSegment": "활동 시간 구간을 기록했어요",
+      "challengeAchieved": "도전 성공!"
     }
+  },
+  "stamp": {
+    "done": "해냈어요"
+  },
+  "challenges": {
+    "button": "더 해 볼까?",
+    "shorter": "블록 {max}개 안에 풀기",
+    "bothTurns": "왼쪽으로도, 오른쪽으로도 돌아서 풀기",
+    "bothDirections": "앞에서도, 뒤에서도 찾아서 풀기",
+    "achieved": "도전 성공!",
+    "partial": "하나 했어요. 다른 쪽도 해 볼까요?",
+    "legacyTitle": "이전 별 기록",
+    "legacy": "예전 방식으로 받은 별이에요. 지금은 도장과 도전으로 보여 줘요.",
+    "recent": "최근 도전",
+    "facts": {
+      "shorter": "짧게도 풀어 봤어요",
+      "bothTurns": "양쪽으로 돌아 봤어요",
+      "bothDirections": "앞과 뒤에서 찾아 봤어요"
+    },
+    "column": "선택 도전"
   }
 }

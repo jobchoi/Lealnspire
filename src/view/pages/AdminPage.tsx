@@ -18,6 +18,7 @@ function detailRows(timeline: Timeline) {
     if (event.type === 'timeSegment' || event.type === 'executionCalculated' || event.type === 'resultReached' || event.type === 'executionInterrupted') continue
     let label = t(`admin.events.${event.type}`)
     if (event.type === 'attemptStarted') {
+      if (event.data.purpose === 'challenge') label = t('challenges.column')
       // Match by visit and attempt, stopping at a new execution even for incomplete records.
       const following: HistoryEvent[] = []
       for (const next of timeline) {
@@ -93,6 +94,16 @@ export function AdminPage({ data, onHome }: Props) {
         { key: 'admin.minutes', value: t('admin.minuteValue', { count: unit.minutes }) },
       ] }))} />
     </section>
+    <section aria-labelledby="admin-challenges"><h2 id="admin-challenges">{t('challenges.column')}</h2>
+      <div className="admin-table-scroll" role="region" aria-labelledby="admin-challenges" tabIndex={0}><table>
+        <thead><tr><th scope="col">{t('admin.puzzle')}</th><th scope="col">{t('admin.completed')}</th><th scope="col">{t('challenges.column')}</th></tr></thead>
+        <tbody>{data.challengeEntries.map(e => <tr key={e.stage.id}><th scope="row">{stageLabel(e.stage)}</th><td>{e.puzzle.completed ? t('stamp.done') : t('admin.none')}</td><td>{e.challenges.map(c => t(`challenges.${c.kind}`, { max: c.params.maxBlocks ?? 0 })).join(', ') || t('admin.none')}</td></tr>)}</tbody>
+      </table></div>
+      <DataCards kind="challenges" rows={data.challengeEntries.map(e => ({ id: e.stage.id, title: stageLabel(e.stage), values: [
+        { key: 'admin.completed', value: e.puzzle.completed ? t('stamp.done') : t('admin.none') },
+        { key: 'challenges.column', value: e.challenges.map(c => t(`challenges.${c.kind}`, { max: c.params.maxBlocks ?? 0 })).join(', ') || t('admin.none') },
+      ] }))} />
+    </section>
     <section aria-labelledby="admin-attention"><h2 id="admin-attention">{t('admin.attention')}</h2>
       {attention.length === 0 && <p>{t('admin.noAttention')}</p>}
       <ul>{attention.map(e => <li key={e.stage.id}><strong>{stageLabel(e.stage)}</strong>
@@ -119,7 +130,7 @@ export function AdminPage({ data, onHome }: Props) {
     <section aria-labelledby="admin-detail"><h2 id="admin-detail">{t('admin.detail')}</h2>
       <label htmlFor="admin-puzzle">{t('admin.puzzle')}</label>{' '}
       <select id="admin-puzzle" value={selected} onChange={event => setSelected(event.target.value)}>{data.entries.map(e => <option key={e.stage.id} value={e.stage.id}>{stageLabel(e.stage)}</option>)}</select>
-      {entry && <><h3>{stageLabel(entry.stage)}</h3>{groups.length === 0 && <p>{t('admin.emptyDetail')}</p>}
+      {entry && <><h3>{stageLabel(entry.stage)}</h3>{entry.legacyStars > 0 && <details><summary>{t('challenges.legacyTitle')}</summary><p>{t('challenges.legacy')}</p><p>{t('stars', { count: entry.legacyStars })}</p></details>}{groups.length === 0 && <p>{t('admin.emptyDetail')}</p>}
         {groups.map((group, index) => <div className="admin-day" key={index}><h4>{group.day}</h4>
           <ol>{group.rows.map(row => <li key={row.sequence}><time dateTime={row.at}>{new Date(row.at).toLocaleTimeString(i18n.locale === 'en' ? 'en-US' : 'ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false })}</time> — {row.label}</li>)}</ol>
         </div>)}</>}

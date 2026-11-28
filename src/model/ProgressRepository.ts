@@ -1,3 +1,5 @@
+import { stageChallenges, evaluateChallenge } from './challenges'
+import type { ChallengeState } from './challenges'
 import { emptyHistory, validHistoryEvent, validDate } from './history'
 import type { HistoryDocument, HistoryEvent, HistoryEventInput } from './history'
 import { compactHistory, historyLimits, parseHistory } from './historySummary'
@@ -6,14 +8,17 @@ import type { Program, ProgramDocument, ProgramInput, FunctionDef, Stage } from 
 import { normalizeLogicProgram, validDocument } from './program'
 import { allStages as stages, stages as unit1Stages } from './stages'
 
-export type StageProgress = { completed: boolean; bestStars: number; lastProgram: Program; functions?: FunctionDef[] }
+export type StageProgress = { completed: boolean; bestStars: number; legacyEvaluationVersion?: 1; completionEvaluationVersion?: 2; challenges?: Record<string, ChallengeState>; lastProgram: Program; functions?: FunctionDef[] }
 export type Progress = { version: 1; stages: Record<string, StageProgress> }
 export type ProgressStorage = { getItem(key: string): string | null; setItem(key: string, value: string): void; removeItem?(key: string): void }
 export const progressKey = 'lealnspire.progress'
 export const progressV2Key = 'lealnspire.progress.v2'
 export const progressV3Key = 'lealnspire.progress.v3'
-export const historyKey = 'lealnspire.history.v1'
+export const progressV4Key = 'lealnspire.progress.v4'
+export const legacyHistoryKey = 'lealnspire.history.v1'
+export const historyKey = 'lealnspire.history.v2'
 export type ProgressV3 = Omit<ProgressV2, 'version'> & { version: 3; learnerId: string; historyStartedAt: string; pastDetailsUnavailable: boolean }
+export type ProgressV4 = Omit<ProgressV3, 'version'> & { version: 4 }
 export type HistoryOptions = { now?: () => string; createId?: () => string }
 let identitySequence = 0
 const newIdentity = () => `local-${Date.now().toString(36)}-${(++identitySequence).toString(36)}-${Math.random().toString(36).slice(2)}`
@@ -38,11 +43,24 @@ function validStageDocument(value: unknown, id: string): value is ProgramDocumen
 }
 
 const knownStageIds = new Set(stages.map(stage => stage.id))
+function normalizeChallenges(value: unknown): Record<string, ChallengeState> {
+  if (!record(value)) return {}
+  return Object.fromEntries(Object.entries(value).flatMap(([id, state]) => {
+    if (!/^[\w.:-]{1,128}$/.test(id) || !record(state) || !Number.isSafeInteger(state.ruleVersion) || (state.ruleVersion as number) < 1
+      || !(state.achievedAt === null || validDate(state.achievedAt))
+      || state.partial !== undefined && (!Array.isArray(state.partial) || !state.partial.every(p => ['turnLeft', 'turnRight', 'front', 'back'].includes(p)))) return []
+    return [[id, { ruleVersion: state.ruleVersion as number, achievedAt: state.achievedAt as string | null,
+      ...(Array.isArray(state.partial) ? { partial: [...new Set(state.partial as string[])] } : {}) }]]
+  }))
+}
 function normalizeStages(entries: Record<string, unknown>, withFunctions = false): Record<string, StageProgress> {
   return Object.fromEntries(Object.entries(entries).flatMap(([id, value]) => {
     if (!knownStageIds.has(id)) return []
     const entry = record(value) ? value : {}
     return [[id, {
+      ...(entry.legacyEvaluationVersion === 1 ? { legacyEvaluationVersion: 1 as const } : {}),
+      ...(entry.completionEvaluationVersion === 2 ? { completionEvaluationVersion: 2 as const } : {}),
+      ...(record(entry.challenges) ? { challenges: normalizeChallenges(entry.challenges) } : {}),
       completed: typeof entry.completed === 'boolean' ? entry.completed : false,
       bestStars: Number.isInteger(entry.bestStars) && (entry.bestStars as number) >= 0 && (entry.bestStars as number) <= 3
         ? entry.bestStars as number : 0,
@@ -70,7 +88,7 @@ const migrations = [migrateV1toV2]
 
 function toDocument(progress: Progress): ProgressV2 {
   return { version: 2, stages: Object.fromEntries(Object.entries(progress.stages).map(([id, entry]) =>
-    [id, { completed: entry.completed, bestStars: entry.bestStars, lastProgram: { main: clone(entry.lastProgram), functions: clone(entry.functions ?? []) } }])) }
+    [id, { completed: entry.completed, bestStars: entry.bestStars, ...(entry.legacyEvaluationVersion === 1 ? { legacyEvaluationVersion: 1 as const } : {}), ...(entry.completionEvaluationVersion === 2 ? { completionEvaluationVersion: 2 as const } : {}), ...(entry.challenges ? { challenges: clone(entry.challenges) } : {}), lastProgram: { main: clone(entry.lastProgram), functions: clone(entry.functions ?? []) } }])) }
 }
 function readJSON(raw: string | null): unknown {
   try { return JSON.parse(raw ?? 'null') } catch { return null }
@@ -132,27 +150,35 @@ function makeStore(storage?: ProgressStorage, options: HistoryOptions = {}) {
   }
   let progress = empty()
   try {
-    const v3 = readJSON(storage?.getItem(progressV3Key) ?? null)
+    const v4raw = storage?.getItem(progressV4Key) ?? null
+    const v3raw = storage?.getItem(progressV3Key) ?? null
+    const v4 = readJSON(v4raw)
+    // Preserve unknown versions, but recover malformed v4 from the newest legacy data.
+    const useV4 = record(v4) && ('version' in v4 && v4.version !== 4 || v4.version === 4 && record(v4.stages))
+    const v3 = useV4 ? v4 : readJSON(v3raw)
     const v2raw = storage?.getItem(progressV2Key) ?? null
     const v1raw = storage?.getItem(progressKey) ?? null
-    preservedBytes = ((v1raw?.length ?? 0) + (v2raw?.length ?? 0)) * 2
+    preservedBytes = ((v1raw?.length ?? 0) + (v2raw?.length ?? 0) + (v3raw?.length ?? 0)) * 2
     settingsBytes = (storage?.getItem(settingsKey)?.length ?? 0) * 2
     try {
-      const historyRaw = storage?.getItem(historyKey) ?? null
+      const oldHistoryRaw = storage?.getItem(legacyHistoryKey) ?? null
+      preservedBytes += (oldHistoryRaw?.length ?? 0) * 2
+      const historyRaw = storage?.getItem(historyKey) ?? oldHistoryRaw
       const historyValue = readJSON(historyRaw)
-      historyWritable = !(record(historyValue) && 'version' in historyValue && historyValue.version !== 1)
+      historyWritable = !(record(historyValue) && 'version' in historyValue && historyValue.version !== 1 && historyValue.version !== 2)
       if (historyWritable) history = parseHistory(historyRaw)
       else { history.incomplete = true; preservedBytes += (historyRaw?.length ?? 0) * 2 }
     } catch { historyWritable = false; history.incomplete = true }
-    if (record(v3) && v3.version === 3 && record(v3.stages)) {
-      identityPersisted = true
+    if (record(v3) && (useV4 ? v3.version === 4 : v3.version === 3) && record(v3.stages)) {
+      identityPersisted = useV4
       progress = fromDocument({ ...v3, version: 2 })!
       if (typeof v3.learnerId === 'string' && /^[\w.:-]{1,128}$/.test(v3.learnerId)) learnerId = v3.learnerId
       else history.incomplete = true
       if (validDate(v3.historyStartedAt)) historyStartedAt = v3.historyStartedAt
       else history.incomplete = true
       pastDetailsUnavailable = v3.pastDetailsUnavailable !== false
-    } else if (record(v3) && 'version' in v3 && v3.version !== 3) { progressWritable = false; futureProgressBytes = (storage?.getItem(progressV3Key)?.length ?? 0) * 2 }
+      if (!useV4) { persist(); historyDirty = true; flushHistory() }
+    } else if (record(v3) && 'version' in v3 && v3.version !== (useV4 ? 4 : 3)) { progressWritable = false; futureProgressBytes = ((useV4 ? v4raw : v3raw)?.length ?? 0) * 2 }
     else {
       const current = readJSON(v2raw)
       const restored = fromDocument(current)
@@ -164,8 +190,10 @@ function makeStore(storage?: ProgressStorage, options: HistoryOptions = {}) {
       if (progressWritable && (v1raw !== null || v2raw !== null)) { persist(); historyDirty = true; flushHistory() }
     }
   } catch { storage = undefined }
-  function progressDocument(): ProgressV3 {
-    return { ...toDocument(progress), version: 3, learnerId, historyStartedAt, pastDetailsUnavailable }
+  function progressDocument(): ProgressV4 {
+    const saved = toDocument(progress)
+    for (const entry of Object.values(saved.stages)) { entry.legacyEvaluationVersion = 1; entry.challenges ??= {} }
+    return { ...saved, version: 4, learnerId, historyStartedAt, pastDetailsUnavailable }
   }
   function persist() {
     const raw = JSON.stringify(progressDocument())
@@ -177,7 +205,7 @@ function makeStore(storage?: ProgressStorage, options: HistoryOptions = {}) {
         flushHistory(false)
         if (preservedBytes + settingsBytes + progressBytes + historyBytes > historyLimits.bytes) throw Error('app storage budget')
       }
-      storage?.setItem(progressV3Key, raw)
+      storage?.setItem(progressV4Key, raw)
       identityPersisted = true
     } catch {
       history = compactHistory(history, now(), preservedBytes + settingsBytes + progressBytes, true)
@@ -185,7 +213,7 @@ function makeStore(storage?: ProgressStorage, options: HistoryOptions = {}) {
         const rawHistory = JSON.stringify(history); historyBytes = rawHistory.length * 2
         if (historyBytes + preservedBytes + settingsBytes + progressBytes > historyLimits.bytes) throw Error('app storage budget')
         if (historyWritable) storage?.setItem(historyKey, rawHistory)
-        storage?.setItem(progressV3Key, raw)
+        storage?.setItem(progressV4Key, raw)
         identityPersisted = true
       } catch { storage = undefined }
     }
@@ -244,7 +272,7 @@ function makeStore(storage?: ProgressStorage, options: HistoryOptions = {}) {
       if (deletionStorage) {
         if (!deletionStorage.removeItem) return false
         let removed = true
-        for (const key of [progressKey, progressV2Key, progressV3Key, historyKey]) {
+        for (const key of [progressKey, progressV2Key, progressV3Key, progressV4Key, legacyHistoryKey, historyKey]) {
           try { deletionStorage.removeItem(key) }
           catch { removed = false }
         }
@@ -270,15 +298,29 @@ function makeStore(storage?: ProgressStorage, options: HistoryOptions = {}) {
     saveProgram(stageId: string, program: ProgramInput) {
       const previous = progress.stages[stageId]
       progress.stages = { ...progress.stages, [stageId]: {
-        completed: previous?.completed ?? false, bestStars: previous?.bestStars ?? 0, lastProgram: clone(programDocument(program).main), ...(programDocument(program).functions.length ? { functions: clone(programDocument(program).functions) } : {}),
+        ...previous, functions: undefined, legacyEvaluationVersion: 1, challenges: previous?.challenges ?? {}, completed: previous?.completed ?? false, bestStars: previous?.bestStars ?? 0, lastProgram: clone(programDocument(program).main), ...(programDocument(program).functions.length ? { functions: clone(programDocument(program).functions) } : {}),
       } }
       persist()
+    },
+    confirmChallenges(stageId: string, doc: ProgramDocument, runs: import('./types').RunResult[]) {
+      const entry = progress.stages[stageId]
+      if (!entry?.completed) return []
+      const newly: string[] = []
+      for (const challenge of stageChallenges(stageId)) {
+        const previous = entry.challenges?.[challenge.id]
+        const state = evaluateChallenge(challenge, doc, runs, previous, now())
+        if (!state) continue
+        entry.challenges = { ...entry.challenges, [challenge.id]: state }
+        if (state.achievedAt && !(previous?.ruleVersion === state.ruleVersion && previous.achievedAt)) newly.push(challenge.id)
+      }
+      persist()
+      return newly
     },
     completeStage(stageId: string, stars: number, program: ProgramInput) {
       if (!Number.isInteger(stars) || stars < 1 || stars > 3) return
       const previous = progress.stages[stageId]
       progress.stages = { ...progress.stages, [stageId]: {
-        completed: true, bestStars: Math.max(previous?.bestStars ?? 0, stars), lastProgram: clone(programDocument(program).main), ...(programDocument(program).functions.length ? { functions: clone(programDocument(program).functions) } : {}),
+        ...previous, functions: undefined, legacyEvaluationVersion: 1, completionEvaluationVersion: 2, challenges: previous?.challenges ?? {}, completed: true, bestStars: previous?.bestStars ?? 0, lastProgram: clone(programDocument(program).main), ...(programDocument(program).functions.length ? { functions: clone(programDocument(program).functions) } : {}),
       } }
       persist()
     },
@@ -314,6 +356,7 @@ export class ProgressRepository {
   getProgram = (stage: Stage) => this.store.getProgram(stage)
   getDocument = (stage: Stage) => this.store.getDocument(stage)
   saveProgram = (id: string, program: ProgramInput) => this.store.saveProgram(id, program)
+  confirmChallenges = (id: string, doc: ProgramDocument, runs: import('./types').RunResult[]) => this.store.confirmChallenges(id, doc, runs)
   completeStage = (id: string, stars: number, program: ProgramInput) => this.store.completeStage(id, stars, program)
 }
 export const createProgressStore = (storage?: ProgressStorage, options: HistoryOptions = {}) => new ProgressRepository(storage, options)

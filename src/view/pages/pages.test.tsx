@@ -33,9 +33,9 @@ describe('화면 렌더링', () => {
     expect(list()).toContain(t('locked'))
     store.completeStage('1', 2, [])
     expect(list().match(/disabled=""/g)).toHaveLength(allStages.length - 2)
-    expect(list()).toContain(t('bestStars', { count: 2 }))
-    expect(list().match(/style="opacity:1"/g)).toHaveLength(2)
-    expect(list().match(/style="opacity:0.25"/g)).toHaveLength(allStages.length * 3 - 2)
+    expect(list()).toContain(t('stamp.done'))
+    expect(list().match(/class="completion-stamp"/g)).toHaveLength(1)
+    expect(list()).not.toContain('empty-star')
   })
   it('저장 코드로 게임을 열고 힌트와 결과는 닫힌 상태로 시작한다', () => {
     const store = createProgressStore()
@@ -280,7 +280,7 @@ it('uses the localized Unit 2 title in play, list and results without exposing i
       for (let i = 0; i < 1000 && !controller.finished; i++) controller.step()
       expect(controller.result).toBe('success')
       const html = renderToString(<PlayPage stage={stage} progressStore={store} controller={controller} onList={noop} onNext={noop} lastStage />).replaceAll('<!-- -->', '')
-      expect(html).toContain(`<h1 tabindex="-1" data-page-title="true">${title}</h1>`)
+      expect(html).toContain(`<h1 tabindex="-1" data-page-title="true">${title}<span class="play-completion" role="img" aria-label="${t('stamp.done')}">`)
       expect(html.split('role="dialog"')[1]).toContain(title)
       expect(html).not.toContain('u2-1')
       const list = renderToString(<StageSelectPage progress={store.getProgress()} onSelect={noop} onHome={noop} />)
@@ -646,7 +646,7 @@ it('shows a dismissible save warning once per repository and keeps successful pr
         expect(page()).toContain(t('saveNotice.result'))
         expect(page()).toContain('class="save-notice" role="status"')
         expect(page()).toContain(`aria-label="${t('close')}"`)
-        expect(store.getProgress().stages['1']).toMatchObject({ completed: true, bestStars: 3, lastProgram: stages[0].solution })
+        expect(store.getProgress().stages['1']).toMatchObject({ completed: true, bestStars: 0, lastProgram: stages[0].solution })
         game.dismissSaveNotice()
         expect(page()).not.toContain(t('saveNotice.failed').replaceAll("'", '&#x27;'))
         expect(page()).toContain(t('saveNotice.result'))
@@ -734,3 +734,19 @@ for (const locale of ['ko', 'en']) {
     } finally { i18n.locale = previous }
   })
 }
+
+it('renders completion stamps and optional challenge entry only after completion, with no empty rewards', () => {
+  const repo = createProgressStore()
+  const stage = stages[1]
+  const page = () => renderToString(<PlayPage stage={stage} progressStore={repo} onList={noop} onNext={noop} lastStage={false} />)
+  expect(page()).not.toContain(t('challenges.button'))
+  expect(page()).not.toContain('completion-stamp')
+  repo.completeStage(stage.id, 3, stage.solution)
+  expect(page()).toContain(t('challenges.button'))
+  expect(page()).toContain(t('stamp.done'))
+  expect(page()).not.toContain(t('challenges.partial'))
+  const list = renderToString(<StageSelectPage progress={repo.getProgress()} onSelect={noop} onHome={noop} />)
+  expect(list.match(/class="completion-stamp"/g)).toHaveLength(1)
+  expect(list).not.toContain('empty-star')
+  expect(list).not.toContain(t('bestStars', { count: 0 }))
+})

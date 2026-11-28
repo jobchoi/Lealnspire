@@ -827,7 +827,28 @@
       "demoEnded": "Closed demo",
       "completionConfirmed": "Completed the puzzle",
       "reviewChanged": "Changed review selection",
-      "timeSegment": "Recorded activity time segment"
+      "timeSegment": "Recorded activity time segment",
+      "challengeAchieved": "Challenge done!"
     }
+  },
+  "stamp": {
+    "done": "Done!"
+  },
+  "challenges": {
+    "button": "Want a challenge?",
+    "shorter": "Solve with {max} blocks or fewer",
+    "bothTurns": "Solve it turning left, and turning right",
+    "bothDirections": "Solve it searching from the front, and from the back",
+    "achieved": "Challenge done!",
+    "partial": "One done. Try the other way?",
+    "legacyTitle": "Previous stars",
+    "legacy": "Stars from the old way. Now we show stamps and challenges.",
+    "recent": "Recent challenges",
+    "facts": {
+      "shorter": "I tried a shorter solution",
+      "bothTurns": "I tried turning both ways",
+      "bothDirections": "I searched from the front and the back"
+    },
+    "column": "Optional challenges"
   }
 }
