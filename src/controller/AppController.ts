@@ -34,8 +34,28 @@ export class AppController extends Observable<Screen> {
     if (!challenge || this.progress.stages[challenge.stageId]?.completed !== true) return
     this.game?.dispose()
     this.prediction?.dispose()
-    this.prediction = new PredictionController(challenge)
+    this.prediction = new PredictionController(challenge, undefined, this.repository)
     this.update({ page: 'prediction', id })
+  }
+  setVisible = (visible: boolean) => {
+    const active = this.state.page === 'play' ? this.game : this.state.page === 'prediction' ? this.prediction?.game : undefined
+    active?.setVisible(visible)
+  }
+  flushHistory = () => {
+    if (this.state.page === 'play') this.game?.flushHistory()
+    if (this.state.page === 'prediction') this.prediction?.game.flushHistory()
+  }
+  activity = () => {
+    const active = this.state.page === 'play' ? this.game : this.state.page === 'prediction' ? this.prediction?.game : undefined
+    active?.activity()
+  }
+  pagehide = () => {
+    if (this.state.page === 'play') { this.game?.suspend(); this.game?.endVisit('reload') }
+    if (this.state.page === 'prediction') { this.prediction?.game.suspend(); this.prediction?.game.endVisit('reload') }
+  }
+  restorePage = () => {
+    if (this.state.page === 'play') this.openStage(this.state.index)
+    else if (this.state.page === 'prediction') this.openPrediction(this.state.id)
   }
   start = () => this.openStage(0)
   continue = () => { if (this.continueIndex !== undefined) this.openStage(this.continueIndex) }

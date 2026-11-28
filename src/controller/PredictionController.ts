@@ -6,13 +6,13 @@ import { samePrediction, type Prediction } from '../model/predictions'
 export class PredictionController extends Observable<{ selected: number | null }> {
   readonly game: GameController
   readonly challenge: Prediction
-  constructor(challenge: Prediction, clock?: Scheduler) {
+  constructor(challenge: Prediction, clock?: Scheduler, historyRepository?: ProgressRepository) {
     super({ selected: null })
     this.challenge = challenge
     const repository = new ProgressRepository()
     const stage = challenge.stage ?? stages.find(stage => stage.id === challenge.stageId)!
     repository.saveProgram(stage.id, challenge.program)
-    this.game = new GameController(stage, repository, clock)
+    this.game = new GameController(stage, repository, clock, historyRepository ?? repository, 'prediction', challenge.id)
   }
   get firstCheck() {
     if (!this.game.finished) return undefined

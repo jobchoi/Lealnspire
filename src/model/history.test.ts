@@ -242,3 +242,12 @@ it('applies the 90-day retention window on restore without waiting for a new eve
   expect(summarize(restored.getHistory()).attempts).toBe(1)
   expect(JSON.parse(s.getItem(historyKey)!).events).toHaveLength(0)
 })
+it('keeps over-budget legacy migration in memory without recursive identity persistence', () => {
+  const s = storage()
+  const raw = JSON.stringify({ version: 1, stages: { '1': { completed: true, bestStars: 2, lastProgram: [] } } }) + ' '.repeat(historyLimits.bytes)
+  s.setItem(progressKey, raw)
+  const repo = new ProgressRepository(s, options)
+  expect(repo.getProgress().stages['1'].completed).toBe(true)
+  expect(repo.persistent).toBe(false)
+  expect(s.getItem(progressKey)).toBe(raw)
+})

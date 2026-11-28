@@ -6,7 +6,7 @@ export const historyResults: HistoryResult[] = ['success', 'collision', 'unfinis
 export const blockTypes: BlockType[] = ['forward', 'turnLeft', 'turnRight', 'repeat', 'if', 'while', 'call', 'set', 'change', 'return', 'on', 'forEach', 'breakForEach']
 export type HistoryPayloads = {
   visitStarted: Record<string, never>
-  visitEnded: { reason: 'leave' | 'hidden' | 'reload' }
+  visitEnded: { reason: 'leave' | 'hidden' | 'reload' | 'unknown' }
   attemptStarted: { revision: number; mode: 'auto' | 'step'; changed: boolean; previousAttemptId?: string }
   executionCalculated: { result: HistoryResult; variants: HistoryResult[]; failedVariant: number | null; cause?: BlockType; path?: number[]; callId?: string }
   resultReached: Record<string, never>
@@ -44,9 +44,9 @@ const token = (v: unknown): v is string => typeof v === 'string' && v.length > 0
 export const validDate = (v: unknown): v is string => typeof v === 'string' && /^\d{4}-\d\d-\d\dT/.test(v) && Number.isFinite(Date.parse(v))
 const result = (v: unknown) => historyResults.includes(v as HistoryResult)
 const schemas: Record<keyof HistoryPayloads, Record<string, (v: unknown) => boolean>> = {
-  visitStarted: {}, visitEnded: { reason: v => ['leave', 'hidden', 'reload'].includes(v as string) },
+  visitStarted: {}, visitEnded: { reason: v => ['leave', 'hidden', 'reload', 'unknown'].includes(v as string) },
   attemptStarted: { revision: integer, mode: v => v === 'auto' || v === 'step', changed: v => typeof v === 'boolean', 'previousAttemptId?': token },
-  executionCalculated: { result, variants: v => Array.isArray(v) && v.length > 0 && v.length <= 128 && v.every(result), failedVariant: v => v === null || integer(v), 'cause?': v => blockTypes.includes(v as BlockType), 'path?': v => Array.isArray(v) && v.length <= 20 && v.every(integer), 'callId?': token },
+  executionCalculated: { result, variants: v => Array.isArray(v) && v.length > 0 && v.length <= 128 && v.every(result), failedVariant: v => v === null || integer(v), 'cause?': v => blockTypes.includes(v as BlockType), 'path?': v => Array.isArray(v) && v.length <= 20 && v.every(n => integer(n) || n === -1), 'callId?': token },
   resultReached: {}, executionInterrupted: { reason: v => ['reset', 'rerun', 'leave', 'hidden'].includes(v as string) },
   codeChanged: { revision: integer, changes: integer, changed: v => typeof v === 'boolean', counts: v => isRecord(v) && Object.entries(v).every(([k, n]) => blockTypes.includes(k as BlockType) && integer(n)) },
   fixRequested: { previousAttemptId: token, source: v => v === 'button' || v === 'edit' }, undo: { revision: integer },
