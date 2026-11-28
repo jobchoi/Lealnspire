@@ -43,6 +43,7 @@ E2E는 Chromium과 로컬 포트 실행 권한이 필요합니다. 실행 못 �
 | `main.tsx` | 브라우저 storage 주입, ?lang 선택, React mount |
 | `model/ProgressRepository.test.ts` | 손상·버전·검증·예외·복사·최고 별·저장·잠금 |
 | `model/ProgressRepository.ts` | 주입 storage의 진행 v3·학습 이력 v1 저장, v1·v2 이행(원본 보존)·검증·복사·메모리 대체와 잠금 계산 |
+| `src/model/factory/` | T84-7 규칙 분류 공장 타입·프로그램 검증(30블록)·실행기·단원 개방(`unlocks.ts`) — 퍼즐 실행기와 분리 |
 | `src/model/history.ts`, `historySummary.ts` | T84 학습 이력 이벤트 타입·봉투·검증, 보존 정리·집계(`summarizeHistory`) — 저장은 ProgressRepository만 |
 | `model/editor.test.ts` | ID 경로·중첩 탐색·새 블록 생성 |
 | `model/editor.ts` | 재귀 ID 경로 찾기, 새 블록 ID와 기본 반복 생성 |
@@ -175,6 +176,7 @@ T12에서 새로 참고한 API 공식 문서(Context7 도구 없음):
 | `layout.e2e.ts` | 세 월드 + 본래 스테이지 4·8 × 3개 화면 크기 배치, 44px, 글자 잘림·쪼개짐 |
 | `fix.e2e.ts` | T15 실패 지점 고치기, T22 닫은 뒤 바로 편집 |
 | `hint.e2e.ts` | T16 2단계 힌트, 모든 힌트가 정답 순서를 말하지 않음 |
+| `factory.e2e.ts` | T84-7 규칙 분류 공장: 1단원 전 잠금, 스택 맨 위, 빈 벨트 오류, 3크기 44px·대비 |
 | `admin.e2e.ts` | T84-5 교사·보호자: 3연속 실패+힌트 → 살펴볼 퍼즐·도움·상세, 아이 화면 비노출, v2만 있는 경우, 3크기·높이 |
 | `learning.e2e.ts` | T84-4 내 배움: 빈 상태, 고쳐서 성공 문장·다시 보기 담기/빼기, 수치 노출 없음, v2만 있는 아이, 키보드, 3크기 |
 | `history.e2e.ts` | T84-3 실제 흐름의 학습 이력(방문·시도·결과·힌트·완료), 한 단계 연타=한 시도, 시범≠시도, 편집 30회에 이력 쓰기 3회 이하, 새로고침 뒤 방문 닫힘 |
